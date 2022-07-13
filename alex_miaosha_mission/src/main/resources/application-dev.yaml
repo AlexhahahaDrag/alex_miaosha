@@ -1,0 +1,15 @@
+server:
+  port: 40010
+
+spring:
+  application:
+    name: alex-mission
+
+  task:
+    execution:
+      pool:
+        core-size: 4
+        max-size: 16
+        keep-alive: 60s
+        queue-capacity: 1000
+      thread-name-prefix: async-task-
