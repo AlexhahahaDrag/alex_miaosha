@@ -27,5 +27,11 @@
             <groupId>com.alex</groupId>
             <artifactId>alex_miaosha_common</artifactId>
         </dependency>
+
+        <!--整合Rabbit-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -10,21 +10,27 @@ public enum ResultEnum implements BaseEnum {
 
     SUCCESS("200", "success"),
     PARAM_ERROR("400", "param_fail"),
-    SYSTEM_ERROR("500", "system_fail"),
+    //服务器模块
+    SYSTEM_ERROR("500100", "系统异常"),
+    REQUIRE_ILLEGAL("500102", "请求非法"),
+    ACCESS_LIMIT_REACHED("500103", "访问太频繁"),
     //商品模块
     GOODS_CREATE_ERROR("500", "商品创建失败"),
     GOODS_UPDATE_ERROR("500", "商品更新失败"),
     GOODS_NOT_EXISTS("500", "商品不存在"),
-    //订单模块
-    ORDER_NOT_EXISTS("60001", "订单不存在"),
+    //用户模块
+    MOBILE_NOT_EXIST ("500214", "手机号不存在"),
+    PASSWORD_ERROR("500215", "密码错误"),
+    //秒杀模块
+    SECKILL_OVER("500500", "商品已经秒杀完毕"),
+    SECKILL_REPEAT("500501", "不能进行重复秒杀"),
     //文件模块
     IMAGE_UPLOAD_FAIL("502", "上传图片失败"),
     IMAGE_DELETE_FAIL("503", "删除图片失败"),
     IMAGE_VIOLATION_FAIL("504", "图片违规"),
     IMAGE_ENUM_NOT_FOUND("501", "上传的类型不正确"),
-    //用户模块
-    MOBILE_NOT_EXIST ("500214", "手机号不存在"),
-    PASSWORD_ERROR("500215", "密码错误"),
+    //订单模块
+    ORDER_NOT_EXISTS("60001", "订单不存在"),
     test("11", "11")
     ;
 

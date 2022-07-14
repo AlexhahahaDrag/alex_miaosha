@@ -15,7 +15,7 @@ public interface SeckillService {
      * @createDate:  2022/7/13 17:39
      * @return:      com.alex.common.common.Result<java.lang.Integer>
     */
-    Result<Integer> deSeckill(Long goodsId, String path, HttpServletRequest request);
+    Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request);
 
     /**
      * @param goodsId

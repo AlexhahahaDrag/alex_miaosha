@@ -2,7 +2,7 @@ package com.alex.common.redis.key;
 
 public class SeckillGoodsKey extends BasePrefix{
 
-    public SeckillGoodsKey(String prefix) {
+    private SeckillGoodsKey(String prefix) {
         super(prefix);
     }
 

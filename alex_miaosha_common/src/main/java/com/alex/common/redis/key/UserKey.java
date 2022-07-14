@@ -2,7 +2,7 @@ package com.alex.common.redis.key;
 
 public class UserKey extends BasePrefix{
 
-    public UserKey(String prefix) {
+    private UserKey(String prefix) {
         super(prefix);
     }
 
