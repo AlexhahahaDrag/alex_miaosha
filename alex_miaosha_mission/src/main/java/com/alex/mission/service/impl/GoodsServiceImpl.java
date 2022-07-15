@@ -10,12 +10,11 @@ import com.alex.common.redis.key.SeckillGoodsKey;
 import com.alex.common.redis.manager.RedisService;
 import com.alex.common.utils.POJOConverter;
 import com.alex.common.utils.qiniu.ImageScalaKit;
+import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.mapper.GoodsMapper;
-import com.alex.mission.mapper.SeckillGoodsMapper;
 import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.vo.GoodsDetailVo;
-import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.service.GoodsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -106,7 +105,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Result<Object> create(GoodsDTO goodsDTO) {
+    public Result<GoodsDTO> create(GoodsDTO goodsDTO) {
         Goods goods = goodsDTOToGoods(goodsDTO, "id");
         goodsMapper.insert(goods);
         goodsDTO.setId(goods.getId());
@@ -118,7 +117,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Result<Object> update(GoodsDTO goodsDTO) {
+    public Result<GoodsDTO> update(GoodsDTO goodsDTO) {
         if (goodsDTO == null || goodsDTO.getId() == null) {
             return Result.error(ResultEnum.GOODS_UPDATE_ERROR);
         }
@@ -200,7 +199,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     // TODO: 2022/7/13 测试注解是否好用 
-    @Async(value = "AsyncExecutorConfig")
+    @Async(value = "myExecutor")
     void deleteGoods(List<String> goodsIdList) {
         goodsIdList.forEach(id -> {
             log.info("==========异步删除商品信息==========");

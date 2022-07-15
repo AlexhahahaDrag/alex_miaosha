@@ -14,10 +14,11 @@ public enum ResultEnum implements BaseEnum {
     SYSTEM_ERROR("500100", "系统异常"),
     REQUIRE_ILLEGAL("500102", "请求非法"),
     ACCESS_LIMIT_REACHED("500103", "访问太频繁"),
+    ACCESS_TOO_MANY("500104", "当前访问的人数太多，其稍后尝试"),
     //商品模块
-    GOODS_CREATE_ERROR("500", "商品创建失败"),
-    GOODS_UPDATE_ERROR("500", "商品更新失败"),
-    GOODS_NOT_EXISTS("500", "商品不存在"),
+    GOODS_CREATE_ERROR("500300", "商品创建失败"),
+    GOODS_UPDATE_ERROR("500301", "商品更新失败"),
+    GOODS_NOT_EXISTS("500302", "商品不存在"),
     //用户模块
     MOBILE_NOT_EXIST ("500214", "手机号不存在"),
     PASSWORD_ERROR("500215", "密码错误"),

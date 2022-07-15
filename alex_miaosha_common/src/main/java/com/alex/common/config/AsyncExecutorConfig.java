@@ -23,27 +23,27 @@ public class AsyncExecutorConfig {
     /**
      * 核心线程
      */
-    private int corePoolSize;
+    private int corePoolSize = 5;
 
     /**
      * 最大线程
      */
-    private int maxPoolSize;
+    private int maxPoolSize = 10;
 
     /**
      * 队列容量
      */
-    private int queueCapacity;
+    private int queueCapacity = 2;
 
     /**
      * 保持时间
      */
-    private int keepAliveSeconds;
+    private int keepAliveSeconds = 600;
 
     /**
      * 名称前缀
      */
-    private String preFix;
+    private String preFix = "name_";
 
     @Bean
     public Executor myExecutor() {

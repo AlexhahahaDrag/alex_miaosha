@@ -53,7 +53,7 @@ public interface GoodsService {
      * @createDate:  2022/7/11 16:13
      * @return:      com.alex.common.common.Result<java.lang.Object>
     */
-    Result<Object> create(GoodsDTO goodsDTO);
+    Result<GoodsDTO> create(GoodsDTO goodsDTO);
 
     /**
      * @param goodsDTO
@@ -62,7 +62,7 @@ public interface GoodsService {
      * @createDate:  2022/7/11 16:13
      * @return:      com.alex.common.common.Result<java.lang.Object>
      */
-    Result<Object> update(GoodsDTO goodsDTO);
+    Result<GoodsDTO> update(GoodsDTO goodsDTO);
 
     /**
      * @param id

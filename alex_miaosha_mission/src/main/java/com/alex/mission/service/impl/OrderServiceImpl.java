@@ -2,11 +2,11 @@ package com.alex.mission.service.impl;
 
 import com.alex.common.common.Result;
 import com.alex.common.pojo.dto.OrderDTO;
-import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.redis.manager.RedisService;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.OrderManager;
+import com.alex.mission.mapper.OrderMapper;
 import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.vo.OrderDetailVo;
@@ -33,6 +33,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final RedisService redisService;
 
+    private final OrderMapper orderMapper;
+
     @Override
     public Result<List<OrderDetailVo>> getOrderList(HttpServletRequest request) {
         Long userId = getUserId(request);
@@ -42,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Page<OrderDTO>> findByOrderId(Integer page, Integer pageSize, Long orderId) {
         Page<OrderDTO> pageInfo = new Page<>(page, pageSize);
-        Page<OrderDTO> orderDTOPage = orderManager.findPage(pageInfo, orderId);
+        Page<OrderDTO> orderDTOPage = orderMapper.findPage(pageInfo, orderId);
         return Result.success(orderDTOPage);
     }
 

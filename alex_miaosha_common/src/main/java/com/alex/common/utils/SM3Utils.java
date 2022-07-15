@@ -41,12 +41,13 @@ public class SM3Utils {
 
     // TODO: 2022/7/14 报错 
     public static void main(String[] args) {
-        String text = "我是一段测试aaaa";
-
-        SM2 sm2 = SmUtil.sm2();
-        // 公钥加密，私钥解密
-        String encryptStr = sm2.encryptBcd(text, KeyType.PublicKey);
-        String decryptStr = StrUtil.utf8Str(sm2.decryptFromBcd(encryptStr, KeyType.PrivateKey));
-        System.out.println(decryptStr);
+        System.out.println(SM3Utils.sm3("123456"));
+//        String text = "我是一段测试aaaa";
+//
+//        SM2 sm2 = SmUtil.sm2();
+//        // 公钥加密，私钥解密
+//        String encryptStr = sm2.encryptBcd(text, KeyType.PublicKey);
+//        String decryptStr = StrUtil.utf8Str(sm2.decryptFromBcd(encryptStr, KeyType.PrivateKey));
+//        System.out.println(decryptStr);
     }
 }
