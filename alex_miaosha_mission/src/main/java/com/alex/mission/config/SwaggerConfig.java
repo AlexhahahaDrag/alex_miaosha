@@ -4,16 +4,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
+import springfox.documentation.builders.RequestParameterBuilder;
+import springfox.documentation.oas.annotations.EnableOpenApi;
+import springfox.documentation.schema.ScalarType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ParameterType;
+import springfox.documentation.service.RequestParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,38 +26,42 @@ import java.util.List;
  *version:      1.0.0
  */
 @Configuration
-@EnableSwagger2
+@EnableOpenApi
 @Profile({"test", "dev"})
 // TODO: 2022/7/15 添加参数下拉
 // TODO: 2022/7/15 整合nacos模式
 // TODO: 2022/7/15 切换到3.0版本
 public class SwaggerConfig {
 
-//    @Bean(value = "defaultApi2")
     @Bean
     public Docket buildDocket() {
         //添加head参数配置start
-        ParameterBuilder tokenPar = new ParameterBuilder();
-        List<Parameter> pars = new ArrayList<>();
-        tokenPar.name("Authorization").description("令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
-        pars.add(tokenPar.build());
+        List<RequestParameter> globalRequestParameters = new ArrayList<>();
+        RequestParameter requestParameter = new RequestParameterBuilder()
+                .name("Authorization")
+                .description("令牌")
+                .in(ParameterType.HEADER)
+                .required(true)
+                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
+                .build();
+        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.alex.mission.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.alex.blog.miaosha.web.restApi"))
                 .paths(PathSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
-                .globalOperationParameters(pars);//注意这里
+                .globalRequestParameters(globalRequestParameters);//注意这里
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("alex blog document")
+                .title("alex miaosha document")
                 .contact(new Contact("alex", "localhost", "734663446@qq.com"))
                 .description("ha ha ha ! be happy")
                 .termsOfServiceUrl("www.baidu.com")
-                .version("3.0-version")
+                .version("1.0-version")
                 .build();
     }
 }
