@@ -1,9 +1,9 @@
 package com.alex.common.interceptor;
 
 import cn.hutool.json.JSONUtil;
+import com.alex.base.common.Result;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.annotations.SeckillLimit;
-import com.alex.common.common.Result;
-import com.alex.common.enums.ResultEnum;
 import com.alex.common.redis.key.AccessKey;
 import com.alex.common.redis.manager.RedisService;
 import lombok.RequiredArgsConstructor;

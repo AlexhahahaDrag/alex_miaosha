@@ -1,6 +1,6 @@
 package com.alex.mission.service;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -1,6 +1,6 @@
 package com.alex.common.exception;
 
-import com.alex.common.enums.ResultEnum;
+import com.alex.base.enums.ResultEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

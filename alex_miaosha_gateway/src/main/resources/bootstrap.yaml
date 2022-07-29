@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+        group: alex-miaosha
+        namespace: 033377eb-973b-4dac-a0e9-e99c87325009
+#        extension-configs:
+#          - data-id: user_db.yaml
+#            group: majf-dev-test
+#            refresh: true
+#          - data-id: nacos-server.yaml
+#            group: majf-dev-test
+#            refresh: true

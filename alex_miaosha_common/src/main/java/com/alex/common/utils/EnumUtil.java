@@ -1,6 +1,6 @@
 package com.alex.common.utils;
 
-import com.alex.common.enums.BaseEnum;
+import com.alex.base.enums.BaseEnum;
 
 /**
  *description:  枚举工具类

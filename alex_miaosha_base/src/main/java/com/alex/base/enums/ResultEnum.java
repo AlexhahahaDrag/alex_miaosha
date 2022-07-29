@@ -1,4 +1,4 @@
-package com.alex.common.enums;
+package com.alex.base.enums;
 
 /**
  *description:  结果枚举
@@ -32,6 +32,8 @@ public enum ResultEnum implements BaseEnum {
     IMAGE_ENUM_NOT_FOUND("501", "上传的类型不正确"),
     //订单模块
     ORDER_NOT_EXISTS("60001", "订单不存在"),
+
+    SYSTEM_UP_ERROR("500", "系统更新中，请稍后尝试！"),
     test("11", "11")
     ;
 

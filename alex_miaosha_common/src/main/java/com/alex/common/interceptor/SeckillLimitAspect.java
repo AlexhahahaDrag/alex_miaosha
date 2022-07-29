@@ -1,8 +1,8 @@
 package com.alex.common.interceptor;
 
+import com.alex.base.common.Result;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.annotations.SeckillLimit;
-import com.alex.common.common.Result;
-import com.alex.common.enums.ResultEnum;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.AccessKey;
 import com.alex.common.redis.manager.RedisService;

@@ -1,6 +1,6 @@
 package com.alex.mission.controller;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.OrderDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;

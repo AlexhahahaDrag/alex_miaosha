@@ -1,6 +1,6 @@
 package com.alex.miaosha.cloud;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.miaosha.cloud.callback.MissionClientFallback;
 import com.alex.miaosha.config.FeignConfig;

@@ -1,4 +1,4 @@
-package com.alex.common.enums;
+package com.alex.base.enums;
 
 /**
  *description:  图片类型枚举类

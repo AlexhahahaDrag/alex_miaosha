@@ -1,6 +1,6 @@
 package com.alex.mission.service.impl;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.redis.key.SeckillGoodsKey;
 import com.alex.common.redis.manager.RedisService;
@@ -8,9 +8,6 @@ import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.mapper.SeckillGoodsMapper;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.service.SeckillGoodsService;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +44,6 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
     // TODO: 2022/7/12 库存减1
     private void reduceStockCount(Long goodsId, SeckillGoods seckillGoods) {
         Integer stockCount = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId, Integer.class);
-        seckillGoods.setGoodsStock(stockCount);
+        seckillGoods.setStockCount(stockCount);
     }
 }

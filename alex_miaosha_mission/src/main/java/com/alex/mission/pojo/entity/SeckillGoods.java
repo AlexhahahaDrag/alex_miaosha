@@ -19,6 +19,6 @@ public class SeckillGoods extends BaseEntity<SeckillGoods> {
     private Long goodsId;
 
     @ApiModelProperty(value = "商品库存，-1表示没有限制")
-    @TableField("goods_stock")
-    private Integer goodsStock;
+    @TableField("stock_count")
+    private Integer stockCount;
 }

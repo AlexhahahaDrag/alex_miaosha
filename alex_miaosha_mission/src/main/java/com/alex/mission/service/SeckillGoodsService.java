@@ -1,6 +1,6 @@
 package com.alex.mission.service;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 

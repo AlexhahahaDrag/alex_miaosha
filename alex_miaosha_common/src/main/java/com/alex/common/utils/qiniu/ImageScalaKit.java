@@ -1,8 +1,8 @@
 package com.alex.common.utils.qiniu;
 
 import cn.hutool.core.lang.UUID;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.config.qiniu.QiNiuProperties;
-import com.alex.common.enums.ResultEnum;
 import com.alex.common.exception.CustomizeException;
 import com.qiniu.common.QiniuException;
 import com.qiniu.storage.model.DefaultPutRet;

@@ -1,8 +1,8 @@
 package com.alex.mission.controller;
 
+import com.alex.base.common.Result;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.annotations.SeckillLimit;
-import com.alex.common.common.Result;
-import com.alex.common.enums.ResultEnum;
 import com.alex.mission.manager.AccessLimitService;
 import com.alex.mission.service.SeckillService;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;

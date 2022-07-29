@@ -1,0 +1,58 @@
+server:
+  port: 40001
+spring:
+  application:
+    name: alex-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true #启动自动根据服务id生成路由
+          lower-case-service-id: true #设置路由的路径为小写的服务id
+      routes:
+        - id: alex-mission
+          uri: lb://alex-mission
+          predicates:
+            - Path=/alex-mission/**
+          filters:
+            - StripPrefix=1 #移除前缀
+
+#        - id: alex-uaa
+#          uri: lb://alex-uaa
+#          predicates:
+#            - Path=/alex-uaa/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: alex-manage
+#          uri: lb://alex-manage
+#          predicates:
+#            - Path=/alex-manage/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: alex-monitor
+#          uri: lb://alex-monitor
+#          predicates:
+#            - Path=/alex-monitor/**
+#          filters:
+#            - StripPrefix=1
+#management:
+#  endpoints:
+#    web:
+#      # 开放指定节点 /actuator/（info, health, beans, env, metrics）或者全部
+#      exposure:
+#        include: '*'
+  # 在访问/actuator/health时显示完整信息
+#  endpoint:
+#    logfile:
+#      external-file: log/cloud-gateway/gateway.log
+logging:
+  # 日志文件地址
+  config: classpath:logback-spring.xml
+
+  level:
+    org.springframework.cloud.gateway: debug

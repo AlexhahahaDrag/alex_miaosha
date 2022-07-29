@@ -14,6 +14,7 @@
         <module>alex_miaosha_gateway</module>
         <module>alex_miaosha_web</module>
         <module>alex_miaosha_mission</module>
+        <module>alex_miaosha_base</module>
     </modules>
 
     <parent>
@@ -35,8 +36,9 @@
         <alibaba.version>2.2.5.RELEASE</alibaba.version>
         <knife4j.version>3.0.3</knife4j.version>
         <alex_miaosha_common.version>1.0-SNAPSHOT</alex_miaosha_common.version>
+        <alex_miaosha_base.version>1.0-SNAPSHOT</alex_miaosha_base.version>
         <feign-version>3.0.3</feign-version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <mybatisplus.version>3.5.2</mybatisplus.version>
         <redis.version>2.7.0</redis.version>
         <hutool.version>5.8.3</hutool.version>
@@ -90,7 +92,7 @@
              <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-aggregation-spring-boot-starter</artifactId>
-                             <!--在引用时请在maven中央仓库搜索aggregation最新版本号-->
+                 <!--在引用时请在maven中央仓库搜索aggregation最新版本号-->
                  <version>2.0.9</version>
             </dependency>
 
@@ -105,6 +107,12 @@
                 <groupId>com.alex</groupId>
                 <artifactId>alex_miaosha_common</artifactId>
                 <version>${alex_miaosha_common.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alex</groupId>
+                <artifactId>alex_miaosha_base</artifactId>
+                <version>${alex_miaosha_base.version}</version>
             </dependency>
 
             <!-- 引入lombok -->
@@ -187,6 +195,20 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
+            </dependency>
+
+            <!--gateway-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-gateway</artifactId>
+                <version>3.1.3</version>
+            </dependency>
+
+            <!--负载均衡 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+                <version>2.2.0.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

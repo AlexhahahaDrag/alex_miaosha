@@ -39,14 +39,14 @@ logging:
     com.alex.mission.mapper: debug
 
 knife4j:
-#  # 开启增强配置
-#  enable: true
+  # 开启增强配置
+  enable: true
 #  # 开启生产环境屏蔽
 #  production: false
-  enableAggregation: true
-  nacos:
-    enable: true
-    serviceUrl: http://localhost:8848/nacos/
+#  enableAggregation: true
+#  nacos:
+#    enable: true
+#    serviceUrl: http://localhost:8848/nacos/
 #    routeAuth:
 #      enable: true
 #      username: test

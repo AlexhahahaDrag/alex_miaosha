@@ -1,4 +1,4 @@
-package com.alex.common.enums;
+package com.alex.base.enums;
 
 public enum RedisCacheTimeEnum {
     LOGIN_EXTIME(60 * 30 * 24),

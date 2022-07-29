@@ -1,6 +1,6 @@
 package com.alex.mission.service.impl;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.OrderDTO;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.redis.manager.RedisService;
@@ -65,8 +65,8 @@ public class OrderServiceImpl implements OrderService {
                 OrderDetailVo.builder()
                         .orderId(order.getId())
                         .goodsId(order.getGoodsId())
-                        .createdTime(order.getCreatedTime())
-                        .updatedTime(order.getUpdatedTime())
+                        .createdTime(order.getCreatedAt())
+                        .updatedTime(order.getUpdatedAt())
                         .goodsName(goodsMap.get(order.getGoodsId()))
                         .build()
         ).collect(Collectors.toList());

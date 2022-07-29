@@ -2,12 +2,10 @@ package com.alex.mission.pojo.entity;
 
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,15 +44,11 @@ public class Goods extends BaseEntity<Goods> {
     @TableField("is_using")
     private Boolean isUsing;
 
-    @ApiModelProperty("秒杀开始时间")
+    @ApiModelProperty(value = "秒杀开始时间")
     @TableField("start_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private LocalDateTime startTime;
 
-    @ApiModelProperty("秒杀结束时间")
+    @ApiModelProperty(value = "秒杀结束时间")
     @TableField("end_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private LocalDateTime endTime;
 }

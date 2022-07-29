@@ -1,4 +1,4 @@
-package com.alex.common.enums;
+package com.alex.base.enums;
 
 public interface BaseEnum {
 

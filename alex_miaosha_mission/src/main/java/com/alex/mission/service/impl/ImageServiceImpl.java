@@ -1,7 +1,7 @@
 package com.alex.mission.service.impl;
 
-import com.alex.common.enums.ImageDirEnum;
-import com.alex.common.enums.ResultEnum;
+import com.alex.base.enums.ImageDirEnum;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.CustomizeException;
 import com.alex.common.utils.EnumUtil;
 import com.alex.common.utils.qiniu.ImageKit;

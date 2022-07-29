@@ -1,8 +1,8 @@
 package com.alex.mission.service.impl;
 
-import com.alex.common.common.Result;
-import com.alex.common.enums.RedisCacheTimeEnum;
-import com.alex.common.enums.ResultEnum;
+import com.alex.base.common.Result;
+import com.alex.base.enums.RedisCacheTimeEnum;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.redis.key.GoodsKey;

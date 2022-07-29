@@ -1,6 +1,6 @@
 package com.alex.mission.controller;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.mission.pojo.vo.GoodsDetailVo;
 import com.alex.mission.service.GoodsService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;

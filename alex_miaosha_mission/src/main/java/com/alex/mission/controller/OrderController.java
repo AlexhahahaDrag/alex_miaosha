@@ -1,6 +1,6 @@
 package com.alex.mission.controller;
 
-import com.alex.common.common.Result;
+import com.alex.base.common.Result;
 import com.alex.mission.pojo.vo.OrderDetailVo;
 import com.alex.mission.service.OrderService;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;

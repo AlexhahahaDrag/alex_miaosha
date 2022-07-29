@@ -1,9 +1,9 @@
 package com.alex.mission.service.impl;
 
 import cn.hutool.core.lang.UUID;
-import com.alex.common.common.Result;
-import com.alex.common.enums.RedisCacheTimeEnum;
-import com.alex.common.enums.ResultEnum;
+import com.alex.base.common.Result;
+import com.alex.base.enums.RedisCacheTimeEnum;
+import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SeckillException;
 import com.alex.common.obj.SeckillMessage;
 import com.alex.common.redis.key.SeckillGoodsKey;
@@ -68,8 +68,8 @@ public class SeckillServiceImpl implements SeckillService {
             return;
         }
         list.forEach(seckillGoods -> {
-            redisService.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
-            localOverMap.put(seckillGoods.getGoodsId(), seckillGoods.getGoodsStock() > 0);
+            redisService.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getStockCount(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+            localOverMap.put(seckillGoods.getGoodsId(), seckillGoods.getStockCount() > 0);
         });
     }
 

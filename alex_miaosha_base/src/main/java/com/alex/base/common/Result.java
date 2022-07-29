@@ -1,6 +1,6 @@
-package com.alex.common.common;
+package com.alex.base.common;
 
-import com.alex.common.enums.ResultEnum;
+import com.alex.base.enums.ResultEnum;
 import lombok.Data;
 
 /**
