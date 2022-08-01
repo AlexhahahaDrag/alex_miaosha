@@ -1,5 +1,5 @@
 server:
-  port: 40001
+  port: 30001
 spring:
   application:
     name: alex-gateway
@@ -7,6 +7,7 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+      server-addr: localhost:8848
     gateway:
       discovery:
         locator:
@@ -40,16 +41,15 @@ spring:
 #            - Path=/alex-monitor/**
 #          filters:
 #            - StripPrefix=1
-#management:
-#  endpoints:
-#    web:
-#      # 开放指定节点 /actuator/（info, health, beans, env, metrics）或者全部
-#      exposure:
-#        include: '*'
-  # 在访问/actuator/health时显示完整信息
-#  endpoint:
-#    logfile:
-#      external-file: log/cloud-gateway/gateway.log
+management:
+  endpoints:
+    web:
+      # 开放指定节点 /actuator/（info, health, beans, env, metrics）或者全部
+      exposure:
+        include: '*'
+#   在访问/actuator/health时显示完整信息
+    logfile:
+      external-file: log/cloud-gateway/gateway.log
 logging:
   # 日志文件地址
   config: classpath:logback-spring.xml
