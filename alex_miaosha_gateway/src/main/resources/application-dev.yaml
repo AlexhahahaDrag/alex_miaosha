@@ -6,8 +6,10 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-      server-addr: localhost:8848
+        server-addr: ${nacos.url}
+        group: ${nacos.group}
+        namespace: ${nacos.namaspace}
+      server-addr: ${nacos.url}
     gateway:
       discovery:
         locator:

@@ -1,5 +1,6 @@
 package com.alex.gateway.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -20,14 +21,14 @@ import reactor.core.publisher.Mono;
  * @version:      1.0.0
  */
 @Component
-//@Slf4j
+@Slf4j
 public class GatewayFilterConfig implements GlobalFilter, Ordered {
 
 //    @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
-//        log.info("当前请求地址：{}", path);
+        log.info("当前请求地址：{}", path);
         return chain.filter(exchange);
     }
 

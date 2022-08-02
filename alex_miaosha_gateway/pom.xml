@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-        <parent>
-            <artifactId>alex_miaosha</artifactId>
-            <groupId>com.alex</groupId>
-            <version>1.0-SNAPSHOT</version>
-        </parent>
+    <parent>
+        <artifactId>alex_miaosha</artifactId>
+        <groupId>com.alex</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>alex_miaosha_gateway</artifactId>
@@ -20,12 +20,6 @@
         <dependency>
             <groupId>com.alex</groupId>
             <artifactId>alex_miaosha_base</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                    <artifactId>spring-boot-starter-web</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
         </dependency>
 
         <!--gateway-->
@@ -39,42 +33,28 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        <!--gateway 与spring-boot-starter-web和gateway 内部不兼容的 spring-webflux有冲突-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-<!--        &lt;!&ndash;负载均衡 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId> spring-cloud-starter-netflix-ribbon</artifactId>-->
-<!--        </dependency>-->
-        <!--nacos-->
+
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-<!--        &lt;!&ndash;Springboot actuator&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash;springboot admin client&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>de.codecentric</groupId>-->
-<!--            <artifactId>spring-boot-admin-starter-client</artifactId>-->
-<!--            <version>2.2.0</version>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash;Springboot actuator&ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash;springboot admin client&ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>de.codecentric</groupId>-->
+        <!--            <artifactId>spring-boot-admin-starter-client</artifactId>-->
+        <!--            <version>2.2.0</version>-->
+        <!--        </dependency>-->
 
-<!--        &lt;!&ndash;负载均衡 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>-->
-<!--        </dependency>-->
-                <dependency>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-                </dependency>
+        <!--负载均衡 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,7 +69,7 @@
                         </goals>
                     </execution>
                 </executions>
-                <version> 2.1.0.RELEASE</version>
+                <version>2.1.0.RELEASE</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -97,7 +77,7 @@
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
-                <version> 2.22.1</version>
+                <version>2.22.1</version>
             </plugin>
         </plugins>
         <resources>

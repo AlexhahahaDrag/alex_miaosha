@@ -1,10 +1,12 @@
 server:
-  port: 40010
+  port: 30005
 
 spring:
   application:
     name: alex-mission
-
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   task:
     execution:
       pool:
@@ -41,26 +43,5 @@ logging:
 knife4j:
   # 开启增强配置
   enable: true
-#  # 开启生产环境屏蔽
-#  production: false
-#  enableAggregation: true
-#  nacos:
-#    enable: true
-#    serviceUrl: http://localhost:8848/nacos/
-#    routeAuth:
-#      enable: true
-#      username: test
-#      password: 12313
-#    routes:
-#      - name: 订单服务
-#        serviceName: alex-mission
-#        groupName: alex-miaosha
-#        namespaceId: 033377eb-973b-4dac-a0e9-e99c87325009
-##        clusters: test
-#        location: /v2/api-docs?group=default
-#        swaggerVersion: 2.0
-#        servicePath: /goods
-#        routeAuth:
-#          enable: true
-#          username: test
-#          password: 12313
+  # 开启生产环境屏蔽
+  production: false

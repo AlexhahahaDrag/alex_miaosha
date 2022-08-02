@@ -1,0 +1,60 @@
+server:
+  port: 30088
+
+spring:
+  application:
+    name: alex-api-doc
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+knife4j:
+  # 开启增强配置
+  enable: true
+  # 开启生产环境屏蔽
+  production: false
+  enableAggregation: true
+  nacos:
+    enable: true
+    serviceUrl: http://${nacos.url}/nacos/
+    routeAuth:
+      enable: true
+      username: nacos
+      password: nacos
+    routes:
+      - name: mission
+        serviceName: alex-mission
+        groupName: ${nacos.group}
+        namespaceId: ${nacos.namaspace}
+#        clusters: test
+        location: /v3/api-docs?group=default
+        swaggerVersion: 3.0
+        servicePath: /alex-mission
+        routeAuth:
+          enable: true
+          username: nacos
+          password: nacos
+      - name: gateway
+        serviceName: alex-gateway
+        groupName: ${nacos.group}
+        namespaceId: ${nacos.namaspace}
+          #        clusters: test
+        location: /v3/api-docs?group=default
+        swaggerVersion: 3.0
+        servicePath: /alex-api-doc
+        routeAuth:
+          enable: true
+          username: nacos
+          password: nacos
+      - name: web
+        serviceName: alex-web
+        groupName: ${nacos.group}
+        namespaceId: ${nacos.namaspace}
+        #        clusters: test
+        location: /v3/api-docs?group=default
+        swaggerVersion: 3.0
+        servicePath: /alex-web
+        routeAuth:
+          enable: true
+          username: nacos
+          password: nacos
