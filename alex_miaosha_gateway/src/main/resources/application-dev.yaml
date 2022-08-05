@@ -3,6 +3,15 @@ server:
 spring:
   application:
     name: alex-gateway
+  boot:
+    admin:
+      client:
+        url: http://localhost:30099
+        instance:
+          service-url: http://localhost:${server.port}
+          name: ${spring.application.name}
+  #        username: admin
+#        password: 123456
   cloud:
     nacos:
       discovery:
@@ -51,7 +60,7 @@ management:
         include: '*'
 #   在访问/actuator/health时显示完整信息
     logfile:
-      external-file: log/cloud-gateway/gateway.log
+      external-file: log/alex-gateway/gateway.log
 logging:
   # 日志文件地址
   config: classpath:logback-spring.xml

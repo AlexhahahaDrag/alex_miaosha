@@ -49,6 +49,7 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.alex.mission.controller"))
                 .paths(PathSelectors.any())
                 .build()
+                .groupName("mission")
                 .globalRequestParameters(globalRequestParameters)
                 ;//注意这里
     }

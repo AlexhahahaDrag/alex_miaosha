@@ -3,10 +3,12 @@ package com.alex.apidoc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 // TODO: 2022/8/2 网关配置knife4j 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableWebMvc
 public class ApiDocApplication {
 
     public static void main(String[] args) {

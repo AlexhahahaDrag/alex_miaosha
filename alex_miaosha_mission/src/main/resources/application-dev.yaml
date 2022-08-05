@@ -4,6 +4,15 @@ server:
 spring:
   application:
     name: alex-mission
+  boot:
+    admin:
+      client:
+        url: http://localhost:30099
+        instance:
+          service-url: http://localhost:${server.port}
+          name: ${spring.application.name}
+  #        username: admin
+#        password: 123456
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -44,4 +53,10 @@ knife4j:
   # 开启增强配置
   enable: true
   # 开启生产环境屏蔽
-  production: false
+  production: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    #   在访问/actuator/health时显示完整信息
