@@ -4,13 +4,13 @@ server:
 spring:
   application:
     name: alex-api-doc
-  boot:
-    admin:
-      client:
-        url: http://localhost:30099
-        instance:
-          service-url: http://localhost:${server.port}
-          name: ${spring.application.name}
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:30099
+#        instance:
+#          service-url: http://localhost:${server.port}
+#          name: ${spring.application.name}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

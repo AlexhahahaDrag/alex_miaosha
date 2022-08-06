@@ -6,7 +6,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://localhost:30099
+#        url: http://localhost:30099
         instance:
           service-url: http://localhost:${server.port}
           name: ${spring.application.name}
