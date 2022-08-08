@@ -41,6 +41,7 @@ public class UserController {
             @ApiImplicitParam(value = "loginParam", name = "登录参数", required = true)
     )
     public Result<String> doLogin(@RequestBody LoginParam loginParam) {
+
         return userService.doLogin(loginParam);
     }
 

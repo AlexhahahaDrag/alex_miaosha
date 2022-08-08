@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         updateLastUpdateTime(user);
         redisService.set(UserKey.getById, loginToken, user.getId(), RedisCacheTimeEnum.LOGIN_EXTIME.getValue());
         log.info("用户{}登录成功", user.getId());
-        return Result.success(loginToken);
+        return Result.success("登录成功！", loginToken);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
         if (!user.getPassword().equals(loginParam.getPassword())) {
             return Result.error(ResultEnum.PASSWORD_ERROR);
         }
-        user.setPassword("");
+        user.setPassword(null);
         return Result.success(user);
     }
 

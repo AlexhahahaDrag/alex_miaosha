@@ -29,7 +29,7 @@ public class User implements Serializable {
     private Long id;
 
     @ApiModelProperty("用户名")
-    @TableField(value = "userName")
+    @TableField(value = "user_name")
     private String userName;
 
     @ApiModelProperty("登录手机号")
@@ -41,18 +41,18 @@ public class User implements Serializable {
     private String password;
 
     @ApiModelProperty("身份证号")
-    @TableField(value = "identityCardId")
+    @TableField(value = "identity_card_id")
     private String identityCardId;
 
     @ApiModelProperty("创建时间")
-    @TableField(value = "createdAt")
+    @TableField(value = "created_at")
     private LocalDateTime createdAt;
 
     @ApiModelProperty("更新时间")
-    @TableField(value = "updatedAt")
+    @TableField(value = "updated_at")
     private LocalDateTime updatedAt;
 
     @ApiModelProperty("最后一次登录时间")
-    @TableField(value = "lastLoginTime")
+    @TableField(value = "last_login_time")
     private LocalDateTime lastLoginTime;
 }

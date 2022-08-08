@@ -36,7 +36,7 @@ knife4j:
 #        clusters: test
         location: /v3/api-docs?group=default
         swaggerVersion: 3.0
-        servicePath: /alex-mission
+        servicePath: /
         routeAuth:
           enable: true
           username: nacos
@@ -48,7 +48,7 @@ knife4j:
           #        clusters: test
         location: /v3/api-docs?group=default
         swaggerVersion: 3.0
-        servicePath: /alex-api-doc
+        servicePath: /
         routeAuth:
           enable: true
           username: nacos
@@ -58,9 +58,21 @@ knife4j:
         groupName: ${nacos.group}
         namespaceId: ${nacos.namaspace}
         #        clusters: test
-        location: /v3/api-docs?group=default
+        location: /v3/api-docs?group=web
         swaggerVersion: 3.0
-        servicePath: /alex-web
+        servicePath: /
+        routeAuth:
+          enable: true
+          username: nacos
+          password: nacos
+      - name: uaa
+        serviceName: alex-uaa
+        groupName: ${nacos.group}
+        namespaceId: ${nacos.namaspace}
+        #        clusters: test
+        location: /v3/api-docs?group=uaa
+        swaggerVersion: 3.0
+        servicePath: /
         routeAuth:
           enable: true
           username: nacos
