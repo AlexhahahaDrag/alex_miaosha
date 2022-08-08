@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: ${nacos.url}
+      config:
+        server-addr: ${nacos.url}
+        file-extension: yaml
+        group: ${nacos.group}
+        namespace: ${nacos.namaspace}
+      discovery:
+        server-addr: ${nacos.url}
+        group: ${nacos.group}
+        namespace: ${nacos.namaspace}
+#        extension-configs:
+#          - data-id: user_db.yaml
+#            group: majf-dev-test
+#            refresh: true
+#          - data-id: nacos-server.yaml
+#            group: majf-dev-test
+#            refresh: true
+
+nacos:
+  url: localhost:8848
+  group: alex-miaosha
+  namaspace: 033377eb-973b-4dac-a0e9-e99c87325009

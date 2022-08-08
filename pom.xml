@@ -16,7 +16,7 @@
         <module>alex_miaosha_mission</module>
         <module>alex_miaosha_base</module>
         <module>alex_miaosha_api_doc</module>
-        <module>alex_miaosha_monitor</module>
+        <module>alex_miaosha_monitor</module><module>alex_miaosha_uaa</module>
     </modules>
 
     <parent>
