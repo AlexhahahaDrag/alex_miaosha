@@ -1,8 +1,8 @@
-package com.alex.miaosha.controller.web;
+package com.alex.web.controller.web;
 
 import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.GoodsDTO;
-import com.alex.miaosha.cloud.MissionClient;
+import com.alex.web.cloud.MissionClient;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,9 +1,8 @@
 添加arthas
 
-<p align>
+<p align="center">
     <a href="https://github.com/AlexhahahaDrag/alex_miaosha">
-        <img src="D:\project\alex_miaosha\doc\img\favicon.ico" 
-alt="alex博客" style="width:200px;height:200px">
+        <img src=".\doc\img\favicon.ico" alt="alex博客" style="width:200px;height:200px">
         </img>
     </a>
 </p>

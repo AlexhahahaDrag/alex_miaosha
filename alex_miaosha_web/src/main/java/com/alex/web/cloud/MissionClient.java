@@ -1,9 +1,9 @@
-package com.alex.miaosha.cloud;
+package com.alex.web.cloud;
 
 import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.GoodsDTO;
-import com.alex.miaosha.cloud.callback.MissionClientFallback;
-import com.alex.miaosha.config.FeignConfig;
+import com.alex.web.cloud.callback.MissionClientFallback;
+import com.alex.web.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

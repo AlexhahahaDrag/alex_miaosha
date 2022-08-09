@@ -1,4 +1,4 @@
-package com.alex.miaosha.config;
+package com.alex.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
