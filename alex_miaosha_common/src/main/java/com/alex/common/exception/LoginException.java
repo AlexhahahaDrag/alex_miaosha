@@ -21,6 +21,11 @@ public class LoginException extends RuntimeException{
 
     private String msg;
 
+    public LoginException(ResultEnum resultEnum) {
+        this.code = resultEnum.getCode();
+        this.msg = resultEnum.getValue();
+    }
+
     public LoginException(Result userResult, String mobile) {
         if (ResultEnum.PASSWORD_ERROR.equals(userResult.getCode())) {
             log.error("{} 号码登录失败，密码错误", mobile);

@@ -3,6 +3,7 @@ package com.alex.common.exception.handler;
 import com.alex.base.common.Result;
 import com.alex.common.exception.CustomizeException;
 import com.alex.common.exception.LoginException;
+import com.alex.common.exception.RegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,16 +22,22 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result<String> handler(LoginException exception) {
         exception.printStackTrace();
-        return Result.error("100", exception.getMsg());
+        return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(CustomizeException.class)
     @ResponseStatus(HttpStatus.OK)
     public Result<Object> handle(CustomizeException exception) {
         exception.printStackTrace();
-        return Result.error("100", exception.getMsg());
+        return Result.error(exception.getCode(), exception.getMsg());
     }
 
+    @ExceptionHandler(RegisterException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result<Object> handle(RegisterException exception) {
+        exception.printStackTrace();
+        return Result.error(exception.getCode(), exception.getMsg());
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @description:  注册字段
  * @author:       majf
@@ -18,15 +21,19 @@ import lombok.NoArgsConstructor;
 @ApiModel(value = "Register参数", description = "注册参数")
 public class RegisterParam {
 
+    @NotBlank(message = "注册手机号不能为空")
     @ApiModelProperty(value = "注册手机号", name = "registerMobile")
     private String registerMobile;
 
+    @NotBlank(message = "注册用户名不能为空")
     @ApiModelProperty(value = "注册用户名", name = "registerUsername")
     private String registerUsername;
 
+    @NotBlank(message = "注册身份不能为空")
     @ApiModelProperty(value = "注册身份", name = "registerIdentity")
     private String registerIdentity;
 
+    @NotBlank(message = "注册密码不能为空")
     @ApiModelProperty(value = "注册密码", name = "registerPassword")
     private String registerPassword;
 }

@@ -81,6 +81,9 @@ public class UserServiceImpl implements UserService {
     public Result updatePassword(UpdatePasswordParam updatePasswordParam, HttpServletRequest request) {
         String loginToken = getUserIdByRequest(request);
         Long userId = redisService.get(UserKey.getById, loginToken, Long.class);
+        if (userId == null) {
+            throw new LoginException(ResultEnum.NO_LOGIN);
+        }
         User user = userManager.getById(userId);
         if (!user.getPassword().equals(updatePasswordParam.getOldPassword())) {
             throw new UpdatePasswordException(ResultEnum.PASSWORD_ERROR);
@@ -145,6 +148,9 @@ public class UserServiceImpl implements UserService {
      */
     private String getUserIdByRequest(HttpServletRequest request) {
         String authInfo = request.getHeader("Authorization");
+        if (authInfo == null) {
+            throw new LoginException(ResultEnum.NO_LOGIN);
+        }
         return authInfo.split("Bearer")[1];
     }
 

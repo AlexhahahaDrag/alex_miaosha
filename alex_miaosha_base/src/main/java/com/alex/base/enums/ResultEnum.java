@@ -26,7 +26,7 @@ public enum ResultEnum implements BaseEnum {
      */
     MOBILE_NOT_EXIST ("500214", "手机号不存在"),
     PASSWORD_ERROR("500215", "密码错误"),
-
+    NO_LOGIN("500216", "请先登录"),
 
     /**
      * 商品模块

@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @description:  user控制器
- * @author:       majf
- * @createDate:   2022/8/8 15:42
- * @version:      1.0.0
+ * @description: user控制器
+ * @author: majf
+ * @createDate: 2022/8/8 15:42
+ * @version: 1.0.0
  */
 @ApiSort(195)
 @RestController
@@ -38,16 +39,15 @@ public class UserController {
     @PostMapping("doLogin")
     @ApiOperation(value = "登录")
     @ApiImplicitParams(
-            @ApiImplicitParam(value = "loginParam", name = "登录参数", required = true)
+            @ApiImplicitParam(value = "登录参数", name = "loginParam", required = true, type = "LoginParam.class")
     )
     public Result<String> doLogin(@RequestBody LoginParam loginParam) {
-
         return userService.doLogin(loginParam);
     }
 
-    @PostMapping("doLgout")
+    @PostMapping("doLogout")
     @ApiOperation(value = "注销")
-    public Result<String> doLgout(HttpServletRequest request) {
+    public Result<String> doLogout(HttpServletRequest request) {
         return userService.doLogout(request);
     }
 
@@ -55,16 +55,17 @@ public class UserController {
     @PostMapping("doRegister")
     @ApiOperation(value = "注册")
     @ApiImplicitParams(
-            @ApiImplicitParam(value = "registerParam", name = "注册参数", required = true)
+            @ApiImplicitParam(value = "注册参数", name = "registerParam", required = true, type = "RegisterParam.class")
     )
-    public Result doRegister(@RequestBody RegisterParam registerParam) {
+    // TODO: 2022/8/11 校验编写
+    public Result doRegister(@Validated @RequestBody RegisterParam registerParam) {
         return userService.doRegister(registerParam);
     }
 
     @PostMapping("updatePassword")
     @ApiOperation(value = "更换密码")
     @ApiImplicitParams(
-            @ApiImplicitParam(value = "updatePasswordParam", name = "更换密码", required = true)
+            @ApiImplicitParam(value = "更换密码", name = "updatePasswordParam", required = true)
     )
     public Result updatePassword(@RequestBody UpdatePasswordParam updatePasswordParam, HttpServletRequest request) {
         return userService.updatePassword(updatePasswordParam, request);
