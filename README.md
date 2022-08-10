@@ -8,10 +8,9 @@
 
 &nbsp;&nbsp;alex秒杀系统，一个基于基于微服务架构的前后端分离的系统。web端使vue+antDesign，后端使用springcloud+springboot+mybatisplus+jasypt+springSecurity+knife4j进行开发。
 
-<p align>
+<p align="center">
     <a href="https://github.com/AlexhahahaDrag/alex_miaosha">
-        <img src="D:\project\alex_miaosha\doc\img\favicon.ico" 
-alt="alex博客" style="width:200px;height:200px">
+        <img src=".\doc\img\favicon.ico" alt="alex博客" style="width:200px;height:200px">
         </img>
     </a>
 </p>
