@@ -35,7 +35,7 @@ public interface GoodsService {
      * @createDate:  2022/7/11 16:12
      * @return:      com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.alex.common.pojo.dto.GoodsDTO>
     */
-    Result<Page<GoodsDTO>> findGoods(Integer page, Integer pageSize, String goodsName);
+    Result<Page<GoodsDTO>> findGoods(Long page, Long pageSize, String goodsName);
 
     /**
      * @param id

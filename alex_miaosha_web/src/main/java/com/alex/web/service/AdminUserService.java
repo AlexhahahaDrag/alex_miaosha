@@ -4,7 +4,6 @@ import com.alex.web.pojo.dto.AdminUserDTO;
 import com.alex.web.pojo.dto.AdminUserPermissionDTO;
 import com.alex.web.pojo.dto.PermissionMenuDTO;
 import com.alex.web.pojo.request.AdminUserPasswordReq;
-import com.alex.web.pojo.request.AdminUserReq;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
@@ -42,7 +41,7 @@ public interface AdminUserService {
      * @author:      majf
      * @return:      com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.alex.web.pojo.dto.AdminUserDTO>
     */
-    Page<AdminUserDTO> findByAdminUsers(Integer page, Integer pageSize, String search);
+    Page<AdminUserDTO> findAdminUsers(Long page, Long pageSize, String search);
 
     /**
      * @param id
@@ -50,23 +49,23 @@ public interface AdminUserService {
      * @author:      majf
      * @return:      void
     */
-    void switchIsBan(Integer id);
+    void switchIsBan(Long id);
 
     /**
-     * @param adminUserReq
+     * @param adminUserDTO
      * @description: 创建管理员
      * @author:      majf
      * @return:      boolean
     */
-    void createAdminUser(AdminUserReq adminUserReq);
+    void createAdminUser(AdminUserDTO adminUserDTO);
 
     /**
-     * @param adminUserReq
+     * @param adminUserDTO
      * @description: 更新管理员信息
      * @author:      majf
      * @return:      boolean
     */
-    void updateAdminUser(AdminUserReq adminUserReq);
+    void updateAdminUser(AdminUserDTO adminUserDTO);
     /**
      * @param ids
      * @description: 批量删除
