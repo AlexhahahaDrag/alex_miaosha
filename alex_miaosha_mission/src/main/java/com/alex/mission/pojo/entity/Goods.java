@@ -28,10 +28,6 @@ public class Goods extends BaseEntity<Goods> {
     @TableField("goods_img")
     private String goodsImg;
 
-    @ApiModelProperty(value = "商品的详情介绍")
-    @TableField("goods_detail")
-    private String goodsDetail;
-
     @ApiModelProperty(value = "商品单价")
     @TableField("goods_price")
     private BigDecimal goodsPrice;

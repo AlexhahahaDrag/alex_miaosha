@@ -43,21 +43,21 @@ public class CloudController {
 
     @GetMapping(value = "/goods")
     @ApiOperation(value = "获得商品列表", notes = "获得商品列表")
-    public Result<Page<GoodsDTO>> goodsIndex(@ApiParam(value = "页数", name = "page", required = true) @RequestParam(value = "page") Integer page,
-                                             @ApiParam(value = "页面大小", name = "pageSize", required = true) @RequestParam(value = "pageSize") Integer pageSize,
+    public Result<Page<GoodsDTO>> goodsIndex(@ApiParam(value = "页数", name = "page", required = true) @RequestParam(value = "page") Long page,
+                                             @ApiParam(value = "页面大小", name = "pageSize", required = true) @RequestParam(value = "pageSize") Long pageSize,
                                              @ApiParam(value = "商品名称", name = "goodsName") @RequestParam(value = "goodsName", required = false) String goodsName){
         return goodsService.findGoods(page, pageSize, goodsName);
     }
 
     @PostMapping(value = "/goods")
     @ApiOperation(value = "新增商品", notes = "新增商品")
-    public Result<GoodsDTO> goodsCreate(@ApiParam(value = "商品信息", name = "goodsDTO", required = true) @Valid @RequestBody GoodsDTO goodsDTO){
+    public Result<GoodsDTO> createGoods(@ApiParam(value = "商品信息", name = "goodsDTO", required = true) @Valid @RequestBody GoodsDTO goodsDTO){
         return goodsService.create(goodsDTO);
     }
 
     @PutMapping(value = "/goods")
     @ApiOperation(value = "修改商品", notes = "修改商品")
-    public Result<GoodsDTO> goodsUpdate (@ApiParam(value = "商品信息", name = "goodsDTO", required = true) @Valid @RequestBody GoodsDTO goodsDTO){
+    public Result<GoodsDTO> updateGoods (@ApiParam(value = "商品信息", name = "goodsDTO", required = true) @Valid @RequestBody GoodsDTO goodsDTO){
         return goodsService.update(goodsDTO);
     }
 
@@ -67,7 +67,7 @@ public class CloudController {
         return Result.success(goodsService.selectById(goodsId));
     }
 
-    @GetMapping(value = "/goods/updateUsing/{id}")
+    @GetMapping(value = "/goods/{id}/updateUsing")
     @ApiOperation(value = "修改是否可用", notes = "修改是否可用")
     public Result<Boolean> updateUsing(@ApiParam(value = "商品id", name = "id", required = true) @PathVariable(value = "id") Long goodsId){
         return Result.success(goodsService.updateUsingById(goodsId));
@@ -75,13 +75,13 @@ public class CloudController {
 
     @DeleteMapping(value = "/goods/{id}")
     @ApiOperation(value = "删除商品", notes = "删除商品")
-    public Result<Boolean> goodsDelete(@ApiParam(value = "商品id", name = "id", required = true) @PathVariable(value = "id") Long goodsId){
+    public Result<Boolean> deleteGoods(@ApiParam(value = "商品id", name = "id", required = true) @PathVariable(value = "id") Long goodsId){
         return Result.success(goodsService.delete(goodsId));
     }
 
     @DeleteMapping(value = "/goods/deletes")
     @ApiOperation(value = "删除商品", notes = "删除商品")
-    public Result<Boolean> goodsDeletes(@ApiParam(value = "商品id列表", name = "ids", required = true) @RequestParam(value = "ids") String ids){
+    public Result<Boolean> deleteGoodss(@ApiParam(value = "商品id列表", name = "ids", required = true) @RequestParam(value = "ids") String ids){
         return Result.success(goodsService.deletes(ids));
     }
 

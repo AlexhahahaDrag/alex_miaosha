@@ -17,7 +17,6 @@ import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.vo.GoodsDetailVo;
 import com.alex.mission.service.GoodsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
+public class GoodsServiceImpl implements GoodsService {
 
     private final GoodsMapper goodsMapper;
 
@@ -47,6 +47,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     private final ImageScalaKit imageScalaKit;
 
+    /**
+     * 系统初始化，把商品信息加载到Redis缓存中。后续客户访问都从缓存中读取。
+     */
+    @PostConstruct
     public void initGoodsInfo() {
         List<Goods> goodsList = goodsManagerService.list();
         if (goodsList == null ||goodsList.isEmpty()) {
@@ -78,7 +82,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Result<Page<GoodsDTO>> findGoods(Integer page, Integer pageSize, String goodsName) {
+    public Result<Page<GoodsDTO>> findGoods(Long page, Long pageSize, String goodsName) {
         Page<GoodsDTO> pageInfo = new Page<>(page, pageSize);
         Page<GoodsDTO> goodsPage = goodsMapper.findGoodsPage(pageInfo, goodsName);
         return Result.success(goodsPage);
@@ -164,6 +168,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     private List<GoodsDetailVo> getGoodsDetailVos() {
         List<GoodsDTO> keys = redisService.keys(GoodsKey.goodsKey, GoodsDTO.class);
+        System.out.println();
         return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).collect(Collectors.toList());
     }
 
