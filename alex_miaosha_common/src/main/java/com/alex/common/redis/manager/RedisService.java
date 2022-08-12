@@ -199,7 +199,8 @@ public class RedisService {
     */
     public <T> List<T> keys(KeyPrefix prefix, Class<T> clazz) {
         try {
-            Set<String> keys = redisTemplate.keys(prefix.getPrefix());
+            Set<String> keys = redisTemplate.keys(prefix.getPrefix() + "*");
+            System.out.println(prefix.getPrefix() + "*");
             return keys.parallelStream().map(item -> BeanUtils.stringToBean(item, clazz)).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("根据前缀模糊查询key失败，key为{}，异常为{}", prefix.getPrefix(), e);
