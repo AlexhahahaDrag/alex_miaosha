@@ -20,8 +20,8 @@ public class GoodsDTO {
     @ApiModelProperty(value = "id")
     private Long id;
 
-    @ApiModelProperty(value = "商品名称")
     @NotBlank(message = "商品名称是必须的")
+    @ApiModelProperty(value = "商品名称")
     private String goodsName;
 
     @ApiModelProperty(value = "商品标题")

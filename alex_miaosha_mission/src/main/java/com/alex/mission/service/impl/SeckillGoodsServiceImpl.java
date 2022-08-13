@@ -44,6 +44,6 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
     // TODO: 2022/7/12 库存减1
     private void reduceStockCount(Long goodsId, SeckillGoods seckillGoods) {
         Integer stockCount = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId, Integer.class);
-        seckillGoods.setStockCount(stockCount);
+        seckillGoods.setGoodsStock(stockCount);
     }
 }

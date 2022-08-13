@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  *createDate:   2022/7/14 11:26
  *version:      1.0.0
  */
+// TODO: 2022/8/13 学习lua脚本
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -32,15 +33,25 @@ public class RedisLua {
      * @return:      java.lang.Long
     */
     public Long judgeStockAndDecrStock(Long goodsId) {
-        String stockScript = "local stock = tonumber(redis.call('get', KEY[1]));" +
-                "if (stock <= 0) then " +
+//        String stockScript1 = "local stock = tonumber(redis.call('get', KEYS[1]) or 0); return stock; ";
+        String stockScript1 = " local key = KEYS[1];  return tonumber(redis.call('get', key)); ";
+        DefaultRedisScript<Long> redisScript1 = new DefaultRedisScript<>(stockScript1, Long.class);
+        Long execute = redisTemplate.execute(redisScript1, Collections.singletonList("aa"));
+
+        String stockScript2 = " local key = KEYS[1];  return tonumber(redis.call('get', key)); ";
+        DefaultRedisScript<Long> redisScript2 = new DefaultRedisScript<>(stockScript1, Long.class);
+        Long execute2 = redisTemplate.execute(redisScript2, Collections.singletonList(RedisConstants.SECKILL_KEY + ":" + goodsId));
+
+        String stockScript = "local stock = tonumber(redis.call('get', KEY[1])); " +
+                " if (stock <= 0) then " +
                 " return -1;" +
                 " end; " +
-                "if (stock > 0) then " +
-                "return redis.call('increby', KEYS[1], -1);" +
+                " if (stock > 0) then " +
+                " return redis.call('increby', KEY[1], -1); " +
                 " end;";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(stockScript, Long.class);
-        return redisTemplate.execute(redisScript, Collections.singletonList(RedisConstants.SECKILL_KEY + goodsId));
+        log.info("===============================key:{}========================", RedisConstants.SECKILL_KEY + ":" + goodsId);
+        return redisTemplate.execute(redisScript, Collections.singletonList(RedisConstants.SECKILL_KEY + ":" + goodsId));
     }
 
     /**
@@ -52,7 +63,7 @@ public class RedisLua {
     */
     public Long getVisitorCount(String lockKey) {
         try {
-            String countScript = "local num = tonumber(redis.call('get', KEY[1]));" +
+            String countScript = "local num = tonumber(redis.call('get', KEYS[1]));" +
                     "return num;";
             DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(countScript, Long.class);
             return redisTemplate.execute(redisScript, Collections.singletonList(lockKey));
@@ -71,7 +82,7 @@ public class RedisLua {
      * @return:      java.lang.Long
     */
     public Long addVisitorCount(String lockKey) {
-        String addNumScript = "local num = redis.call('incr', KEY[1]) return num;";
+        String addNumScript = "local num = redis.call('incr', KEYS[1]) return num;";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(addNumScript, Long.class);
         return redisTemplate.execute(redisScript, Collections.singletonList(lockKey));
     }

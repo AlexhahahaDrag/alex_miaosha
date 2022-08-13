@@ -10,7 +10,7 @@ public class RedisConstants {
 
     public static String COUNT_LOGIN = "count:login";
 
-    public static String TEST = "seckillGoodsKey:sc1";
+    public static String TEST = "SeckillGoodsKey:sc1";
 
-    public static String SECKILL_KEY = "seckillGoodsKey:sc";
+    public static String SECKILL_KEY = "SeckillGoodsKey:sc";
 }

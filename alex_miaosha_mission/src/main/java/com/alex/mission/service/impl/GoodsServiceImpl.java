@@ -53,7 +53,7 @@ public class GoodsServiceImpl implements GoodsService {
     @PostConstruct
     public void initGoodsInfo() {
         List<Goods> goodsList = goodsManagerService.list();
-        if (goodsList == null ||goodsList.isEmpty()) {
+        if (goodsList == null || goodsList.isEmpty()) {
             return;
         }
         for (Goods goods : goodsList) {
@@ -169,19 +169,22 @@ public class GoodsServiceImpl implements GoodsService {
     private List<GoodsDetailVo> getGoodsDetailVos() {
         List<GoodsDTO> keys = redisService.keys(GoodsKey.goodsKey, GoodsDTO.class);
         System.out.println();
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
         return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).collect(Collectors.toList());
     }
 
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {
         //从redis中获取库存信息
-        int stockCount = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId, Integer.class);
+        Integer stockCount = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId, Integer.class);
         long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
         long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
         long now = System.currentTimeMillis();
         int remainSeconds;
         if (now < startTime) {
             //秒杀还没开始
-            remainSeconds = (int)((startTime - now) / 1000);
+            remainSeconds = (int) ((startTime - now) / 1000);
         } else if (now > endTime) {
             //秒杀已经结束
             remainSeconds = -1;

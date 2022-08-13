@@ -14,7 +14,7 @@ public class UserUtils {
 
     public Long getUserId(HttpServerRequest request) {
         String authInfo = request.getHeader("Authorization");
-        String loginToken = authInfo.split("Bearer ")[1];
+        String loginToken = authInfo.split("Bearer_")[1];
         return redisService.get(UserKey.getById, loginToken, Long.class);
     }
 }

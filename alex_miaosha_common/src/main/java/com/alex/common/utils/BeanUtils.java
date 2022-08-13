@@ -16,7 +16,7 @@ public class BeanUtils {
         }
         Class<?> clazz = value.getClass();
         if (Integer.class.equals(clazz) || Long.class.equals(clazz)) {
-            return "" + value;
+            return value.toString();
         } else if (String.class.equals(clazz)) {
             return (String) value;
         }

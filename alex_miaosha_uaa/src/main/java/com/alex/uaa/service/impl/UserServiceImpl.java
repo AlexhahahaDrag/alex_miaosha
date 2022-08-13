@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
         if (authInfo == null) {
             throw new LoginException(ResultEnum.NO_LOGIN);
         }
-        return authInfo.split("Bearer")[1];
+        return authInfo.split("Bearer_")[1];
     }
 
     /**

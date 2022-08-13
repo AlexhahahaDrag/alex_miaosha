@@ -50,13 +50,16 @@ public class OrderServiceImpl implements OrderService {
 
     private Long getUserId(HttpServletRequest request) {
         String authInfo = request.getHeader("Authorization");
-        String loginToken = authInfo.split("Bearer")[1];
+        String loginToken = authInfo.split("Bearer_")[1];
         return redisService.get(UserKey.getById, loginToken, Long.class);
     }
 
     private Result<List<OrderDetailVo>> getListResult(Long userId) {
         //获取订单数据
         List<Order> orderList = orderManager.list(Wrappers.<Order>lambdaQuery().eq(Order::getUserId, userId));
+        if (orderList == null || orderList.isEmpty()) {
+            return Result.success(null);
+        }
         //获取商品id列表及将商品信息转化成map
         List<Long> goodsIdList = orderList.parallelStream().map(Order::getGoodsId).collect(Collectors.toList());
         List<Goods> goodsList = goodsManager.list(Wrappers.<Goods>lambdaQuery().in(Goods::getId, goodsIdList));

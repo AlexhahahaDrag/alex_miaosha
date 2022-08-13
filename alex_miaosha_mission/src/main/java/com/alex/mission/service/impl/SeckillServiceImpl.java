@@ -4,6 +4,7 @@ import cn.hutool.core.lang.UUID;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.LoginException;
 import com.alex.common.exception.SeckillException;
 import com.alex.common.obj.SeckillMessage;
 import com.alex.common.redis.key.SeckillGoodsKey;
@@ -68,8 +69,8 @@ public class SeckillServiceImpl implements SeckillService {
             return;
         }
         list.forEach(seckillGoods -> {
-            redisService.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getStockCount(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
-            localOverMap.put(seckillGoods.getGoodsId(), seckillGoods.getStockCount() > 0);
+            redisService.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+            localOverMap.put(seckillGoods.getGoodsId(), seckillGoods.getGoodsStock() > 0);
         });
     }
 
@@ -85,13 +86,13 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     @Transactional
     public Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request) {
-        // TODO: 2022/7/14 添加获取userId的方法
-        Long userId = null;
+        Long userId = getUserId(request);
         //验证path
         checkPath(goodsId, path, userId);
         //校验是否超卖
         isCountOver(goodsId);
         //使用幂等机制，根据用户号和商品id生成订单。防止重复秒杀
+        // TODO: 2022/8/13 生成订单方式 
         Long orderId = goodsId * 1000000 + userId;
         Order order = orderManager.getOne(Wrappers.<Order>lambdaQuery().eq(Order::getId, orderId));
         if (order != null) {
@@ -169,6 +170,7 @@ public class SeckillServiceImpl implements SeckillService {
      * @return:      void
      */
     private void isCountOver(Long goodsId) {
+        // TODO: 2022/8/13 判断是否超卖方法 
         if (!localOverMap.get(goodsId)) {
             throw new SeckillException(ResultEnum.SECKILL_OVER.getCode(), ResultEnum.SECKILL_OVER.getValue());
         }
@@ -229,7 +231,10 @@ public class SeckillServiceImpl implements SeckillService {
     */
     private Long getUserId(HttpServletRequest request) {
         String authInfo = request.getHeader("Authorization");
-        String loginToken = authInfo.split("Bearer ")[1];
+        if (StringUtils.isEmpty(authInfo)) {
+            throw new LoginException(ResultEnum.NO_LOGIN);
+        }
+        String loginToken = authInfo.split("Bearer_")[1];
         return redisService.get(UserKey.getById, loginToken, Long.class);
     }
 

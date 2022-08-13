@@ -32,8 +32,8 @@ CREATE TABLE `goods`  (
   `is_using` tinyint(4) NULL DEFAULT NULL COMMENT '是否启用',
   `start_time` datetime NULL DEFAULT NULL COMMENT '秒杀开始时间',
   `end_time` datetime NULL DEFAULT NULL COMMENT '秒杀结束时间',
-  `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
-  `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `created_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updated_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_delete` tinyint(255) NULL DEFAULT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品表' ROW_FORMAT = Dynamic;
@@ -54,8 +54,8 @@ CREATE TABLE `order_info`  (
    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
    `user_id` bigint(20) NULL DEFAULT NULL COMMENT '用户id',
    `goods_id` bigint(20) NULL DEFAULT NULL COMMENT '商品id',
-   `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
-   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+   `created_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
+   `updated_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
    `is_delete` tinyint(255) NULL DEFAULT NULL COMMENT '是否删除',
    PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '订单表' ROW_FORMAT = DYNAMIC;
@@ -72,8 +72,8 @@ CREATE TABLE `seckill_goods`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `goods_id` bigint(20) NULL DEFAULT NULL COMMENT '商品id',
   `goods_stock` int(11) NULL DEFAULT NULL COMMENT '库存',
-  `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
-  `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `created_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updated_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_delete` tinyint(255) NULL DEFAULT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '秒杀表' ROW_FORMAT = DYNAMIC;
