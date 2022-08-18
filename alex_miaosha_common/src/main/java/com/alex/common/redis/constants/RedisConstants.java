@@ -8,9 +8,11 @@ package com.alex.common.redis.constants;
  */
 public class RedisConstants {
 
+    public static final String SEGEMENT = ":";
+
     public static String COUNT_LOGIN = "count:login";
 
     public static String TEST = "SeckillGoodsKey:sc1";
 
-    public static String SECKILL_KEY = "SeckillGoodsKey:sc";
+    public static String SECKILL_KEY = "SeckillGoodsKey" + SEGEMENT + "sc";
 }

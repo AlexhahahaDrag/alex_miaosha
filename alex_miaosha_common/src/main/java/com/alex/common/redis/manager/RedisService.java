@@ -30,10 +30,20 @@ public class RedisService {
 
     final RedisTemplate<String, Object> redisTemplate;
 
-    public String get(String key) {
+    public Object get(String key) {
         try {
-            String result = (String) redisTemplate.opsForValue().get(key);
+            Object result = redisTemplate.opsForValue().get(key);
             return result;
+        } catch (Exception e) {
+            log.error("获取单个对象失败，key为{}，异常为{}", key, e);
+            return null;
+        }
+    }
+
+    public Object get(KeyPrefix prefix, String key) {
+        try {
+            String realKey = prefix.getPrefix() + SEGEMENT + key ;
+            return redisTemplate.opsForValue().get(realKey);
         } catch (Exception e) {
             log.error("获取单个对象失败，key为{}，异常为{}", key, e);
             return null;
@@ -102,16 +112,12 @@ public class RedisService {
      */
     public <T> boolean set(KeyPrefix prefix, String key, T value, int exTime) {
         try {
-            String result = BeanUtils.beanToString(value);
-            if (result == null || result.length() == 0) {
-                return false;
-            }
             String realKey = prefix.getPrefix() + SEGEMENT + key;
             if (exTime == 0) {
                 //不设置过期时间
-                redisTemplate.opsForValue().set(realKey, result);
+                redisTemplate.opsForValue().set(realKey, value);
             } else {
-                redisTemplate.opsForValue().set(realKey, result, exTime, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(realKey, value, exTime, TimeUnit.SECONDS);
             }
             return true;
         } catch (Exception e) {

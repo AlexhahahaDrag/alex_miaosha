@@ -33,22 +33,12 @@ public class RedisLua {
      * @return:      java.lang.Long
     */
     public Long judgeStockAndDecrStock(Long goodsId) {
-//        String stockScript1 = "local stock = tonumber(redis.call('get', KEYS[1]) or 0); return stock; ";
-        String stockScript1 = " local key = KEYS[1];  return tonumber(redis.call('get', key)); ";
-        DefaultRedisScript<Long> redisScript1 = new DefaultRedisScript<>(stockScript1, Long.class);
-        Long execute = redisTemplate.execute(redisScript1, Collections.singletonList("aa"));
-
-        String stockScript2 = " local key = KEYS[1];  return tonumber(redis.call('get', key)); ";
-        DefaultRedisScript<Long> redisScript2 = new DefaultRedisScript<>(stockScript1, Long.class);
-        Long execute2 = redisTemplate.execute(redisScript2, Collections.singletonList(RedisConstants.SECKILL_KEY + ":" + goodsId));
-
-        String stockScript = "local stock = tonumber(redis.call('get', KEY[1])); " +
+        String stockScript = "local stock = tonumber(redis.call('get', KEYS[1])); " +
                 " if (stock <= 0) then " +
                 " return -1;" +
-                " end; " +
-                " if (stock > 0) then " +
-                " return redis.call('increby', KEY[1], -1); " +
-                " end;";
+                " else " +
+                " return redis.call('DECR', KEYS[1]); " +
+                " end; ";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(stockScript, Long.class);
         log.info("===============================key:{}========================", RedisConstants.SECKILL_KEY + ":" + goodsId);
         return redisTemplate.execute(redisScript, Collections.singletonList(RedisConstants.SECKILL_KEY + ":" + goodsId));

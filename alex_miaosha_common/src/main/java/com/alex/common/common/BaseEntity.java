@@ -22,4 +22,8 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     @ApiModelProperty("更新时间")
     @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
     private LocalDateTime updatedAt;
+
+    @ApiModelProperty("是否删除")
+    @TableLogic
+    private Integer isDelete;
 }

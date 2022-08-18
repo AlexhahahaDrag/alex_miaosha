@@ -4,6 +4,7 @@ import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.OrderDTO;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.redis.manager.RedisService;
+import com.alex.common.utils.UserUtils;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.OrderManager;
 import com.alex.mission.mapper.OrderMapper;
@@ -35,9 +36,11 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderMapper orderMapper;
 
+    private final UserUtils userUtils;
+
     @Override
     public Result<List<OrderDetailVo>> getOrderList(HttpServletRequest request) {
-        Long userId = getUserId(request);
+        Long userId = userUtils.getUserId(request);
         return getListResult(userId);
     }
 
@@ -46,12 +49,6 @@ public class OrderServiceImpl implements OrderService {
         Page<OrderDTO> pageInfo = new Page<>(page, pageSize);
         Page<OrderDTO> orderDTOPage = orderMapper.findPage(pageInfo, orderId);
         return Result.success(orderDTOPage);
-    }
-
-    private Long getUserId(HttpServletRequest request) {
-        String authInfo = request.getHeader("Authorization");
-        String loginToken = authInfo.split("Bearer_")[1];
-        return redisService.get(UserKey.getById, loginToken, Long.class);
     }
 
     private Result<List<OrderDetailVo>> getListResult(Long userId) {
