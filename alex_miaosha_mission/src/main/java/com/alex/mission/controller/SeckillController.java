@@ -34,6 +34,8 @@ public class SeckillController {
 
     private final AccessLimitService accessLimitService;
 
+    // TODO: 2022/8/19 减库存 多久同步一回到数据库 
+    // TODO: 2022/8/19 校验同一用户不能连续秒杀多次 
     @GetMapping
     @ApiOperation(value = "执行秒杀", notes = "执行秒杀")
     public Result<Integer> doSeckill(@ApiParam(value = "商品id", name = "goodsId", required = true) @RequestParam(value = "goodsId") Long goodsId,

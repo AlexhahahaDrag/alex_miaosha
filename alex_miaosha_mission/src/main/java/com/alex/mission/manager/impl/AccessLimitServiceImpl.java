@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 /**
  *description:
@@ -23,8 +24,8 @@ public class AccessLimitServiceImpl implements AccessLimitService {
 
     @Override
     public boolean tryAcquireToken() {
-        return seckillRateLimiter.tryAcquire();
-//        return seckillRateLimiter.tryAcquire(3, TimeUnit.SECONDS);
+//        return seckillRateLimiter.tryAcquire();
+        return seckillRateLimiter.tryAcquire(3, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) throws InterruptedException {

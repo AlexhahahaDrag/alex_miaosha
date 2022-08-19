@@ -94,7 +94,7 @@ public class SeckillServiceImpl implements SeckillService {
         checkPath(goodsId, path, userId);
         //校验是否超卖
         // TODO: 2022/8/18 校验超卖的解决方案 
-//        isCountOver(goodsId);
+        isCountOver(goodsId);
         //使用幂等机制，根据用户号和商品id生成订单。防止重复秒杀
         // TODO: 2022/8/13 生成订单方式 
         Long orderId = goodsId * 1000000 + userId;

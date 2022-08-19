@@ -29,7 +29,7 @@
 
 ## **项目模块**
 
-+ alex_miaosha_base:
+alex_miaosha_base:
 
 + alex_miaosha_common: **todo**
 
@@ -55,10 +55,14 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 
 ### 项目架构图
 
+![系统架构设计.png](C:\Users\majf\Desktop\系统架构设计.png)
+
+
+
 ### 后端技术
 
 | 技术              | 说明                                | 官网                               |
-|:----------------| --------------------------------- | -------------------------------- |
+|:--------------- | --------------------------------- | -------------------------------- |
 | SpringCloud     |                                   |                                  |
 | SpringBoot      |                                   |                                  |
 | SpringSercurity |                                   |                                  |
@@ -67,6 +71,7 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 | SpringBootAdmin |                                   |                                  |
 | nacos           | 服务发现、配置管理、服务治理的综合型解决方案            | https://github.com/alibaba/nacos |
 | redis           | 分布式缓存                             | https://redis.io/                |
+| rabbitmq        | 消息队列                              |                                  |
 
 ### 前端技术
 
@@ -75,3 +80,7 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 ## 结语
 
 &nbsp;&nbsp;感谢
+
+## todo
+
+了解 LVS（Linux Virtual Server）即Linux虚拟服务器，是由章文嵩博士主导的开源负载均衡项目
