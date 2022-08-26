@@ -4,6 +4,7 @@ import com.alex.base.common.Result;
 import com.alex.common.exception.CustomizeException;
 import com.alex.common.exception.LoginException;
 import com.alex.common.exception.RegisterException;
+import com.alex.common.exception.SeckillException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,6 +36,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegisterException.class)
     @ResponseStatus(HttpStatus.OK)
     public Result<Object> handle(RegisterException exception) {
+        exception.printStackTrace();
+        return Result.error(exception.getCode(), exception.getMsg());
+    }
+
+    @ExceptionHandler(SeckillException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result<Object> handle(SeckillException exception) {
         exception.printStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }

@@ -16,8 +16,8 @@ public enum ResultEnum implements BaseEnum {
      * 服务器模块
      */
     SYSTEM_ERROR("500100", "系统异常"),
-    REQUIRE_ILLEGAL("500102", "请求非法"),
     ACCESS_LIMIT_REACHED("500103", "访问太频繁"),
+    REQUIRE_ILLEGAL("500102", "请求非法"),
     ACCESS_TOO_MANY("500104", "当前访问的人数太多，其稍后尝试"),
 
 
@@ -40,7 +40,7 @@ public enum ResultEnum implements BaseEnum {
      */
     SECKILL_OVER("500500", "商品已经秒杀完毕"),
     SECKILL_REPEAT("500501", "不能进行重复秒杀"),
-
+    SECKILL_NO_START("500502", "秒杀还未开始！"),
 
     /**
      * 注册模块

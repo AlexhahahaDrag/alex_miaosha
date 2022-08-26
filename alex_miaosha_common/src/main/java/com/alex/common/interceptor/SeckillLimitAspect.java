@@ -59,9 +59,9 @@ public class SeckillLimitAspect {
         int hashCode = Math.abs(ipKey.hashCode());
         AccessKey accessKey = AccessKey.withExpire;
         log.info("ipKey={}, requestURI={},key={}", ipKey, requestURI, accessKey);
-
+        // TODO: 2022/8/25 添加ip信息
         //当前获取指定url的访问次数
-        Integer count = redisService.get(accessKey, requestURI, Integer.class);
+        Integer count = (Integer) redisService.get(accessKey, requestURI);
         if (count == null) {
             redisService.set(accessKey, requestURI, 1, seconds);
         } else if (count < maxCount) {

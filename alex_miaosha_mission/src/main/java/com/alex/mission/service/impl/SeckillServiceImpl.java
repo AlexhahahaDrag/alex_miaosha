@@ -4,12 +4,10 @@ import cn.hutool.core.lang.UUID;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
-import com.alex.common.exception.LoginException;
 import com.alex.common.exception.SeckillException;
 import com.alex.common.obj.SeckillMessage;
 import com.alex.common.redis.key.SeckillGoodsKey;
 import com.alex.common.redis.key.SeckillKey;
-import com.alex.common.redis.key.UserKey;
 import com.alex.common.redis.manager.RedisLua;
 import com.alex.common.redis.manager.RedisService;
 import com.alex.common.utils.SM3Utils;
@@ -103,10 +101,10 @@ public class SeckillServiceImpl implements SeckillService {
             throw new SeckillException(ResultEnum.SECKILL_REPEAT.getCode(), ResultEnum.SECKILL_REPEAT.getValue());
         }
         //lua脚本判断库存和预减库存
-        luaCheckAndReduceStock(goodsId);
+        Long stock = luaCheckAndReduceStock(goodsId);
         //入队
         doMQ(goodsId, userId);
-        return Result.success();
+        return Result.success("用户：" + userId + "秒杀成功，剩余库存：" + stock);
     }
 
     /**
@@ -186,12 +184,13 @@ public class SeckillServiceImpl implements SeckillService {
      * @createDate:  2022/7/14 10:09
      * @return:      void
      */
-    private void luaCheckAndReduceStock(Long goodsId) {
+    private Long luaCheckAndReduceStock(Long goodsId) {
         Long count = redisLua.judgeStockAndDecrStock(goodsId);
         if (count == -1) {
             localOverMap.put(goodsId, false);
             throw new SeckillException(ResultEnum.SECKILL_OVER.getCode(), ResultEnum.SECKILL_OVER.getValue());
         }
+        return count;
     }
 
     /**
@@ -221,7 +220,6 @@ public class SeckillServiceImpl implements SeckillService {
         if (userId == null || StringUtils.isEmpty(path)) {
             return false;
         }
-        // TODO: 2022/7/14 校验为什么是用户+商品id获取路径
         String redisPath = redisService.get(SeckillKey.getSeckillPath, userId + "_" + goodsId, String.class);
         return path.equals(redisPath);
     }
@@ -249,8 +247,17 @@ public class SeckillServiceImpl implements SeckillService {
         if (userId == null || goodsId == null) {
             return null;
         }
+        // TODO: 2022/8/25 判断秒杀是否开始
+        Object stock = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId);
+        if (stock == null) {
+            throw new SeckillException(ResultEnum.SECKILL_NO_START);
+        }
+        if (Long.parseLong(stock + "") <= 0) {
+            throw new SeckillException(ResultEnum.SECKILL_OVER);
+        }
         String str = SM3Utils.sm3(UUID.randomUUID() + "123456");
         redisService.set(SeckillKey.getSeckillPath, userId + "_" + goodsId, str, RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+        log.info("库存数量:" + stock);
         return str;
     }
 }
