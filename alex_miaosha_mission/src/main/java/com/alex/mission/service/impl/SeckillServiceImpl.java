@@ -88,6 +88,7 @@ public class SeckillServiceImpl implements SeckillService {
     @Transactional
     public Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request) {
         Long userId = userUtils.getUserId(request);
+        // TODO: 2022/8/30 验证重复秒杀 
         //验证path
         checkPath(goodsId, path, userId);
         //校验是否超卖
