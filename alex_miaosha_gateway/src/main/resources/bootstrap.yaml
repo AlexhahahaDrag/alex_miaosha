@@ -18,3 +18,13 @@ nacos:
   url: localhost:8848
   group: alex-miaosha
   namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
+
+audience:
+  clientId: 098f6bcd4621d373cade4e832627b4f6
+  base64Secret: MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=
+  name: mogublog
+  expiresSecond: 3600000  #1个小时 3600
+  refreshSecond: 3600
+
+tokenHeader: Authorization
+tokenHead: Bearer_

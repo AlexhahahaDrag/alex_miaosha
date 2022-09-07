@@ -5,11 +5,8 @@ import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
-import com.alex.common.redis.constants.RedisConstants;
 import com.alex.common.redis.key.GoodsKey;
 import com.alex.common.redis.key.SeckillGoodsKey;
-import com.alex.common.redis.manager.RedisService;
-import com.alex.common.utils.POJOConverter;
 import com.alex.common.utils.qiniu.ImageScalaKit;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.SeckillGoodsManager;
@@ -17,13 +14,14 @@ import com.alex.mission.mapper.GoodsMapper;
 import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.vo.GoodsDetailVo;
 import com.alex.mission.service.GoodsService;
+import com.alex.utils.POJOConverter;
+import com.alex.utils.bean.BeanUtils;
+import com.alex.utils.redis.RedisUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +42,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     private final GoodsManager goodsManagerService;
 
-    private final RedisService redisService;
+    private final RedisUtils redisUtils;
 
     private final SeckillGoodsManager seckillGoodsManager;
 
@@ -62,7 +60,7 @@ public class GoodsServiceImpl implements GoodsService {
             return;
         }
         for (Goods goods : goodsList) {
-            redisService.set(GoodsKey.goodsKey, "" + goods.getId(), com.alex.common.utils.BeanUtils.beanToString(goods), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+            redisUtils.set(GoodsKey.goodsKey, "" + goods.getId(), BeanUtils.beanToString(goods), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
         }
     }
 
@@ -73,7 +71,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public Result<GoodsDetailVo> getDetail(Long goodsId) {
-        GoodsDTO goods = redisService.get(GoodsKey.goodsKey, "" + goodsId, GoodsDTO.class);
+        GoodsDTO goods = redisUtils.get(GoodsKey.goodsKey, "" + goodsId, GoodsDTO.class);
         if (goods == null) {
             Goods goodData = goodsManagerService.getById(goodsId);
             goods = goodsToGoodsDTO(goodData);
@@ -105,8 +103,8 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
         //删除缓存
-        redisService.delete(GoodsKey.goodsKey, "" + id);
-        redisService.delete(SeckillGoodsKey.seckillCount, "" + id);
+        redisUtils.delete(GoodsKey.goodsKey, "" + id);
+        redisUtils.delete(SeckillGoodsKey.seckillCount, "" + id);
         //删除商品
         goodsMapper.deleteById(id);
         seckillGoodsManager.deleteSeckillGoods(id);
@@ -153,13 +151,13 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public boolean updateUsingById(Long id) {
-        GoodsDTO goodsDTO = redisService.get(GoodsKey.goodsKey, "" + id, GoodsDTO.class);
+        GoodsDTO goodsDTO = redisUtils.get(GoodsKey.goodsKey, "" + id, GoodsDTO.class);
         goodsDTO.setIsUsing(!goodsDTO.getIsUsing());
         Goods goods = goodsDTOToGoods(goodsDTO);
         //更新商品信息
         goodsMapper.updateById(goods);
         //更新商品缓存信息
-        redisService.set(GoodsKey.goodsKey, "" + id, com.alex.common.utils.BeanUtils.beanToString(goodsDTO), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+        redisUtils.set(GoodsKey.goodsKey, "" + id, BeanUtils.beanToString(goodsDTO), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
         return true;
     }
 
@@ -172,7 +170,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     private List<GoodsDetailVo> getGoodsDetailVos() {
-        List<GoodsDTO> keys = redisService.keys(GoodsKey.goodsKey, GoodsDTO.class);
+        List<GoodsDTO> keys = redisUtils.keys(GoodsKey.goodsKey, GoodsDTO.class);
         System.out.println();
         if (keys == null || keys.isEmpty()) {
             return null;
@@ -182,7 +180,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {
         //从redis中获取库存信息
-        Integer stockCount = (Integer)redisService.get(SeckillGoodsKey.seckillCount, goodsId + "");
+        Integer stockCount = (Integer)redisUtils.get(SeckillGoodsKey.seckillCount, goodsId + "");
         long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
         long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
         long now = System.currentTimeMillis();
@@ -208,8 +206,8 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     private void addGoodsToCache(GoodsDTO goodsDTO) {
-        redisService.set(GoodsKey.goodsKey, "" + goodsDTO.getId(), com.alex.common.utils.BeanUtils.beanToString(goodsDTO), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
-        redisService.set(SeckillGoodsKey.seckillCount, "" + goodsDTO.getId(), goodsDTO.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+        redisUtils.set(GoodsKey.goodsKey, "" + goodsDTO.getId(), BeanUtils.beanToString(goodsDTO), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+        redisUtils.set(SeckillGoodsKey.seckillCount, "" + goodsDTO.getId(), goodsDTO.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
     }
 
     // TODO: 2022/7/13 测试注解是否好用 

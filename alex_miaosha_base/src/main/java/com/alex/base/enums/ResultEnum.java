@@ -11,7 +11,7 @@ public enum ResultEnum implements BaseEnum {
     SUCCESS("200", "success"),
     PARAM_ERROR("400", "param_fail"),
 
-
+    UNAUTHORIZED("403", "没有权限"),
     /**
      * 服务器模块
      */

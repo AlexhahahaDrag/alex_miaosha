@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.alex.mission", "com.alex.common"})
+@ComponentScan(basePackages = {"com.alex.mission", "com.alex.common", "com.alex.utils"})
 public class MissionApplication {
 
     // TODO: 2022/8/19 消费消息后，如何回写

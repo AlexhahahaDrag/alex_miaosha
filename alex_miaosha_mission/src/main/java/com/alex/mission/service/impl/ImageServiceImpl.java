@@ -3,10 +3,10 @@ package com.alex.mission.service.impl;
 import com.alex.base.enums.ImageDirEnum;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.CustomizeException;
-import com.alex.common.utils.EnumUtil;
 import com.alex.common.utils.qiniu.ImageKit;
 import com.alex.common.utils.qiniu.ImageScalaKit;
 import com.alex.mission.service.ImageService;
+import com.alex.utils.enums.EnumsUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ImageKit upload(MultipartFile file, String dir) {
-        ImageDirEnum dirEnum = EnumUtil.getByCode(dir, ImageDirEnum.class);
+        ImageDirEnum dirEnum = EnumsUtils.getByCode(dir, ImageDirEnum.class);
         if (dirEnum == null) {
             throw new CustomizeException(ResultEnum.IMAGE_ENUM_NOT_FOUND);
         }

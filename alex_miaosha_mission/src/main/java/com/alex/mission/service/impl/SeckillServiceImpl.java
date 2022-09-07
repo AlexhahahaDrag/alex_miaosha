@@ -8,16 +8,16 @@ import com.alex.common.exception.SeckillException;
 import com.alex.common.obj.SeckillMessage;
 import com.alex.common.redis.key.SeckillGoodsKey;
 import com.alex.common.redis.key.SeckillKey;
-import com.alex.common.redis.manager.RedisLua;
-import com.alex.common.redis.manager.RedisService;
-import com.alex.common.utils.SM3Utils;
-import com.alex.common.utils.UserUtils;
 import com.alex.mission.manager.OrderManager;
 import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.rabbitmq.ackmodel.manual.ManualAckPublisher;
 import com.alex.mission.service.SeckillService;
+import com.alex.utils.redis.LuaUtils;
+import com.alex.utils.redis.RedisUtils;
+import com.alex.utils.sm3.SM3Utils;
+import com.alex.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     private final SeckillGoodsManager seckillGoodsManager;
 
-    private final RedisService redisService;
+    private final RedisUtils redisUtils;
 
     private final Map<Long, Boolean> localOverMap = new ConcurrentHashMap<>();
 
@@ -53,7 +53,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     private final ManualAckPublisher manualAckPublisher;
 
-    private final RedisLua redisLua;
+    private final LuaUtils redisLua;
 
     private final UserUtils userUtils;
 
@@ -70,7 +70,7 @@ public class SeckillServiceImpl implements SeckillService {
             return;
         }
         list.forEach(seckillGoods -> {
-            redisService.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+            redisUtils.set(SeckillGoodsKey.seckillCount, "" + seckillGoods.getGoodsId(), seckillGoods.getGoodsStock(), RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
             localOverMap.put(seckillGoods.getGoodsId(), seckillGoods.getGoodsStock() > 0);
         });
     }
@@ -90,7 +90,7 @@ public class SeckillServiceImpl implements SeckillService {
         Long userId = userUtils.getUserId(request);
         // TODO: 2022/8/30 验证重复秒杀 
         //验证path
-        checkPath(goodsId, path, userId);
+//        checkPath(goodsId, path, userId);
         //校验是否超卖
         // TODO: 2022/8/18 校验超卖的解决方案 
         isCountOver(goodsId);
@@ -221,7 +221,7 @@ public class SeckillServiceImpl implements SeckillService {
         if (userId == null || StringUtils.isEmpty(path)) {
             return false;
         }
-        String redisPath = redisService.get(SeckillKey.getSeckillPath, userId + "_" + goodsId, String.class);
+        String redisPath = redisUtils.get(SeckillKey.getSeckillPath, userId + "_" + goodsId, String.class);
         return path.equals(redisPath);
     }
 
@@ -233,7 +233,7 @@ public class SeckillServiceImpl implements SeckillService {
      * @return:      boolean
     */
     private boolean getGoodsOver(Long goodsId) {
-        return redisService.exists(SeckillKey.isGoodOver, "" + goodsId);
+        return redisUtils.exists(SeckillKey.isGoodOver, "" + goodsId);
     }
 
     /**
@@ -249,7 +249,7 @@ public class SeckillServiceImpl implements SeckillService {
             return null;
         }
         // TODO: 2022/8/25 判断秒杀是否开始
-        Object stock = redisService.get(SeckillGoodsKey.seckillCount, "" + goodsId);
+        Object stock = redisUtils.get(SeckillGoodsKey.seckillCount, "" + goodsId);
         if (stock == null) {
             throw new SeckillException(ResultEnum.SECKILL_NO_START);
         }
@@ -257,7 +257,7 @@ public class SeckillServiceImpl implements SeckillService {
             throw new SeckillException(ResultEnum.SECKILL_OVER);
         }
         String str = SM3Utils.sm3(UUID.randomUUID() + "123456");
-        redisService.set(SeckillKey.getSeckillPath, userId + "_" + goodsId, str, RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
+        redisUtils.set(SeckillKey.getSeckillPath, userId + "_" + goodsId, str, RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
         log.info("库存数量:" + stock);
         return str;
     }
