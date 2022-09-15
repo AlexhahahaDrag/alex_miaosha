@@ -14,21 +14,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @description:  过滤器打印请求地址
@@ -79,10 +80,12 @@ public class GatewayFilterConfig implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
         log.info("当前请求地址：{}", path);
-        return chain.filter(exchange);
-//        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpRequest request = exchange.getRequest();
         //得到请求头信息authorization信息
-        String authHeader = exchange.getRequest().getHeaders().getFirst(tokenHeader);
+        String authHeader  = Optional.ofNullable(request)
+                .map(re -> re.getHeaders())
+                .map(header -> header.getFirst(tokenHeader))
+                .orElse(null);
 
         //TODO 判断是否触发 mogu-picture发送的请求【图片上传鉴权，需要用户登录，携带token请求admin，后期考虑加入OAuth服务统一鉴权】
         //请求头 'Authorization': tokenHead + token
@@ -121,9 +124,13 @@ public class GatewayFilterConfig implements GlobalFilter, Ordered {
             String username = jwtTokenUtils.getUsername(token, base64Secret);
             Long adminId = jwtTokenUtils.getUserId(token, base64Secret);
             //把adminUid存储到request中
-//            request.setAttribute(SysConf.ADMIN_ID, adminId);
-//            request.setAttribute(SysConf.USERNAME, username);
-//            request.setAttribute(SysConf.TOKEN, authHeader);
+            String finalAuthHeader = authHeader;
+            Consumer<HttpHeaders> headers = httpHeaders -> {
+                httpHeaders.add(SysConf.ADMIN_ID, adminId + "");
+                httpHeaders.add(SysConf.ADMIN_ID, username);
+                httpHeaders.add(SysConf.TOKEN, finalAuthHeader);
+            };
+            request.mutate().headers(headers).build();
             log.info("解析出来用户: {}", username);
             log.info("解析出来的用户Uid: {}", adminId);
 
