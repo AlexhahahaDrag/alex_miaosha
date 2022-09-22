@@ -11,8 +11,7 @@ spring:
         instance:
           service-url: http://localhost:${server.port}
           name: ${spring.application.name}
-  #        username: admin
-#        password: 123456
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

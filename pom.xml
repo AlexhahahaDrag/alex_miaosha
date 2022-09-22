@@ -29,8 +29,9 @@
     </parent>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <spring-boot.version>2.7.2</spring-boot.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <!--项目编码规则-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -61,7 +62,7 @@
         <druid.version>1.2.2</druid.version>
         <jwt.version>4.0.0</jwt.version>
         <jjwt.version>0.9.1</jjwt.version>
-        <security.version>2.2.5.RELEASE</security.version>
+        <spring-security.version>5.7.3</spring-security.version>
     </properties>
 
     <dependencyManagement>
@@ -250,9 +251,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-security</artifactId>
-                <version>${security.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <dependency>

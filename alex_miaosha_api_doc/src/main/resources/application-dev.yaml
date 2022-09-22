@@ -66,7 +66,7 @@ knife4j:
           username: nacos
           password: nacos
       - name: uaa
-        serviceName: alex-uaa
+        serviceName: alex-user
         groupName: ${nacos.group}
         namespaceId: ${nacos.namaspace}
         #        clusters: test

@@ -32,12 +32,12 @@ spring:
           filters:
             - StripPrefix=1 #移除前缀
 
-#        - id: alex-uaa
-#          uri: lb://alex-uaa
-#          predicates:
-#            - Path=/alex-uaa/**
-#          filters:
-#            - StripPrefix=1
+        - id: alex-user
+          uri: lb://alex-user
+          predicates:
+            - Path=/alex-user/**
+          filters:
+            - StripPrefix=1
 #
 #        - id: alex-manage
 #          uri: lb://alex-manage

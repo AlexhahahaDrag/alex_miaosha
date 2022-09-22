@@ -22,7 +22,6 @@ import org.springframework.context.annotation.FilterType;
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                 value = {QiNiuConfiguration.class, ImageScalaKit.class, WebMvcConfigurer.class}
 )})
-// TODO: 2022/9/7 网关整合统一权限验证 
 public class GatewayApplication {
 
     public static void main(String[] args) {

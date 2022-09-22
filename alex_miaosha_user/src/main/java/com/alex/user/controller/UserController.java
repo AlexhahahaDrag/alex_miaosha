@@ -6,7 +6,9 @@ import com.alex.user.pojo.vo.LoginParam;
 import com.alex.user.pojo.vo.RegisterParam;
 import com.alex.user.pojo.vo.UpdatePasswordParam;
 import com.alex.user.service.UserService;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,6 +37,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiOperationSupport(order = 1)
     @AccessLimit()
     @PostMapping("doLogin")
     @ApiOperation(value = "登录")
@@ -45,6 +48,7 @@ public class UserController {
         return userService.doLogin(loginParam);
     }
 
+    @ApiOperationSupport(order = 8)
     @PostMapping("doLogout")
     @ApiOperation(value = "注销")
     public Result<String> doLogout(HttpServletRequest request) {
@@ -52,6 +56,7 @@ public class UserController {
     }
 
     // TODO: 2022/8/8 添加防止重复提交
+    @ApiOperationSupport(order = 3)
     @PostMapping("doRegister")
     @ApiOperation(value = "注册")
     @ApiImplicitParams(
@@ -62,6 +67,7 @@ public class UserController {
         return userService.doRegister(registerParam);
     }
 
+    @ApiOperationSupport(order = 0)
     @PostMapping("updatePassword")
     @ApiOperation(value = "更换密码")
     @ApiImplicitParams(

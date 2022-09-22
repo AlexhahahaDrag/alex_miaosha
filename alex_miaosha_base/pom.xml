@@ -12,8 +12,8 @@
     <artifactId>alex_miaosha_base</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <maven.compiler.source>${java-compiler.version}</maven.compiler.source>
-        <maven.compiler.target>${java-compiler.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <dependencies>
