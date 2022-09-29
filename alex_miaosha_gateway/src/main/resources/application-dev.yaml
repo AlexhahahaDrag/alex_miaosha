@@ -31,6 +31,10 @@ spring:
             - Path=/alex-mission/**
           filters:
             - StripPrefix=1 #移除前缀
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter.replenishRate: 10
+#                redis-rate-limiter.burstCapacity: 20
 
         - id: alex-user
           uri: lb://alex-user
