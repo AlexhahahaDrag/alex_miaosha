@@ -1,4 +1,4 @@
-package com.alex.gateway.config;
+package com.alex.gateway.filter;
 
 import com.alex.base.constants.SysConf;
 import com.alex.common.redis.key.UserKey;
@@ -46,14 +46,14 @@ import java.util.function.Consumer;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class GatewayFilterConfig implements GlobalFilter, Ordered {
+public class GatewayFilter implements GlobalFilter, Ordered {
 
     // TODO: 2022/9/7 添加tokenid 防止token直接暴露在外
     @Value(value = "${tokenHead}")
     private String tokenHead;
 
     @Value(value = "${tokenHeader}")
-    private String tokenHeader;
+    public static String tokenHeader;
 
     /**
      * token过期的时间
