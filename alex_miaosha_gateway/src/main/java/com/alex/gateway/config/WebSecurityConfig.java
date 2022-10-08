@@ -1,5 +1,7 @@
-package com.alex.common.config;
+package com.alex.gateway.config;
 
+import com.alex.common.config.SecurityUserDetailsService;
+import com.alex.gateway.fiter.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
