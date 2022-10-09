@@ -1,7 +1,5 @@
 package com.alex.user.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.SecureUtil;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
@@ -15,11 +13,15 @@ import com.alex.user.pojo.vo.LoginParam;
 import com.alex.user.pojo.vo.RegisterParam;
 import com.alex.user.pojo.vo.UpdatePasswordParam;
 import com.alex.user.service.UserService;
+import com.alex.utils.jwt.Audience;
+import com.alex.utils.jwt.JwtTokenUtils;
 import com.alex.utils.redis.RedisUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserManager userManager;
 
+    private final JwtTokenUtils jwtTokenUtils;
+
+    private final Audience audience;
+
+    @Value(value = "${isRememberMeExpiresSecond}")
+    private int isRememberMeExpiresSecond;
+
     @Override
     public Result<String> doLogin(LoginParam loginParam) {
         Result<User> userResult = login(loginParam);
@@ -47,8 +56,9 @@ public class UserServiceImpl implements UserService {
             throw new LoginException(userResult, loginParam.getMobile());
         }
         User user = userResult.getData();
-        // TODO: 2022/8/8 修改为jwt
-        String loginToken = getLoginToken(user);
+        long expiration = loginParam.isRemember() ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        String loginToken = jwtTokenUtils.createJwt(user.getUserName(), user.getId(), "roleName", audience.getClientId(), audience.getName()
+                , expiration, audience.getBase64Secret());
         updateLastUpdateTime(user);
         redisUtils.set(UserKey.getById, loginToken, user.getId(), RedisCacheTimeEnum.LOGIN_EXTIME.getValue());
         log.info("用户{}登录成功", user.getId());
@@ -85,11 +95,13 @@ public class UserServiceImpl implements UserService {
             throw new LoginException(ResultEnum.NO_LOGIN);
         }
         User user = userManager.getById(userId);
-        if (!user.getPassword().equals(updatePasswordParam.getOldPassword())) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //校验密码
+        if (encoder.matches(encoder.encode(updatePasswordParam.getOldPassword()), user.getPassword())) {
             throw new UpdatePasswordException(ResultEnum.PASSWORD_ERROR);
         }
         try {
-            user.setPassword(updatePasswordParam.getNewPassword());
+            user.setPassword(encoder.encode(updatePasswordParam.getNewPassword()));
             userManager.updateById(user);
             log.info(user.getId() + "用户修改密码成功");
         } catch (Exception e) {
@@ -110,22 +122,12 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return Result.error(ResultEnum.MOBILE_NOT_EXIST);
         }
-        // TODO: 2022/8/8 传入的密码是明文，数据库的密码是加密后的信息，如何判断相等
-        if (!user.getPassword().equals(loginParam.getPassword())) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(encoder.encode(loginParam.getPassword()), user.getPassword())) {
             return Result.error(ResultEnum.PASSWORD_ERROR);
         }
         user.setPassword(null);
         return Result.success(user);
-    }
-
-    /**
-     * @param user
-     * @description: 设置token
-     * @author: majf
-     * @return: java.lang.String
-     */
-    private String getLoginToken(User user) {
-        return SecureUtil.md5(user.getPhone() + RandomUtil.randomInt(100000));
     }
 
     /**
@@ -157,9 +159,9 @@ public class UserServiceImpl implements UserService {
     /**
      * @param registerParam
      * @description: 判断电话号、身份证是否被注册过
-     * @author:      majf
-     * @return:      boolean
-    */
+     * @author: majf
+     * @return: boolean
+     */
     private boolean isRegistered(RegisterParam registerParam) {
         if (userManager.getOne(Wrappers.<User>lambdaQuery().eq(User::getPhone, registerParam.getRegisterMobile())) != null) {
             throw new RegisterException(ResultEnum.REPEATED_REGISTER_MOBILE);
@@ -176,9 +178,9 @@ public class UserServiceImpl implements UserService {
     /**
      * @param registerParam
      * @description: 通过注册信息转化成用户信息
-     * @author:      majf
-     * @return:      com.alex.uaa.pojo.entity.User
-    */
+     * @author: majf
+     * @return: com.alex.uaa.pojo.entity.User
+     */
     private User getUserByRegisterParam(RegisterParam registerParam) {
         return User.builder()
                 .userName(registerParam.getRegisterUsername())

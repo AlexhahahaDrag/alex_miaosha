@@ -287,6 +287,12 @@
                 <artifactId>knife4j-spring-ui</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>2.13.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

@@ -50,3 +50,12 @@ knife4j:
 #    enable: true
 #    password: 123456
 #    username: alex
+
+#设置jwt
+audience:
+  clientId: 098f6bcd4621d373cade4e832627b4f6
+  base64Secret: MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=
+  name: mogublog
+  expiresSecond: 3600000  #1个小时 3600
+  refreshSecond: 3600
+isRememberMeExpiresSecond: 259200000 #记住密码三天

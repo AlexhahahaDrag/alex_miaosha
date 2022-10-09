@@ -23,4 +23,7 @@ public class LoginParam {
 
     @ApiModelProperty(value = "密码", name = "password")
     private String password;
+
+    @ApiModelProperty(value = "记住密码", name = "isRemember")
+    private boolean isRemember;
 }
