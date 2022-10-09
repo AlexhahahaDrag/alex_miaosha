@@ -1,4 +1,4 @@
-package com.alex.common.config;
+package com.alex.mission.config;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -17,7 +17,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
+/**
+ * description:
+ * author:       majf
+ * createDate:   2022/10/8 17:34
+ * version:      1.0.0
+ */
 @Configuration
 public class WebMvcConfigurer {
 
@@ -37,6 +42,4 @@ public class WebMvcConfigurer {
     private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment, String basePath) {
         return webEndpointProperties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath) || ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
     }
-
 }
-

@@ -42,12 +42,6 @@
             <artifactId>alex_miaosha_base</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-micro-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
-        </dependency>
-
         <!--mybatis-plus-->
         <dependency>
             <groupId>com.baomidou</groupId>

@@ -1,4 +1,4 @@
-package com.alex.common.annotations.uaa;
+package com.alex.common.annotations.user;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

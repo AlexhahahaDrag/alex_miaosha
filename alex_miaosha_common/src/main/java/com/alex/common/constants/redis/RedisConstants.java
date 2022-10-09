@@ -1,4 +1,4 @@
-package com.alex.common.redis.constants;
+package com.alex.common.constants.redis;
 
 /**
  *description:  redis常量

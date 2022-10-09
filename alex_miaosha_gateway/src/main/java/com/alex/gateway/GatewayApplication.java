@@ -1,6 +1,5 @@
 package com.alex.gateway;
 
-import com.alex.common.config.WebMvcConfigurer;
 import com.alex.common.config.qiniu.QiNiuConfiguration;
 import com.alex.common.utils.qiniu.ImageScalaKit;
 import com.alex.utils.interceptor.SeckillInterceptor;
@@ -21,7 +20,7 @@ import org.springframework.context.annotation.FilterType;
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex.gateway", "com.alex.common", "com.alex.utils"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                value = {QiNiuConfiguration.class, ImageScalaKit.class, WebMvcConfigurer.class, SeckillInterceptor.class}
+                value = {QiNiuConfiguration.class, ImageScalaKit.class, SeckillInterceptor.class}
         )})
 public class GatewayApplication {
 

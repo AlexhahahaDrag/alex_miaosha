@@ -1,7 +1,7 @@
 package com.alex.user.controller;
 
 import com.alex.base.common.Result;
-import com.alex.common.annotations.uaa.AccessLimit;
+import com.alex.common.annotations.user.AccessLimit;
 import com.alex.user.pojo.vo.LoginParam;
 import com.alex.user.pojo.vo.RegisterParam;
 import com.alex.user.pojo.vo.UpdatePasswordParam;
@@ -38,7 +38,7 @@ public class UserController {
 
     @ApiOperationSupport(order = 1)
     @AccessLimit()
-    @PostMapping("doLogin")
+    @PostMapping("/doLogin")
     @ApiOperation(value = "登录")
     @ApiImplicitParams(
             @ApiImplicitParam(value = "登录参数", name = "loginParam", required = true, type = "LoginParam.class")
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @ApiOperationSupport(order = 8)
-    @PostMapping("doLogout")
+    @PostMapping("/doLogout")
     @ApiOperation(value = "注销")
     public Result<String> doLogout(HttpServletRequest request) {
         return userService.doLogout(request);
@@ -56,7 +56,7 @@ public class UserController {
 
     // TODO: 2022/8/8 添加防止重复提交
     @ApiOperationSupport(order = 3)
-    @PostMapping("doRegister")
+    @PostMapping("/doRegister")
     @ApiOperation(value = "注册")
     @ApiImplicitParams(
             @ApiImplicitParam(value = "注册参数", name = "registerParam", required = true, type = "RegisterParam.class")
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @ApiOperationSupport(order = 0)
-    @PostMapping("updatePassword")
+    @PostMapping("/updatePassword")
     @ApiOperation(value = "更换密码")
     @ApiImplicitParams(
             @ApiImplicitParam(value = "更换密码", name = "updatePasswordParam", required = true)

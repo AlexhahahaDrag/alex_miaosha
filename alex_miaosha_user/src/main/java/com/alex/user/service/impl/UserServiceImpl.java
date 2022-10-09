@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result updatePassword(UpdatePasswordParam updatePasswordParam, HttpServletRequest request) {
         String loginToken = getUserIdByRequest(request);
-        Long userId = redisUtils.get(UserKey.getById, loginToken, Long.class);
+        Long userId = Long.parseLong(redisUtils.get(UserKey.getById, loginToken).toString());
         if (userId == null) {
             throw new LoginException(ResultEnum.NO_LOGIN);
         }
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
             log.info(user.getId() + "用户修改密码失败");
             throw new RegisterException(ResultEnum.SYSTEM_ERROR);
         }
-        return Result.success();
+        return Result.success("用户修改密码成功！！！");
     }
 
     /**

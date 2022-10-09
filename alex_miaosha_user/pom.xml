@@ -39,12 +39,6 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
 
-        <!--负载均衡 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-
         <!--    skywalking整合logback    -->
         <dependency>
             <groupId>org.apache.skywalking</groupId>

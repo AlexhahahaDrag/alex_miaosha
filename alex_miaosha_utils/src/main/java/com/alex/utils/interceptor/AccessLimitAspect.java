@@ -2,7 +2,7 @@ package com.alex.utils.interceptor;
 
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
-import com.alex.common.annotations.uaa.AccessLimit;
+import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.AccessKey;
 import com.alex.utils.redis.RedisUtils;
@@ -37,7 +37,7 @@ public class AccessLimitAspect {
      * @author:       alex
      * @return:       java.lang.Object
     */
-    @Around("@annotation(com.alex.common.annotations.uaa.AccessLimit)")
+    @Around("@annotation(com.alex.common.annotations.user.AccessLimit)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         HttpServletRequest request = RequestHolder.getRequest();
         //获取注解

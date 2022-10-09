@@ -16,6 +16,9 @@ public enum ResultEnum implements BaseEnum {
      * 服务器模块
      */
     SYSTEM_ERROR("500100", "系统异常"),
+
+    SYSTEM_BUSY("服务器繁忙，请稍后再试", "系统异常"),
+
     ACCESS_LIMIT_REACHED("500103", "访问太频繁"),
     REQUIRE_ILLEGAL("500102", "请求非法"),
     ACCESS_TOO_MANY("500104", "当前访问的人数太多，其稍后尝试"),
@@ -64,8 +67,8 @@ public enum ResultEnum implements BaseEnum {
     IMAGE_VIOLATION_FAIL("504", "图片违规"),
     IMAGE_ENUM_NOT_FOUND("501", "上传的类型不正确"),
 
-
     SYSTEM_UP_ERROR("500", "系统更新中，请稍后尝试！"),
+
     test("11", "11")
     ;
 

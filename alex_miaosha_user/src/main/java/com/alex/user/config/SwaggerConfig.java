@@ -24,7 +24,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 // TODO: 2022/7/15 添加参数下拉
 public class SwaggerConfig {
 
-    @Bean(value = "uaaApi")
+    @Bean(value = "userApi")
     public Docket buildDocket() {
 //        //添加head参数配置start
 //        List<RequestParameter> globalRequestParameters = new ArrayList<>();
@@ -37,19 +37,20 @@ public class SwaggerConfig {
 //                .build();
 //        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
+                .pathMapping("/am-user")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.user.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("uaa")
+                .groupName("alex-user")
 //                .globalRequestParameters(globalRequestParameters)
                 ;//注意这里
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("alex miaosha uaa document")
+                .title("alex miaosha user document")
                 .contact(new Contact("alex", "localhost", "734663446@qq.com"))
                 .description("ha ha ha ! be happy")
                 .termsOfServiceUrl("www.baidu.com")

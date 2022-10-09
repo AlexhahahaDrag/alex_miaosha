@@ -8,13 +8,13 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 /**
- * @description:  网关 解决跨域
- * @author:       majf
- * @createDate:   2022/7/29 14:26
- * @version:      1.0.0
+ * description:
+ * author:       majf
+ * createDate:   2022/10/8 17:05
+ * version:      1.0.0
  */
 @Configuration
-public class GatewayCorsConfiguration {
+public class GlobalCorsConfig {
 
     private final Long MAX_AGE = 18000l;
 

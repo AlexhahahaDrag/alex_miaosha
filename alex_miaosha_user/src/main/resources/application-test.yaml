@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-uaa
+    name: alex-user
   boot:
     admin:
       client:

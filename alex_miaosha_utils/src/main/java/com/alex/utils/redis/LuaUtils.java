@@ -1,6 +1,6 @@
 package com.alex.utils.redis;
 
-import com.alex.common.redis.constants.RedisConstants;
+import com.alex.common.constants.redis.RedisConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

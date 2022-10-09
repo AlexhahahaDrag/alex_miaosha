@@ -24,7 +24,6 @@ public class LocalDateTimeFormatConfig {
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
     @Bean
-    @Primary
     public ObjectMapper objectMapper(){
         ObjectMapper objectMapper = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();

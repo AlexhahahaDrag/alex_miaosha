@@ -24,11 +24,14 @@ spring:
         locator:
           enabled: true #启动自动根据服务id生成路由
           lower-case-service-id: true #设置路由的路径为小写的服务id
+          filters:
+            # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置。
+            - PreserveHostHeader
       routes:
         - id: alex-mission
           uri: lb://alex-mission
           predicates:
-            - Path=/alex-mission/**
+            - Path=/am-mission/**
           filters:
             - StripPrefix=1 #移除前缀
 #            - name: RequestRateLimiter
@@ -39,21 +42,21 @@ spring:
         - id: alex-user
           uri: lb://alex-user
           predicates:
-            - Path=/alex-user/**
+            - Path=/am-user/**
           filters:
             - StripPrefix=1
 #
 #        - id: alex-manage
 #          uri: lb://alex-manage
 #          predicates:
-#            - Path=/alex-manage/**
+#            - Path=/am-manage/**
 #          filters:
 #            - StripPrefix=1
 #
 #        - id: alex-monitor
 #          uri: lb://alex-monitor
 #          predicates:
-#            - Path=/alex-monitor/**
+#            - Path=/aa-monitor/**
 #          filters:
 #            - StripPrefix=1
   redis:
@@ -62,7 +65,8 @@ spring:
     port: 6379
     password:
     timeout: 30000
-
+  main:
+    allow-bean-definition-overriding: true
 management:
   endpoints:
     web:
@@ -78,3 +82,11 @@ logging:
 
   level:
     org.springframework.cloud.gateway: debug
+
+knife4j:
+  enable: true
+  production: false
+#  basic:
+#    enable: true
+#    password: 123456
+#    username: alex

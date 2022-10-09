@@ -20,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -43,7 +42,7 @@ import java.util.function.Consumer;
  * @createDate:   2022/7/29 14:57
  * @version:      1.0.0
  */
-@Component
+//@Component
 @Slf4j
 @RequiredArgsConstructor
 public class GatewayFilter implements GlobalFilter, Ordered {
@@ -75,6 +74,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
     private final UserDetailsService userDetailsService;
 
+    // TODO: 2022/10/9 校验token 
     @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -141,8 +141,6 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
-//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-//                            request));
                     //以后可以security中取得SecurityUser信息
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

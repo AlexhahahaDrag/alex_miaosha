@@ -65,12 +65,12 @@ knife4j:
           enable: true
           username: nacos
           password: nacos
-      - name: uaa
+      - name: user
         serviceName: alex-user
         groupName: ${nacos.group}
         namespaceId: ${nacos.namaspace}
         #        clusters: test
-        location: /v3/api-docs?group=uaa
+        location: /v3/api-docs?group=user
         swaggerVersion: 3.0
         servicePath: /
         routeAuth:

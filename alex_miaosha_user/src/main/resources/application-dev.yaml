@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-uaa
+    name: alex-user
   boot:
     admin:
       client:
@@ -28,11 +28,6 @@ logging:
   level:
     com.alex.user.mapper: debug
 
-knife4j:
-  # 开启增强配置
-  enable: true
-  # 开启生产环境屏蔽
-  production: false
 management:
   endpoints:
     web:
@@ -45,3 +40,13 @@ qiniu:
   secretKey: ENC(RySyvFuZ+SfUDAVA0VSUX4fexjmQ1t/D45oADbkAkRMQdy0kQX+cF9uyRsh/BUzJciemr1GK610=)
   bucket: weiran1999
   domain: http://rel.weiran.ltd/
+
+#配置knife4j
+knife4j:
+  #开启增强
+  enable: true
+  production: false
+#  basic:
+#    enable: true
+#    password: 123456
+#    username: alex

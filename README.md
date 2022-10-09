@@ -37,7 +37,7 @@ alex_miaosha_base:
 
 + alex_miaosha_gateway：todo
 
-+ alex_miaosha_uaa：todo
++ alex_miaosha_user：todo
 
 + alex_miaosha_web：
 

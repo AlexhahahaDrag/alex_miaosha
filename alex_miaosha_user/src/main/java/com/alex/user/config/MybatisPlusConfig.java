@@ -30,11 +30,6 @@ public class MybatisPlusConfig {
         return interceptor;
     }
 
-//    @Bean
-//    public MybatisPlusSqlInjector mybatisPlusSqlInjector() {
-//        return new MybatisPlusSqlInjector();
-//    }
-
     @Bean
     @Profile({"dev","test"})// 设置 dev test 环境开启
     public PerformanceMonitorInterceptor performanceInterceptor() {
