@@ -30,11 +30,3 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
-knife4j:
-  enable: true
-  production: false
-  basic:
-    enable: true
-    password: 123456
-    username: alex

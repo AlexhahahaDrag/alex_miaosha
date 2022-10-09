@@ -1,7 +1,15 @@
-FROM java:8
+FROM java:17
 
-COPY ./target/alex_miaosha_user-1.0-SNAPSHOT.jar ./user.jar
+MAINTAINER alex 734663446@qq.com
 
-CMD ["java", "-jar", "user.jar"]
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
+
+ARG JAR_FILE
+
+COPY ${JAR_FILE} /user.jar
+
+ENTRYPOINT ["java", "-Xmx512m", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/user.jar"]
+CMD ["--spring.profiles.active=prod"]
 
 EXPOSE 30006

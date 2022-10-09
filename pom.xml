@@ -19,6 +19,7 @@
         <module>alex_miaosha_monitor</module>
         <module>alex_miaosha_user</module>
         <module>alex_miaosha_utils</module>
+        <module>alex_miaosha_finance</module>
     </modules>
 
     <parent>
