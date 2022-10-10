@@ -117,7 +117,7 @@ public class Generate {
 //                            .naming(NamingStrategy.no_change)
                             .columnNaming(NamingStrategy.underline_to_camel)
                             .addSuperEntityColumns("id", "creator", "createTime", "updater", "updateTime",
-                                    "deleter", "deleteTime", "isValid", "isDelete", "operator", "operateTime")
+                                    "deleter", "deleteTime", "isDelete", "operator", "operateTime")
 ////                            .addIgnoreColumns("age")
                             .addTableFills(list)
                             //配置controller
