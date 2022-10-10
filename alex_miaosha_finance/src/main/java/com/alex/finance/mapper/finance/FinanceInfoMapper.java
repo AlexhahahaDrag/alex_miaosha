@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * @description:  财务信息表 mapper
  * @author:       majf
- * @createDate:   2022-10-10 16:56:00
+ * @createDate:   2022-10-10 18:02:03
  * @version:      1.0.0
  */
 @Mapper

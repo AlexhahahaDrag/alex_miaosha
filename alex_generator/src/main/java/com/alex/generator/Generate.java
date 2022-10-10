@@ -116,8 +116,8 @@ public class Generate {
                             .logicDeletePropertyName("isDelete")
 //                            .naming(NamingStrategy.no_change)
                             .columnNaming(NamingStrategy.underline_to_camel)
-                            .addSuperEntityColumns("id", "creator", "create_time", "updater", "update_time",
-                                    "deleter", "delete_time", "is_valid", "is_delete", "operator", "operate_time")
+                            .addSuperEntityColumns("id", "creator", "createTime", "updater", "updateTime",
+                                    "deleter", "deleteTime", "isValid", "isDelete", "operator", "operateTime")
 ////                            .addIgnoreColumns("age")
                             .addTableFills(list)
                             //配置controller

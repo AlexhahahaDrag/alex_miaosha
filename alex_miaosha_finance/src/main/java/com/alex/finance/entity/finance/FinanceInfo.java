@@ -3,17 +3,18 @@ package com.alex.finance.entity.finance;
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.math.BigDecimal;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @description:  财务信息表类
  * @author:       majf
- * @createDate: 2022-10-10 16:55:59
+ * @createDate: 2022-10-10 18:02:03
  * @version:      1.0.0
  */
 @Getter
@@ -38,5 +39,9 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
     @ApiModelProperty(value = "来源")
     @TableField("from_source")
     private String fromSource;
+
+    @ApiModelProperty(value = "是否有效")
+    @TableField("is_valid")
+    private String isValid;
 
 }

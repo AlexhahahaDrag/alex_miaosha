@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @description:  财务信息表Vo
  * @author:       majf
- * @createDate:   2022-10-10 16:56:00
+ * @createDate:   2022-10-10 18:02:03
  * @version:      1.0.0
  */
 @Getter
@@ -37,5 +37,9 @@ public class FinanceInfoVo extends Model<FinanceInfoVo> {
     @ApiModelProperty(value = "来源")
     @JsonProperty("FROM_SOURCE")
     private String fromSource;
+
+    @ApiModelProperty(value = "是否有效")
+    @JsonProperty("IS_VALID")
+    private String isValid;
 
 }

@@ -5,7 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.alex.finance.entity.finance.FinanceInfo">
         <result column="id" property="id" />
-        <result column="is_valid" property="isValid" />
         <result column="is_delete" property="isDelete" />
         <result column="creator" property="creator" />
         <result column="updater" property="updater" />
@@ -18,12 +17,12 @@
         <result column="type_code" property="typeCode" />
         <result column="amount" property="amount" />
         <result column="from_source" property="fromSource" />
+        <result column="is_valid" property="isValid" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         finance_info.id,
-        finance_info.is_valid,
         finance_info.is_delete,
         finance_info.creator,
         finance_info.updater,
@@ -32,7 +31,7 @@
         finance_info.update_time,
         finance_info.delete_time,
         finance_info.operate_time,
-        finance_info.`name`, finance_info.type_code, finance_info.amount, finance_info.from_source
+        finance_info.`name`, finance_info.type_code, finance_info.amount, finance_info.from_source, finance_info.is_valid
     </sql>
 
     <select id="getPage" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
@@ -76,6 +75,9 @@
           </if>
           <if test = "financeInfoVo.fromSource != null">
             and from_source like concat('%', #{financeInfoVo.fromSource}, '%')
+          </if>
+          <if test = "financeInfoVo.isValid != null">
+            and is_valid like concat('%', #{financeInfoVo.isValid}, '%')
           </if>
         </if>
      </sql>

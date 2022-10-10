@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description: 财务信息表restApi
- * @author: majf
- * @createDate: 2022-10-10 16:56:00
- * @version: 1.0.0
+ * @description:  财务信息表restApi
+ * @author:       majf
+ * @createDate:   2022-10-10 18:02:03
+ * @version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "财务信息表相关接口", tags = {"财务信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/finance_manager")
+@RequestMapping("/finance-info")
 public class FinanceInfoController {
 
     private final FinanceInfoService financeInfoService;
@@ -38,15 +38,15 @@ public class FinanceInfoController {
             @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
     )
     public Result<Page<FinanceInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                               @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                               @RequestBody FinanceInfoVo financeInfoVo) {
+                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                 @RequestBody FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.getPage(pageNum, pageSize, financeInfoVo));
     }
 
     @ApiOperation(value = "获取财务信息表列表", notes = "获取财务信息表列表", response = Result.class)
     @PostMapping(value = "/list")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
+        @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
     )
     public Result<List<FinanceInfoVo>> getList(@RequestBody FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.getList(financeInfoVo));
