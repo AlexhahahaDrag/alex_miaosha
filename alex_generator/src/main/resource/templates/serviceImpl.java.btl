@@ -1,0 +1,69 @@
+package ${package.ServiceImpl};
+
+import ${package.Entity}.${entity};
+import ${package.Vo}.${table.voName};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import cn.hutool.core.bean.BeanUtil;
+/**
+ * <p>
+ * @description:  ${table.comment!}服务实现类
+ * @author:       ${author}
+ * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @version:      1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+<% if(kotlin){ %>
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+}
+<% }else{ %>
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+    private final ${table.mapperName} ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)};
+
+    @Override
+    public Page<${table.voName}> getPage(Long pageNum, Long pageSize, ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        Page<${table.voName}> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.getPage(page, ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+    }
+
+    @Override
+    public List<${table.voName}> getList(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.getList(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+    }
+
+    @Override
+    public ${table.voName} query${entity}(String id) {
+        return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.query${entity}(id);
+    }
+
+    @Override
+    public ${entity} add${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        ${entity} ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} = new ${entity}();
+        BeanUtil.copyProperties(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
+        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.insert(${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
+        return ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)};
+    }
+
+    @Override
+    public ${entity} update${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        ${entity} ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} = new ${entity}();
+        BeanUtil.copyProperties(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
+        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.updateById(${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
+        return ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)};
+    }
+
+    @Override
+    public Boolean delete${entity}(List<String> ids) {
+        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.deleteBatchIds(ids);
+        return true;
+    }
+}
+<% } %>

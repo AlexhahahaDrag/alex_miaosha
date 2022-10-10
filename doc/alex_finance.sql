@@ -32,8 +32,8 @@ CREATE TABLE `finance_info`  (
   `creator` bigint COMMENT '创建人',
   `updater` bigint COMMENT '更新人',
   `deleter` bigint COMMENT '删除人',
-  `created_time` datetime COMMENT '创建时间',
-  `updated_time` datetime COMMENT '更新时间',
+  `create_time` datetime COMMENT '创建时间',
+  `update_time` datetime COMMENT '更新时间',
   `delete_time` datetime COMMENT '更新时间',
   `operate_time` datetime COMMENT '操作时间',
   PRIMARY KEY (`id`) USING BTREE

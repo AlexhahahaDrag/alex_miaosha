@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+<% if(enableCache){ %>
+    <!-- 开启二级缓存 -->
+    <cache type="${cacheClassName}"/>
+
+<% } %>
+<% if(baseResultMap){ %>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+<% for(field in table.fields){ %>
+   <% /** 生成主键排在第一位 **/ %>
+   <% if(field.keyFlag){ %>
+        <id column="${field.name}" property="${field.propertyName}" />
+   <% } %>
+<% } %>
+<% for(field in table.commonFields){ %>
+    <% /** 生成公共字段 **/ %>
+        <result column="${field.name}" property="${field.propertyName}" />
+<% } %>
+<% for(field in table.fields){ %>
+   <% /** 生成普通字段 **/ %>
+   <% if(!field.keyFlag){ %>
+        <result column="${field.name}" property="${field.propertyName}" />
+   <% } %>
+<% } %>
+    </resultMap>
+<% } %>
+
+<% if(baseColumnList){ %>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+<% for(field in table.commonFields){ %>
+        ${table.name}.${field.columnName},
+<% } %>
+        ${table.fieldNames}
+    </sql>
+<% } %>
+
+    <select id="getPage" resultType="${package.Vo}.${table.voName}">
+        select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
+        <where>
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="getList" resultType="${package.Vo}.${table.voName}">
+        select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
+        <where>
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="query${entity}" resultType="${package.Vo}.${table.voName}">
+        select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)} != null">
+          <% for(field in table.fields){ %>
+        <% if(field.columnType == 'STRING'){ %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
+            and ${field.name} like concat('%', #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}, '%')
+          </if>
+          <% } %>
+          <% else if(field.columnType == 'BIG_DECIMAL' || field.columnType == 'INTEGER'){ %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null and ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}.size > 0">
+            <foreach collection="${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}" index="index" item="item" >
+            <if test="index == 0">
+                and ${field.name} >= #{item}
+            </if>
+            <if test="index == 1">
+                and ${field.name} &lt;= #{item}
+            </if>
+          </foreach>
+          </if>
+          <% } %>
+          <% else if(field.columnType == 'LOCAL_DATE_TIME'){ %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null and ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}.size > 0">
+            <foreach collection="${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}" index="index" item="item" >
+                <if test="index == 0">
+                    and ${field.name} >= TIMESTAMP(#{item})
+                </if>
+                <if test="index == 1">
+                    and ${field.name} &lt;= TIMESTAMP(#{item})
+                </if>
+            </foreach>
+          </if>
+          <% } %>
+          <% else { %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
+            and ${field.name} = #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}
+          </if>
+          <% } %>
+          <% } %>
+        </if>
+     </sql>
+</mapper>

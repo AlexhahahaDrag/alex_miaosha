@@ -15,15 +15,39 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
+    @ApiModelProperty("创建人")
+    @TableField(value = "creator")
+    private Long creator;
+
     @ApiModelProperty("创建时间")
-    @TableField(value = "created_at", fill = FieldFill.INSERT, updateStrategy = FieldStrategy.DEFAULT)
-    private LocalDateTime createdAt;
+    @TableField(value = "create_time", fill = FieldFill.INSERT, updateStrategy = FieldStrategy.DEFAULT)
+    private LocalDateTime createTime;
+
+    @ApiModelProperty("更新人")
+    @TableField(value = "updater")
+    private Long updater;
 
     @ApiModelProperty("更新时间")
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
-    private LocalDateTime updatedAt;
+    @TableField(value = "update_time", fill = FieldFill.UPDATE, updateStrategy = FieldStrategy.DEFAULT)
+    private LocalDateTime updateTime;
+
+    @ApiModelProperty("操作人")
+    @TableField(value = "operator")
+    private Long operator;
+
+    @ApiModelProperty("操作时间")
+    @TableField(value = "operate_time", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
+    private LocalDateTime operateTime;
+
+    @ApiModelProperty("删除人")
+    @TableField(value = "deleter")
+    private Long deleter;
+
+    @ApiModelProperty("操作时间")
+    @TableField(value = "delete_time")
+    private LocalDateTime deleteTime;
 
     @ApiModelProperty("是否删除")
-    @TableLogic
+    @TableLogic(value = "is_delete")
     private Integer isDelete;
 }

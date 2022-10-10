@@ -1,0 +1,33 @@
+package ${package.Mapper};
+
+import ${package.Entity}.${entity};
+import ${package.Vo}.${table.voName};
+import ${superMapperClassPackage};
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+<% if(mapperAnnotation){ %>
+import org.apache.ibatis.annotations.Mapper;
+<% } %>
+
+/**
+ * @description:  ${table.comment!} mapper
+ * @author:       ${author}
+ * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @version:      1.0.0
+ */
+<% if(mapperAnnotation){ %>
+@Mapper
+<% } %>
+<% if(kotlin){ %>
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
+<% }else{ %>
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+
+    Page<${table.voName}> getPage(Page<${table.voName}> page, @Param("${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}") ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    List<${table.voName}> getList(@Param("${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}") ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    ${table.voName} query${entity}(@Param("id") String id);
+}
+<% } %>

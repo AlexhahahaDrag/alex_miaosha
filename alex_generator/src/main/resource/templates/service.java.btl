@@ -1,0 +1,33 @@
+package ${package.Service};
+
+import ${package.Vo}.${table.voName};
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import ${package.Entity}.${entity};
+import ${superServiceClassPackage};
+import java.util.List;
+
+/**
+ * ${table.comment!} 服务类
+ * @author: ${author}
+ * @createDate: ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @description: 我是由代码生成器生成
+ * version: 1.0.0
+ */
+<% if(kotlin){ %>
+interface ${table.serviceName} : ${superServiceClass}<${entity}>
+<% }else{ %>
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+
+    Page<${table.voName}> getPage(Long pageNum, Long pageSize, ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    List<${table.voName}> getList(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    ${table.voName} query${entity}(String id);
+
+    ${entity} add${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    ${entity} update${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
+    Boolean delete${entity}(List<String> ids);
+}
+<% } %>

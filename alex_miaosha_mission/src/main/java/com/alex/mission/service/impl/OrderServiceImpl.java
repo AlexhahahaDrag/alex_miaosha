@@ -64,8 +64,8 @@ public class OrderServiceImpl implements OrderService {
                 OrderDetailVo.builder()
                         .orderId(order.getId())
                         .goodsId(order.getGoodsId())
-                        .createdTime(order.getCreatedAt())
-                        .updatedTime(order.getUpdatedAt())
+                        .createdTime(order.getCreateTime())
+                        .updatedTime(order.getUpdateTime())
                         .goodsName(goodsMap.get(order.getGoodsId()))
                         .build()
         ).collect(Collectors.toList());

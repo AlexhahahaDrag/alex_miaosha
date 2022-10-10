@@ -20,6 +20,7 @@
         <module>alex_miaosha_user</module>
         <module>alex_miaosha_utils</module>
         <module>alex_miaosha_finance</module>
+        <module>alex_generator</module>
     </modules>
 
     <parent>
@@ -64,6 +65,8 @@
         <jwt.version>4.0.0</jwt.version>
         <jjwt.version>0.9.1</jjwt.version>
         <spring-security.version>5.7.3</spring-security.version>
+        <beetl.version>3.9.3.RELEASE</beetl.version>
+        <velocity.version>1.7</velocity.version>
     </properties>
 
     <dependencyManagement>
@@ -293,6 +296,25 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>2.13.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ibeetl</groupId>
+                <artifactId>beetl</artifactId>
+                <version>${beetl.version}</version>
+            </dependency>
+
+            <!--mybatis-plus-generator-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatisplus.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

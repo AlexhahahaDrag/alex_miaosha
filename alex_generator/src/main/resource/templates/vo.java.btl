@@ -1,0 +1,137 @@
+package ${package.Vo};
+
+<% for(pkg in table.importVoPackages){ %>
+import ${pkg};
+<% } %>
+<% if(swagger){ %>
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+<% } %>
+<% if(voLombokModel){ %>
+import lombok.Getter;
+import lombok.Setter;
+<% if(chainModel){ %>
+import lombok.experimental.Accessors;
+<% } %>
+<% } %>
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * @description:  ${table.comment!}Vo
+ * @author:       ${author}
+ * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @version:      1.0.0
+ */
+<% if(voLombokModel){ %>
+@Getter
+@Setter
+    <% if(chainModel){ %>
+@Accessors(chain = true)
+    <% } %>
+<% } %>
+<% if(swagger){ %>
+@ApiModel(value = "${table.voName}", description = "${table.comment!''}Vo")
+<% } %>
+<% if(isNotEmpty(superVoClass)){ %>
+public class ${table.voName} extends ${superVoClass}<% if(activeRecord){ %><${table.voName}><%}%>{
+<% }else if(activeRecord){ %>
+public class ${table.voName} extends Model<${table.voName}> {
+<% }else if(voSerialVersionUID){ %>
+public class ${table.voName} implements Serializable {
+<% }else{ %>
+public class ${table.voName} {
+<% } %>
+<% if(voSerialVersionUID){ %>
+
+    private static final long serialVersionUID = 1L;
+<% } %>
+<% /** -----------BEGIN 字段循环遍历----------- **/ %>
+<% for(field in table.fields){ %>
+    <%
+    if(field.keyFlag){
+        var keyPropertyName = field.propertyName;
+    }
+    %>
+
+    <% if(isNotEmpty(field.comment)){ %>
+        <% if(swagger){ %>
+    @ApiModelProperty(value = "${field.comment}")
+        <% }else{ %>
+    /**
+     * ${field.comment}
+     */
+        <% } %>
+    <% } %>
+    <% if(field.keyFlag){ %>
+    <%
+    /*主键*/
+    %>
+    <%
+    /*普通字段*/
+    %>
+    <% }else if(isNotEmpty(field.fill)){ %>
+        <% if(field.convert){ %>
+    @TableField(value = "${field.annotationColumnName}", fill = FieldFill.${field.fill})
+        <% }else{ %>
+    @TableField(fill = FieldFill.${field.fill})
+        <% } %>
+    <% } %>
+    <%
+    /*乐观锁注解*/
+    %>
+    <% if(field.versionField){ %>
+    @Version
+    <% } %>
+    @JsonProperty("${strutil.toUpperCase(field.name)}")
+    private ${field.propertyType} ${field.propertyName};
+<% } %>
+<% /** -----------END 字段循环遍历----------- **/ %>
+
+<% if(!voLombokModel){ %>
+    <% for(field in table.fields){ %>
+        <%
+        var getprefix ='';
+        if(field.propertyType=='boolean'){
+            getprefix='is';
+        }else{
+            getprefix='get';
+        }
+        %>
+    public ${field.propertyType} ${getprefix}${field.capitalName}() {
+        return ${field.propertyName};
+    }
+
+        <% if(chainModel){ %>
+    public ${vo} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+        <% }else{ %>
+    public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+        <% } %>
+        this.${field.propertyName} = ${field.propertyName};
+        <% if(chainModel){ %>
+        return this;
+        <% } %>
+    }
+
+    <% } %>
+<% } %>
+<% if(voColumnConstant){ %>
+   <% for(field in table.fields){ %>
+    public static final String ${strutil.toUpperCase(field.name)} = "${field.name}";
+
+   <% } %>
+<% } %>
+<% if(!voLombokModel){ %>
+    @Override
+    public String toString() {
+        return "${vo}{" +
+    <% for(field in table.fields){ %>
+       <% if(fieldLP.index==0){ %>
+        "${field.propertyName}=" + ${field.propertyName} +
+       <% }else{ %>
+        ", ${field.propertyName}=" + ${field.propertyName} +
+       <% } %>
+    <% } %>
+        "}";
+    }
+<% } %>
+}
