@@ -52,6 +52,7 @@ public class ${table.controllerName} {
 
     private final ${table.serviceName} ${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)};
 
+    @ApiOperationSupport(order = 10, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}分页", notes = "获取${table.comment!}分页", response = Result.class)
     @PostMapping(value = "/page")
     <% if(swagger){ %>
@@ -67,6 +68,7 @@ public class ${table.controllerName} {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Vo));
     }
 
+    @ApiOperationSupport(order = 20, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}列表", notes = "获取${table.comment!}列表", response = Result.class)
     @PostMapping(value = "/list")
     <% if(swagger){ %>
@@ -78,24 +80,28 @@ public class ${table.controllerName} {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getList(${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Vo));
     }
 
+    @ApiOperationSupport(order = 30, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}详情", notes = "获取${table.comment!}详情", response = Result.class)
     @GetMapping
     public Result<${table.voName}> query(@RequestParam(value = "id") String id) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.query${entity}(id));
     }
 
+    @ApiOperationSupport(order = 40, author = "${author}")
     @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
     @PostMapping
     public Result<${entity}> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.add${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
+    @ApiOperationSupport(order = 50, author = "${author}")
     @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
     @PutMapping
     public Result<${entity}> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.update${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
+    @ApiOperationSupport(order = 60, author = "${author}")
     @ApiOperation(value = "刪除${table.comment!}", notes = "刪除${table.comment!}", response = Result.class)
     @DeleteMapping
     public Result<Boolean> update(@RequestParam("ids") List<String> ids) {

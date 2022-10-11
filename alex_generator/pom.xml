@@ -16,11 +16,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
+        <!--引入模板-->
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
@@ -29,6 +25,11 @@
         <dependency>
             <groupId>com.ibeetl</groupId>
             <artifactId>beetl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
         <!--mybatis-plus-->
@@ -40,11 +41,12 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
-        </dependency><dependency><groupId>com.alex</groupId><artifactId>alex_miaosha_common</artifactId></dependency>
+        </dependency>
 
-        <!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-freemarker</artifactId>-->
-<!--        </dependency>-->
+        <!--    alex-common    -->
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>alex_miaosha_common</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,40 @@
+package com.alex.generator.controller;
+
+import com.alex.base.common.Result;
+import com.alex.common.annotations.user.AccessLimit;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * description:  generator控制器
+ * author:       majf
+ * createDate:   2022/10/11 14:44
+ * version:      1.0.0
+ */
+@ApiSort(10)
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/generator")
+@Api(value = "generator接口", tags = {"generator"})
+public class GeneratorController {
+
+    @ApiOperationSupport(order = 1, author = "alex")
+    @AccessLimit()
+    @PostMapping("/doLogin")
+    @ApiOperation(value = "登录")
+    @ApiImplicitParams(
+            @ApiImplicitParam(value = "登录参数", name = "loginParam", required = true, type = "LoginParam.class")
+    )
+    public Result<String> doLogin(@RequestBody LoginParam loginParam) {
+        return userService.doLogin(loginParam);
+    }
+}
