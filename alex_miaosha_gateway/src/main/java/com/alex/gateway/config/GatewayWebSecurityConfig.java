@@ -34,6 +34,7 @@ public class GatewayWebSecurityConfig {
                 "/fallback",
                 "/am-user/**",
                 "/am-mission/**",
+                "/am-finance/**",
                 "/user/doLogin",
                 "/user/**",
 

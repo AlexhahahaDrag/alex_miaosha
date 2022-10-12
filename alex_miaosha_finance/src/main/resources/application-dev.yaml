@@ -4,15 +4,15 @@ server:
 spring:
   application:
     name: alex-finance
-#  boot:
-#    admin:
-#      client:
-#        url: http://localhost:30099
-#        instance:
-#          service-url: http://localhost:${server.port}
-#          name: ${spring.application.name}
-  #        username: admin
-#        password: 123456
+  boot:
+    admin:
+      client:
+        url: http://localhost:30099
+        instance:
+          service-url: http://localhost:${server.port}
+          name: ${spring.application.name}
+#          username: admin
+#          password: 123456
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

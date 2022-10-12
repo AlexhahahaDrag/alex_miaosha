@@ -48,7 +48,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     private LocalDateTime deleteTime;
 
     @ApiModelProperty("是否删除")
-    @TableLogic(value = "is_delete")
-    @TableField(value = "is_delete", fill = FieldFill.INSERT)
+    @TableLogic
+    @TableField(value = "is_delete", fill = FieldFill.INSERT, select = false)
     private Integer isDelete;
 }

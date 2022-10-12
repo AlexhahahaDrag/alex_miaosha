@@ -37,6 +37,7 @@
     <select id="getPage" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
         select <include refid="Base_Column_List"></include> from finance_info
         <where>
+            is_delete = 0 and
             <include refid="queryInfo"></include>
         </where>
     </select>
@@ -44,14 +45,14 @@
     <select id="getList" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
         select <include refid="Base_Column_List"></include> from finance_info
         <where>
-            <include refid="queryInfo"></include>
+            is_delete = 0 and <include refid="queryInfo"></include>
         </where>
     </select>
 
     <select id="queryFinanceInfo" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
         select <include refid="Base_Column_List"></include> from finance_info
         <where>
-            id = #{id}
+            id = #{id} and is_delete = 0
         </where>
     </select>
 
