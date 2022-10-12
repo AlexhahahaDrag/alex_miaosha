@@ -14,7 +14,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 <% } %>
 <% } %>
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @description:  ${table.comment!}Vo
@@ -82,7 +81,6 @@ public class ${table.voName} {
     <% if(field.versionField){ %>
     @Version
     <% } %>
-    @JsonProperty("${strutil.toUpperCase(field.name)}")
     private ${field.propertyType} ${field.propertyName};
 <% } %>
 <% /** -----------END 字段循环遍历----------- **/ %>

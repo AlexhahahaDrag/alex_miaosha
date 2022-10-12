@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                 "/user/**",
                 "/druid/**",
                 "/v3/api-docs",
-                "/finance_manager",
+                "/finance-info",
                 "/error"};
     }
 

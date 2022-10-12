@@ -2,6 +2,7 @@ package com.alex.generator.controller;
 
 import com.alex.base.common.Result;
 import com.alex.common.annotations.user.AccessLimit;
+import com.alex.generator.service.GenerateService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
@@ -10,7 +11,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,14 +27,20 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "generator接口", tags = {"generator"})
 public class GeneratorController {
 
+    private final GenerateService generateService;
+
     @ApiOperationSupport(order = 1, author = "alex")
     @AccessLimit()
-    @PostMapping("/doLogin")
-    @ApiOperation(value = "登录")
-    @ApiImplicitParams(
-            @ApiImplicitParam(value = "登录参数", name = "loginParam", required = true, type = "LoginParam.class")
+    @PostMapping("/generate")
+    @ApiOperation(value = "自动生成", notes = "自动生成代码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "页码", name = "pageNum"),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
     )
-    public Result<String> doLogin(@RequestBody LoginParam loginParam) {
-        return userService.doLogin(loginParam);
+    public Result<Boolean> generate() {
+        return Result.success(generateService.generate());
     }
+
+    // TODO: 2022/10/12 修改vo模板集成baseVo 
 }

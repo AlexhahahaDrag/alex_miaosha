@@ -1,14 +1,13 @@
 package com.alex.finance.vo.finance;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.math.BigDecimal;
+import com.alex.common.common.BaseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.math.BigDecimal;
 
 /**
  * @description:  财务信息表Vo
@@ -20,26 +19,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Setter
 @Accessors(chain = true)
 @ApiModel(value = "FinanceInfoVo", description = "财务信息表Vo")
-public class FinanceInfoVo extends Model<FinanceInfoVo> {
+public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
-    @ApiModelProperty(value = "名称")
-    @JsonProperty("NAME")
+    @ApiModelProperty(name = "name", value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "类别")
-    @JsonProperty("TYPE_CODE")
+    @ApiModelProperty(name = "typeCode", value = "类别")
     private String typeCode;
 
-    @ApiModelProperty(value = "钱数")
-    @JsonProperty("AMOUNT")
+    @ApiModelProperty(name = "amount", value = "钱数")
     private BigDecimal amount;
 
-    @ApiModelProperty(value = "来源")
-    @JsonProperty("FROM_SOURCE")
+    @ApiModelProperty(name = "fromSource", value = "来源")
     private String fromSource;
 
-    @ApiModelProperty(value = "是否有效")
-    @JsonProperty("IS_VALID")
-    private String isValid;
-
+    @ApiModelProperty(name = "isValid", value = "来源")
+    private Integer isValid;
 }

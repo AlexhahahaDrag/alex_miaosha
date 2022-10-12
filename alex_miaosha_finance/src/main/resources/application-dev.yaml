@@ -31,10 +31,14 @@ management:
         include: '*'
     #   在访问/actuator/health时显示完整信息
 mybatis:
-  mapper-locations: classpath*:com/alex/finance/mapper/**/*Mapper.xml
+  mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml
 
 #配置knife4j
 knife4j:
   #开启增强
   enable: true
   production: false
+
+logging:
+  level:
+    com.alex.finance.mapper: debug

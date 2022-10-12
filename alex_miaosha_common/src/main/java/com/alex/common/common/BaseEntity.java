@@ -49,5 +49,6 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
 
     @ApiModelProperty("是否删除")
     @TableLogic(value = "is_delete")
+    @TableField(value = "is_delete", fill = FieldFill.INSERT)
     private Integer isDelete;
 }

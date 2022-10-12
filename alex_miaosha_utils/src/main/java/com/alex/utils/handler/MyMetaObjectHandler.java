@@ -22,8 +22,8 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         log.info("start insert fill ....");
         LocalDateTime now = LocalDateTime.now();
-        if (metaObject.hasSetter("status")) {
-            this.strictInsertFill(metaObject, "status", Integer.class, 1);
+        if (metaObject.hasSetter("isValid")) {
+            this.strictInsertFill(metaObject, "isValid", Integer.class, 1);
         }
         if (metaObject.hasSetter("isDelete")) {
             this.strictInsertFill(metaObject, "isDelete", Integer.class, 0);

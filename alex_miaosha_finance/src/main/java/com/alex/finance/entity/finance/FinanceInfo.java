@@ -1,6 +1,7 @@
 package com.alex.finance.entity.finance;
 
 import com.alex.common.common.BaseEntity;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -41,7 +42,6 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
     private String fromSource;
 
     @ApiModelProperty(value = "是否有效")
-    @TableField("is_valid")
-    private String isValid;
-
+    @TableField(value = "is_valid", fill = FieldFill.INSERT)
+    private Integer isValid;
 }
