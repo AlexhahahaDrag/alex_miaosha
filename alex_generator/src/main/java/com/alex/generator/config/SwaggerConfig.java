@@ -1,4 +1,4 @@
-package com.alex.finance.config;
+package com.alex.generator.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,44 +13,32 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /**
- *description:  swagger配置类
- *author:       alex
- *createDate:   2021/6/6 15:17
- *version:      1.0.0
+ * description:  swagger配置类
+ * author:       alex
+ * createDate:   2021/6/6 15:17
+ * version:      1.0.0
  */
 @Configuration
 @EnableOpenApi
 @Profile({"test", "dev"})
 public class SwaggerConfig {
 
-    @Bean(value = "financeApi")
+    @Bean(value = "generateApi")
     public Docket buildDocket() {
-//        //添加head参数配置start
-//        List<RequestParameter> globalRequestParameters = new ArrayList<>();
-//        RequestParameter requestParameter = new RequestParameterBuilder()
-//                .name("Authorization")
-//                .description("令牌")
-//                .in(ParameterType.HEADER)
-//                .required(true)
-//                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-//                .build();
-//        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
 //                .pathMapping("/am-finance")
                 .apiInfo(apiInfo())
-                .pathMapping("/am-finanace")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.alex.finance.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.alex.generator.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("alex-finance")
-//                .globalRequestParameters(globalRequestParameters)
+                .groupName("alex-generate")
                 ;//注意这里
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("alex miaosha finance document")
+                .title("alex miaosha user document")
                 .contact(new Contact("alex", "localhost", "734663446@qq.com"))
                 .description("ha ha ha ! be happy")
                 .termsOfServiceUrl("www.baidu.com")

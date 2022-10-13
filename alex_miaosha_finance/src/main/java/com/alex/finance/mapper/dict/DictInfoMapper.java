@@ -1,0 +1,23 @@
+package com.alex.finance.mapper.dict;
+
+import com.alex.finance.entity.dict.DictInfo;
+import com.alex.finance.vo.dict.DictInfoVo;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * @description:  字典表 mapper
+ * @author:       alex
+ * @createDate:   2022-10-13 17:47:15
+ * @version:      1.0.0
+ */
+@Mapper
+public interface DictInfoMapper extends BaseMapper<DictInfo> {
+
+    Page<DictInfoVo> getPage(Page<DictInfoVo> page, @Param("dictInfoVo") DictInfoVo dictInfoVo);
+
+    DictInfoVo queryDictInfo(@Param("id") String id);
+}

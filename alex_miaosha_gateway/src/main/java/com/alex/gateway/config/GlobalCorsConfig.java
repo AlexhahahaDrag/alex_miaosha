@@ -26,7 +26,7 @@ public class GlobalCorsConfig {
         //允许提交的请求方法类型，*表示全部
         corsConfiguration.addAllowedMethod("*");
         //允许向该服务器提交请求的uri，*表示全部允许，在springmvc中，如果设置成*，会自动转成当前请求头中的origin
-        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedOriginPattern("*");
         //这里一定要设置，因为这里要携带请求头进行凭证验证，允许cookies跨域
         corsConfiguration.setAllowCredentials(true);
         //预检请求的缓存时间（秒），即在这段时间里，对于相同的跨域请求不在预检

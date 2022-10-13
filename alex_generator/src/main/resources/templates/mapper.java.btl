@@ -26,8 +26,6 @@ public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
 
     Page<${table.voName}> getPage(Page<${table.voName}> page, @Param("${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}") ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
-    List<${table.voName}> getList(@Param("${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}") ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
-
     ${table.voName} query${entity}(@Param("id") String id);
 }
 <% } %>

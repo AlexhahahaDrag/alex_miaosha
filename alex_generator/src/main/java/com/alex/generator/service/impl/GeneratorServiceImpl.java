@@ -1,6 +1,9 @@
-package com.alex.generator;
+package com.alex.generator.service.impl;
 
 import com.alex.common.common.BaseEntity;
+import com.alex.common.common.BaseVo;
+import com.alex.generator.config.DatabaseConfig;
+import com.alex.generator.service.GeneratorService;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -11,46 +14,45 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.BeetlTemplateEngine;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Generate {
+/**
+ * @description:
+ * @author: alex
+ * @createDate: 2022/10/11 21:22
+ * @version: 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+public class GeneratorServiceImpl implements GeneratorService {
 
-    public static void main(String[] args) {
+    private final DatabaseConfig databaseConfig;
 
-        String myClientPath = "";
-        String myControllerPath = "";
-        String myServicePath = "";
-        String myEntityPath = "";
-        String myVoPath = "";
-//        String myVoPath = "G:\\project\\alex_miaosha\\alex_miaosha_common\\src\\main\\java\\com\\alex\\common\\pojo\\vo";
-        String myMapperPath = "";
-
-        //数据库配置
-        String dbConfig = "jdbc:mysql://localhost:3306/alex_finance";
-        String dbUser = "root";
-        String dbPassword = "mysql";
-        String[] tableNames = {"finance_info"};
-        String author = "majf";
-        String parentPackage = "com.alex.finance";
-        String moduleName = "alex_miaosha_finance";
-        String fileName = "finance";
-        String java = "/java/com/alex/finance";
+    @Override
+    public boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author,
+                             String myControllerPath, String myServicePath, String myMapperPath, String myEntityPath, String myVoPath, String myClientPath) {
+        String java = "/java/com/alex" + System.getProperty("file.separator") + javaPath;
         for (String tableName : tableNames) {
-            executeGenerate(parentPackage, java, tableName, moduleName, fileName, dbConfig, dbUser, dbPassword,
+            executeGenerate(parentPackage, java, tableName, moduleName, fileName,
                     myVoPath, myControllerPath, myEntityPath, myMapperPath, myServicePath, myClientPath,
                     author);
         }
+        return true;
     }
 
-    private static void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName, String dbConfig, String dbUser,
-                                        String dbPassword,
-                                        String myVoPath, String myControllerPath, String myEntityPath, String myMapperPath, String myServicePath, String myClientPath,
-                                        String author) {
+    private void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName,
+                                 String myVoPath, String myControllerPath, String myEntityPath, String myMapperPath, String myServicePath, String myClientPath,
+                                 String author) {
+        String dbConfig = databaseConfig.getUrl();
+        String dbUser = databaseConfig.getUsername();
+        String dbPassword = databaseConfig.getPassword();
         String base = "/src/main/";
         String separator = System.getProperty("file.separator");
         String basePath = System.getProperty("user.dir");
@@ -67,7 +69,7 @@ public class Generate {
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
-        pathMap.put(OutputFile.mapperXml, mapperPath + separator + "mapper" + separator + fileName);
+        pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
         pathMap.put(OutputFile.mapper, mapperPath + separator + fileName);
@@ -140,7 +142,7 @@ public class Generate {
                             .formatXmlFileName("%sMapper")
                             .voBuilder()
                             .formatVoFileName("%sVo")
-//                            .superVoClass(BaseVo.class)
+                            .superVoClass(BaseVo.class)
                             .enableChainModel()
                             .enableLombok()
                             .disableSerialVersionUID()

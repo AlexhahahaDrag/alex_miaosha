@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable {
 
+    // TODO: 2022/10/13 雪花算法丢失精度的问题
     @ApiModelProperty(value = "id")
     private Long id;
 

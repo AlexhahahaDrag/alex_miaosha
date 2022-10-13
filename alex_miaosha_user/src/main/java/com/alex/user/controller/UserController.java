@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  * @createDate: 2022/8/8 15:42
  * @version: 1.0.0
  */
-@ApiSort(195)
+@ApiSort(10)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/user")

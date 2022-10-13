@@ -29,7 +29,7 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
     @TableField("`name`")
     private String name;
 
-    @ApiModelProperty(value = "类别")
+    @ApiModelProperty(value = "类别编码")
     @TableField("type_code")
     private String typeCode;
 

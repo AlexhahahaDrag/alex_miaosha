@@ -22,7 +22,7 @@ import java.util.List;
  * @createDate: 2022-10-10 18:02:03
  * @version: 1.0.0
  */
-@ApiSort(105)
+@ApiSort(10)
 @Api(value = "财务信息表相关接口", tags = {"财务信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
@@ -79,7 +79,7 @@ public class FinanceInfoController {
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "刪除财务信息表", notes = "刪除财务信息表", response = Result.class)
     @DeleteMapping
-    public Result<Boolean> update(@RequestParam("ids") List<String> ids) {
+    public Result<Boolean> delete(@RequestParam("ids") List<String> ids) {
         return Result.success(financeInfoService.deleteFinanceInfo(ids));
     }
 }

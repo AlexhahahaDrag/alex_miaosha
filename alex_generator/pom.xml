@@ -16,6 +16,18 @@
     </properties>
 
     <dependencies>
+        <!--druid-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+
+        <!-- 添加 Undertow依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+
         <!--引入模板-->
         <dependency>
             <groupId>org.apache.velocity</groupId>

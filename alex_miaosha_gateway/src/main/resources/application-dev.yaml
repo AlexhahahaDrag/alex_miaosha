@@ -45,6 +45,7 @@ spring:
             - Path=/am-user/**
           filters:
             - StripPrefix=1
+
         - id: alex-finance
           uri: lb://alex-finance
           predicates:

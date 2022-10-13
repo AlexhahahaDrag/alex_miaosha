@@ -35,9 +35,12 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
-        select <include refid="Base_Column_List"></include> from finance_info
+        select <include refid="Base_Column_List"></include>, dict_info.type_name as from_source_name
+        from finance_info
+        left join dict_info
+        on finance_info.from_source = dict_info.type_code and dict_info.is_delete = 0
         <where>
-            is_delete = 0 and
+            finance_info.is_delete = 0
             <include refid="queryInfo"></include>
         </where>
     </select>
@@ -45,7 +48,7 @@
     <select id="getList" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
         select <include refid="Base_Column_List"></include> from finance_info
         <where>
-            is_delete = 0 and <include refid="queryInfo"></include>
+            is_delete = 0 <include refid="queryInfo"></include>
         </where>
     </select>
 

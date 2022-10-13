@@ -8,8 +8,10 @@ import ${superServiceImplClassPackage};
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.List;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import cn.hutool.core.bean.BeanUtil;
+import com.alex.utils.string.StringUtils;
 /**
  * <p>
  * @description:  ${table.comment!}服务实现类
@@ -35,11 +37,6 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
-    public List<${table.voName}> getList(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
-        return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.getList(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
-    }
-
-    @Override
     public ${table.voName} query${entity}(String id) {
         return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.query${entity}(id);
     }
@@ -61,8 +58,12 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
-    public Boolean delete${entity}(List<String> ids) {
-        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.deleteBatchIds(ids);
+    public Boolean delete${entity}(String ids) {
+        if(StringUtils.isEmpty(ids)) {
+            return true;
+        }
+        List<String> idArr = Arrays.asList(ids.split(","));
+        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.deleteBatchIds(idArr);
         return true;
     }
 }
