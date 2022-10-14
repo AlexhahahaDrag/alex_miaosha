@@ -78,4 +78,9 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
         LambdaQueryWrapper<DictInfo> query = Wrappers.<DictInfo>lambdaQuery().eq(DictInfo::getTypeName, typeCode);
         return this.getOne(query);
     }
+
+    @Override
+    public List<DictInfoVo> listByBelong(String belongTo) {
+        return dictInfoMapper.listByBelong(belongTo);
+    }
 }

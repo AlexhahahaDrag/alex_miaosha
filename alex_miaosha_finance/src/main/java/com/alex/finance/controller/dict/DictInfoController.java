@@ -1,21 +1,20 @@
 package com.alex.finance.controller.dict;
 
-import com.alex.finance.vo.dict.DictInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
+import com.alex.base.common.Result;
 import com.alex.finance.entity.dict.DictInfo;
+import com.alex.finance.service.dict.DictInfoService;
+import com.alex.finance.vo.dict.DictInfoVo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.finance.service.dict.DictInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @description:  字典表restApi
@@ -72,5 +71,15 @@ public class DictInfoController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(dictInfoService.deleteDictInfo(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "获取字典表列表", notes = "获取字典表列表", response = Result.class)
+    @PostMapping(value = "/listByBelong")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "类别", name = "belongTo")}
+    )
+    public Result<List<DictInfoVo>> listByBelong(@RequestBody(required = false) String belongTo) {
+        return Result.success(dictInfoService.listByBelong(belongTo));
     }
 }

@@ -47,6 +47,13 @@
         </where>
     </select>
 
+    <select id="listByBelong" resultType="com.alex.finance.vo.dict.DictInfoVo">
+        select <include refid="Base_Column_List"></include> from dict_info
+        <where>
+            dict_info.is_delete = 0 <include refid="queryInfo"></include>
+        </where>
+    </select>
+
      <sql id="queryInfo">
         <if test = "dictInfoVo != null">
           <if test = "dictInfoVo.typeCode != null">
@@ -56,7 +63,7 @@
             and type_name like concat('%', #{dictInfoVo.typeName}, '%')
           </if>
           <if test = "dictInfoVo.belongTo != null">
-            and belong_to like concat('%', #{dictInfoVo.belongTo}, '%')
+            and belong_to = #{dictInfoVo.belongTo}
           </if>
           <if test = "dictInfoVo.isValid != null">
             and is_valid like concat('%', #{dictInfoVo.isValid}, '%')
