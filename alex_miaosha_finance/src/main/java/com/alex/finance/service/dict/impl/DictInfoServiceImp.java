@@ -1,23 +1,28 @@
 package com.alex.finance.service.dict.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alex.finance.entity.dict.DictInfo;
-import com.alex.finance.vo.dict.DictInfoVo;
 import com.alex.finance.mapper.dict.DictInfoMapper;
 import com.alex.finance.service.dict.DictInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
-import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
+import com.alex.finance.vo.dict.DictInfoVo;
 import com.alex.utils.string.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * <p>
- * @description:  字典表服务实现类
- * @author:       alex
- * @createDate:   2022-10-13 17:47:15
- * @version:      1.0.0
+ *
+ * @description: 字典表服务实现类
+ * @author: alex
+ * @createDate: 2022-10-13 17:47:15
+ * @version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -54,11 +59,23 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
 
     @Override
     public Boolean deleteDictInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
         dictInfoMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public DictInfo queryDictInfoByTypeName(String typeName) {
+        LambdaQueryWrapper<DictInfo> query = Wrappers.<DictInfo>lambdaQuery().eq(DictInfo::getTypeName, typeName);
+        return this.getOne(query);
+    }
+
+    @Override
+    public DictInfo queryDictInfoByTypeCode(String typeCode) {
+        LambdaQueryWrapper<DictInfo> query = Wrappers.<DictInfo>lambdaQuery().eq(DictInfo::getTypeName, typeCode);
+        return this.getOne(query);
     }
 }

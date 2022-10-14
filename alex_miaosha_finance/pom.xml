@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>alex_miaosha_finance</artifactId>
-    <name>my-application module microservice client project</name>
+    <name>alex_miaosha_finance</name>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -38,6 +38,18 @@
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+        <!--easypoi-->
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--  guava  -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
     </dependencies>
 
@@ -70,8 +82,20 @@
         </plugins>
         <resources>
             <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.yaml</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.xlsx</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
                 <directory>src/main/java</directory>
                 <includes>
+                    <include>**/*.yaml</include>
+                    <include>**/*.properties</include>
                     <include>**/*.xml</include>
                 </includes>
                 <filtering>true</filtering>

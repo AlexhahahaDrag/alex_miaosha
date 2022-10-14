@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -79,7 +80,14 @@ public class FinanceInfoController {
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "刪除财务信息表", notes = "刪除财务信息表", response = Result.class)
     @DeleteMapping
-    public Result<Boolean> delete(@RequestParam("ids") List<String> ids) {
+    public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(financeInfoService.deleteFinanceInfo(ids));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @PostMapping(value = "/importFinance")
+    @ApiOperation(value = "导入财务信息表", notes = "导入财务信息表", response = Result.class)
+    public Result<Boolean> importFinance(@RequestPart("file") MultipartFile file) throws Exception {
+        return Result.success(financeInfoService.importFinance(file));
     }
 }
