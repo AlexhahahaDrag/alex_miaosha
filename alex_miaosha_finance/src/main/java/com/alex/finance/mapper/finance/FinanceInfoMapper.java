@@ -3,7 +3,7 @@ package com.alex.finance.mapper.finance;
 import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.vo.finance.FinanceInfoVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
-    Page<FinanceInfoVo> getPage(Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
+    IPage<FinanceInfoVo> getPage(IPage<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 

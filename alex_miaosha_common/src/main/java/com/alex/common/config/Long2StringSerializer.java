@@ -16,8 +16,8 @@ public class Long2StringSerializer extends JsonSerializer<Long> {
 
     @Override
     public void serialize(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-//        if (value != null) {
-//            jsonGenerator.writeString(value.toString());
-//        }
+        if (value != null) {
+            jsonGenerator.writeString(value.toString());
+        }
     }
 }

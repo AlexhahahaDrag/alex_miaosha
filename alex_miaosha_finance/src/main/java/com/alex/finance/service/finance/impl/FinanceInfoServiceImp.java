@@ -12,6 +12,7 @@ import com.alex.finance.vo.finance.FinanceInfoVo;
 import com.alex.finance.vo.finance.ImportFinanceInfoVo;
 import com.alex.utils.bean.BeanUtils;
 import com.alex.utils.string.StringUtils;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,10 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     private final IExcelDictHandlerImpl iExcelDictHandler;
 
     @Override
-    public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
-        Page<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
-        return financeInfoMapper.getPage(page, financeInfoVo);
+    public IPage<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
+        IPage<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        IPage<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
+         return result;
     }
 
     @Override

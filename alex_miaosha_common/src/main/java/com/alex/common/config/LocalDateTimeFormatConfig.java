@@ -1,7 +1,6 @@
 package com.alex.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -35,9 +34,9 @@ public class LocalDateTimeFormatConfig {
         javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN)));
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN)));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_PATTERN)));
-        //解决long类型到前端精度丢失的问题
-        javaTimeModule.addSerializer(Long.class, ToStringSerializer.instance);
-        javaTimeModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+//        //解决long类型到前端精度丢失的问题
+//        javaTimeModule.addSerializer(Long.class, ToStringSerializer.instance);
+//        javaTimeModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
         objectMapper.registerModule(javaTimeModule);
         return objectMapper;
     }
