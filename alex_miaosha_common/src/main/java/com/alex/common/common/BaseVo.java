@@ -1,6 +1,8 @@
 package com.alex.common.common;
 
+import com.alex.common.config.Long2StringSerializer;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable {
 
     @ApiModelProperty(value = "id")
-//    @JsonSerialize(using = Long2StringSerializer.class)
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long id;
 
     @ApiModelProperty("创建人")
