@@ -3,7 +3,6 @@ package com.alex.finance.vo.finance;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.handler.inter.IExcelDataModel;
 import cn.afterturn.easypoi.handler.inter.IExcelModel;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,7 +31,6 @@ public class ImportFinanceInfoVo implements Serializable, IExcelModel, IExcelDat
 
     @Excel(name = "类别")
     @ApiModelProperty(value = "类别")
-    @TableField("type_name")
     private String typeName;
 
     @Excel(name = "金额")
@@ -43,8 +41,15 @@ public class ImportFinanceInfoVo implements Serializable, IExcelModel, IExcelDat
     @ApiModelProperty(name = "fromSource", value = "来源")
     private String fromSource;
 
+    @Excel(name = "收支类型", dict = "income_expense_type")
+    @ApiModelProperty(name = "incomeAndExpenses", value = "收支类型")
+    private String incomeAndExpenses;
+
     @ApiModelProperty(name = "isValid", value = "是否有效")
     private Integer isValid;
+
+    @Excel(name = "人员")
+    private Long belongTo;
 
     @Excel(name = "信息")
     private String errorMsg;

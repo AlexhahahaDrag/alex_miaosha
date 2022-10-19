@@ -31,7 +31,13 @@
         finance_info.update_time,
         finance_info.delete_time,
         finance_info.operate_time,
-        finance_info.`name`, finance_info.type_code, finance_info.amount, finance_info.from_source, finance_info.is_valid
+        finance_info.`name`,
+        finance_info.type_code,
+        finance_info.amount,
+        finance_info.from_source,
+        finance_info.income_and_expenses,
+        finance_info.belong_to,
+        finance_info.is_valid
     </sql>
 
     <select id="getPage" resultType="com.alex.finance.vo.finance.FinanceInfoVo">
@@ -80,6 +86,12 @@
           </if>
           <if test = "financeInfoVo.fromSource != null">
             and from_source = #{financeInfoVo.fromSource}
+          </if>
+          <if test = "financeInfoVo.incomeAndExpenses != null">
+            and income_and_expenses = #{financeInfoVo.incomeAndExpenses}
+          </if>
+          <if test = "financeInfoVo.belongTo != null">
+            and belong_to = #{financeInfoVo.belongTo}
           </if>
           <if test = "financeInfoVo.isValid != null">
             and is_valid = #{financeInfoVo.isValid}

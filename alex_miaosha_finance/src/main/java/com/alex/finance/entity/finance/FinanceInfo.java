@@ -41,6 +41,14 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
     @TableField("from_source")
     private String fromSource;
 
+    @ApiModelProperty(name = "incomeAndExpenses", value = "收支类型")
+    @TableField("income_and_expenses")
+    private String incomeAndExpenses;
+
+    @ApiModelProperty(name = "belongTo", value = "属于")
+    @TableField("belong_to")
+    private Long belongTo;
+
     @ApiModelProperty(value = "是否有效")
     @TableField(value = "is_valid", fill = FieldFill.INSERT)
     private Integer isValid;

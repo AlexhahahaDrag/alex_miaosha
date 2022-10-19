@@ -1,7 +1,6 @@
 package com.alex.finance.vo.finance;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -29,7 +28,6 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     private String typeCode;
 
     @ApiModelProperty(value = "类别")
-    @TableField("type_name")
     private String typeName;
 
     @ApiModelProperty(name = "amount", value = "金额")
@@ -38,8 +36,11 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(name = "fromSource", value = "来源编码")
     private String fromSource;
 
-    @ApiModelProperty(name = "fromSourceName", value = "来源")
-    private String fromSourceName;
+    @ApiModelProperty(name = "incomeAndExpenses", value = "收支类型")
+    private String incomeAndExpenses;
+
+    @ApiModelProperty(name = "belongTo", value = "属于")
+    private Long belongTo;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")
     private Integer isValid;
