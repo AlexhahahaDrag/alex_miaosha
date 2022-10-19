@@ -1,7 +1,6 @@
 package com.alex.finance.vo.dict;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -32,4 +31,6 @@ public class DictInfoVo extends BaseVo<DictInfoVo>{
     @ApiModelProperty(value = "是否有效")
     private String isValid;
 
+    @ApiModelProperty("是否删除")
+    private Integer isDelete;
 }

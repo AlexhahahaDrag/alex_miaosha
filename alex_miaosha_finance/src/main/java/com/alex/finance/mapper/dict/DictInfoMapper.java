@@ -22,5 +22,5 @@ public interface DictInfoMapper extends BaseMapper<DictInfo> {
 
     DictInfoVo queryDictInfo(@Param("id") String id);
 
-    List<DictInfoVo> listByBelong(@Param("belongTo") String belongTo);
+    List<DictInfoVo> listByBelong(@Param("queryInfo") DictInfoVo queryInfo);
 }

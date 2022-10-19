@@ -61,30 +61,6 @@
             and ${field.name} like concat('%', #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}, '%')
           </if>
           <% } %>
-          <% else if(field.columnType == 'BIG_DECIMAL' || field.columnType == 'INTEGER'){ %>
-          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null and ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}.size > 0">
-            <foreach collection="${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}" index="index" item="item" >
-            <if test="index == 0">
-                and ${field.name} >= #{item}
-            </if>
-            <if test="index == 1">
-                and ${field.name} &lt;= #{item}
-            </if>
-          </foreach>
-          </if>
-          <% } %>
-          <% else if(field.columnType == 'LOCAL_DATE_TIME'){ %>
-          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null and ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}.size > 0">
-            <foreach collection="${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}" index="index" item="item" >
-                <if test="index == 0">
-                    and ${field.name} >= TIMESTAMP(#{item})
-                </if>
-                <if test="index == 1">
-                    and ${field.name} &lt;= TIMESTAMP(#{item})
-                </if>
-            </foreach>
-          </if>
-          <% } %>
           <% else { %>
           <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
             and ${field.name} = #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}

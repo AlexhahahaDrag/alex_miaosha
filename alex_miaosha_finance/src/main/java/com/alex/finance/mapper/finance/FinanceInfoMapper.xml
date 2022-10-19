@@ -42,6 +42,7 @@
         <where>
             finance_info.is_delete = 0
             <include refid="queryInfo"></include>
+            order by IF(ISNULL(finance_info.operate_time),1,0), finance_info.operate_time desc
         </where>
     </select>
 
@@ -65,7 +66,7 @@
             and name like concat('%', #{financeInfoVo.name}, '%')
           </if>
           <if test = "financeInfoVo.typeCode != null">
-            and type_code like concat('%', #{financeInfoVo.typeCode}, '%')
+            and type_code = #{financeInfoVo.typeCode}
           </if>
           <if test = "financeInfoVo.amount != null and financeInfoVo.amount.size > 0">
             <foreach collection="financeInfoVo.amount" index="index" item="item" >
@@ -78,10 +79,10 @@
           </foreach>
           </if>
           <if test = "financeInfoVo.fromSource != null">
-            and from_source like concat('%', #{financeInfoVo.fromSource}, '%')
+            and from_source = #{financeInfoVo.fromSource}
           </if>
           <if test = "financeInfoVo.isValid != null">
-            and is_valid like concat('%', #{financeInfoVo.isValid}, '%')
+            and is_valid = #{financeInfoVo.isValid}
           </if>
         </if>
      </sql>
