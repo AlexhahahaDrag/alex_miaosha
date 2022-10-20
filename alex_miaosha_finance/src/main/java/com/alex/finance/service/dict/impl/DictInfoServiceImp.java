@@ -81,10 +81,10 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
 
     @Override
     public List<DictInfoVo> listByBelong(String belongTo) {
-        DictInfoVo dictInfoVo = new DictInfoVo();
-        dictInfoVo.setBelongTo(belongTo);
-        dictInfoVo.setIsValid("1");
-        dictInfoVo.setIsDelete(0);
-        return dictInfoMapper.listByBelong(dictInfoVo);
+        String[] arr = null;
+        if (!StringUtils.isEmpty(belongTo)) {
+            arr = belongTo.split(",");
+        }
+        return dictInfoMapper.listByBelong(arr);
     }
 }

@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description: 财务信息表Vo
@@ -26,10 +27,10 @@ public class ImportFinanceInfoVo implements Serializable, IExcelModel, IExcelDat
     @ApiModelProperty(name = "name", value = "名称")
     private String name;
 
+    @Excel(name = "类别")
     @ApiModelProperty(name = "typeCode", value = "类别编码")
     private String typeCode;
 
-    @Excel(name = "类别")
     @ApiModelProperty(value = "类别")
     private String typeName;
 
@@ -50,6 +51,10 @@ public class ImportFinanceInfoVo implements Serializable, IExcelModel, IExcelDat
 
     @Excel(name = "人员")
     private Long belongTo;
+
+    @Excel(name = "日期")
+    @ApiModelProperty(name = "infoDate", value = "业务日期")
+    private LocalDateTime infoDate;
 
     @Excel(name = "信息")
     private String errorMsg;

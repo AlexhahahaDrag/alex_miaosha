@@ -37,6 +37,7 @@
         finance_info.from_source,
         finance_info.income_and_expenses,
         finance_info.belong_to,
+        finance_info.info_date,
         finance_info.is_valid
     </sql>
 

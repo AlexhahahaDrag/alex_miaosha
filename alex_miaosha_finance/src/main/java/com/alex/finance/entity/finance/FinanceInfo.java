@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description:  财务信息表类
@@ -48,6 +49,10 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
     @ApiModelProperty(name = "belongTo", value = "属于")
     @TableField("belong_to")
     private Long belongTo;
+
+    @ApiModelProperty(name = "infoDate", value = "业务日期")
+    @TableField("info_date")
+    private LocalDateTime infoDate;
 
     @ApiModelProperty(value = "是否有效")
     @TableField(value = "is_valid", fill = FieldFill.INSERT)

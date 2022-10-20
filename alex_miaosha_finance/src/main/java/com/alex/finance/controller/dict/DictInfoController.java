@@ -75,11 +75,11 @@ public class DictInfoController {
 
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "获取字典表列表", notes = "获取字典表列表", response = Result.class)
-    @PostMapping(value = "/listByBelong")
+    @GetMapping(value = "/listByBelong")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "类别", name = "belongTo")}
+            @ApiImplicitParam(value = "分类", name = "belongTo")}
     )
-    public Result<List<DictInfoVo>> listByBelong(@RequestBody(required = false) String belongTo) {
+    public Result<List<DictInfoVo>> listByBelong(@RequestParam(value = "belongTo", required = false) String belongTo) {
         return Result.success(dictInfoService.listByBelong(belongTo));
     }
 }

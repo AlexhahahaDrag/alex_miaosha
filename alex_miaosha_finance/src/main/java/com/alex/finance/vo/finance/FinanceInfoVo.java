@@ -1,5 +1,6 @@
 package com.alex.finance.vo.finance;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alex.common.common.BaseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description: 财务信息表Vo
@@ -41,6 +43,9 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
     @ApiModelProperty(name = "belongTo", value = "属于")
     private Long belongTo;
+
+    @ApiModelProperty(name = "infoDate", value = "业务日期")
+    private LocalDateTime infoDate;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")
     private Integer isValid;

@@ -23,6 +23,7 @@
     <sql id="Base_Column_List">
         dict_info.id,
         dict_info.is_delete,
+        dict_info.order_by,
         dict_info.creator,
         dict_info.updater,
         dict_info.deleter,
@@ -50,7 +51,14 @@
     <select id="listByBelong" resultType="com.alex.finance.vo.dict.DictInfoVo">
         select <include refid="Base_Column_List"></include> from dict_info
         <where>
-            dict_info.is_delete = 0 <include refid="queryInfo"></include>
+            dict_info.is_delete = 0 and is_valid = '1'
+            <if test="belongTo != null">
+                and belong_to in
+                <foreach collection="belongTo" open="(" close=")" item="be" separator=",">
+                    #{be}
+                </foreach>
+            </if>
+            order by dict_info.order_by
         </where>
     </select>
 
