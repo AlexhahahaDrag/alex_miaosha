@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 "/druid/**",
                 "/v3/api-docs",
                 "/finance-info/**",
+                "/finance-analysis/**",
                 "/dict-info/**",
                 "/generator/**",
                 "/error"};
