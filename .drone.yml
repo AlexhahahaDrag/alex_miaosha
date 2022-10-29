@@ -1,49 +1,49 @@
-#kind: pipeline # 定义对象类型，还有secret和signature两种类型
-#type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
-#name: drone-zl-web # 定义流水线名称
-#
-#steps: # 定义流水线执行步骤，这些步骤将顺序执行
-#
-#  - name: build-package # 流水线名称
-#    image: maven:3.8.5-openjdk-8 # 定义创建容器的Docker镜像
-#    volumes: # 将容器内目录挂载到宿主机，仓库需要开启Trusted设置
-#      - name: maven-build
-#        path: /root/hello-mogu # 将应用打包好的Jar和执行脚本挂载出来
-#    commands:
-#      - mvn clean package -DskipTests=true
-#      # 将打包后的jar包，拷贝到挂载目录
-#      - cp zl-web/target/zl-web-0.0.1-SNAPSHOT.jar  /usr/local/soft/drone/zl-web
-#      # 将Dockerfile拷贝到挂载目录
-#      - cp zl-web/Dockerfile /usr/local/soft/drone/zl-web
-#
-#  - name: ssh
-#    image: appleboy/drone-ssh
-#    settings:
-#      # 你服务器ip地址
-#      host:
-#        from_secret: 192.168.144.12
-#      # 服务器账号
-#      username: root
-#      # 密码登入写法
-#      password:
-#        from_secret: admin123
-#      port: 22
-#      script:
-#        - cd /usr/local/soft/drone/zl-web
-#        - ls
-#        - docker build  -t zl-web:latest .
-#        - docker run -p 40033:40010 -v /home/logs:/usr/local/logs -d zl-web:latest
-#volumes: # 定义流水线挂载目录，用于共享数据
-#  - name: maven-build
-#    host:
-#      path: /usr/local/soft/drone/zl-web   #jar包目录可以修改从宿主机中挂载的目录
-kind: pipeline  # kind 属性定义了对象的种类。此示例定义了一个管道对象。
-type: docker    # type 属性定义管道的类型。此示例定义了一个 Docker 管道，其中每个管道步骤都在 Docker 容器内执行。
-name: default   # name 属性定义了管道的名称。您可以为您的项目定义一个或多个管道
+kind: pipeline # 定义对象类型，还有secret和signature两种类型
+type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
+name: drone-miaosha # 定义流水线名称
 
-steps: # 步骤部分定义了一系列串行执行的管道步骤。如果管道中的任何步骤失败，管道将立即退出
-  - name: greeting # name 属性定义管道步骤的名称
-    image: alpine # image 属性定义了一个执行 shell 命令的 Docker 镜像。您可以使用来自任何 DockerHub 中的任何 Docker镜像。
-    commands: # commands 属性将在 Docker 容器内执行的 shell 命令列表定义为容器入口点。如果任何命令返回非零退出代码，则管道步骤将失败。
-      - echo hello
-      - echo world
+steps: # 定义流水线执行步骤，这些步骤将顺序执行
+
+  - name: build-package # 流水线名称
+    image: maven:3.8.5-openjdk-8 # 定义创建容器的Docker镜像
+    volumes: # 将容器内目录挂载到宿主机，仓库需要开启Trusted设置
+      - name: maven-build
+        path: /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor # 将应用打包好的Jar和执行脚本挂载出来
+    commands:
+      - mvn clean package -DskipTests=true
+      # 将打包后的jar包，拷贝到挂载目录
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-monitor-0.0.1-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor
+      # 将Dockerfile拷贝到挂载目录
+      - cp alex_miaosha/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha-monitor
+
+  - name: ssh
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: 192.168.10.32
+      # 服务器账号
+      username: root
+      # 密码登入写法
+      password:
+        from_secret: 123456
+      port: 22
+      script:
+        - cd /usr/local/soft/drone/alex-miaosha-monitor
+        - ls
+        - docker build  -t alex_miaosha-monitor:latest .
+        - docker run -p 40033:40010 -v /home/logs:/usr/local/logs -d alex_miaosha-monitor:latest
+volumes: # 定义流水线挂载目录，用于共享数据
+  - name: maven-build
+    host:
+      path: /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor   #jar包目录可以修改从宿主机中挂载的目录
+#kind: pipeline  # kind 属性定义了对象的种类。此示例定义了一个管道对象。
+#type: docker    # type 属性定义管道的类型。此示例定义了一个 Docker 管道，其中每个管道步骤都在 Docker 容器内执行。
+#name: default   # name 属性定义了管道的名称。您可以为您的项目定义一个或多个管道
+#
+#steps: # 步骤部分定义了一系列串行执行的管道步骤。如果管道中的任何步骤失败，管道将立即退出
+#  - name: greeting # name 属性定义管道步骤的名称
+#    image: alpine # image 属性定义了一个执行 shell 命令的 Docker 镜像。您可以使用来自任何 DockerHub 中的任何 Docker镜像。
+#    commands: # commands 属性将在 Docker 容器内执行的 shell 命令列表定义为容器入口点。如果任何命令返回非零退出代码，则管道步骤将失败。
+#      - echo hello
+#      - echo world
