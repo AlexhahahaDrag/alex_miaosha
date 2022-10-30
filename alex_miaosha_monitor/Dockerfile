@@ -1,4 +1,4 @@
-FROM java:17
+FROM openjdk:8
 
 MAINTAINER alex 734663446@qq.com
 
