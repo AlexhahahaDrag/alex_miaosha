@@ -36,8 +36,8 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       script:
         - cd /usr/local/soft/drone/alex_miaosha/monitor
         - ls
-        - docker build  -t alex_miaosha-monitor:latest .
-        - docker run -p 30006:30006 -v /home/logs:/usr/local/logs -d alex_miaosha-monitor:latest
+        - docker build  -t alex_miaosha_monitor:latest .
+        - docker run -p 30006:30006 -v /home/logs:/usr/local/logs -d alex_miaosha_monitor:latest
 #  - name: notify      # 步骤4 部署完成，邮件通知
 #    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
 #    image: drillster/drone-email
