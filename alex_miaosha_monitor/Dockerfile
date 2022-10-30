@@ -5,6 +5,7 @@ MAINTAINER alex 734663446@qq.com
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone
 
+COPY /usr/local/soft/drone/alex_miaosha/monitor/alex_miaosha_monitor-1.0-SNAPSHOT.jar alex_miaosha_monitor-1.0-SNAPSHOT.jar
 
 ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_monitor-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
