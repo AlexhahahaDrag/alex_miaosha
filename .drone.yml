@@ -11,14 +11,14 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     commands:
       - mvn clean package -DskipTests=true -s settings.xml -B -U
       # 将打包后的jar包，拷贝到挂载目录
-      - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/alex_miaosha_monitor-1.0-SNAPSHOT.jar
-      - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/alex_miaosha_finance-1.0-SNAPSHOT.jar
-      - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/gateway/alex_miaosha_gateway-1.0-SNAPSHOT.jar
-      - cp /drone/src/alex_miaosha_mission/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/mission/alex_miaosha_mission-1.0-SNAPSHOT.jar
-      - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web/alex_miaosha_web-1.0-SNAPSHOT.jar
-      - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/generator/alex_generator-1.0-SNAPSHOT.jar
+      - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
+      - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
+      - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
+      - cp /drone/src/alex_miaosha_mission/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
+      - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
+      - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
       # 将Dockerfile拷贝到挂载目录
-      - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/Dockerfile
+      - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/
 
   - name: ssh
     pull: if-not-exists
@@ -41,4 +41,4 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
 volumes: # 定义流水线挂载目录，用于共享数据
   - name: maven-build
     host:
-      path: /usr/local/soft/drone/alex_miaosha/monitor   #jar包目录可以修改从宿主机中挂载的目录
+      path: /usr/local/soft/drone/alex_miaosha/   #jar包目录可以修改从宿主机中挂载的目录
