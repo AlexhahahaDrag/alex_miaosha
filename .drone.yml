@@ -10,7 +10,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         path: /usr/local/soft/drone/alex_miaosha # 将应用打包好的Jar和执行脚本挂载出来
     commands:
       - mvn clean package -DskipTests=true -s settings.xml -B -U
-      - mkdir /usr/local/soft/drone/alex_miaosha/monitor
+      - mkdir /usr/local/soft/drone/alex_miaosha/monitor/
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
@@ -39,7 +39,32 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - ls
         - docker build  -t alex_miaosha-monitor:latest .
         - docker run -p 30099:30099 -v /home/logs:/usr/local/logs -d alex_miaosha-monitor:latest
+#  - name: notify      # 步骤4 部署完成，邮件通知
+#    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+#    image: drillster/drone-email
+#    settings:
+#      recipients_only: true # 只发送给指定邮件收件人，不默认发送给流水线创建人
+#      host: smtp.qq.com      #SMTP服务器 例如 smtp.qq.com
+#      port: 465   #SMTP服务端口  例如QQ邮箱端口465
+#      subject: "Drone Build Complete!"
+#      username: #邮箱用户名
+#        from_secret: qqmail_username
+#      password: #邮箱密码
+#        from_secret: qqmail_pwd
+#      from:
+#        from_secret: qqmail_username
+#      recipients: 734663446@qq.com           #收件人邮箱
+#    when: #执行条件
+#      status:
+#        - success
+#        - changed
+#        - failure
 volumes: # 定义流水线挂载目录，用于共享数据
   - name: maven-build
     host:
       path: /usr/local/soft/drone/alex_miaosha/   #jar包目录可以修改从宿主机中挂载的目录
+
+# 可限制哪些分支可以推送自动CICD
+trigger:
+  branch:
+    - master
