@@ -7,13 +7,17 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
     volumes: # 将容器内目录挂载到宿主机，仓库需要开启Trusted设置
       - name: maven-build
-        path: /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor # 将应用打包好的Jar和执行脚本挂载出来
+        path: /usr/local/soft/drone/alex_miaosha # 将应用打包好的Jar和执行脚本挂载出来
     commands:
       - mvn clean package -DskipTests=true
       # 将打包后的jar包，拷贝到挂载目录
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor/
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-finanace-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finanece
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/gateway
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/mission
+      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web
       # 将Dockerfile拷贝到挂载目录
-      - cp alex_miaosha/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha/alex-miaosha-monitor
+      - cp alex_miaosha/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha/monitor
 
   - name: ssh
     image: appleboy/drone-ssh
@@ -28,11 +32,11 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         from_secret: 123456
       port: 22
       script:
-        - cd /usr/local/soft/drone/alex-miaosha/alex-miaosha-monitor/
+        - cd /usr/local/soft/drone/alex-miaosha/monitor
         - ls
         - docker build  -t alex_miaosha-monitor:latest .
         - docker run -p 30099:30099 -v /home/logs:/usr/local/logs -d alex_miaosha-monitor:latest
 volumes: # 定义流水线挂载目录，用于共享数据
   - name: maven-build
     host:
-      path: /usr/local/soft/drone/alex_miaosha/alex-miaosha-monitor   #jar包目录可以修改从宿主机中挂载的目录
+      path: /usr/local/soft/drone/alex-miaosha/monitor   #jar包目录可以修改从宿主机中挂载的目录
