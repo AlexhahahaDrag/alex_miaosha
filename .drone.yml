@@ -11,13 +11,14 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     commands:
       - mvn clean package -DskipTests=true -s settings.xml -B -U
       # 将打包后的jar包，拷贝到挂载目录
-      - cp /drone/src/alex-miaosha-monitor/target/alex-miaosha-monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/monitor
-      - cp /drone/src/alex-miaosha-finanace/target/alex-miaosha-finanace-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/finanece
-      - cp /drone/src/alex-miaosha-gateway/target/alex-miaosha-gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/gateway
-      - cp /drone/src/alex-miaosha-mission/target/target/alex-miaosha-mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/mission
-      - cp /drone/src/alex-miaosha-web/target/alex-miaosha-web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/web
+      - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor
+      - cp /drone/src/alex_miaosha_finanace/target/alex_miaosha_finanace-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finanece
+      - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/gateway
+      - cp /drone/src/alex_miaosha_mission/target/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/mission
+      - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web
+      - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/generator
       # 将Dockerfile拷贝到挂载目录
-      - cp /drone/src/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha/monitor
+      - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor
 
   - name: ssh
     image: appleboy/drone-ssh
@@ -32,11 +33,11 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         from_secret: 123456
       port: 22
       script:
-        - cd /usr/local/soft/drone/alex-miaosha/monitor
+        - cd /usr/local/soft/drone/alex_miaosha/monitor
         - ls
         - docker build  -t alex_miaosha-monitor:latest .
         - docker run -p 30099:30099 -v /home/logs:/usr/local/logs -d alex_miaosha-monitor:latest
 volumes: # 定义流水线挂载目录，用于共享数据
   - name: maven-build
     host:
-      path: /usr/local/soft/drone/alex-miaosha/monitor   #jar包目录可以修改从宿主机中挂载的目录
+      path: /usr/local/soft/drone/alex_miaosha/monitor   #jar包目录可以修改从宿主机中挂载的目录
