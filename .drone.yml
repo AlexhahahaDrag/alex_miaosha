@@ -19,7 +19,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
       - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/
       # 将Dockerfile拷贝到挂载目录
-      - cp /drone/src/alex_miaosha_monitor/Dockerfile monitor/
+      - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/
 
   - name: ssh
     pull: if-not-exists
