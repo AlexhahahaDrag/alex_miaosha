@@ -11,13 +11,14 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     commands:
       - mvn clean package -DskipTests=true -s settings.xml -B -U
       # 将打包后的jar包，拷贝到挂载目录
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-finanace-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finanece
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/gateway
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/mission
-      - cp alex_miaosha/alex-miaosha-monitor/target/alex-miaosha-web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web
+      - cp /drone/src/alex-miaosha-monitor/target/alex-miaosha-monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/monitor
+      - cp /drone/src/alex-miaosha-finanace/target/alex-miaosha-finanace-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/finanece
+      - cp /drone/src/alex-miaosha-gateway/target/alex-miaosha-gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/gateway
+      - cp /drone/src/alex-miaosha-mission/target/target/alex-miaosha-mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/mission
+      - cp /drone/src/alex-miaosha-web/target/alex-miaosha-web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex-miaosha/web
       # 将Dockerfile拷贝到挂载目录
-      - cp alex_miaosha/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha/monitor
+      - cp /drone/src/alex-miaosha-monitor/Dockerfile /usr/local/soft/drone/alex-miaosha/monitor
+
   - name: ssh
     image: appleboy/drone-ssh
     settings:
