@@ -21,4 +21,14 @@ public interface FinanceAnalysisService {
      * @return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
     */
     List<AnalysisVo> getBalance(Long belongTo, String searchDate);
+
+    /**
+     * @param belongTo
+     * @param searchDate
+     * @param type
+     * @description: 
+     * @author:      alex
+     * @return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+    */
+    List<AnalysisVo> getIncomeAndExpense(Long belongTo, String searchDate, String type);
 }

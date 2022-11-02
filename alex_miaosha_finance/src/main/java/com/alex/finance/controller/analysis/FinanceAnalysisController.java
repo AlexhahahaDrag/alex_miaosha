@@ -43,4 +43,18 @@ public class FinanceAnalysisController {
                                                    @RequestParam(value = "searchDate", required = false) String searchDate) {
         return Result.success(financeAnalysisService.getBalance(belongTo, searchDate));
     }
+
+    @ApiOperationSupport(order = 20, author = "alex")
+    @ApiOperation(value = "获取余额", notes = "获取余额", response = Result.class)
+    @GetMapping(value = "/getIncomeAndExpense")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "人员", name = "belongTo"),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true),
+            @ApiImplicitParam(value = "收入支出类型（收入:income,支出:expense）", name = "type")}
+    )
+    public Result<List<AnalysisVo>> getIncomeAndExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                                                        @RequestParam(value = "searchDate") String searchDate,
+                                                        @RequestParam(value = "type", required = false) String type) {
+        return Result.success(financeAnalysisService.getIncomeAndExpense(belongTo, searchDate, type));
+    }
 }

@@ -24,4 +24,9 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
     public List<AnalysisVo> getBalance(Long belongTo, String searchDate) {
         return financeAnalysisMapper.getBalance(belongTo, searchDate);
     }
+
+    @Override
+    public List<AnalysisVo> getIncomeAndExpense(Long belongTo, String searchDate, String type) {
+        return financeAnalysisMapper.getIncomeAndExpense(belongTo, searchDate, type);
+    }
 }

@@ -40,5 +40,34 @@
             dict_info.is_valid = '1'
           AND dict_info.is_delete = '0'
           AND dict_info.belong_to = 'pay_way'
+          order by dict_info.order_by
+    </select>
+
+    <select id="getIncomeAndExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+        SELECT
+            type_code,
+            income_and_expenses,
+            sum( amount ) AS amount
+        FROM
+            finance_info
+        WHERE
+            is_valid = '1'
+            AND is_delete = 0
+            AND type_code != '转账'
+            <if test="belongTo != null">
+                 and belong_to = #{belongTo}
+            </if>
+            AND NAME != '白条收入'
+            <if test="type != null and type != ''">
+                AND income_and_expenses = #{type}
+            </if>
+            AND operate_time >= cast( concat( #{searchDate}, '-', '01' ) AS datetime )
+            AND operate_time &lt; DATE_ADD( cast( concat( #{searchDate}, '-', '01' ) AS datetime ), INTERVAL 1 MONTH )
+        GROUP BY
+            type_code,
+            income_and_expenses
+        ORDER BY
+            type_code,
+            income_and_expenses
     </select>
 </mapper>

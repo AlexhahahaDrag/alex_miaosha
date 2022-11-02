@@ -26,6 +26,9 @@ public class AnalysisVo {
     @ApiModelProperty(name = "typeName", value = "类别")
     private String typeName;
 
+    @ApiModelProperty(name = "incomeAndExpenses", value = "支出收入类型")
+    private String incomeAndExpenses;
+
     @ApiModelProperty(name = "amount", value = "钱数")
     private BigDecimal amount;
 }
