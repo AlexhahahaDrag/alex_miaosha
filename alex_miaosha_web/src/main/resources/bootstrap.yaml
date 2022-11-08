@@ -6,18 +6,16 @@ spring:
         file-extension: yaml
         group: ${nacos.group}
         namespace: ${nacos.namaspace}
-      discovery:
-        group: ${nacos.group}
-        namespace: ${nacos.namaspace}
-        server-addr: ${nacos.url}
-      server-addr: ${nacos.url}
-#        extension-configs:
-#          - data-id: user_db.yaml
-#            group: ${nacos.group}
-#            refresh: true
-#          - data-id: nacos-server.yaml
-#            group: majf-dev-test
-#            refresh: true
+        extension-configs:
+          - data-id: redis.yaml
+            group: ${nacos.group}
+            refresh: true
+          - data-id: nacos-server.yaml
+            group: ${nacos.group}
+            refresh: true
+          - data-id: springbootadmin.yaml
+            group: ${nacos.group}
+            refresh: true
 
 nacos:
   url: localhost:8848

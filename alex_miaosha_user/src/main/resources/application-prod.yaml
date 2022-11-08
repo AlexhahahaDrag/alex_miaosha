@@ -4,18 +4,6 @@ server:
 spring:
   application:
     name: alex-user
-  boot:
-    admin:
-      client:
-        url: http://localhost:30099
-        instance:
-          service-url: http://localhost:${server.port}
-          name: ${spring.application.name}
-  #        username: admin
-  #        password: 123456
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
@@ -27,18 +15,6 @@ spring:
 logging:
   level:
     com.alex.user.mapper: debug
-
-knife4j:
-  # 开启增强配置
-  enable: true
-  # 开启生产环境屏蔽
-  production: false
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-    #   在访问/actuator/health时显示完整信息
 
 qiniu:
   accessKey: ENC(XEL2TdE7S3eBkI4lukdgHuP03m3FKV/NaCpUezk6z6KCR6UOo7UGmS8VXI2YlI/cDCXyuGbuqFw=)
