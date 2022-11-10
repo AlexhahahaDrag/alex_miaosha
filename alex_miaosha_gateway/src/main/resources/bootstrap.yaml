@@ -1,29 +1,37 @@
 spring:
   cloud:
     nacos:
+      server-addr: ${nacos.url}
       config:
         server-addr: ${nacos.url}
-        file-extension: yaml
+        file-extension: ${nacos.file-extension}
         group: ${nacos.group}
         namespace: ${nacos.namaspace}
         extension-configs:
-          - data-id: redis.yaml
+          - data-id: ${nacos.redis}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
-          - data-id: nacos-server.yaml
+          - data-id: ${nacos.nacos}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
-          - data-id: springbootadmin.yaml
+          - data-id: ${nacos.knife4j}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
-          - data-id: knife4j.yaml
+          - data-id: ${nacos.admin}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
 
 nacos:
-  url: localhost:8848
+  url: nacos1:8848
   group: alex-miaosha
   namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
+  username: nacos
+  password: nacos
+  file-extension: yaml
+  knife4j: knife4j
+  admin: springbootadmin
+  nacos: nacos-service
+  redis: redis
 
 audience:
   clientId: 098f6bcd4621d373cade4e832627b4f6

@@ -1,4 +1,4 @@
 nacos:
-  url: localhost:8848
+  url: 10.10.20.100:8848
   group: alex-miaosha
   namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
