@@ -1,8 +1,8 @@
 package com.alex.web;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,6 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
 public class WebApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WebApplication.class, args);
+        new SpringApplicationBuilder(WebApplication.class)
+                .properties("spring.config.additional-location:file:./common/bootstrap.yaml")
+                .build().run(args);
     }
 }

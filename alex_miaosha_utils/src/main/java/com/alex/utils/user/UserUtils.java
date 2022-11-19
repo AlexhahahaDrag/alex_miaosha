@@ -6,7 +6,7 @@ import com.alex.common.redis.key.UserKey;
 import com.alex.common.security.SecurityUser;
 import com.alex.utils.redis.RedisUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

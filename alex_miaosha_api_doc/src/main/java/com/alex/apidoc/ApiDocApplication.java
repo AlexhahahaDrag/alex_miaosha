@@ -1,9 +1,8 @@
 package com.alex.apidoc;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 // TODO: 2022/8/2 网关配置knife4j 
 @SpringBootApplication
@@ -11,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ApiDocApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiDocApplication.class, args);
+        new SpringApplicationBuilder(ApiDocApplication.class)
+                .properties("spring.config.additional-location:file:./common/bootstrap.yaml")
+                .build().run(args);
     }
 }

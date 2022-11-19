@@ -1,0 +1,11 @@
+nacos:
+  url: 123.249.83.33:8811,123.249.83.33:8822,123.249.83.33:8833
+  group: alex-miaosha
+  namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
+  username: nacos
+  password: nacos
+  file-extension: yaml
+  knife4j: knife4j
+  admin: springbootadmin
+  nacos: nacos-service
+  redis: redis

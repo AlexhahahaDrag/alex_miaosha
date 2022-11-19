@@ -1,7 +1,7 @@
 package com.alex.user;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -11,6 +11,8 @@ import org.springframework.context.annotation.ComponentScan;
 public class UserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserApplication.class, args);
+        new SpringApplicationBuilder(UserApplication.class)
+                .properties("spring.config.additional-location:file:./common/bootstrap.yaml")
+                .build().run(args);
     }
 }
