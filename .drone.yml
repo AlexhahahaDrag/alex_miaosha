@@ -30,7 +30,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     image: appleboy/drone-ssh
     settings:
       # 你服务器ip地址
-      host: 192.168.10.32
+      host: 123.249.83.33
       # 服务器端口号
       port: 22
       # 服务器账号
@@ -48,7 +48,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     image: appleboy/drone-ssh
     settings:
       # 你服务器ip地址
-      host: 192.168.10.32
+      host: 123.249.83.33
       # 服务器端口号
       port: 22
       # 服务器账号
