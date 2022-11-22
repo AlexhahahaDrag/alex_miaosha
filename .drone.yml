@@ -2,6 +2,8 @@ kind: pipeline # 定义对象类型，还有secret和signature两种类型
 type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
 name: drone-miaosha # 定义流水线名称
 
+clone:
+  disable: true
 steps: # 定义流水线执行步骤，这些步骤将顺序执行
   - name: build-package # 流水线名称
     image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
