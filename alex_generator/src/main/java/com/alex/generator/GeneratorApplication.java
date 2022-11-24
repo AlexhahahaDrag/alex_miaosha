@@ -2,8 +2,8 @@ package com.alex.generator;
 
 import com.alex.common.config.qiniu.QiNiuConfiguration;
 import com.alex.common.utils.qiniu.ImageScalaKit;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -22,8 +22,6 @@ import org.springframework.context.annotation.FilterType;
 public class GeneratorApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(GeneratorApplication.class)
-                .properties("spring.config.additional-location:file:./common/bootstrap.yaml")
-                .build().run(args);
+        SpringApplication.run(GeneratorApplication.class, args);
     }
 }
