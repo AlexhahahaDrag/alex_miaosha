@@ -9,7 +9,7 @@ ARG JAR_FILE=./*.jar
 
 COPY ${JAR_FILE} alex_miaosha_monitor-1.0-SNAPSHOT.jar
 
-COPY ../common /common
+COPY /usr/local/soft/drone/alex_miaosha/common /common
 
 ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_monitor-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
