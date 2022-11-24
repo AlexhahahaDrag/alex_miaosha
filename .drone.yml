@@ -2,8 +2,6 @@ kind: pipeline # 定义对象类型，还有secret和signature两种类型
 type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
 name: drone-miaosha # 定义流水线名称
 
-clone:
-  disable: true
 steps: # 定义流水线执行步骤，这些步骤将顺序执行
   - name: build-package # 流水线名称
     image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
@@ -11,8 +9,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - name: maven-build
         path: /usr/local/soft/drone/alex_miaosha # 将应用打包好的Jar和执行脚本挂载出来
     commands:
-#      - mvn clean package -DskipTests=true -s settings.xml -B -U
-      - mvn clean package -DskipTests=true
+      - mvn clean package -DskipTests=true -s settings.xml -B -U
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/
