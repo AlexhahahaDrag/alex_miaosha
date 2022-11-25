@@ -1,5 +1,5 @@
 server:
-  port: 40099
+  port: 30099
 spring:
   application:
     name: alex-monitor
