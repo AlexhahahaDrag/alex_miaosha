@@ -23,7 +23,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_gateway/Dockerfile /usr/local/soft/drone/alex_miaosha/gateway/
       - cp /drone/src/alex_miaosha_mission/Dockerfile /usr/local/soft/drone/alex_miaosha/mission/
       - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/drone/alex_miaosha/web/
-      - cp /drone/src/alex_miaosha_genertor/Dockerfile /usr/local/soft/drone/alex_miaosha/generator/
+      - cp /drone/src/alex_genertor/Dockerfile /usr/local/soft/drone/alex_miaosha/generator/
 
   - name: ssh-monitor
     pull: if-not-exists
@@ -73,8 +73,8 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       subject: "Drone Build Complete!"
       username: 734663446@qq.com
 #        from_secret: 734663446
-      password: #邮箱密码
-        from_secret: ssh_email_password
+      password: ma.25991992qq
+#        from_secret: ssh_email_password
       from: 734663446@qq.com
 #        from_secret: 734663446@qq.com
       recipients: 734663446@qq.com           #收件人邮箱
