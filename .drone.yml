@@ -44,6 +44,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - docker build  -t alex_miaosha_monitor:latest .
         - docker rm -f monitor
         - docker run -p 30099:30099 --name=monitor -v /home/logs:/usr/local/logs -d alex_miaosha_monitor:latest
+
   - name: ssh-gateway
     pull: if-not-exists
     image: appleboy/drone-ssh
@@ -63,26 +64,67 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - docker build  -t alex_miaosha_gateway:latest .
         - docker rm -f gateway
         - docker run -p 30001:30001 --name=gateway -v /home/logs:/usr/local/logs -d alex_miaosha_gateway:latest
-#  - name: notify      # 步骤4 部署完成，邮件通知
-#    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
-#    image: drillster/drone-email
-#    settings:
-#      recipients_only: true # 只发送给指定邮件收件人，不默认发送给流水线创建人
-#      host: smtp.qq.com      #SMTP服务器 例如 smtp.qq.com
-#      port: 465   #SMTP服务端口  例如QQ邮箱端口465
-#      subject: "Drone Build Complete!"
-#      username: #邮箱用户名
-#        from_secret: qqmail_username
-#      password: #邮箱密码
-#        from_secret: qqmail_pwd
-#      from:
-#        from_secret: qqmail_username
-#      recipients: 734663446@qq.com           #收件人邮箱
-#    when: #执行条件
-#      status:
-#        - success
-#        - changed
-#        - failure
+
+  - name: ssh-finance
+      pull: if-not-exists
+      image: appleboy/drone-ssh
+      settings:
+        # 你服务器ip地址
+        host: 123.249.83.33
+        # 服务器端口号
+        port: 22
+        # 服务器账号
+        username: root
+        # 密码登入写法
+        password:
+          from_secret: ssh_password
+        script:
+          - cd /usr/local/soft/drone/alex_miaosha/finance
+          - ls
+          - docker build  -t alex_miaosha_finance:latest .
+          - docker rm -f finance
+          - docker run -p 30008:30008 --name=finance -v /home/logs:/usr/local/logs -d alex_miaosha_finance:latest
+
+  - name: ssh-generator
+      pull: if-not-exists
+      image: appleboy/drone-ssh
+      settings:
+        # 你服务器ip地址
+        host: 123.249.83.33
+        # 服务器端口号
+        port: 22
+        # 服务器账号
+        username: root
+        # 密码登入写法
+        password:
+          from_secret: ssh_password
+        script:
+          - cd /usr/local/soft/drone/alex_miaosha/generator
+          - ls
+          - docker build  -t alex_miaosha_generator:latest .
+          - docker rm -f generator
+          - docker run -p 30022:30022 --name=generator -v /home/logs:/usr/local/logs -d alex_miaosha_generator:latest
+
+  - name: notify      # 步骤4 部署完成，邮件通知
+    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+    image: drillster/drone-email
+    settings:
+      recipients_only: true # 只发送给指定邮件收件人，不默认发送给流水线创建人
+      host: smtp.qq.com      #SMTP服务器 例如 smtp.qq.com
+      port: 465   #SMTP服务端口  例如QQ邮箱端口465
+      subject: "Drone Build Complete!"
+      username: #邮箱用户名
+        from_secret: 734663446
+      password: #邮箱密码
+        from_secret: ssh_email_password
+      from:
+        from_secret: qqmail_username
+      recipients: 734663446@qq.com           #收件人邮箱
+    when: #执行条件
+      status:
+        - success
+        - changed
+        - failure
 volumes: # 定义流水线挂载目录，用于共享数据
   - name: maven-build
     host:
