@@ -71,12 +71,12 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       host: smtp.qq.com      #SMTP服务器 例如 smtp.qq.com
       port: 465   #SMTP服务端口  例如QQ邮箱端口465
       subject: "Drone Build Complete!"
-      username: #邮箱用户名
+      username: 734663446@qq.com
         from_secret: 734663446
       password: #邮箱密码
         from_secret: ssh_email_password
       from:
-        from_secret: qqmail_username
+        from_secret: 734663446
       recipients: 734663446@qq.com           #收件人邮箱
     when: #执行条件
       status:
