@@ -62,7 +62,26 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - ls
         - docker build  -t alex_miaosha_gateway:latest .
         - docker rm -f gateway
-        - docker run -p 30001:30001 --name=gateway -v /home/logs:/usr/local/logs -d alex_miaosha_gateway:latest
+        - docker run -p 30008:30008 --name=gateway -v /home/logs:/usr/local/logs -d alex_miaosha_gateway:latest
+  - name: ssh-finance
+      pull: if-not-exists
+      image: appleboy/drone-ssh
+      settings:
+        # 你服务器ip地址
+        host: 123.249.83.33
+        # 服务器端口号
+        port: 22
+        # 服务器账号
+        username: root
+        # 密码登入写法
+        password:
+          from_secret: ssh_password
+        script:
+          - cd /usr/local/soft/drone/alex_miaosha/finance
+          - ls
+          - docker build  -t alex_miaosha_finance:latest .
+          - docker rm -f gateway
+          - docker run -p 30001:30001 --name=finance -v /home/logs:/usr/local/logs -d alex_miaosha_finance:latest
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     image: drillster/drone-email
@@ -72,12 +91,12 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       port: 465   #SMTP服务端口  例如QQ邮箱端口465
       subject: "Drone Build Complete!"
       username: 734663446@qq.com
-#        from_secret: 734663446
+#        from_secret: ssh_email_username
       password: kwwwvwuqaengbcfc
 #        from_secret: ssh_email_password
       from: 734663446@qq.com
-#        from_secret: 734663446@qq.com
-      recipients: 425578298@qq.com           #收件人邮箱
+#        from_secret: ssh_email_username
+      recipients: 734663446@qq.com           #收件人邮箱
     when: #执行条件
       status:
         - success
