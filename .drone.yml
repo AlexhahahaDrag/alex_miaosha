@@ -80,7 +80,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/finance
         - ls
         - docker build  -t alex_miaosha_finance:latest .
-        - docker rm -f gateway
+        - docker rm -f finance
         - docker run -p 30008:30008 --name=finance -v /home/logs:/usr/local/logs -d alex_miaosha_finance:latest
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
