@@ -2,6 +2,12 @@ kind: pipeline # 定义对象类型，还有secret和signature两种类型
 type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
 name: drone-miaosha # 定义流水线名称
 
+server:
+  host: 123.249.83.33
+  user: root
+  password:
+    from_secret: ssh_password
+
 steps: # 定义流水线执行步骤，这些步骤将顺序执行
   - name: build-package # 流水线名称
     image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
@@ -29,15 +35,15 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-      # 你服务器ip地址
-      host: 123.249.83.33
-      # 服务器端口号
-      port: 22
-      # 服务器账号
-      username: root
-      # 密码登入写法
-      password:
-        from_secret: ssh_password
+#      # 你服务器ip地址
+#      host: 123.249.83.33
+#      # 服务器端口号
+#      port: 22
+#      # 服务器账号
+#      username: root
+#      # 密码登入写法
+#      password:
+#        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/monitor
         - ls
@@ -48,15 +54,15 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-      # 你服务器ip地址
-      host: 123.249.83.33
-      # 服务器端口号
-      port: 22
-      # 服务器账号
-      username: root
-      # 密码登入写法
-      password:
-        from_secret: ssh_password
+#      # 你服务器ip地址
+#      host: 123.249.83.33
+#      # 服务器端口号
+#      port: 22
+#      # 服务器账号
+#      username: root
+#      # 密码登入写法
+#      password:
+#        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/gateway
         - ls
@@ -67,15 +73,15 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-      # 你服务器ip地址
-      host: 123.249.83.33
-      # 服务器端口号
-      port: 22
-      # 服务器账号
-      username: root
-      # 密码登入写法
-      password:
-        from_secret: ssh_password
+#      # 你服务器ip地址
+#      host: 123.249.83.33
+#      # 服务器端口号
+#      port: 22
+#      # 服务器账号
+#      username: root
+#      # 密码登入写法
+#      password:
+#        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/finance
         - ls
