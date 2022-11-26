@@ -44,7 +44,7 @@ public class IExcelDictHandlerImpl implements IExcelDictHandler {
     public String toValue(String s, Object o, String s1, Object value) {
         DictInfo dictInfo = dictInfoService.queryDictInfoByTypeCode(String.valueOf(value));
         if (dictInfo == null) {
-            throw new Exception("错误");
+            throw new Exception("错误:" + value + "在字典中不存在!");
         }
         return dictInfo.getTypeCode();
     }

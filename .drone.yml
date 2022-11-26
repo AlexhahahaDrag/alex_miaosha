@@ -2,12 +2,6 @@ kind: pipeline # 定义对象类型，还有secret和signature两种类型
 type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
 name: drone-miaosha # 定义流水线名称
 
-server:
-  host: 123.249.83.33
-  user: root
-  password:
-    from_secret: ssh_password
-
 steps: # 定义流水线执行步骤，这些步骤将顺序执行
   - name: build-package # 流水线名称
     image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
@@ -35,59 +29,59 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-#      # 你服务器ip地址
-#      host: 123.249.83.33
-#      # 服务器端口号
-#      port: 22
-#      # 服务器账号
-#      username: root
-#      # 密码登入写法
-#      password:
-#        from_secret: ssh_password
+      # 你服务器ip地址
+      host: 123.249.83.33
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username: root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/monitor
         - ls
         - docker build  -t alex_miaosha_monitor:latest .
         - docker rm -f monitor
-        - docker run -p 30099:30099 --name=monitor -v /home/logs:/usr/local/logs -d alex_miaosha_monitor:latest
+        - docker run -p 30099:30099 --name=monitor -v /usr/local/soft/drone/alex_miaosha/monitor/logs:/logs/alex-monitor -d alex_miaosha_monitor:latest
   - name: ssh-gateway
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-#      # 你服务器ip地址
-#      host: 123.249.83.33
-#      # 服务器端口号
-#      port: 22
-#      # 服务器账号
-#      username: root
-#      # 密码登入写法
-#      password:
-#        from_secret: ssh_password
+      # 你服务器ip地址
+      host: 123.249.83.33
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username: root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/gateway
         - ls
         - docker build  -t alex_miaosha_gateway:latest .
         - docker rm -f gateway
-        - docker run -p 30001:30001 --name=gateway -v /home/logs:/usr/local/logs -d alex_miaosha_gateway:latest
+        - docker run -p 30001:30001 --name=gateway -v /usr/local/soft/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
   - name: ssh-finance
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
-#      # 你服务器ip地址
-#      host: 123.249.83.33
-#      # 服务器端口号
-#      port: 22
-#      # 服务器账号
-#      username: root
-#      # 密码登入写法
-#      password:
-#        from_secret: ssh_password
+      # 你服务器ip地址
+      host: 123.249.83.33
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username: root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/finance
         - ls
         - docker build  -t alex_miaosha_finance:latest .
         - docker rm -f finance
-        - docker run -p 30008:30008 --name=finance -v /home/logs:/usr/local/logs -d alex_miaosha_finance:latest
+        - docker run -p 30008:30008 --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     image: drillster/drone-email
