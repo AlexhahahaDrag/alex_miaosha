@@ -1,7 +1,7 @@
 package com.alex.finance.vo.finance;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alex.common.common.BaseVo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -45,6 +45,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     private Long belongTo;
 
     @ApiModelProperty(name = "infoDate", value = "业务日期")
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8:00")
     private LocalDateTime infoDate;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")
