@@ -12,10 +12,12 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 @Configuration
 public class LocalDateTimeFormatConfig {
@@ -37,6 +39,9 @@ public class LocalDateTimeFormatConfig {
 //        //解决long类型到前端精度丢失的问题
 //        javaTimeModule.addSerializer(Long.class, ToStringSerializer.instance);
 //        javaTimeModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        objectMapper.setDateFormat(new SimpleDateFormat(DEFAULT_DATE_TIME_PATTERN));
+        // TODO: 2022/11/26 修改时区问题 
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
         objectMapper.registerModule(javaTimeModule);
         return objectMapper;
     }

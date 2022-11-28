@@ -1,7 +1,7 @@
 package com.alex.finance.vo.finance;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alex.common.common.BaseVo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

@@ -7,9 +7,9 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 
 ARG JAR_FILE=./*.jar
 
-COPY ${JAR_FILE} alex_miaosha_generator-1.0-SNAPSHOT.jar
+COPY ${JAR_FILE} alex_miaosha_mission-1.0-SNAPSHOT.jar
 
-ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_generator-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_mission-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
 
 EXPOSE 30006
