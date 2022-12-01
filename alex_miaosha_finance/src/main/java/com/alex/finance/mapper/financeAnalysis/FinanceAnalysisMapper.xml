@@ -75,14 +75,12 @@
         SELECT
             SUBSTR( date_info.date, 9 ) AS info_date,
             date_info.user_id,
-            date_info.username,
             IFNULL( info.amount, 0 ) AS amount
         FROM
             (
             SELECT
                 date,
-                user_info.user_id,
-                user_info.username
+                user_info.user_id
             FROM
                 (
                 SELECT
@@ -98,26 +96,16 @@
                     ) xcxc
                 ) x0,
                 (
-                SELECT
-                    finance_info.user_id,
-                CASE
-                        WHEN t_user.nick_name IS NOT NULL THEN
-                        t_user.nick_name ELSE t_user.username
-                    END AS username
+                SELECT DISTINCT
+                    finance_info.belong_to AS user_id
                 FROM
-                    (
-                    SELECT DISTINCT
-                        finance_info.belong_to AS user_id
-                    FROM
-                        alex_finance.finance_info
-                    WHERE
-                        info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
-                        AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-                        AND income_and_expenses = 'expense'
-                        AND is_valid = '1'
-                        AND is_delete = '0'
-                    ) finance_info
-                    LEFT JOIN alex_user.t_user ON finance_info.user_id = t_user.id
+                    finance_info
+                WHERE
+                    info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
+                    AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                    AND income_and_expenses = 'expense'
+                    AND is_valid = '1'
+                    AND is_delete = '0'
                 ) user_info
             WHERE
                 x0.date >= (
@@ -153,38 +141,26 @@
     <select id="getMonthExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
         WITH recursive c ( n ) AS ( SELECT 1 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
         SELECT
-            date_info.n,
+            date_info.n as info_Date,
             date_info.user_id,
-            date_info.username,
             ifnull( info.amount, 0 ) AS amount
             FROM
                 (
                 SELECT
                     c.n,
-                    user_info.user_id,
-                    user_info.username
+                    user_info.user_id
                 FROM
                     c,(
-                    SELECT
-                        finance_info.user_id,
-                    CASE
-                            WHEN t_user.nick_name IS NOT NULL THEN
-                            t_user.nick_name ELSE t_user.username
-                        END AS username
+                    SELECT DISTINCT
+                        finance_info.belong_to AS user_id
                     FROM
-                        (
-                        SELECT DISTINCT
-                            finance_info.belong_to AS user_id
-                        FROM
-                            alex_finance.finance_info
-                        WHERE
-                            info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime ) 
-                            AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-                            AND type_code != '工资' 
-                            AND is_valid = '1'
-                            AND is_delete = '0'
-                        ) finance_info
-                        LEFT JOIN alex_user.t_user ON finance_info.user_id = t_user.id
+                        finance_info
+                    WHERE
+                        info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime )
+                        AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                        AND type_code != '工资'
+                        AND is_valid = '1'
+                        AND is_delete = '0'
                     ) user_info
                 ) date_info
                 LEFT JOIN (
