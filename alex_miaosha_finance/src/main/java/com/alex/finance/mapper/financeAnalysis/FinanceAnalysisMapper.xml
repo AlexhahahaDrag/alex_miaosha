@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.mapper.financeAnalysis.FinanceAnalysisMapper">
+
+    <select id="getBalance" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+        SELECT
+            dict_info.type_code,
+            dict_info.type_name,
+            IFNULL( finance_base_info.amount, 0 ) + IFNULL( finance_info.amount, 0 ) AS amount
+        FROM
+            dict_info
+                LEFT JOIN finance_base_info ON finance_base_info.from_source = dict_info.type_code
+                AND finance_base_info.is_valid = '1'
+                AND finance_base_info.is_delete = '0'
+                <if test="belongTo != null">
+                    AND finance_base_info.belong_to = #{belongTo}
+                </if>
+                LEFT JOIN (
+                SELECT
+                    finance_info.from_source,
+                    sum( CASE finance_info.income_and_expenses WHEN 'income' THEN finance_info.amount ELSE - finance_info.amount END ) AS amount
+                FROM
+                    finance_info
+                WHERE
+                    finance_info.is_valid = '1'
+                  AND finance_info.is_delete = '0'
+                  <if test="belongTo != null">
+                      AND finance_info.belong_to = #{belongTo}
+                  </if>
+                  <if test="searchDate != null">
+                      AND finance_info.info_date &lt; DATE_ADD(
+                        cast( CONCAT( #{searchDate}, '-01' ) AS datetime ),
+                      INTERVAL 1 MONTH
+                      )
+                  </if>
+                GROUP BY
+                    finance_info.from_source
+            ) finance_info ON finance_info.from_source = dict_info.type_code
+        WHERE
+            dict_info.is_valid = '1'
+          AND dict_info.is_delete = '0'
+          AND dict_info.belong_to = 'pay_way'
+          order by dict_info.order_by
+    </select>
+
+    <select id="getIncomeAndExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+        SELECT
+            type_code,
+            income_and_expenses,
+            sum( amount ) AS amount
+        FROM
+            finance_info
+        WHERE
+            is_valid = '1'
+            AND is_delete = 0
+            AND type_code != '转账'
+            <if test="belongTo != null">
+                 and belong_to = #{belongTo}
+            </if>
+            AND NAME != '白条收入'
+            <if test="type != null and type != ''">
+                AND income_and_expenses = #{type}
+            </if>
+            AND operate_time >= cast( concat( #{searchDate}, '-', '01' ) AS datetime )
+            AND operate_time &lt; DATE_ADD( cast( concat( #{searchDate}, '-', '01' ) AS datetime ), INTERVAL 1 MONTH )
+        GROUP BY
+            type_code,
+            income_and_expenses
+        ORDER BY
+            type_code,
+            income_and_expenses
+    </select>
+
+    <select id="getDayExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+        SELECT
+            SUBSTR( date_info.date, 9 ) AS info_date,
+            date_info.user_id,
+            date_info.username,
+            IFNULL( info.amount, 0 ) AS amount
+        FROM
+            (
+            SELECT
+                date,
+                user_info.user_id,
+                user_info.username
+            FROM
+                (
+                SELECT
+                    DATE_FORMAT( DATE_SUB( last_day( cast( concat( #{searchDate}, '-01' ) AS datetime )), INTERVAL xc - 1 DAY ), '%Y-%m-%d' ) AS date
+                FROM
+                    (
+                    SELECT
+                        @xi := @xi + 1 AS xc
+                    FROM
+                        ( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) xc1,
+                        ( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) xc2,
+                        ( SELECT @xi := 0 ) xc0
+                    ) xcxc
+                ) x0,
+                (
+                SELECT
+                    finance_info.user_id,
+                CASE
+                        WHEN t_user.nick_name IS NOT NULL THEN
+                        t_user.nick_name ELSE t_user.username
+                    END AS username
+                FROM
+                    (
+                    SELECT DISTINCT
+                        finance_info.belong_to AS user_id
+                    FROM
+                        alex_finance.finance_info
+                    WHERE
+                        info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
+                        AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                        AND income_and_expenses = 'expense'
+                        AND is_valid = '1'
+                        AND is_delete = '0'
+                    ) finance_info
+                    LEFT JOIN alex_user.t_user ON finance_info.user_id = t_user.id
+                ) user_info
+            WHERE
+                x0.date >= (
+                SELECT
+                    date_add(
+                        cast( concat( #{searchDate}, '-01' ) AS datetime ),
+                        INTERVAL - DAY (
+                        cast( concat( #{searchDate}, '-01' ) AS datetime ))+ 1 DAY
+                    ))) date_info
+            LEFT JOIN (
+            SELECT
+                belong_to,
+                DATE_FORMAT( info_date, '%Y-%m-%d' ) AS dateinfo,
+                sum( CASE income_and_expenses WHEN 'expense' THEN amount ELSE - amount END ) AS amount
+            FROM
+                finance_info
+            WHERE
+                info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
+                AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                AND type_code != '工资'
+                AND is_valid = '1'
+                AND is_delete = '0'
+            GROUP BY
+                belong_to,
+                dateinfo
+            ) info ON date_info.date = info.dateinfo
+            AND date_info.user_id = info.belong_to
+        ORDER BY
+            date_info.date,
+            info.belong_to;
+    </select>
+
+    <select id="getMonthExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+        WITH recursive c ( n ) AS ( SELECT 1 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
+        SELECT
+            date_info.n,
+            date_info.user_id,
+            date_info.username,
+            ifnull( info.amount, 0 ) AS amount
+            FROM
+                (
+                SELECT
+                    c.n,
+                    user_info.user_id,
+                    user_info.username
+                FROM
+                    c,(
+                    SELECT
+                        finance_info.user_id,
+                    CASE
+                            WHEN t_user.nick_name IS NOT NULL THEN
+                            t_user.nick_name ELSE t_user.username
+                        END AS username
+                    FROM
+                        (
+                        SELECT DISTINCT
+                            finance_info.belong_to AS user_id
+                        FROM
+                            alex_finance.finance_info
+                        WHERE
+                            info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime ) 
+                            AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                            AND type_code != '工资' 
+                            AND is_valid = '1'
+                            AND is_delete = '0'
+                        ) finance_info
+                        LEFT JOIN alex_user.t_user ON finance_info.user_id = t_user.id
+                    ) user_info
+                ) date_info
+                LEFT JOIN (
+                SELECT
+                    belong_to AS user_id,
+                    DATE_FORMAT( info_date, '%m' ) AS dateinfo,
+                    sum( CASE WHEN income_and_expenses = 'expense' THEN amount ELSE - amount END ) AS amount
+                FROM
+                    finance_info
+                WHERE
+                    info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime )
+                    AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
+                    AND type_code != '工资'
+                    AND is_valid = '1'
+                    AND is_delete = '0'
+                GROUP BY
+                    belong_to,
+                    dateinfo
+                ) info ON info.dateinfo = date_info.n
+                AND info.user_id = date_info.user_id
+            ORDER BY
+                date_info.n,
+                date_info.user_id
+    </select>
+</mapper>

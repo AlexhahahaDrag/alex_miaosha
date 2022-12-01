@@ -57,4 +57,28 @@ public class FinanceAnalysisController {
                                                         @RequestParam(value = "type", required = false) String type) {
         return Result.success(financeAnalysisService.getIncomeAndExpense(belongTo, searchDate, type));
     }
+
+    @ApiOperationSupport(order = 30, author = "alex")
+    @ApiOperation(value = "获取天花费明细", notes = "获取天花费明细", response = Result.class)
+    @GetMapping(value = "/getDayExpense")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "人员", name = "belongTo"),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+    )
+    public Result<List<AnalysisVo>> getDayExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                                                  @RequestParam(value = "searchDate") String searchDate) {
+        return Result.success(financeAnalysisService.getDayExpense(belongTo, searchDate));
+    }
+
+    @ApiOperationSupport(order = 40, author = "alex")
+    @ApiOperation(value = "获取月花费明细", notes = "获取月花费明细", response = Result.class)
+    @GetMapping(value = "/getMonthExpense")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "人员", name = "belongTo"),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+    )
+    public Result<List<AnalysisVo>> getMonthExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                                                    @RequestParam(value = "searchDate") String searchDate) {
+        return Result.success(financeAnalysisService.getMonthExpense(belongTo, searchDate));
+    }
 }
