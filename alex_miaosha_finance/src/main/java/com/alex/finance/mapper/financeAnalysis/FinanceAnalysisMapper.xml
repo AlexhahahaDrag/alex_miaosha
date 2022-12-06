@@ -106,6 +106,9 @@
                     AND income_and_expenses = 'expense'
                     AND is_valid = '1'
                     AND is_delete = '0'
+                    <if test="belongTo != null">
+                        and belong_to = #{belongTo}
+                    </if>
                 ) user_info
             WHERE
                 x0.date >= (
@@ -128,6 +131,9 @@
                 AND type_code != '工资'
                 AND is_valid = '1'
                 AND is_delete = '0'
+                <if test="belongTo != null">
+                     and belong_to = #{belongTo}
+                </if>
             GROUP BY
                 belong_to,
                 dateinfo
@@ -161,6 +167,9 @@
                         AND type_code != '工资'
                         AND is_valid = '1'
                         AND is_delete = '0'
+                        <if test="belongTo != null">
+                            and belong_to = #{belongTo}
+                        </if>
                     ) user_info
                 ) date_info
                 LEFT JOIN (
@@ -176,6 +185,9 @@
                     AND type_code != '工资'
                     AND is_valid = '1'
                     AND is_delete = '0'
+                    <if test="belongTo != null">
+                        and belong_to = #{belongTo}
+                    </if>
                 GROUP BY
                     belong_to,
                     dateinfo
