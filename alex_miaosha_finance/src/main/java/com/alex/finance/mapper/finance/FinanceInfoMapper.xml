@@ -73,32 +73,32 @@
      <sql id="queryInfo">
         <if test = "financeInfoVo != null">
           <if test = "financeInfoVo.name != null">
-            and name like concat('%', #{financeInfoVo.name}, '%')
+            and finance_info.name like concat('%', #{financeInfoVo.name}, '%')
           </if>
           <if test = "financeInfoVo.typeCode != null">
-            and type_code = #{financeInfoVo.typeCode}
+            and finance_info.type_code = #{financeInfoVo.typeCode}
           </if>
           <if test = "financeInfoVo.amount != null and financeInfoVo.amount.size > 0">
             <foreach collection="financeInfoVo.amount" index="index" item="item" >
             <if test="index == 0">
-                and amount >= #{item}
+                and finance_info.amount >= #{item}
             </if>
             <if test="index == 1">
-                and amount &lt;= #{item}
+                and finance_info.amount &lt;= #{item}
             </if>
           </foreach>
           </if>
           <if test = "financeInfoVo.fromSource != null">
-            and from_source = #{financeInfoVo.fromSource}
+            and finance_info.from_source = #{financeInfoVo.fromSource}
           </if>
           <if test = "financeInfoVo.incomeAndExpenses != null">
-            and income_and_expenses = #{financeInfoVo.incomeAndExpenses}
+            and finance_info.income_and_expenses = #{financeInfoVo.incomeAndExpenses}
           </if>
           <if test = "financeInfoVo.belongTo != null">
-            and belong_to = #{financeInfoVo.belongTo}
+            and finance_info.belong_to = #{financeInfoVo.belongTo}
           </if>
           <if test = "financeInfoVo.isValid != null">
-            and is_valid = #{financeInfoVo.isValid}
+            and finance_info.is_valid = #{financeInfoVo.isValid}
           </if>
         </if>
      </sql>
