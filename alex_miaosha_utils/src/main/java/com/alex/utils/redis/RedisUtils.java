@@ -1,11 +1,12 @@
 package com.alex.utils.redis;
 
+import cn.hutool.json.JSONUtil;
 import com.alex.common.redis.key.KeyPrefix;
 import com.alex.utils.bean.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,11 +21,11 @@ public class RedisUtils {
 
     private static final String SEGEMENT = ":";
 
-    final RedisTemplate<String, Object> redisTemplate;
+    final StringRedisTemplate redisTemplate;
 
-    public Object get(String key) {
+    public String get(String key) {
         try {
-            Object result = redisTemplate.opsForValue().get(key);
+            String result = redisTemplate.opsForValue().get(key);
             return result;
         } catch (Exception e) {
             log.error("获取单个对象失败，key为{}，异常为{}", key, e);
@@ -32,9 +33,9 @@ public class RedisUtils {
         }
     }
 
-    public Object get(KeyPrefix prefix, String key) {
+    public String get(KeyPrefix prefix, String key) {
         try {
-            String realKey = prefix.getPrefix() + SEGEMENT + key ;
+            String realKey = prefix.getPrefix() + SEGEMENT + key;
             return redisTemplate.opsForValue().get(realKey);
         } catch (Exception e) {
             log.error("获取单个对象失败，key为{}，异常为{}", key, e);
@@ -63,7 +64,7 @@ public class RedisUtils {
      */
     public <T> T get(KeyPrefix prefix, String key, Class<T> clazz) {
         try {
-            String realKey = prefix.getPrefix() + SEGEMENT + key ;
+            String realKey = prefix.getPrefix() + SEGEMENT + key;
             String result = (String) redisTemplate.opsForValue().get(realKey);
             if (StringUtils.isEmpty(result)) {
                 return null;
@@ -92,6 +93,15 @@ public class RedisUtils {
         }
     }
 
+    public void expire(KeyPrefix prefix, String key, Long exTime, TimeUnit unit) {
+        String s = prefix.getPrefix() + SEGEMENT + key;
+        try {
+            redisTemplate.opsForValue().set(prefix.getPrefix() + SEGEMENT + key, "1", exTime, unit);
+        } catch (Exception e) {
+            log.error("设置过期时间失败，key为{}，异常为{}", key, e);
+        }
+    }
+
     /**
      * @param prefix
      * @param key
@@ -107,15 +117,20 @@ public class RedisUtils {
             String realKey = prefix.getPrefix() + SEGEMENT + key;
             if (exTime == 0) {
                 //不设置过期时间
-                redisTemplate.opsForValue().set(realKey, value);
+                redisTemplate.opsForValue().set(realKey, JSONUtil.toJsonStr(value));
             } else {
-                redisTemplate.opsForValue().set(realKey, value, exTime, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(realKey, JSONUtil.toJsonStr(value), exTime, TimeUnit.SECONDS);
             }
             return true;
         } catch (Exception e) {
             log.error("设置对象失败，key为{}，异常为{}", key, e);
             return false;
         }
+    }
+
+    public boolean set(String key, Object value) {
+        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
+        return true;
     }
 
     /**
@@ -214,7 +229,7 @@ public class RedisUtils {
      */
     public Long decrease(KeyPrefix prefix, String key, Long num) {
         try {
-            return redisTemplate.opsForValue().decrement(prefix.getPrefix() +  SEGEMENT + key, num);
+            return redisTemplate.opsForValue().decrement(prefix.getPrefix() + SEGEMENT + key, num);
         } catch (Exception e) {
             log.error("key增加值1失败，key为{}，异常为{}", key, e);
             return null;

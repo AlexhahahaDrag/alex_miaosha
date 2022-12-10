@@ -3,6 +3,7 @@ package ${package.Controller};
 import ${package.Vo}.${table.voName};
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -75,6 +76,7 @@ public class ${table.controllerName} {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.query${entity}(id));
     }
 
+    @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "${author}")
     @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
     @PostMapping

@@ -4,6 +4,7 @@ import com.alex.base.common.Result;
 import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.service.finance.FinanceInfoService;
 import com.alex.finance.vo.finance.FinanceInfoVo;
+import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -63,6 +64,7 @@ public class FinanceInfoController {
         return Result.success(financeInfoService.queryFinanceInfo(id));
     }
 
+    @AvoidRepeatableCommit
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "新增财务信息表", notes = "新增财务信息表", response = Result.class)
     @PostMapping
