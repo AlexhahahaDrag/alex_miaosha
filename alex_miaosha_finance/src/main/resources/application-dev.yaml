@@ -60,3 +60,20 @@ mybatis-plus:
 logging:
   level:
     com.alex.finance.mapper: debug
+
+## prometheus配置
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      prometheus: true
+  ## 配置为开启 Actuator 服务
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    export:
+      export:
+        enabled: true

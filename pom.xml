@@ -360,6 +360,20 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
+
+            <!--actuator依赖提供指标-->
+            <dependency>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-actuator</artifactId>
+              <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!--将指标转换成prometheus可使用的格式-->
+            <dependency>
+              <groupId>io.micrometer</groupId>
+              <artifactId>micrometer-registry-prometheus</artifactId>
+              <version>1.10.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
