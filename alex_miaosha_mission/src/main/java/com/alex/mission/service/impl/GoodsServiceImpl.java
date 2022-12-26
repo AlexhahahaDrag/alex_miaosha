@@ -180,7 +180,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {
         //从redis中获取库存信息
-        Integer stockCount = (Integer)redisUtils.get(SeckillGoodsKey.seckillCount, goodsId + "");
+        Integer stockCount = Integer.parseInt(redisUtils.get(SeckillGoodsKey.seckillCount, goodsId + ""));
         long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
         long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
         long now = System.currentTimeMillis();
