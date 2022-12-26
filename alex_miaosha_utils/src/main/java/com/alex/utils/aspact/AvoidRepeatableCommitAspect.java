@@ -63,7 +63,7 @@ public class AvoidRepeatableCommitAspect {
         log.info("ipKey={}, hashCode={},key={}", ipKey, hashCode, key);
 
         //判断是否redis中存在，如果存在
-        String value = redisUtils.get(CommonKey.commonKey.getPrefix() + RedisConstants.SEGEMENT + key);
+        String value = redisUtils.get(CommonKey.commonKey.getPrefix() + RedisConstants.SEGMENTATION + key);
         if (StringUtils.isNotBlank(value)) {
             log.info("请勿重复提交表单！");
             return Result.error(ResultEnum.REPEAT_COMMIT);

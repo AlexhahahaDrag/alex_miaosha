@@ -29,4 +29,6 @@ audience:
   name: mogublog
   expiresSecond: 3600000  #1个小时 3600
   refreshSecond: 3600
+
 isRememberMeExpiresSecond: 259200000 #记住密码三天
+tokenHead: bearer_

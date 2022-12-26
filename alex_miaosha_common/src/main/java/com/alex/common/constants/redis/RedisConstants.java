@@ -8,13 +8,13 @@ package com.alex.common.constants.redis;
  */
 public class RedisConstants {
 
-    public static final String SEGEMENT = ":";
+    public static final String SEGMENTATION = ":";
 
-    public static String COUNT_LOGIN = "count:login";
+    public static final Integer NUM_ONE = 1;
 
-    public static String TEST = "SeckillGoodsKey:sc1";
+    public static final Integer NUM_FIVE = 5;
 
-    public static String SECKILL_KEY = "SeckillGoodsKey" + SEGEMENT + "sc";
+    public static String SEC_KILL_KEY = "SecKillGoodsKey" + SEGMENTATION + "sc";
 
     public static final String AVOID_REPEAT_COMMIT = "avoid_repeat_commit";
 }

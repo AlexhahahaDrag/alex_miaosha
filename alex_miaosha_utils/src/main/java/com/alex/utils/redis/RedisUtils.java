@@ -128,6 +128,30 @@ public class RedisUtils {
         }
     }
 
+    /**
+     * @param key
+     * @param value
+     * @param exTime
+     * @param timeUnit
+     * @description: 
+     * @author:      majf
+     * @return:      boolean
+    */
+    public <T> boolean setEx(String key, T value, int exTime, TimeUnit timeUnit) {
+        try {
+            if (exTime == 0) {
+                //不设置过期时间
+                redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
+            } else {
+                redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), exTime, timeUnit == null ? timeUnit : TimeUnit.SECONDS);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("设置对象失败，key为{}，异常为{}", key, e);
+            return false;
+        }
+    }
+
     public boolean set(String key, Object value) {
         redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
         return true;

@@ -13,4 +13,6 @@ public class LoginIdKey extends BasePrefix {
     }
 
     public static LoginIdKey loginIdKey = new LoginIdKey("login_in");
+
+    public static LoginIdKey loginLimitCount = new LoginIdKey("login_limit_count");
 }

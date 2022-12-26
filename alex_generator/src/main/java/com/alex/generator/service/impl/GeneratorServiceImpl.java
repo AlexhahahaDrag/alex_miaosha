@@ -37,18 +37,18 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     @Override
     public boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author,
-                             String myControllerPath, String myServicePath, String myMapperPath, String myEntityPath, String myVoPath, String myClientPath) {
+                             String myEntityPath, String myVoPath, String myClientPath) {
         String java = "/java/com/alex" + System.getProperty("file.separator") + javaPath;
         for (String tableName : tableNames) {
             executeGenerate(parentPackage, java, tableName, moduleName, fileName,
-                    myVoPath, myControllerPath, myEntityPath, myMapperPath, myServicePath, myClientPath,
+                    myVoPath, myEntityPath, myClientPath,
                     author);
         }
         return true;
     }
 
     private void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName,
-                                 String myVoPath, String myControllerPath, String myEntityPath, String myMapperPath, String myServicePath, String myClientPath,
+                                 String myVoPath, String myEntityPath, String myClientPath,
                                  String author) {
         String dbConfig = databaseConfig.getUrl();
         String dbUser = databaseConfig.getUsername();
@@ -58,10 +58,10 @@ public class GeneratorServiceImpl implements GeneratorService {
         String basePath = System.getProperty("user.dir");
         String projectPath = basePath + separator + moduleName + getPath(base, separator);
         String voPath = StringUtils.isEmpty(myVoPath) ? projectPath + java + "/vo" : myVoPath;
-        String controllerPath = StringUtils.isEmpty(myControllerPath) ? projectPath + java + "/controller" : myControllerPath;
+        String controllerPath = projectPath + java + "/controller";
         String entityPath = StringUtils.isEmpty(myEntityPath) ? projectPath + java + "/entity" : myEntityPath;
-        String mapperPath = StringUtils.isEmpty(myMapperPath) ? projectPath + java + "/mapper" : myMapperPath;
-        String servicePath = StringUtils.isEmpty(myServicePath) ? projectPath + java + "/service" : myServicePath;
+        String mapperPath = projectPath + java + "/mapper";
+        String servicePath = projectPath + java + "/service";
         String clientPath = StringUtils.isEmpty(myClientPath) ? projectPath + java + "/client" : myClientPath;
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
@@ -162,13 +162,13 @@ public class GeneratorServiceImpl implements GeneratorService {
                 })
                 .injectionConfig(builder -> {
                     builder.beforeOutputFile((tableInfo, objectMap) -> {
-                                System.out.println("tableInfo: " + tableInfo.getEntityName() + " objectMap: " + objectMap.size());
+                        System.out.println("tableInfo: " + tableInfo.getEntityName() + " objectMap: " + objectMap.size());
 //                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
 //                                //配置other模板及类名
 //                                Map<String, String> customFile = Objects.requireNonNull(config.getInjectionConfig()).getCustomFile();
 //                                customFile.put(tableInfo.getEntityName() + "Vo.java", "/templates/vo.java.btl");
 //                                customFile.put(tableInfo.getEntityName() + "FeignClient.java", "/templates/feignClient.java.btl");
-                            })
+                    })
                             //配置全局变量
 //                            .customMap(Collections.singletonMap("vo11", "aaaVo"))
                             .build();

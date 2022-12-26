@@ -21,4 +21,6 @@ public @interface AvoidRepeatableCommit {
      * @return:      long
     */
     long timeout() default 1000;
+
+    String message() default "";
 }

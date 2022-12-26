@@ -36,12 +36,9 @@ public class GeneratorController {
             @ApiImplicitParam(value = "服务名称", name = "moduleName", defaultValue = "alex_miaosha_finance"),
             @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
             @ApiImplicitParam(value = "文件名称", name = "fileName", defaultValue = "test"),
-            @ApiImplicitParam(value = "父级包名称", name = "parentPackage"),
-            @ApiImplicitParam(value = "表格列表", name = "tableNames"),
-            @ApiImplicitParam(value = "作者(Alex)", name = "author"),
-            @ApiImplicitParam(value = "自定义controller路径", name = "myControllerPath"),
-            @ApiImplicitParam(value = "自定义service路径", name = "myServicePath"),
-            @ApiImplicitParam(value = "自定义mapper路径", name = "myMapperPath"),
+            @ApiImplicitParam(value = "父级包名称", name = "parentPackage", defaultValue = "com.alex.user"),
+            @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
+            @ApiImplicitParam(value = "作者(Alex)", name = "author", defaultValue = "alex"),
             @ApiImplicitParam(value = "自定义entity路径", name = "myEntityPath"),
             @ApiImplicitParam(value = "自定义vo路径", name = "myVoPath"),
             @ApiImplicitParam(value = "自定义client路径", name = "myClientPath")})
@@ -51,14 +48,11 @@ public class GeneratorController {
                                     @RequestParam(value = "parentPackage") String parentPackage,
                                     @RequestParam(value = "tableNames") String[] tableNames,
                                     @RequestParam(value = "author", required = false) String author,
-                                    @RequestParam(value = "myControllerPath", required = false) String myControllerPath,
-                                    @RequestParam(value = "myServicePath", required = false) String myServicePath,
-                                    @RequestParam(value = "myMapperPath", required = false) String myMapperPath,
                                     @RequestParam(value = "myEntityPath", required = false) String myEntityPath,
                                     @RequestParam(value = "myVoPath", required = false) String myVoPath,
                                     @RequestParam(value = "myClientPath", required = false) String myClientPath) {
         return Result.success(generatorService.generator(moduleName, javaPath, fileName, parentPackage, tableNames, author,
-                myControllerPath, myServicePath, myMapperPath, myEntityPath, myVoPath, myClientPath));
+                myEntityPath, myVoPath, myClientPath));
     }
 
     // TODO: 2022/10/12 修改vo模板集成baseVo 

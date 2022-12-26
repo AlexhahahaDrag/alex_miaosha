@@ -12,4 +12,13 @@ public class SysConf {
 
     public static final String TOKEN = "token";
 
+    public static final String EMAIL = "email";
+
+    public static final String MOBILE = "mobile";
+
+    public static final String LIMIT_ONE = "limit 1";
+
+    public static final String STATUS = "status";
+
+    public static final String ADMIN = "admin";
 }

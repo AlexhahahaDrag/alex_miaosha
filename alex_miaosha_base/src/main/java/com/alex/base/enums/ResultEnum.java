@@ -31,6 +31,8 @@ public enum ResultEnum implements BaseEnum {
      */
     MOBILE_NOT_EXIST ("500214", "手机号不存在"),
     PASSWORD_ERROR("500215", "密码错误"),
+    EMPTY_USERNAME_OR_PASSWORD("500217", "账号密码不能为空!"),
+    LOGIN_ERROR_MORE("500218", "密码输错次数过多，已被锁定30分钟"),
     NO_LOGIN("500216", "请先登录"),
 
     /**

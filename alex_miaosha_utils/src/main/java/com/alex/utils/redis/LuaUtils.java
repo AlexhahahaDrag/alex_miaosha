@@ -45,8 +45,8 @@ public class LuaUtils {
                 " return redis.call('DECR', KEYS[1]); " +
                 " end; ";
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(stockScript, Long.class);
-        log.info("===============================key:{}========================", RedisConstants.SECKILL_KEY + ":" + goodsId);
-        return redisTemplate.execute(redisScript, Collections.singletonList(RedisConstants.SECKILL_KEY + ":" + goodsId));
+        log.info("===============================key:{}========================", RedisConstants.SEC_KILL_KEY + ":" + goodsId);
+        return redisTemplate.execute(redisScript, Collections.singletonList(RedisConstants.SEC_KILL_KEY + ":" + goodsId));
     }
 
     /**
