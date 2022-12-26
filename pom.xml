@@ -73,6 +73,7 @@
         <shardingsphere.version>5.2.1</shardingsphere.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <ip2region.version>2.6.6</ip2region.version>
+        <prometheus.version>1.10.2</prometheus.version>
     </properties>
 
     <dependencyManagement>
@@ -380,7 +381,7 @@
             <dependency>
               <groupId>io.micrometer</groupId>
               <artifactId>micrometer-registry-prometheus</artifactId>
-              <version>1.10.2</version>
+              <version>${prometheus.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -49,7 +49,7 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 
 ## 站点演示
 
-&nbsp;暂时没有。
+[网站演示](mjzp.xyz:3000)。
 
 ## 技术选型
 
@@ -57,23 +57,27 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 
 ![系统架构设计.png](C:\Users\majf\Desktop\系统架构设计.png)
 
-
-
 ### 后端技术
 
 | 技术              | 说明                                | 官网                               |
 |:--------------- | --------------------------------- | -------------------------------- |
 | SpringCloud     |                                   |                                  |
 | SpringBoot      |                                   |                                  |
-| SpringSercurity |                                   |                                  |
+| SpringSecurity |                                   |                                  |
 | MyBatis-Plus    | MyBatis的增强工具                      | https://baomidou.com/            |
 | knife4j         | Java MVC框架集成Swagger生成Api文档的增强解决方案 | https://doc.xiaominfo.com/       |
 | SpringBootAdmin |                                   |                                  |
 | nacos           | 服务发现、配置管理、服务治理的综合型解决方案            | https://github.com/alibaba/nacos |
 | redis           | 分布式缓存                             | https://redis.io/                |
 | rabbitmq        | 消息队列                              |                                  |
+| prometheus      | 普罗米修斯监控                           | https://prometheus.io/           |
 
 ### 前端技术
+
+| 技术             | 说明  | 版本  | 官网                                          |
+|:-------------- | --- | --- | ------------------------------------------- |
+| vue            |     | 3.2 |                                             |
+| ant-design-vue | a   | v3  | https://www.antdv.com/docs/vue/introduce-cn |
 
 添加arthas
 
