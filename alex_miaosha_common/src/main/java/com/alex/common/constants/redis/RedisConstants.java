@@ -15,4 +15,6 @@ public class RedisConstants {
     public static String TEST = "SeckillGoodsKey:sc1";
 
     public static String SECKILL_KEY = "SeckillGoodsKey" + SEGEMENT + "sc";
+
+    public static final String AVOID_REPEAT_COMMIT = "avoid_repeat_commit";
 }

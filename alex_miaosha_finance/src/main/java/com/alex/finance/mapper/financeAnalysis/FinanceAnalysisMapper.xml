@@ -3,44 +3,59 @@
 <mapper namespace="com.alex.finance.mapper.financeAnalysis.FinanceAnalysisMapper">
 
     <select id="getBalance" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
+    SELECT
+        dict_info.type_code,
+        dict_info.type_name,
+        IFNULL( info.amount, 0 ) AS amount
+    FROM
+        dict_info dict_info
+        LEFT JOIN (
         SELECT
             dict_info.type_code,
-            dict_info.type_name,
-            IFNULL( finance_base_info.amount, 0 ) + IFNULL( finance_info.amount, 0 ) AS amount
+            sum(
+            IFNULL( finance_base_info.amount, 0 ) + IFNULL( finance_info.amount, 0 )) AS amount
         FROM
             dict_info
-                LEFT JOIN finance_base_info ON finance_base_info.from_source = dict_info.type_code
-                AND finance_base_info.is_valid = '1'
-                AND finance_base_info.is_delete = '0'
-                <if test="belongTo != null">
-                    AND finance_base_info.belong_to = #{belongTo}
+            LEFT JOIN finance_base_info ON finance_base_info.from_source = dict_info.type_code
+            AND finance_base_info.is_valid = '1'
+            AND finance_base_info.is_delete = '0'
+            <if test="belongTo != null">
+              AND finance_base_info.belong_to = #{belongTo}
+            </if>
+            LEFT JOIN (
+            SELECT
+                finance_info.from_source,
+                finance_info.belong_to,
+                sum( CASE finance_info.income_and_expenses WHEN 'income' THEN finance_info.amount ELSE - finance_info.amount END ) AS amount
+            FROM
+                finance_info
+            WHERE
+                finance_info.is_valid = '1'
+                AND finance_info.is_delete = '0'
+                <if test="searchDate != null">
+                  AND finance_info.info_date &lt; DATE_ADD( cast( CONCAT( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
                 </if>
-                LEFT JOIN (
-                SELECT
-                    finance_info.from_source,
-                    sum( CASE finance_info.income_and_expenses WHEN 'income' THEN finance_info.amount ELSE - finance_info.amount END ) AS amount
-                FROM
-                    finance_info
-                WHERE
-                    finance_info.is_valid = '1'
-                  AND finance_info.is_delete = '0'
-                  <if test="belongTo != null">
-                      AND finance_info.belong_to = #{belongTo}
-                  </if>
-                  <if test="searchDate != null">
-                      AND finance_info.info_date &lt; DATE_ADD(
-                        cast( CONCAT( #{searchDate}, '-01' ) AS datetime ),
-                      INTERVAL 1 MONTH
-                      )
-                  </if>
-                GROUP BY
-                    finance_info.from_source
+                <if test="belongTo != null">
+                  AND finance_info.belong_to = #{belongTo}
+                </if>
+            GROUP BY
+                finance_info.from_source,
+                finance_info.belong_to
             ) finance_info ON finance_info.from_source = dict_info.type_code
+            AND finance_info.belong_to = finance_base_info.belong_to
         WHERE
             dict_info.is_valid = '1'
-          AND dict_info.is_delete = '0'
-          AND dict_info.belong_to = 'pay_way'
-          order by dict_info.order_by
+            AND dict_info.is_delete = '0'
+            AND dict_info.belong_to = 'pay_way'
+        GROUP BY
+            dict_info.type_code
+        ) info ON info.type_code = dict_info.type_code
+    WHERE
+        dict_info.is_valid = '1'
+        AND dict_info.is_delete = '0'
+        AND dict_info.belong_to = 'pay_way'
+    ORDER BY
+        dict_info.order_by
     </select>
 
     <select id="getIncomeAndExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
@@ -106,6 +121,9 @@
                     AND income_and_expenses = 'expense'
                     AND is_valid = '1'
                     AND is_delete = '0'
+                    <if test="belongTo != null">
+                        and belong_to = #{belongTo}
+                    </if>
                 ) user_info
             WHERE
                 x0.date >= (
@@ -128,6 +146,9 @@
                 AND type_code != '工资'
                 AND is_valid = '1'
                 AND is_delete = '0'
+                <if test="belongTo != null">
+                     and belong_to = #{belongTo}
+                </if>
             GROUP BY
                 belong_to,
                 dateinfo
@@ -161,6 +182,9 @@
                         AND type_code != '工资'
                         AND is_valid = '1'
                         AND is_delete = '0'
+                        <if test="belongTo != null">
+                            and belong_to = #{belongTo}
+                        </if>
                     ) user_info
                 ) date_info
                 LEFT JOIN (
@@ -176,6 +200,9 @@
                     AND type_code != '工资'
                     AND is_valid = '1'
                     AND is_delete = '0'
+                    <if test="belongTo != null">
+                        and belong_to = #{belongTo}
+                    </if>
                 GROUP BY
                     belong_to,
                     dateinfo

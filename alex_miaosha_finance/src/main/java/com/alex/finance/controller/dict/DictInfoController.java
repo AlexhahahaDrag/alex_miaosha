@@ -4,6 +4,7 @@ import com.alex.base.common.Result;
 import com.alex.finance.entity.dict.DictInfo;
 import com.alex.finance.service.dict.DictInfoService;
 import com.alex.finance.vo.dict.DictInfoVo;
+import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -52,6 +53,7 @@ public class DictInfoController {
         return Result.success(dictInfoService.queryDictInfo(id));
     }
 
+    @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增字典表", notes = "新增字典表", response = Result.class)
     @PostMapping

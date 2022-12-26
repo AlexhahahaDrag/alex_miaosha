@@ -72,6 +72,7 @@
         <jackson-databind.version>2.13.4</jackson-databind.version>
         <shardingsphere.version>5.2.1</shardingsphere.version>
         <snakeyaml.version>1.33</snakeyaml.version>
+        <ip2region.version>2.6.6</ip2region.version>
     </properties>
 
     <dependencyManagement>
@@ -359,6 +360,13 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <!--ip 2 region-->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
             </dependency>
 
             <!--actuator依赖提供指标-->

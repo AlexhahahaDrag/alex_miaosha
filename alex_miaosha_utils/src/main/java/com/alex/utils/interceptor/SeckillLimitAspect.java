@@ -61,7 +61,7 @@ public class SeckillLimitAspect {
         log.info("ipKey={}, requestURI={},key={}", ipKey, requestURI, accessKey);
         // TODO: 2022/8/25 添加ip信息
         //当前获取指定url的访问次数
-        Integer count = (Integer) redisUtils.get(accessKey, requestURI);
+        Integer count = Integer.parseInt(redisUtils.get(accessKey, requestURI));
         if (count == null) {
             redisUtils.set(accessKey, requestURI, 1, seconds);
         } else if (count < maxCount) {

@@ -12,12 +12,14 @@ public enum ResultEnum implements BaseEnum {
     PARAM_ERROR("400", "param_fail"),
 
     UNAUTHORIZED("403", "没有权限"),
+
+    REPEAT_COMMIT("40010", "请勿重复提交表单!"),
     /**
      * 服务器模块
      */
-    SYSTEM_ERROR("500100", "系统异常"),
+    SYSTEM_ERROR("500", "系统异常"),
 
-    SYSTEM_BUSY("服务器繁忙，请稍后再试", "系统异常"),
+    SYSTEM_BUSY("500101", "服务器繁忙，请稍后再试"),
 
     ACCESS_LIMIT_REACHED("500103", "访问太频繁"),
     REQUIRE_ILLEGAL("500102", "请求非法"),
