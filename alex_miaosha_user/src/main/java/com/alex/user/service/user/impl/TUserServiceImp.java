@@ -7,6 +7,7 @@ import com.alex.base.enums.ResultEnum;
 import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
+import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginIdKey;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
@@ -36,10 +37,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * @description:  管理员表服务实现类
- * @author:       alex
- * @createDate:   2022-12-26 17:20:38
- * @version:      1.0.0
+ *
+ * @description: 管理员表服务实现类
+ * @author: alex
+ * @createDate: 2022-12-26 17:20:38
+ * @version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -51,13 +53,13 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     private final JwtTokenUtils jwtTokenUtils;
 
-    @Value(value = "${tokenHead}")
-    private String tokenHead;
-
     @Value(value = "${isRememberMeExpiresSecond}")
     private int isRememberMeExpiresSecond;
 
     private final Audience audience;
+
+    @Value(value = "${defaultPassword}")
+    private String defaultPassword;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
@@ -72,8 +74,21 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Override
     public TUser addTUser(TUserVo tUserVo) {
+        String username = tUserVo.getUsername();
+        String mobile = tUserVo.getMobile();
+        String email = tUserVo.getEmail();
+        if (StringUtils.isEmpty(username)) {
+            throw new UserException(ResultEnum.NO_USERNAME);
+        }
+        if (StringUtils.isEmpty(email) && StringUtils.isEmpty(mobile)) {
+            throw new UserException(ResultEnum.NO_MOBILE_EMAIL);
+        }
+        // TODO: 2021/9/17 添加手机号和邮箱验证
+        // TODO: 2021/9/5 默认配置信息
         TUser tUser = new TUser();
         BeanUtil.copyProperties(tUserVo, tUser);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        tUser.setPassword(encoder.encode(tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword()));
         tUserMapper.insert(tUser);
         return tUser;
     }
@@ -88,7 +103,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Override
     public Boolean deleteTUser(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
@@ -97,13 +112,14 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     }
 
     @Override
-    public Result<Object> login(HttpServletRequest request, String username, String password, boolean isRemember) {
+    public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             return Result.error(ResultEnum.EMPTY_USERNAME_OR_PASSWORD);
         }
         String ip = IpUtils.getIpAddr(request);
+        String s = LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
         String limitCount = redisUtils.get(LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
-        if(StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
+        if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
             return Result.error(ResultEnum.LOGIN_ERROR_MORE);
         }
         boolean isEmail = CheckUtils.checkEmail(username);
@@ -143,10 +159,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //        }
 //        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
         String roleName = "";
-        long expiration = isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
                 , expiration, audience.getBase64Secret());
-        String token = tokenHead + jwtToken;
+        String token = audience.getTokenHead() + jwtToken;
         HashMap<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         result.put(SysConf.TOKEN, token);
         //进行登陆相关操作
@@ -170,22 +186,23 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     /**
      * @param request
      * @param username 登录名称
-     * @description:  设置登录限制，返回剩余次数
-     * @author:       alex
-     * @return:       java.lang.Integer
+     * @description: 设置登录限制，返回剩余次数
+     * @author: alex
+     * @return: java.lang.Integer
      */
     private Integer setLoginCommit(HttpServletRequest request, String username) {
         String ip = IpUtils.getIpAddr(request);
         String loginCountKey = LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
         String count = redisUtils.get(loginCountKey);
         int surplusCount = RedisConstants.NUM_FIVE;
+        Integer exTime = 30;
         if (StringUtils.isNotEmpty(count)) {
-            int curCount = Integer.parseInt(count) + 1;
+            Integer curCount = Integer.parseInt(count) + 1;
             surplusCount -= curCount;
-            redisUtils.setEx(loginCountKey, curCount, 10, TimeUnit.MINUTES);
+            redisUtils.setEx(loginCountKey, curCount.toString(), exTime, TimeUnit.MINUTES);
         } else {
             surplusCount -= 1;
-            redisUtils.setEx(loginCountKey, RedisConstants.NUM_ONE, 30, TimeUnit.MINUTES);
+            redisUtils.setEx(loginCountKey, RedisConstants.NUM_ONE + "", exTime, TimeUnit.MINUTES);
         }
         return surplusCount;
     }

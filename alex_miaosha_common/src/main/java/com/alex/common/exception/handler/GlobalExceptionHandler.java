@@ -1,10 +1,7 @@
 package com.alex.common.exception.handler;
 
 import com.alex.base.common.Result;
-import com.alex.common.exception.CustomizeException;
-import com.alex.common.exception.LoginException;
-import com.alex.common.exception.RegisterException;
-import com.alex.common.exception.SeckillException;
+import com.alex.common.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -45,6 +42,13 @@ public class GlobalExceptionHandler {
     public Result<Object> handle(SeckillException exception) {
         exception.printStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
+    }
+
+    @ExceptionHandler(UserException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<String> handle(UserException userException) {
+        userException.printStackTrace();
+        return Result.error(userException.getCode(), userException.getMsg());
     }
 
     @ExceptionHandler(Exception.class)

@@ -34,6 +34,8 @@ public enum ResultEnum implements BaseEnum {
     EMPTY_USERNAME_OR_PASSWORD("500217", "账号密码不能为空!"),
     LOGIN_ERROR_MORE("500218", "密码输错次数过多，已被锁定30分钟"),
     NO_LOGIN("500216", "请先登录"),
+    NO_USERNAME("500219", "用户名不能为空！"),
+    NO_MOBILE_EMAIL("500220", "邮箱和手机号至少有一项不能为空!"),
 
     /**
      * 商品模块

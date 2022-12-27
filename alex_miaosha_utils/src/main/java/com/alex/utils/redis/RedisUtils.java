@@ -137,13 +137,13 @@ public class RedisUtils {
      * @author:      majf
      * @return:      boolean
     */
-    public <T> boolean setEx(String key, T value, int exTime, TimeUnit timeUnit) {
+    public boolean setEx(String key, String value, int exTime, TimeUnit timeUnit) {
         try {
             if (exTime == 0) {
                 //不设置过期时间
-                redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
+                redisTemplate.opsForValue().set(key, value);
             } else {
-                redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), exTime, timeUnit == null ? timeUnit : TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
             }
             return true;
         } catch (Exception e) {

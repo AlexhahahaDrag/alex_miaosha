@@ -67,7 +67,7 @@ public class JwtTokenUtils {
         JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT")
                 .claim(SysConf.ADMIN_ID, adminId)
                 .claim(SysConf.ROLE, roleName)
-                .claim(SysConf.CREATE_TIME, now)
+                .claim(SysConf.CREATE_TIME, new Date())
                 .setSubject(username)
                 .setIssuer(issuer)
                 .setAudience(audience)

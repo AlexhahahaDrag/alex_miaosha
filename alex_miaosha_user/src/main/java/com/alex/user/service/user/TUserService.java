@@ -28,5 +28,5 @@ public interface TUserService extends IService<TUser> {
 
     Boolean deleteTUser(String ids);
 
-    Result<Object> login(HttpServletRequest request, String username, String password, boolean isRemember);
+    Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember);
 }

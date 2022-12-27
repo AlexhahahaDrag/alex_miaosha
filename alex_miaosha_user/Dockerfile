@@ -1,15 +1,15 @@
-FROM java:17
+FROM openjdk:17
 
 MAINTAINER alex 734663446@qq.com
 
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone
 
-ARG JAR_FILE
+ARG JAR_FILE=./*.jar
 
-COPY ${JAR_FILE} /user.jar
+COPY ${JAR_FILE} alex_miaosha_user-1.0-SNAPSHOT.jar
 
-ENTRYPOINT ["java", "-Xmx512m", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/user.jar"]
+ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_user-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
 
-EXPOSE 30006
+EXPOSE 30008

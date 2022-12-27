@@ -36,9 +36,8 @@ public class SwaggerConfig {
 //                .build();
 //        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
-//                .pathMapping("/am-finance")
+                .pathMapping("/am-finance")
                 .apiInfo(apiInfo())
-//                .pathMapping("/am-finanace")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.finance.controller"))
                 .paths(PathSelectors.any())

@@ -21,5 +21,11 @@ public class Audience {
 
     private String name;
 
-    private int expiresSecond;
+    private Long expiresSecond;
+
+    private Integer refreshSecond;
+
+    private String tokenHead;
+
+    private String tokenHeader;
 }

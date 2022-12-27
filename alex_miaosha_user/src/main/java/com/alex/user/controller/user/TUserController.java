@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  * @createDate: 2022-12-26 17:20:38
  * @version: 1.0.0
  */
-@ApiSort(105)
+@ApiSort(10)
 @Api(value = "管理员表相关接口", tags = {"管理员表相关接口"})
 @RestController
 @RequiredArgsConstructor
@@ -76,17 +76,19 @@ public class TUserController {
         return Result.success(tUserService.deleteTUser(ids));
     }
 
-    @ApiOperationSupport(order = 60)
+    @ApiOperationSupport(order = 60, author = "alex")
     @AccessLimit()
     @PostMapping("/login")
     @ApiOperation(value = "登录")
-    @ApiImplicitParams(
-            @ApiImplicitParam(value = "登录参数", name = "loginParam", required = true, type = "LoginParam.class")
-    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "用户名称", name = "username", type = "String.class"),
+            @ApiImplicitParam(value = "密码", name = "password", type = "String.class"),
+            @ApiImplicitParam(value = "是否记住我", name = "isRememberMe", type = "Boolean.class")
+    })
     public Result<Object> doLogin(HttpServletRequest request,
                                   @RequestParam(value = "username", required = false) String username,
                                   @RequestParam(value = "password", required = false) String password,
-                                  @RequestParam(value = "isRememberMe", required = false) boolean isRememberMe) {
+                                  @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) {
         return tUserService.login(request, username, password, isRememberMe);
     }
 }
