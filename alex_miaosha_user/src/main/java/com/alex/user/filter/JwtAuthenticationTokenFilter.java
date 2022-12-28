@@ -51,8 +51,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         //得到请求头信息authorization信息
         String authHeader = request.getHeader(audience.getTokenHeader());
 
-        //TODO 判断是否触发 mogu-picture发送的请求【图片上传鉴权，需要用户登录，携带token请求admin，后期考虑加入OAuth服务统一鉴权】
-        //请求头 'Authorization': tokenHead + token
         if (authHeader != null && authHeader.startsWith(audience.getTokenHead())) {
             log.error("传递过来的token为: {}", authHeader);
             final String token = authHeader.substring(audience.getTokenHead().length());

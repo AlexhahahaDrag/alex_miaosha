@@ -28,7 +28,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String password;
 
     @ApiModelProperty(value = "性别(1:男2:女)")
-    private Boolean gender;
+    private Integer gender;
 
     @ApiModelProperty(value = "个人头像")
     private String avatar;

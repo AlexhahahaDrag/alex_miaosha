@@ -34,7 +34,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "性别(1:男2:女)")
     @TableField("gender")
-    private Boolean gender;
+    private Integer gender;
 
     @ApiModelProperty(value = "个人头像")
     @TableField("avatar")

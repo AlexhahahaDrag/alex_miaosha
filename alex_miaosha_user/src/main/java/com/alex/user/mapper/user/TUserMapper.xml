@@ -49,7 +49,7 @@
         t_user.is_delete,
         t_user.operator,
         t_user.operate_time,
-        t_user.username, t_user.`password`, t_user.gender, t_user.avatar, t_user.email, t_user.birthday, t_user.mobile, t_user.valid_code, t_user.summary, t_user.login_count, t_user.last_login_time, t_user.last_login_ip, t_user.`status`, t_user.nick_name, t_user.qq_number, t_user.we_chat, t_user.occupation, t_user.github, t_user.gitee, t_user.role_id, t_user.person_resume
+        t_user.username, t_user.gender, t_user.avatar, t_user.email, t_user.birthday, t_user.mobile, t_user.valid_code, t_user.summary, t_user.login_count, t_user.last_login_time, t_user.last_login_ip, t_user.`status`, t_user.nick_name, t_user.qq_number, t_user.we_chat, t_user.occupation, t_user.github, t_user.gitee, t_user.role_id, t_user.person_resume
     </sql>
 
     <select id="getPage" resultType="com.alex.user.vo.user.TUserVo">
@@ -57,6 +57,7 @@
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"></include>
         </where>
+        order by t_user.id
     </select>
 
     <select id="queryTUser" resultType="com.alex.user.vo.user.TUserVo">

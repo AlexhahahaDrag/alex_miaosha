@@ -1,7 +1,6 @@
 package com.alex.user.security;
 
 import com.alex.user.filter.JwtAuthenticationTokenFilter;
-import com.alex.user.filter.SecurityUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    private final SecurityUserDetailsService securityUserDetailsService;
+    private final UserDetailsService userDetailsService;
 
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
@@ -65,7 +65,7 @@ public class WebSecurityConfig {
                         .permitAll()
                         .anyRequest()
                         .authenticated()
-                ).userDetailsService(securityUserDetailsService)
+                ).userDetailsService(userDetailsService)
                 .build();
     }
 }
