@@ -5,3 +5,4 @@ target
 *.iml
 .svn
 logs
+*/jasypt.yaml
