@@ -1,6 +1,5 @@
 package com.alex.finance.security;
 
-import com.alex.common.config.SecurityUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
