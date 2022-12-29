@@ -1,5 +1,6 @@
 package com.alex.user;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex.user", "com.alex.common", "com.alex.utils"})
+@EnableEncryptableProperties
 public class UserApplication {
 
     public static void main(String[] args) {

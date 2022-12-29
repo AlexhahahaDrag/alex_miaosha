@@ -13,10 +13,10 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /**
- *description:  swagger配置类
- *author:       alex
- *createDate:   2021/6/6 15:17
- *version:      1.0.0
+ * description:  swagger配置类
+ * author:       alex
+ * createDate:   2021/6/6 15:17
+ * version:      1.0.0
  */
 @Configuration
 @EnableOpenApi
@@ -37,6 +37,7 @@ public class SwaggerConfig {
 //                .build();
 //        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
+                .pathMapping("am-mission")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.mission.controller"))
@@ -49,7 +50,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("alex miaosha document")
+                .title("alex miaosha mission document")
                 .contact(new Contact("alex", "localhost", "734663446@qq.com"))
                 .description("ha ha ha ! be happy")
                 .termsOfServiceUrl("www.baidu.com")

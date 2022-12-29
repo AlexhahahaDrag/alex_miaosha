@@ -15,21 +15,21 @@ spring:
       master:
         type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://123.249.83.33:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-        username: root
-        password: 123456
+        url: jdbc:mysql://123.249.83.33:3336/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
       slave1:
         type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://123.249.83.33:3316/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-        username: root
-        password: 123456
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
       slave2:
         type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://123.249.83.33:3326/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-        username: root
-        password: 123456
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
     sharding:
       master-slave-rules:
         master-test0: # 哪一个主节点

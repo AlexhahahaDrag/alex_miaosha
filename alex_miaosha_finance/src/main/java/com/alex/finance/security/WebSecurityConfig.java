@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    private final SecurityUserDetailsService securityUserDetailsService;
+//    private final SecurityUserDetailsService securityUserDetailsService;
 
     //白名单
     private static String[] whiteList;
@@ -33,8 +33,6 @@ public class WebSecurityConfig {
                 "/webjars/**",
                 "/actuator/**",
                 "/favicon.ico",
-//                "/user/**",
-                "/user/login",
                 "/druid/**",
                 "/v3/api-docs",
                 "/finance-info/**",
@@ -60,7 +58,8 @@ public class WebSecurityConfig {
                         .permitAll()
                         .anyRequest()
                         .authenticated()
-                ).userDetailsService(securityUserDetailsService)
+                )
+//                .userDetailsService(securityUserDetailsService)
                 .build();
     }
 }
