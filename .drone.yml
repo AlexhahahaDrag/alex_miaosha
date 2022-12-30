@@ -10,6 +10,13 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         path: /usr/local/soft/drone/alex_miaosha # 将应用打包好的Jar和执行脚本挂载出来
     commands:
       - mvn clean package -DskipTests=true -s settings.xml -B -U
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/monitor" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/monitor"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/finance" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/finance"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/gateway" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/gateway"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/mission" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/mission"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/user" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/user"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/web" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/web"
+      - [ ! -d "/usr/local/soft/drone/alex_miaosha/generator" ] && mkdir -p "/usr/local/soft/drone/alex_miaosha/generator"
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/
