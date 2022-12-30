@@ -12,4 +12,4 @@ COPY ${JAR_FILE} alex_miaosha_user-1.0-SNAPSHOT.jar
 ENTRYPOINT ["java", "-Xmx512m", "-jar", "alex_miaosha_user-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
 
-EXPOSE 30008
+EXPOSE 30006
