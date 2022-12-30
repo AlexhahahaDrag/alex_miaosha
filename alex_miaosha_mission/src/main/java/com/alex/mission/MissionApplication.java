@@ -1,5 +1,6 @@
 package com.alex.mission;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex.mission", "com.alex.common", "com.alex.utils"})
+@EnableEncryptableProperties
 public class MissionApplication {
 
     // TODO: 2022/8/19 消费消息后，如何回写

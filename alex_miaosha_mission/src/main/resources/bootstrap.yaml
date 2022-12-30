@@ -20,6 +20,9 @@ spring:
           - data-id: ${nacos.admin}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+          - data-id: ${nacos.jasypt}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
 
 nacos:
   url: 123.249.83.33:8811,123.249.83.33:8822,123.249.83.33:8833
@@ -32,3 +35,4 @@ nacos:
   admin: springbootadmin
   nacos: nacos-service
   redis: redis
+  jasypt: jasypt-user

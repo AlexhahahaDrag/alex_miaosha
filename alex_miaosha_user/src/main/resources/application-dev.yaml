@@ -39,9 +39,3 @@ audience:
 isRememberMeExpiresSecond: 259200000 #记住密码三天
 
 defaultPassword: "1234@com"
-
-jasypt:
-  encryptor:
-    password: 02700083-9fd9-4b82-a4b4-9177e0560e92
-    algorithm: PBEWithMD5AndDES
-    iv-generator-classname: org.jasypt.iv.NoIvGenerator

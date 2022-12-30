@@ -3,6 +3,7 @@ package com.alex.finance;
 import com.alex.common.config.qiniu.QiNiuConfiguration;
 import com.alex.common.utils.qiniu.ImageScalaKit;
 import com.alex.utils.interceptor.SeckillInterceptor;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.FilterType;
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                 value = {QiNiuConfiguration.class, ImageScalaKit.class, SeckillInterceptor.class}
         )})
+@EnableEncryptableProperties
 public class FinanceApplication {
 
     public static void main(String[] args) {
