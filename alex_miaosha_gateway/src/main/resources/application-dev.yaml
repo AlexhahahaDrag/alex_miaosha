@@ -13,12 +13,7 @@ spring:
             # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置。
             - PreserveHostHeader
       routes:
-        - id: alex-mission
-          uri: lb://alex-mission
-          predicates:
-            - Path=/am-mission/**
-          filters:
-            - StripPrefix=1 #移除前缀
+          #移除前缀
 #            - name: RequestRateLimiter
 #              args:
 #                redis-rate-limiter.replenishRate: 10
@@ -37,7 +32,13 @@ spring:
             - Path=/am-finance/**
           filters:
             - StripPrefix=1
-#
+        - id: alex-mission
+          uri: lb://alex-mission
+          predicates:
+            - Path=/am-mission/**
+          filters:
+            - StripPrefix=1
+  #
 #        - id: alex-manage
 #          uri: lb://alex-manage
 #          predicates:
