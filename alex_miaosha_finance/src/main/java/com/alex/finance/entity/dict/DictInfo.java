@@ -30,9 +30,14 @@ public class DictInfo extends BaseEntity<DictInfo>{
     @TableField("type_name")
     private String typeName;
 
-    @ApiModelProperty(value = "属于")
-    @TableField("belong_to")
+    @ApiModelProperty(value = "分类编码")
     private String belongTo;
+
+    @ApiModelProperty(value = "分类")
+    private String belongToName;
+
+    @ApiModelProperty(value = "排序")
+    private Integer orderBy;
 
     @ApiModelProperty(value = "是否有效")
     @TableField("is_valid")

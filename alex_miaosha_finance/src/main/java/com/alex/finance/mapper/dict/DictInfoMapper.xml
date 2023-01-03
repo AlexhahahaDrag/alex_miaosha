@@ -31,7 +31,7 @@
         dict_info.update_time,
         dict_info.delete_time,
         dict_info.operate_time,
-        dict_info.type_code, dict_info.type_name, dict_info.belong_to, dict_info.is_valid
+        dict_info.type_code, dict_info.type_name, dict_info.belong_to, dict_info.belong_to_name, dict_info.order_by, dict_info.is_valid
     </sql>
 
     <select id="getPage" resultType="com.alex.finance.vo.dict.DictInfoVo">
@@ -70,8 +70,8 @@
           <if test = "dictInfoVo.typeName != null">
             and type_name like concat('%', #{dictInfoVo.typeName}, '%')
           </if>
-          <if test = "dictInfoVo.belongTo != null">
-            and belong_to = #{dictInfoVo.belongTo}
+          <if test = "dictInfoVo.belongToName != null">
+            and belong_to_name like concat('%', #{dictInfoVo.belongToName}, '%')
           </if>
           <if test = "dictInfoVo.isValid != null">
             and is_valid = #{dictInfoVo.isValid}
