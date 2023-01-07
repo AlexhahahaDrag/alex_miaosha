@@ -25,17 +25,6 @@ qiniu:
   bucket: weiran1999
   domain: http://rel.weiran.ltd/
 
-#设置jwt
-audience:
-  clientId: 098f6bcd4621d373cade4e832627b4f6
-  base64Secret: MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=
-  name: mogublog
-  expiresSecond: 3600000  #1个小时 3600
-  refreshSecond: 3600
-  tokenHead: bearer_
-  tokenHeader: Authorization
-
-
 isRememberMeExpiresSecond: 259200000 #记住密码三天
 
 defaultPassword: "1234@com"

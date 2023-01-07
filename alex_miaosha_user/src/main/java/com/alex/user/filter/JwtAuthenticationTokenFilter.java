@@ -77,7 +77,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     // 将新token赋值，用于后续使用
                     authHeader = newToken;
                     // 维护 uuid - token 互相转换的Redis集合【主要用于在线用户管理】
-                    redisUtils.expire(UserKey.getById, newToken, audience.getExpiresSecond());
+                    redisUtils.expire(UserKey.getById, "aa",newToken, audience.getExpiresSecond());
                 }
             } else {
                 filterChain.doFilter(request, response);

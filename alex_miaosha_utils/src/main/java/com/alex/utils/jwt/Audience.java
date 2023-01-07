@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  *description:  jwt相关配置类
  *author:       alex
@@ -28,4 +30,6 @@ public class Audience {
     private String tokenHead;
 
     private String tokenHeader;
+
+    private List<String> whiteList;
 }

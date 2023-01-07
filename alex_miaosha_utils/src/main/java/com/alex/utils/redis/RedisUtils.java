@@ -78,23 +78,22 @@ public class RedisUtils {
 
     /**
      * @param prefix
-     * @param key
+     * @param value
      * @param exTime
      * @description: 设置key的过期时间
      * @author: majf
      * @createDate: 2022/7/12 9:50
      * @return: void
      */
-    public void expire(KeyPrefix prefix, String key, Long exTime) {
+    public void expire(KeyPrefix prefix, String key, String value, Long exTime) {
         try {
-            redisTemplate.expire(prefix.getPrefix() + SEGEMENT + key, exTime, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(prefix.getPrefix() + SEGEMENT + key, value, exTime, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.error("设置过期时间失败，key为{}，异常为{}", key, e);
+            log.error("设置过期时间失败，key为{}，异常为{}", prefix.getPrefix() + SEGEMENT + key, e);
         }
     }
 
     public void expire(KeyPrefix prefix, String key, Long exTime, TimeUnit unit) {
-        String s = prefix.getPrefix() + SEGEMENT + key;
         try {
             redisTemplate.opsForValue().set(prefix.getPrefix() + SEGEMENT + key, "1", exTime, unit);
         } catch (Exception e) {

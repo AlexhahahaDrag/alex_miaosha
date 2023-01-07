@@ -22,7 +22,6 @@ public class GatewayWebSecurityConfig {
     //白名单
     private static String[] whiteList;
 
-    // TODO: 2022/10/13 添加token校验
     static {
         whiteList = new String[]{
                 "/swagger-resources/**",

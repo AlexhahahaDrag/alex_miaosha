@@ -1,6 +1,5 @@
-package com.alex.user.security;
+package com.alex.common.config.security;
 
-import com.alex.user.filter.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @description: security配置类
@@ -26,26 +24,21 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-
     //白名单
     private static String[] whiteList;
 
     static {
         whiteList = new String[]{
-                "/swagger-resources/**",
-                "/doc.html",
-                "/webjars/**",
+//                "/swagger-resources/**",
+//                "/doc.html",
+//                "/webjars/**",
                 "/actuator/**",
-                "/favicon.ico",
+//                "/favicon.ico",
                 "/user/login",
-                "/druid/**",
+//                "/druid/**",
                 "/v3/api-docs",
-                "/finance-info/**",
-                "/finance-analysis/**",
-                "/dict-info/**",
-                "/generator/**",
-                "/error"};
+//                "/error"
+        };
     }
 
     // TODO: 2022/9/26 添加用户service 异常处理
@@ -59,7 +52,6 @@ public class WebSecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
                         .antMatchers(whiteList)
                         .permitAll()
