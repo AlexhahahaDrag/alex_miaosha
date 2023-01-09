@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -116,7 +117,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             // 将新token赋值，用于后续使用
             authHeader = newToken;
             // 维护 uuid - token 互相转换的Redis集合【主要用于在线用户管理】
-            redisUtils.expire(UserKey.getById, adminId.toString(), newToken, audience.getExpiresSecond());
+            redisUtils.setEx(UserKey.getById, adminId.toString(), newToken, audience.getExpiresSecond(), TimeUnit.MINUTES);
             //把adminUid存储到request中
             String finalAuthHeader = authHeader;
             Consumer<HttpHeaders> headers = httpHeaders -> {

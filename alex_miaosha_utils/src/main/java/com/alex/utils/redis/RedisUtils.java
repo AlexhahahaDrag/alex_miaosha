@@ -78,31 +78,6 @@ public class RedisUtils {
 
     /**
      * @param prefix
-     * @param value
-     * @param exTime
-     * @description: 设置key的过期时间
-     * @author: majf
-     * @createDate: 2022/7/12 9:50
-     * @return: void
-     */
-    public void expire(KeyPrefix prefix, String key, String value, Long exTime) {
-        try {
-            redisTemplate.opsForValue().set(prefix.getPrefix() + SEGEMENT + key, value, exTime, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            log.error("设置过期时间失败，key为{}，异常为{}", prefix.getPrefix() + SEGEMENT + key, e);
-        }
-    }
-
-    public void expire(KeyPrefix prefix, String key, Long exTime, TimeUnit unit) {
-        try {
-            redisTemplate.opsForValue().set(prefix.getPrefix() + SEGEMENT + key, "1", exTime, unit);
-        } catch (Exception e) {
-            log.error("设置过期时间失败，key为{}，异常为{}", key, e);
-        }
-    }
-
-    /**
-     * @param prefix
      * @param key
      * @param value
      * @param exTime
@@ -143,6 +118,31 @@ public class RedisUtils {
                 redisTemplate.opsForValue().set(key, value);
             } else {
                 redisTemplate.opsForValue().set(key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("设置对象失败，key为{}，异常为{}", key, e);
+            return false;
+        }
+    }
+
+    /**
+     * @param keyPrefix
+     * @param key
+     * @param value
+     * @param exTime
+     * @param timeUnit
+     * @description: 
+     * @author:      majf
+     * @return:      boolean
+    */
+    public boolean setEx(KeyPrefix keyPrefix, String key, String value, long exTime, TimeUnit timeUnit) {
+        try {
+            if (exTime == 0) {
+                //不设置过期时间
+                redisTemplate.opsForValue().set(keyPrefix.getPrefix() + SEGEMENT + key, value);
+            } else {
+                redisTemplate.opsForValue().set(keyPrefix.getPrefix() + SEGEMENT + key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
             }
             return true;
         } catch (Exception e) {

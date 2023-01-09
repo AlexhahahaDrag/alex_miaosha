@@ -9,6 +9,7 @@ import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginIdKey;
+import com.alex.common.redis.key.UserKey;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.user.TUserService;
@@ -117,7 +118,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             return Result.error(ResultEnum.EMPTY_USERNAME_OR_PASSWORD);
         }
         String ip = IpUtils.getIpAddr(request);
-        String s = LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
         String limitCount = redisUtils.get(LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
         if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
             return Result.error(ResultEnum.LOGIN_ERROR_MORE);
@@ -159,7 +159,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //        }
 //        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
         String roleName = "";
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond() * 1000;
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
                 , expiration, audience.getBase64Secret());
         String token = audience.getTokenHead() + jwtToken;
@@ -179,6 +179,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         //添加在线用户到redis中，设置过期时间
         // TODO: 2022/12/26  
 //        adminService.addOnLineAdmin(admin, expiration);
+        redisUtils.setEx(UserKey.getById, admin.getId().toString(), token, expiration, TimeUnit.MILLISECONDS);
         result.put(SysConf.ADMIN, admin);
         return Result.success(result);
     }
