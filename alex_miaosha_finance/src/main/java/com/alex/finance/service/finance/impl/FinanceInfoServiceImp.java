@@ -7,13 +7,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alex.base.common.Result;
 import com.alex.common.pojo.vo.user.TUserVo;
 import com.alex.finance.entity.finance.FinanceInfo;
-import com.alex.finance.feign.UserClient11;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.mapper.finance.FinanceInfoMapper;
 import com.alex.finance.service.finance.FinanceInfoService;
 import com.alex.finance.vo.finance.FinanceInfoVo;
 import com.alex.finance.vo.finance.ImportFinanceInfoVo;
 import com.alex.utils.bean.BeanUtils;
+import com.alex.utils.feign.UserClient;
 import com.alex.utils.string.StringUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -41,7 +41,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     private final IExcelDictHandlerImpl iExcelDictHandler;
 
-    private final UserClient11 userClient;
+    private final UserClient userClient;
 
     @Override
     public IPage<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {

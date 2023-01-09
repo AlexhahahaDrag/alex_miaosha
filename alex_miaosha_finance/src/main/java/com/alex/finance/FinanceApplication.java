@@ -28,7 +28,7 @@ import org.springframework.context.annotation.FilterType;
                 value = {QiNiuConfiguration.class, ImageScalaKit.class, SeckillInterceptor.class}
         )})
 @EnableEncryptableProperties
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.alex.utils"})
 public class FinanceApplication {
 
     public static void main(String[] args) {

@@ -45,6 +45,7 @@ public class UserUtils {
         return Long.parseLong(result.toString());
     }
 
+    // TODO: 2023/1/10 设置获取当前登录人 
 //    public static SecurityUser getLoginUser() {
 //
 //        /**
