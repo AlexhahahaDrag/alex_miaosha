@@ -122,27 +122,27 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - docker rm -f user
         - docker run -p 30006:30006 --name=user -v /usr/local/soft/drone/alex_miaosha/user/logs:/logs/alex-user -d alex_miaosha_user:latest
 
-  - name: ssh-mission
-    pull: if-not-exists
-    image: appleboy/drone-ssh
-    settings:
-      # 你服务器ip地址
-      host:
-        from_secret: ssh_ip
-      # 服务器端口号
-      port: 22
-      # 服务器账号
-      username:
-        from_secret: ssh_root
-      # 密码登入写法
-      password:
-        from_secret: ssh_password
-      script:
-        - cd /usr/local/soft/drone/alex_miaosha/mission
-        - ls
-        - docker build  -t alex_miaosha_mission:latest .
-        - docker rm -f mission
-        - docker run -p 30005:30005 --name=mission -v /usr/local/soft/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
+#  - name: ssh-mission
+#    pull: if-not-exists
+#    image: appleboy/drone-ssh
+#    settings:
+#      # 你服务器ip地址
+#      host:
+#        from_secret: ssh_ip
+#      # 服务器端口号
+#      port: 22
+#      # 服务器账号
+#      username:
+#        from_secret: ssh_root
+#      # 密码登入写法
+#      password:
+#        from_secret: ssh_password
+#      script:
+#        - cd /usr/local/soft/drone/alex_miaosha/mission
+#        - ls
+#        - docker build  -t alex_miaosha_mission:latest .
+#        - docker rm -f mission
+#        - docker run -p 30005:30005 --name=mission -v /usr/local/soft/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
 
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载

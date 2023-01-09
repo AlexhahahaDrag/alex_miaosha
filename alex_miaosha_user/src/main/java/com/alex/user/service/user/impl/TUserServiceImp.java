@@ -206,4 +206,9 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
         return surplusCount;
     }
+
+    @Override
+    public List<TUserVo> getList(TUserVo tUserVo) {
+        return tUserMapper.getList(tUserVo);
+    }
 }

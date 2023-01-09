@@ -64,7 +64,7 @@ public class JwtTokenUtils {
         byte[] base64Binary = DatatypeConverter.parseBase64Binary(base64Security);
         Key signKey = new SecretKeySpec(base64Binary, signatureAlgorithm.getJcaName());
         //添加构成jwt参数
-        JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT")
+        JwtBuilder builder = Jwts.builder().setHeaderParam("type", "JWT")
                 .claim(SysConf.ADMIN_ID, adminId)
                 .claim(SysConf.ROLE, roleName)
                 .claim(SysConf.CREATE_TIME, new Date())

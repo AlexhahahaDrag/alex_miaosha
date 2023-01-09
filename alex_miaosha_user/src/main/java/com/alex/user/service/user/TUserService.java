@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 管理员表 服务类
@@ -29,4 +30,6 @@ public interface TUserService extends IService<TUser> {
     Boolean deleteTUser(String ids);
 
     Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember);
+
+    List<TUserVo> getList(TUserVo tUserVo);
 }

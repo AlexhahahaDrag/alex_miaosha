@@ -13,4 +13,5 @@ import org.springframework.cloud.openfeign.FeignClient;
 @FeignClient(name = "alex-user", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
 public interface UserClient {
 
+
 }

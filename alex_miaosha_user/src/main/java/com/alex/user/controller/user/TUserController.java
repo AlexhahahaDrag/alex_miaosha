@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @description: 管理员表restApi
@@ -90,5 +91,15 @@ public class TUserController {
                                   @RequestParam(value = "password", required = false) String password,
                                   @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) {
         return tUserService.login(request, username, password, isRememberMe);
+    }
+
+    @ApiOperationSupport(order = 10, author = "alex")
+    @ApiOperation(value = "获取管理员列表", notes = "获取管理员列表", response = Result.class)
+    @PostMapping(value = "/list")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "查询条件", name = "tUserVo")}
+    )
+    public Result<List<TUserVo>> getList(@RequestBody(required = false) TUserVo tUserVo) {
+        return Result.success(tUserService.getList(tUserVo));
     }
 }

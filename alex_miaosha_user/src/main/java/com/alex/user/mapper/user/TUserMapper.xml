@@ -67,6 +67,14 @@
         </where>
     </select>
 
+    <select id="getList" resultType="com.alex.user.vo.user.TUserVo">
+        select <include refid="Base_Column_List"></include> from t_user
+        <where>
+            t_user.is_delete = 0 <include refid="queryInfo"></include>
+        </where>
+        order by t_user.id
+    </select>
+
      <sql id="queryInfo">
         <if test = "tUserVo != null">
           <if test = "tUserVo.username != null">

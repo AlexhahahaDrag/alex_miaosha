@@ -3,9 +3,11 @@ package com.alex.user.mapper.user;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.vo.user.TUserVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @description:  管理员表 mapper
@@ -19,4 +21,6 @@ public interface TUserMapper extends BaseMapper<TUser> {
     Page<TUserVo> getPage(Page<TUserVo> page, @Param("tUserVo") TUserVo tUserVo);
 
     TUserVo queryTUser(@Param("id") String id);
+
+    List<TUserVo> getList(@Param("tUserVo") TUserVo tUserVo);
 }
