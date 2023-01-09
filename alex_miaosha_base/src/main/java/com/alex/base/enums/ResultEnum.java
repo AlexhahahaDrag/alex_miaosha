@@ -37,6 +37,8 @@ public enum ResultEnum implements BaseEnum {
     NO_USERNAME("500219", "用户名不能为空！"),
     NO_MOBILE_EMAIL("500220", "邮箱和手机号至少有一项不能为空!"),
 
+    ERROR_USER_LIST("500221", "获取用户列表数据失败，请联系管理员！"),
+
     /**
      * 商品模块
      */

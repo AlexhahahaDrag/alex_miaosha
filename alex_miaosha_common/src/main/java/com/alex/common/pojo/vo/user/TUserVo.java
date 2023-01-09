@@ -1,6 +1,7 @@
-package com.alex.user.vo.user;
+package com.alex.common.pojo.vo.user;
 
 import com.alex.common.common.BaseVo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -37,6 +38,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone ="GMT+8")
     private LocalDateTime birthday;
 
     @ApiModelProperty(value = "手机")
@@ -52,6 +54,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private Integer loginCount;
 
     @ApiModelProperty(value = "最后登录时间")
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss",timezone ="GMT+8")
     private LocalDateTime lastLoginTime;
 
     @ApiModelProperty(value = "最后登录IP")
@@ -83,5 +86,4 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "履历")
     private String personResume;
-
 }

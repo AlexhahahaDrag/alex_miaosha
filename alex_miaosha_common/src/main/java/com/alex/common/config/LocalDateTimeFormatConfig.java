@@ -25,7 +25,6 @@ public class LocalDateTimeFormatConfig {
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
 
-    // TODO: 2022/10/9 配置 Java 8 date/time type `java.time.LocalDateTime` not supported by default: add Module "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" to enable handling (through reference chain: io.jsonwebtoken.impl.DefaultClaims["create_time"])
     @Bean
     public ObjectMapper objectMapper(){
         ObjectMapper objectMapper = new ObjectMapper();

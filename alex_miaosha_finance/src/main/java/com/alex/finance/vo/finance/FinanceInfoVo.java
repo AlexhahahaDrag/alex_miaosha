@@ -1,7 +1,6 @@
 package com.alex.finance.vo.finance;
 
 import com.alex.common.common.BaseVo;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -49,4 +48,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
     @ApiModelProperty(name = "isValid", value = "是否有效")
     private Integer isValid;
+
+    @ApiModelProperty(name = "belongTo", value = "属于")
+    private String belongToName;
 }

@@ -1,12 +1,13 @@
-package com.alex.utils.feign;
+package com.alex.finance.feign;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
 import com.alex.common.pojo.vo.user.TUserVo;
-import com.alex.utils.feign.fallback.UserFallbackFactory;
+import com.alex.finance.feign.fallback.UserFallbackFactory11;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ import java.util.List;
  * version:      1.0.0
  */
 @Component
-@FeignClient(name = "alex-user", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
-public interface UserClient {
+@FeignClient(name = "alex-user", fallback = UserFallbackFactory11.class, configuration = FeignConfig.class)
+public interface UserClient11 {
 
     @PostMapping(value = "/user/list")
-    Result<List<TUserVo>> getList(TUserVo tUserVo);
+    Result<List<TUserVo>> getList(@RequestBody(required = false) TUserVo tUserVo);
 }

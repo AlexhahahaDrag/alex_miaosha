@@ -4,7 +4,7 @@ import com.alex.base.common.Result;
 import com.alex.common.annotations.user.AccessLimit;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.service.user.TUserService;
-import com.alex.user.vo.user.TUserVo;
+import com.alex.common.pojo.vo.user.TUserVo;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -93,7 +93,7 @@ public class TUserController {
         return tUserService.login(request, username, password, isRememberMe);
     }
 
-    @ApiOperationSupport(order = 10, author = "alex")
+    @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取管理员列表", notes = "获取管理员列表", response = Result.class)
     @PostMapping(value = "/list")
     @ApiImplicitParams({

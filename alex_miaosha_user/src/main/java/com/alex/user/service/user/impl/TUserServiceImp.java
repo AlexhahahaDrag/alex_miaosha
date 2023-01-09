@@ -13,7 +13,7 @@ import com.alex.common.redis.key.UserKey;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.user.TUserService;
-import com.alex.user.vo.user.TUserVo;
+import com.alex.common.pojo.vo.user.TUserVo;
 import com.alex.utils.IpUtils;
 import com.alex.utils.check.CheckUtils;
 import com.alex.utils.jwt.Audience;

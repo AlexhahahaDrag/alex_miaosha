@@ -1,7 +1,7 @@
 package com.alex.user.mapper.user;
 
 import com.alex.user.entity.user.TUser;
-import com.alex.user.vo.user.TUserVo;
+import com.alex.common.pojo.vo.user.TUserVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

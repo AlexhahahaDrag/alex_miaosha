@@ -4,7 +4,10 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import cn.hutool.core.bean.BeanUtil;
+import com.alex.base.common.Result;
+import com.alex.common.pojo.vo.user.TUserVo;
 import com.alex.finance.entity.finance.FinanceInfo;
+import com.alex.finance.feign.UserClient11;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.mapper.finance.FinanceInfoMapper;
 import com.alex.finance.service.finance.FinanceInfoService;
@@ -19,16 +22,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * <p>
- * @description:  财务信息表服务实现类
- * @author:       majf
- * @createDate:   2022-10-10 18:02:03
- * @version:      1.0.0
+ *
+ * @description: 财务信息表服务实现类
+ * @author: majf
+ * @createDate: 2022-10-10 18:02:03
+ * @version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -38,11 +41,27 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     private final IExcelDictHandlerImpl iExcelDictHandler;
 
+    private final UserClient11 userClient;
+
     @Override
     public IPage<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
         IPage<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        Result<List<TUserVo>> list = userClient.getList(new TUserVo());
+        Map<Long, TUserVo> userMap = Optional.ofNullable(list)
+                .map(item -> item.getData().stream()
+                        .collect(Collectors.toMap(TUserVo::getId, vo -> vo, (newVal, oldVal) -> newVal)))
+                .orElse(new HashMap<>());
         IPage<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
-         return result;
+        List<FinanceInfoVo> financeInfoVos = Optional.ofNullable(result)
+                .map(item -> item.getRecords().stream().map(
+                        finance -> {
+                            TUserVo tUserVo = userMap.get(finance.getBelongTo());
+                            finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
+                            return finance;
+                        }).collect(Collectors.toList()))
+                .orElse(null);
+        result.setRecords(financeInfoVos);
+        return result;
     }
 
     @Override
@@ -76,7 +95,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (StringUtils.isEmpty(ids)) {
             return true;
         }
-        financeInfoMapper.deleteBatchIds( Arrays.asList(ids.split(",")));
+        financeInfoMapper.deleteBatchIds(Arrays.asList(ids.split(",")));
         return true;
     }
 
@@ -101,8 +120,8 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     /**
      * @param file
      * @description: 获取导入文件数据
-     * @author:      majf
-     * @return:      java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
+     * @author: majf
+     * @return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
      */
     private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) throws Exception {
         // TODO: 2022/10/14 添加校验信息，报错信息 
