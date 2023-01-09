@@ -71,7 +71,7 @@ public class AvoidRepeatableCommitAspect {
         //设置表单提交时间
         AvoidRepeatableCommit avoidRepeatableCommit = method.getAnnotation(AvoidRepeatableCommit.class);
         long timeout = avoidRepeatableCommit.timeout();
-        redisUtils.expire(CommonKey.commonKey, key, timeout, TimeUnit.MILLISECONDS);
+        redisUtils.setEx(CommonKey.commonKey, key, "1", timeout, TimeUnit.MILLISECONDS);
         //执行方法
         return point.proceed();
     }

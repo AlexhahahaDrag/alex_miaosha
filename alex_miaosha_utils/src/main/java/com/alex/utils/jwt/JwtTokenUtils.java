@@ -1,13 +1,11 @@
 package com.alex.utils.jwt;
 
 import com.alex.base.constants.SysConf;
-import com.alex.common.security.SecurityUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -105,11 +103,11 @@ public class JwtTokenUtils {
      * @author:       alex
      * @return:       java.lang.Boolean
      */
-    public Boolean validateToken(String token, UserDetails userDetails, String base64Security) {
-        SecurityUser securityUser = (SecurityUser) userDetails;
-        final String username = getUsername(token, base64Security);
-        return username.equals(securityUser.getUsername()) && !isExpiration(token, base64Security);
-    }
+//    public Boolean validateToken(String token, UserDetails userDetails, String base64Security) {
+//        SecurityUser securityUser = (SecurityUser) userDetails;
+//        final String username = getUsername(token, base64Security);
+//        return username.equals(securityUser.getUsername()) && !isExpiration(token, base64Security);
+//    }
 
     /**
      * @param token
