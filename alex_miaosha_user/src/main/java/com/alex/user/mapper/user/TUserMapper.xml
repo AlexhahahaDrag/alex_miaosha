@@ -57,7 +57,7 @@
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"></include>
         </where>
-        order by t_user.id
+        order by t_user.operate_time desc
     </select>
 
     <select id="queryTUser" resultType="com.alex.common.pojo.vo.user.TUserVo">

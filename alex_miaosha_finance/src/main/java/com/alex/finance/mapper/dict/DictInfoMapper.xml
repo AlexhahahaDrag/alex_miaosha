@@ -39,6 +39,7 @@
         <where>
             dict_info.is_delete = 0 <include refid="queryInfo"></include>
         </where>
+        order by dict_info.operate_time desc
     </select>
 
     <select id="queryDictInfo" resultType="com.alex.finance.vo.dict.DictInfoVo">
