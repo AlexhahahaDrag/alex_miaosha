@@ -14,7 +14,3 @@ spring:
 
 mybatis:
   mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml
-
-logging:
-  level:
-    com.alex.finance.mapper: debug

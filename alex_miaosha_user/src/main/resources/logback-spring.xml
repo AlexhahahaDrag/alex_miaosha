@@ -49,7 +49,7 @@
             <charset>UTF-8</charset>
         </encoder>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <MaxFileSize>100MB</MaxFileSize>
+            <MaxFileSize>10MB</MaxFileSize>
         </triggeringPolicy>
         <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
             <level>ERROR</level>

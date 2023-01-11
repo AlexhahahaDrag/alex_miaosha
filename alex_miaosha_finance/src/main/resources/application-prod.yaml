@@ -40,7 +40,7 @@ spring:
         load-balance-algorithm-type: round_robin
       props:
         sql:
-          show: true   # 日志显示SQL
+          show: false   # 日志显示SQL
     rules:
       dataSources:
         readwrite_ds:

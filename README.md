@@ -1,12 +1,18 @@
 # **Alex秒杀系统**
 
+<img src="https://img.shields.io/badge/license-Apache--2.0-blue" />
+<img src="https://img.shields.io/badge/JDK-1.8%2B-green"/>
+<img href="https://github.com/AlexhahahaDrag/alex_miaosha" src="https://img.shields.io/badge/springcloud-2021.0.3-green"/>
+<img src="https://img.shields.io/badge/springboot-2.6.8-green" href="https://github.com/AlexhahahaDrag/alex_miaosha"/>
+<img src="https://img.shields.io/badge/knife4j-3.0.3-green"/>
+
 ## 前言
 
 &nbsp;&nbsp;alex秒杀系统，是一个练习自己技术的一个系统。很多技术都是刚刚学习完就应用到项目中了，能力有限，有很多考虑不周到或者不正确的地方，还请各位大佬帮忙指正。
 
 ## **项目介绍**
 
-&nbsp;&nbsp;alex秒杀系统，一个基于基于微服务架构的前后端分离的系统。web端使vue+antDesign，后端使用springcloud+springboot+mybatisplus+jasypt+springSecurity+knife4j进行开发。
+&nbsp;`[&nbsp;alex秒杀系统]([AlexhahahaDrag (AlexhahahaDrug) · GitHub](https://github.com/AlexhahahaDrag))`，一个基于微服务架构的前后端分离的系统。web端使vue+ant-Design-vue+type script，后端使用springcloud+springboot+mybatisplus+jasypt+springSecurity+knife4j进行开发。
 
 <p align="center">
     <a href="https://github.com/AlexhahahaDrag/alex_miaosha">
@@ -14,12 +20,6 @@
         </img>
     </a>
 </p>
-
-<img src="https://img.shields.io/badge/license-Apache--2.0-blue" />
-<img src="https://img.shields.io/badge/JDK-1.8%2B-green"/>
-<img href="https://github.com/AlexhahahaDrag/alex_miaosha" src="https://img.shields.io/badge/springcloud-2021.0.3-green"/>
-<img src="https://img.shields.io/badge/springboot-2.6.8-green" href="https://github.com/AlexhahahaDrag/alex_miaosha"/>
-<img src="https://img.shields.io/badge/knife4j-3.0.3-green"/>
 
 ## **项目地址**
 
@@ -63,7 +63,7 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 |:--------------- | --------------------------------- | -------------------------------- |
 | SpringCloud     |                                   |                                  |
 | SpringBoot      |                                   |                                  |
-| SpringSecurity |                                   |                                  |
+| SpringSecurity  |                                   |                                  |
 | MyBatis-Plus    | MyBatis的增强工具                      | https://baomidou.com/            |
 | knife4j         | Java MVC框架集成Swagger生成Api文档的增强解决方案 | https://doc.xiaominfo.com/       |
 | SpringBootAdmin |                                   |                                  |

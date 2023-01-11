@@ -17,4 +17,4 @@ mybatis:
 
 logging:
   level:
-    com.alex.finance.mapper: debug
+    com.alex.generator.mapper: debug

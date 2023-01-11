@@ -45,13 +45,7 @@ spring:
   #            - Path=/am-manage/**
   #          filters:
   #            - StripPrefix=1
-  #
-  #        - id: alex-monitor
-  #          uri: lb://alex-monitor
-  #          predicates:
-  #            - Path=/aa-monitor/**
-  #          filters:
-  #            - StripPrefix=1
+
   main:
     allow-bean-definition-overriding: true
 management:
