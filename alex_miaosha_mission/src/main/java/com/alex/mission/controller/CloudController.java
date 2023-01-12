@@ -5,8 +5,10 @@ import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.OrderDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.pojo.vo.WelcomeVo;
-import com.alex.common.utils.qiniu.ImageKit;
-import com.alex.mission.service.*;
+import com.alex.mission.service.GoodsService;
+import com.alex.mission.service.OrderService;
+import com.alex.mission.service.SeckillGoodsService;
+import com.alex.mission.service.WelcomeService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
@@ -14,7 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -38,8 +39,6 @@ public class CloudController {
     private final SeckillGoodsService seckillGoodsService;
 
     private final WelcomeService welcomeService;
-
-    private final ImageService imageService;
 
     @GetMapping(value = "/goods")
     @ApiOperation(value = "获得商品列表", notes = "获得商品列表")
@@ -107,22 +106,22 @@ public class CloudController {
         return Result.success(welcomeService.welcomeCount());
     }
 
-    @PostMapping(value = "/upload")
-    @ApiOperation(value = "上传图片", notes  = "上传图片")
-    public Result<ImageKit> upload(@ApiParam(value = "文件", name = "file", required = true) @RequestParam(value = "file")MultipartFile file,
-                                   @ApiParam(value = "上传类型 0：商品，1：主页", name = "type", required = true) @RequestParam(value = "type") String type) {
-        return Result.success(imageService.upload(file, type));
-    }
-
-    @DeleteMapping(value = "/upload")
-    @ApiOperation(value = "删除图片", notes  = "删除图片")
-    public Result<Boolean> delete(@ApiParam(value = "key", name = "key", required = true) @RequestParam(value = "key") String key) {
-        return Result.success(imageService.delete(key));
-    }
-
-    @DeleteMapping(value = "/upload/deletes")
-    @ApiOperation(value = "批量删除图片", notes = "批量删除图片")
-    public Result<Boolean> deletes(@ApiParam(value = "key集合", name = "keys", required = true) @RequestParam(value = "keys") String[] keys) {
-        return Result.success(imageService.deletes(keys));
-    }
+//    @PostMapping(value = "/upload")
+//    @ApiOperation(value = "上传图片", notes  = "上传图片")
+//    public Result<ImageKit> upload(@ApiParam(value = "文件", name = "file", required = true) @RequestParam(value = "file")MultipartFile file,
+//                                   @ApiParam(value = "上传类型 0：商品，1：主页", name = "type", required = true) @RequestParam(value = "type") String type) {
+//        return Result.success(imageService.upload(file, type));
+//    }
+//
+//    @DeleteMapping(value = "/upload")
+//    @ApiOperation(value = "删除图片", notes  = "删除图片")
+//    public Result<Boolean> delete(@ApiParam(value = "key", name = "key", required = true) @RequestParam(value = "key") String key) {
+//        return Result.success(imageService.delete(key));
+//    }
+//
+//    @DeleteMapping(value = "/upload/deletes")
+//    @ApiOperation(value = "批量删除图片", notes = "批量删除图片")
+//    public Result<Boolean> deletes(@ApiParam(value = "key集合", name = "keys", required = true) @RequestParam(value = "keys") String[] keys) {
+//        return Result.success(imageService.deletes(keys));
+//    }
 }

@@ -7,7 +7,6 @@ import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.redis.key.GoodsKey;
 import com.alex.common.redis.key.SeckillGoodsKey;
-import com.alex.common.utils.qiniu.ImageScalaKit;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.mapper.GoodsMapper;
@@ -46,7 +45,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     private final SeckillGoodsManager seckillGoodsManager;
 
-    private final ImageScalaKit imageScalaKit;
+//    private final ImageScalaKit imageScalaKit;
 
     /**
      * 系统初始化，把商品信息加载到Redis缓存中。后续客户访问都从缓存中读取。
@@ -97,7 +96,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (StringUtils.isNotEmpty(goods.getGoodsImg())) {
             try {
                 URL url = new URL(goods.getGoodsImg());
-                imageScalaKit.delete(url.getPath().replaceFirst("/", ""));
+//                imageScalaKit.delete(url.getPath().replaceFirst("/", ""));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

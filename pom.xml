@@ -20,7 +20,8 @@
         <module>alex_miaosha_user</module>
         <module>alex_miaosha_utils</module>
         <module>alex_miaosha_finance</module>
-        <module>alex_generator</module><module>alex_miaosha_oss</module>
+        <module>alex_generator</module>
+        <module>alex_miaosha_osssys</module>
     </modules>
 
     <parent>
@@ -53,7 +54,6 @@
         <redis.version>2.7.0</redis.version>
         <hutool.version>5.8.3</hutool.version>
         <jackson.version>2.11.3</jackson.version>
-        <qiniu.version>7.11.0</qiniu.version>
         <gson.version>2.9.0</gson.version>
         <spring-web.version>5.2.10.RELEASE</spring-web.version>
         <springboot.version>2.6.8</springboot.version>
@@ -75,6 +75,7 @@
         <ip2region.version>2.6.6</ip2region.version>
         <prometheus.version>1.10.2</prometheus.version>
         <jasypt.version>3.0.4</jasypt.version>
+        <minio.version>8.5.1</minio.version>
     </properties>
 
     <dependencyManagement>
@@ -173,13 +174,6 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
-            </dependency>
-
-            <!--qiniu cloud-->
-            <dependency>
-                <groupId>com.qiniu</groupId>
-                <artifactId>qiniu-java-sdk</artifactId>
-                <version>${qiniu.version}</version>
             </dependency>
 
             <dependency>
@@ -394,7 +388,7 @@
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
-                <version>8.4.3</version>
+                <version>${minio.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

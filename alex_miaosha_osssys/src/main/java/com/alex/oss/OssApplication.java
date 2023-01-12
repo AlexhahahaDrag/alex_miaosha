@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * @description: oss启动类
- * @author: alex
- * @createDate: 2023/1/11 22:00
- * @version: 1.0.0
+ * description:
+ * author:       majf
+ * createDate:   2023/1/12 10:48
+ * version:      1.0.0
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableEncryptableProperties
 @ComponentScan(basePackages = {"com.alex.oss", "com.alex.common", "com.alex.utils"})
+@EnableEncryptableProperties
 public class OssApplication {
 
     public static void main(String[] args) {

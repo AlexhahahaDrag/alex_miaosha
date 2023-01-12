@@ -36,4 +36,3 @@ nacos:
   nacos: nacos-service
   redis: redis
   jasypt: jasypt-user
-  audience: audience

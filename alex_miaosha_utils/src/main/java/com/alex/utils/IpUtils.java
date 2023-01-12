@@ -1,8 +1,8 @@
 package com.alex.utils;
 
+import cn.hutool.core.io.FileUtil;
 import com.alex.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.lionsoul.ip2region.xdb.Searcher;
 
@@ -240,7 +240,7 @@ public class IpUtils {
             certStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(ftlPath + ftlName);
             assert certStream != null;
             byte[] certData = IOUtils.toByteArray(certStream);
-            FileUtils.writeByteArrayToFile(newFile, certData);
+            FileUtil.writeBytes(certData, newFile);
             return newFilePath;
         } catch (Exception e) {
             log.info(e.getMessage());

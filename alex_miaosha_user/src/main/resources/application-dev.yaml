@@ -19,12 +19,6 @@ logging:
   level:
     com.alex.user.mapper: debug
 
-qiniu:
-  accessKey: XEL2TdE7S3eBkI4lukdgHuP03m3FKV/NaCpUezk6z6KCR6UOo7UGmS8VXI2YlI/cDCXyuGbuqFw=
-  secretKey: RySyvFuZ+SfUDAVA0VSUX4fexjmQ1t/D45oADbkAkRMQdy0kQX+cF9uyRsh/BUzJciemr1GK610=
-  bucket: weiran1999
-  domain: http://rel.weiran.ltd/
-
 isRememberMeExpiresSecond: 259200000 #记住密码三天
 
 defaultPassword: "1234@com"

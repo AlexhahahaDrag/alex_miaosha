@@ -61,6 +61,15 @@ public class DateUtils {
     }
 
     /**
+     * @description:  获取当前时间毫秒数
+     * @author:       alex
+     * @return:       java.lang.String
+     */
+    public static Long getNowTimeLong() {
+        return LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+    }
+
+    /**
      * @description:  获取当前时间 string
      * @author:       alex
      * @return:       java.lang.String
