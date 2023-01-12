@@ -36,20 +36,15 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final DatabaseConfig databaseConfig;
 
     @Override
-    public boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author,
-                             String myEntityPath, String myVoPath, String myClientPath) {
+    public boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author) {
         String java = "/java/com/alex" + System.getProperty("file.separator") + javaPath;
         for (String tableName : tableNames) {
-            executeGenerate(parentPackage, java, tableName, moduleName, fileName,
-                    myVoPath, myEntityPath, myClientPath,
-                    author);
+            executeGenerate(parentPackage, java, tableName, moduleName, fileName, author);
         }
         return true;
     }
 
-    private void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName,
-                                 String myVoPath, String myEntityPath, String myClientPath,
-                                 String author) {
+    private void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName, String author) {
         String dbConfig = databaseConfig.getUrl();
         String dbUser = databaseConfig.getUsername();
         String dbPassword = databaseConfig.getPassword();
@@ -57,12 +52,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         String separator = System.getProperty("file.separator");
         String basePath = System.getProperty("user.dir");
         String projectPath = basePath + separator + moduleName + getPath(base, separator);
-        String voPath = StringUtils.isEmpty(myVoPath) ? projectPath + java + "/vo" : myVoPath;
+        String voPath =  projectPath + java + "/vo";
         String controllerPath = projectPath + java + "/controller";
-        String entityPath = StringUtils.isEmpty(myEntityPath) ? projectPath + java + "/entity" : myEntityPath;
+        String entityPath = projectPath + java + "/entity";
         String mapperPath = projectPath + java + "/mapper";
         String servicePath = projectPath + java + "/service";
-        String clientPath = StringUtils.isEmpty(myClientPath) ? projectPath + java + "/client" : myClientPath;
+        String clientPath = projectPath + java + "/client";
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
                 .dbQuery(new MySqlQuery())

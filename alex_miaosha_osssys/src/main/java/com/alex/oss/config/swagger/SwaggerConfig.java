@@ -43,13 +43,13 @@ public class SwaggerConfig {
                 .build();
         globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
-                .pathMapping("/am-user")
+//                .pathMapping("/am-oss")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.oss.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("alex-user")
+                .groupName("alex-oss")
 //                .globalRequestParameters(globalRequestParameters)
                 ;
     }

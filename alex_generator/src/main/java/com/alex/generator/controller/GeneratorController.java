@@ -38,21 +38,14 @@ public class GeneratorController {
             @ApiImplicitParam(value = "文件名称", name = "fileName", defaultValue = "test"),
             @ApiImplicitParam(value = "父级包名称", name = "parentPackage", defaultValue = "com.alex.user"),
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
-            @ApiImplicitParam(value = "作者(Alex)", name = "author", defaultValue = "alex"),
-            @ApiImplicitParam(value = "自定义entity路径", name = "myEntityPath"),
-            @ApiImplicitParam(value = "自定义vo路径", name = "myVoPath"),
-            @ApiImplicitParam(value = "自定义client路径", name = "myClientPath")})
+            @ApiImplicitParam(value = "作者(Alex)", name = "author", defaultValue = "alex")})
     public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
                                     @RequestParam(value = "javaPath") String javaPath,
                                     @RequestParam(value = "fileName") String fileName,
                                     @RequestParam(value = "parentPackage") String parentPackage,
                                     @RequestParam(value = "tableNames") String[] tableNames,
-                                    @RequestParam(value = "author", required = false) String author,
-                                    @RequestParam(value = "myEntityPath", required = false) String myEntityPath,
-                                    @RequestParam(value = "myVoPath", required = false) String myVoPath,
-                                    @RequestParam(value = "myClientPath", required = false) String myClientPath) {
-        return Result.success(generatorService.generator(moduleName, javaPath, fileName, parentPackage, tableNames, author,
-                myEntityPath, myVoPath, myClientPath));
+                                    @RequestParam(value = "author", required = false) String author) {
+        return Result.success(generatorService.generator(moduleName, javaPath, fileName, parentPackage, tableNames, author));
     }
 
     // TODO: 2022/10/12 修改vo模板集成baseVo 
