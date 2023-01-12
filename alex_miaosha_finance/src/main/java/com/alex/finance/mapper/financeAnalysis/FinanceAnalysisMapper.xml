@@ -89,13 +89,11 @@
     <select id="getDayExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
         SELECT
             SUBSTR( date_info.date, 9 ) AS info_date,
-            date_info.user_id,
             IFNULL( info.amount, 0 ) AS amount
         FROM
             (
             SELECT
-                date,
-                user_info.user_id
+                date
             FROM
                 (
                 SELECT
@@ -109,22 +107,7 @@
                         ( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) xc2,
                         ( SELECT @xi := 0 ) xc0
                     ) xcxc
-                ) x0,
-                (
-                SELECT DISTINCT
-                    finance_info.belong_to AS user_id
-                FROM
-                    finance_info
-                WHERE
-                    info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
-                    AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-                    AND income_and_expenses = 'expense'
-                    AND is_valid = '1'
-                    AND is_delete = '0'
-                    <if test="belongTo != null">
-                        and belong_to = #{belongTo}
-                    </if>
-                ) user_info
+                ) x0
             WHERE
                 x0.date >= (
                 SELECT
@@ -135,7 +118,6 @@
                     ))) date_info
             LEFT JOIN (
             SELECT
-                belong_to,
                 DATE_FORMAT( info_date, '%Y-%m-%d' ) AS dateinfo,
                 sum( CASE income_and_expenses WHEN 'expense' THEN amount ELSE - amount END ) AS amount
             FROM
@@ -150,46 +132,26 @@
                      and belong_to = #{belongTo}
                 </if>
             GROUP BY
-                belong_to,
                 dateinfo
             ) info ON date_info.date = info.dateinfo
-            AND date_info.user_id = info.belong_to
         ORDER BY
-            date_info.date,
-            info.belong_to;
+            date_info.date
     </select>
 
     <select id="getMonthExpense" resultType="com.alex.finance.vo.financeAnalysis.AnalysisVo">
         WITH recursive c ( n ) AS ( SELECT 1 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
         SELECT
             date_info.n as info_Date,
-            date_info.user_id,
             ifnull( info.amount, 0 ) AS amount
             FROM
                 (
                 SELECT
-                    c.n,
-                    user_info.user_id
+                    c.n
                 FROM
-                    c,(
-                    SELECT DISTINCT
-                        finance_info.belong_to AS user_id
-                    FROM
-                        finance_info
-                    WHERE
-                        info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime )
-                        AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-                        AND type_code != '工资'
-                        AND is_valid = '1'
-                        AND is_delete = '0'
-                        <if test="belongTo != null">
-                            and belong_to = #{belongTo}
-                        </if>
-                    ) user_info
+                    c
                 ) date_info
                 LEFT JOIN (
                 SELECT
-                    belong_to AS user_id,
                     DATE_FORMAT( info_date, '%m' ) AS dateinfo,
                     sum( CASE WHEN income_and_expenses = 'expense' THEN amount ELSE - amount END ) AS amount
                 FROM
@@ -204,12 +166,9 @@
                         and belong_to = #{belongTo}
                     </if>
                 GROUP BY
-                    belong_to,
                     dateinfo
                 ) info ON info.dateinfo = date_info.n
-                AND info.user_id = date_info.user_id
             ORDER BY
-                date_info.n,
-                date_info.user_id
+                date_info.n
     </select>
 </mapper>

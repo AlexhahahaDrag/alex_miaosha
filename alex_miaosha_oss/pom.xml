@@ -9,7 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>alex_miaosha_user</artifactId><packaging>pom</packaging><modules><module>user-api</module><module>user-boot</module></modules>
+    <artifactId>alex_miaosha_oss</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>oss-boot</module><module>oss-api</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -39,10 +44,9 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
 
-        <!--    skywalking整合logback    -->
         <dependency>
-            <groupId>org.apache.skywalking</groupId>
-            <artifactId>apm-toolkit-logback-1.x</artifactId>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
         </dependency>
     </dependencies>
 
@@ -53,7 +57,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <!-- 指定该Main Class为全局的唯一入口 -->
-                    <mainClass>com.alex.user.UserApplication</mainClass>
+                    <mainClass>com.alex.oss.OssApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
