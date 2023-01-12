@@ -20,7 +20,7 @@
         <module>alex_miaosha_user</module>
         <module>alex_miaosha_utils</module>
         <module>alex_miaosha_finance</module>
-        <module>alex_generator</module>
+        <module>alex_generator</module><module>alex_miaosha_oss</module>
     </modules>
 
     <parent>
@@ -389,6 +389,12 @@
                 <groupId>com.github.ulisesbocchio</groupId>
                 <artifactId>jasypt-spring-boot-starter</artifactId>
                 <version>${jasypt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>8.4.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
