@@ -8,5 +8,5 @@ package com.alex.generator.service;
  */
 public interface GeneratorService {
 
-    boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author);
+    boolean generator(String moduleName, String javaPath, String[] tableNames, String author);
 }

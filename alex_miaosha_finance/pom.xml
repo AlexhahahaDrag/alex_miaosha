@@ -61,6 +61,11 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>user-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

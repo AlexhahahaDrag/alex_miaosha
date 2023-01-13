@@ -58,7 +58,7 @@
         <!--    alex-common    -->
         <dependency>
             <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_common</artifactId>
+            <artifactId>alex_miaosha_utils</artifactId>
         </dependency>
     </dependencies>
 </project>

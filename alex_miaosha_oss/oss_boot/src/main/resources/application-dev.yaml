@@ -1,0 +1,27 @@
+server:
+  port: 30009
+
+spring:
+  application:
+    name: alex-oss-dev
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
+    url: jdbc:mysql://123.249.83.33:3336/alex_oss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+    password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+
+mybatis-plus:
+  mapper-locations: classpath*:com/alex/oss/mapper/**/*Mapper.xml
+
+logging:
+  level:
+    com.alex.osssys.mapper: debug
+
+minio:
+  url: 123.249.83.33
+  port: 6000
+  accessKey: TWVBTWYvGjJIRX5q
+  secretKey: vgt0Ir16cqrymG3qbYt1c8fD8xMbCX8h
+  bucketName: user-bucket

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,12 +50,12 @@ public class LocalDateTimeFormatConfig {
         return new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN));
     }
 
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return builder -> {
-            builder.serializerByType(LocalDateTime.class, localDateTimeSerializer());
-            builder.deserializerByType(LocalDateTime.class, localDateTimeDeserializer());
-            builder.simpleDateFormat(DEFAULT_DATE_TIME_PATTERN);
-        };
-    }
+//    @Bean
+//    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+//        return builder -> {
+//            builder.serializerByType(LocalDateTime.class, localDateTimeSerializer());
+//            builder.deserializerByType(LocalDateTime.class, localDateTimeDeserializer());
+//            builder.simpleDateFormat(DEFAULT_DATE_TIME_PATTERN);
+//        };
+//    }
 }

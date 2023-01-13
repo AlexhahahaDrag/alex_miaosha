@@ -4,6 +4,7 @@ import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.service.GeneratorService;
+import com.alex.utils.string.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -15,7 +16,6 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.BeetlTemplateEngine;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,34 +36,39 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final DatabaseConfig databaseConfig;
 
     @Override
-    public boolean generator(String moduleName, String javaPath, String fileName, String parentPackage, String[] tableNames, String author) {
-        String java = "/java/com/alex" + System.getProperty("file.separator") + javaPath;
+    public boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
+        String separator = System.getProperty("file.separator");
+        String bootDir = "/java/com/alex" + separator + javaPath;
+        String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
         for (String tableName : tableNames) {
-            executeGenerate(parentPackage, java, tableName, moduleName, fileName, author);
+            executeGenerate(bootDir, apiDir, tableName, moduleName, author);
         }
         return true;
     }
 
-    private void executeGenerate(String parentPackage, String java, String tableName, String moduleName, String fileName, String author) {
+    private void executeGenerate(String bootDir, String apiDir, String tableName, String moduleName, String author) {
         String dbConfig = databaseConfig.getUrl();
         String dbUser = databaseConfig.getUsername();
         String dbPassword = databaseConfig.getPassword();
         String base = "/src/main/";
         String separator = System.getProperty("file.separator");
         String basePath = System.getProperty("user.dir");
-        String projectPath = basePath + separator + moduleName + getPath(base, separator);
-        String voPath =  projectPath + java + "/vo";
-        String controllerPath = projectPath + java + "/controller";
-        String entityPath = projectPath + java + "/entity";
-        String mapperPath = projectPath + java + "/mapper";
-        String servicePath = projectPath + java + "/service";
-        String clientPath = projectPath + java + "/client";
+        String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
+        String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
+        String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
+        String controllerPath = projectPath + bootDir + "/controller";
+        String entityPath = projectPath + bootDir + "/entity";
+        String mapperPath = projectPath + bootDir + "/mapper";
+        String servicePath = projectPath + bootDir + "/service";
+        String voPath = clientPathProject + apiDir + "/dto";
+        String clientPath = clientPathProject + apiDir + "/api";
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
                 .dbQuery(new MySqlQuery())
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
+        String fileName = StringUtils.camel(tableName);
         pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
@@ -73,18 +78,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
         FastAutoGenerator.create(dataSourceConfig)
-                .globalConfig(builder -> {
-                    builder.disableOpenDir()
-                            .fileOverride()
-                            .outputDir(projectPath + "\\java")
-                            .author(author)
-                            .enableSwagger()
-                            .dateType(DateType.TIME_PACK)
-                            .commentDate("yyyy-MM-dd HH:mm:ss")
-                    ;
-                })
+                .globalConfig(builder -> builder
+                        .outputDir(projectPath + "\\java")
+                        .author(author)
+                        .enableSwagger()
+                        .dateType(DateType.TIME_PACK)
+                        .commentDate("yyyy-MM-dd HH:mm:ss"))
                 .packageConfig(builder -> {
-                    builder.parent(parentPackage) // 设置父包名
+                    builder.parent("com.alex" + fileName) // 设置父包名
                             .entity("entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .service("service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .serviceImpl("service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")

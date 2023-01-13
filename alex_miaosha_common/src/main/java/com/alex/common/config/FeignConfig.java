@@ -1,7 +1,9 @@
 package com.alex.common.config;
 
+import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -21,8 +23,13 @@ public class FeignConfig implements RequestInterceptor {
     public void apply(RequestTemplate requestTemplate) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-
         //添加token
         requestTemplate.header("Authorization", request.getHeader("Authorization"));
+    }
+
+    @Bean
+    public Logger.Level level() {
+        //仅记录请求方法、URL、响应状态代码以及执行时间，生成一般用这个
+        return Logger.Level.BASIC;
     }
 }

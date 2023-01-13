@@ -3,14 +3,14 @@ server:
 
 spring:
   application:
-    name: alex-generator
+    name: alex-generator-dev
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
-    url: jdbc:mysql://123.249.83.33:3306/alex_user
+    url: jdbc:mysql://123.249.83.33:3336/alex_oss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: 123456
+    password: mjzp.99147258369
 
 mybatis:
   mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml

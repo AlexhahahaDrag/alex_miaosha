@@ -35,17 +35,13 @@ public class GeneratorController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "服务名称", name = "moduleName", defaultValue = "alex_miaosha_finance"),
             @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
-            @ApiImplicitParam(value = "文件名称", name = "fileName", defaultValue = "test"),
-            @ApiImplicitParam(value = "父级包名称", name = "parentPackage", defaultValue = "com.alex.user"),
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
             @ApiImplicitParam(value = "作者(Alex)", name = "author", defaultValue = "alex")})
     public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
                                     @RequestParam(value = "javaPath") String javaPath,
-                                    @RequestParam(value = "fileName") String fileName,
-                                    @RequestParam(value = "parentPackage") String parentPackage,
                                     @RequestParam(value = "tableNames") String[] tableNames,
                                     @RequestParam(value = "author", required = false) String author) {
-        return Result.success(generatorService.generator(moduleName, javaPath, fileName, parentPackage, tableNames, author));
+        return Result.success(generatorService.generator(moduleName, javaPath, tableNames, author));
     }
 
     // TODO: 2022/10/12 修改vo模板集成baseVo 

@@ -38,7 +38,13 @@ spring:
             - Path=/am-mission/**
           filters:
             - StripPrefix=1
-  #
+            -
+        - id: alex-oss
+          uri: lb://alex-oss
+          predicates:
+            - Path=/am-oss/**
+          filters:
+            - StripPrefix=1
   #        - id: alex-manage
   #          uri: lb://alex-manage
   #          predicates:

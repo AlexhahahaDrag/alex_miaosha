@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-finance
+    name: alex-finance-dev
 
   shardingsphere:
     #    mode:

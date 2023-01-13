@@ -18,7 +18,7 @@ public enum ResultEnum implements BaseEnum {
      * 服务器模块
      */
     SYSTEM_ERROR("500", "系统异常"),
-
+    SYSTEM_NO_AVAILABLE("500102", "系统服务不存在！"),
     SYSTEM_BUSY("500101", "服务器繁忙，请稍后再试"),
 
     ACCESS_LIMIT_REACHED("500103", "访问太频繁"),

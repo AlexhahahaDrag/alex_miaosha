@@ -36,14 +36,14 @@ public class StringUtils {
      * @author:       alex
      * @return:       java.lang.StringBuffer
     */
-    public static StringBuffer camel(StringBuffer str) {
+    public static String camel(String str) {
         Matcher matcher = CAMLE_PATTERN.matcher(str);
         StringBuffer sb = new StringBuffer();
         while(matcher.find()) {
             matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
         }
         matcher.appendTail(sb);
-        return sb;
+        return sb.toString();
     }
 
     /**
@@ -52,14 +52,14 @@ public class StringUtils {
      * @author:       alex
      * @return:       java.lang.StringBuffer
     */
-    public static StringBuffer underLine(StringBuffer str) {
+    public static String underline(String str) {
         Matcher matcher = UNDER_LINE_PATTERN.matcher(str);
         StringBuffer sb = new StringBuffer();
         while(matcher.find()) {
             matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
         }
         matcher.appendTail(sb);
-        return sb;
+        return sb.toString();
     }
 
     public static final long getLong(String str, Long defaultData) {

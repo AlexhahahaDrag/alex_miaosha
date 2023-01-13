@@ -23,10 +23,9 @@ import org.springframework.context.annotation.FilterType;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.alex.finance", "com.alex.common", "com.alex.utils"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                value = {SeckillInterceptor.class}
-        )})
+                value = {SeckillInterceptor.class})})
 @EnableEncryptableProperties
-@EnableFeignClients(basePackages = {"com.alex.utils"})
+@EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class FinanceApplication {
 
     public static void main(String[] args) {
