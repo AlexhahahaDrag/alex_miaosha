@@ -46,6 +46,11 @@
         <groupId>io.minio</groupId>
         <artifactId>minio</artifactId>
     </dependency>
+
+      <dependency>
+          <groupId>com.alex</groupId>
+          <artifactId>oss-api</artifactId>
+      </dependency>
   </dependencies>
 
   <build>

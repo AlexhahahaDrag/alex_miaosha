@@ -1,8 +1,8 @@
 package com.alex.oss.controller.file;
 
+import com.alex.api.oss.api.dto.file.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.oss.service.FileService;
-import com.alex.oss.vo.FileInfoVo;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;

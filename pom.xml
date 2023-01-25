@@ -49,6 +49,7 @@
         <alex_miaosha_base.version>1.0-SNAPSHOT</alex_miaosha_base.version>
         <alex_miaosha_utils.version>1.0-SNAPSHOT</alex_miaosha_utils.version>
         <alex_miaosha_user_api.version>1.0-SNAPSHOT</alex_miaosha_user_api.version>
+        <alex_miaosha_oss_api.version>1.0-SNAPSHOT</alex_miaosha_oss_api.version>
         <springinfo-version>3.1.3</springinfo-version>
         <lombok.version>1.18.24</lombok.version>
         <mybatisplus.version>3.5.2</mybatisplus.version>
@@ -396,6 +397,12 @@
                 <groupId>com.alex</groupId>
                 <artifactId>user-api</artifactId>
                 <version>${alex_miaosha_user_api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alex</groupId>
+                <artifactId>oss-api</artifactId>
+                <version>${alex_miaosha_oss_api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

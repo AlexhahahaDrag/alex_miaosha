@@ -1,11 +1,11 @@
 package com.alex.oss.service.minio;
 
 import cn.hutool.core.io.FileUtil;
+import com.alex.api.oss.api.dto.file.FileInfoVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.enums.BucketNameEnum;
 import com.alex.oss.config.minio.MinioTemplate;
 import com.alex.oss.service.FileService;
-import com.alex.oss.vo.FileInfoVo;
 import com.alex.utils.date.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
