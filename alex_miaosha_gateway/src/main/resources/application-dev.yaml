@@ -19,27 +19,27 @@ spring:
 #                redis-rate-limiter.replenishRate: 10
 #                redis-rate-limiter.burstCapacity: 20
 
-        - id: alex-user-dev
+        - id: alex-user
           uri: lb://alex-user-dev
           predicates:
             - Path=/am-user/**
           filters:
             - StripPrefix=1
 
-        - id: alex-finance-dev
+        - id: alex-finance
           uri: lb://alex-finance-dev
           predicates:
             - Path=/am-finance/**
           filters:
             - StripPrefix=1
-        - id: alex-mission-dev
+        - id: alex-mission
           uri: lb://alex-mission-dev
           predicates:
             - Path=/am-mission/**
           filters:
             - StripPrefix=1
 
-        - id: alex-oss-dev
+        - id: alex-oss
           uri: lb://alex-oss-dev
           predicates:
             - Path=/am-oss/**
