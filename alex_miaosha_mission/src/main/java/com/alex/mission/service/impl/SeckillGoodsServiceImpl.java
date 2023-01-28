@@ -7,7 +7,7 @@ import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.mapper.SeckillGoodsMapper;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.service.SeckillGoodsService;
-import com.alex.utils.redis.RedisUtils;
+import com.alex.common.utils.redis.RedisUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ server:
   port: 30001
 spring:
   application:
-    name: alex-gateway
+    name: alex-gateway-dev
   cloud:
     gateway:
       discovery:

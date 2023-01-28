@@ -9,7 +9,7 @@ import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.vo.OrderDetailVo;
 import com.alex.mission.service.OrderService;
-import com.alex.utils.redis.RedisUtils;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

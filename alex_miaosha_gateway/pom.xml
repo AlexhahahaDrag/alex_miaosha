@@ -17,16 +17,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_utils</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!--gateway-->
         <dependency>
@@ -60,6 +50,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>user_api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

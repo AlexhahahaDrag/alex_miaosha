@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.mapper.dict.DictInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.entity.dict.DictInfo">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operate_time" property="operateTime" />
+        <result column="type_code" property="typeCode" />
+        <result column="type_name" property="typeName" />
+        <result column="belong_to" property="belongTo" />
+        <result column="is_valid" property="isValid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        dict_info.id,
+        dict_info.is_delete,
+        dict_info.order_by,
+        dict_info.creator,
+        dict_info.updater,
+        dict_info.deleter,
+        dict_info.create_time,
+        dict_info.update_time,
+        dict_info.delete_time,
+        dict_info.operate_time,
+        dict_info.type_code, dict_info.type_name, dict_info.belong_to, dict_info.belong_to_name, dict_info.order_by, dict_info.is_valid
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+        select <include refid="Base_Column_List"></include> from dict_info
+        <where>
+            dict_info.is_delete = 0 <include refid="queryInfo"></include>
+        </where>
+        order by dict_info.operate_time desc
+    </select>
+
+    <select id="queryDictInfo" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+        select <include refid="Base_Column_List"></include> from dict_info
+        <where>
+            dict_info.is_delete = 0 and id = #{id}
+        </where>
+    </select>
+
+    <select id="listByBelong" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+        select <include refid="Base_Column_List"></include> from dict_info
+        <where>
+            dict_info.is_delete = 0 and is_valid = '1'
+            <if test="belongTo != null">
+                and belong_to in
+                <foreach collection="belongTo" open="(" close=")" item="be" separator=",">
+                    #{be}
+                </foreach>
+            </if>
+            order by dict_info.order_by
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "dictInfoVo != null">
+          <if test = "dictInfoVo.typeCode != null">
+            and type_code like concat('%', #{dictInfoVo.typeCode}, '%')
+          </if>
+          <if test = "dictInfoVo.typeName != null">
+            and type_name like concat('%', #{dictInfoVo.typeName}, '%')
+          </if>
+          <if test = "dictInfoVo.belongToName != null">
+            and belong_to_name like concat('%', #{dictInfoVo.belongToName}, '%')
+          </if>
+          <if test = "dictInfoVo.isValid != null">
+            and is_valid = #{dictInfoVo.isValid}
+          </if>
+        </if>
+     </sql>
+</mapper>

@@ -1,6 +1,6 @@
 package com.alex.oss.service;
 
-import com.alex.api.oss.api.dto.file.FileInfoVo;
+import com.alex.api.oss.vo.file.FileInfoVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;

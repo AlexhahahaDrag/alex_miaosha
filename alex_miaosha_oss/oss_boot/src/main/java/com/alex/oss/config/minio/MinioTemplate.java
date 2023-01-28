@@ -3,7 +3,7 @@ package com.alex.oss.config.minio;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
 import com.alex.oss.vo.ObjectItem;
-import com.alex.utils.string.StringUtils;
+import com.alex.common.utils.string.StringUtils;
 import io.minio.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;

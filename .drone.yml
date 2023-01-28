@@ -17,14 +17,16 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - mkdir -p /usr/local/soft/drone/alex_miaosha/user
       - mkdir -p /usr/local/soft/drone/alex_miaosha/web
       - mkdir -p /usr/local/soft/drone/alex_miaosha/generator
+      - mkdir -p /usr/local/soft/drone/alex_miaosha/oss
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/
-      - cp /drone/src/alex_miaosha_finance/target/alex_miaosha_finance-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/
+      - cp /drone/src/alex_miaosha_finance/finance_boot/target/finance_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/
       - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/gateway/
 #      - cp /drone/src/alex_miaosha_mission/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/mission/
-      - cp /drone/src/alex_miaosha_user/user-boot/target/user-boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/user/
+      - cp /drone/src/alex_miaosha_user/user_boot/target/user-boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/user/
       - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/generator/
+      - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss-boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/oss/
       # 将Dockerfile拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/Dockerfile /usr/local/soft/drone/alex_miaosha/finance/
@@ -33,6 +35,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_user/Dockerfile /usr/local/soft/drone/alex_miaosha/user/
       - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/drone/alex_miaosha/generator/
+      - cp /drone/src/alex_miaosha_oss/Dockerfile /usr/local/soft/drone/alex_miaosha/oss/
 
   - name: ssh-monitor
     pull: if-not-exists

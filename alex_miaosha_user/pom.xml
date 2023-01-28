@@ -13,8 +13,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>user-api</module>
-        <module>user-boot</module>
+        <module>user_api</module>
+        <module>user_boot</module>
     </modules>
 
     <properties>

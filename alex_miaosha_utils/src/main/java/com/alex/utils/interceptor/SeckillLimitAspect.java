@@ -5,7 +5,7 @@ import com.alex.base.enums.ResultEnum;
 import com.alex.common.annotations.SeckillLimit;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.AccessKey;
-import com.alex.utils.redis.RedisUtils;
+import com.alex.common.utils.redis.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

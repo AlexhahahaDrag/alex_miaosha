@@ -1,7 +1,7 @@
 package com.alex.utils;
 
 import cn.hutool.core.io.FileUtil;
-import com.alex.utils.string.StringUtils;
+import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.lionsoul.ip2region.xdb.Searcher;

@@ -4,7 +4,7 @@ import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.service.GeneratorService;
-import com.alex.utils.string.StringUtils;
+import com.alex.common.utils.string.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
