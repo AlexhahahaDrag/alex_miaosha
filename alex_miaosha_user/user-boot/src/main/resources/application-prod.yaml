@@ -18,5 +18,3 @@ mybatis-plus:
 isRememberMeExpiresSecond: 259200000 #记住密码三天
 
 defaultPassword: "1234@com"
-
-user-service: ${spring.application.name}

@@ -20,7 +20,7 @@ spring:
         #                redis-rate-limiter.burstCapacity: 20
 
         - id: alex-user
-          uri: lb://alex-user
+          uri: lb://alex-user-prod
           predicates:
             - Path=/am-user/**
           filters:
@@ -40,7 +40,7 @@ spring:
             - StripPrefix=1
             -
         - id: alex-oss
-          uri: lb://alex-oss
+          uri: lb://alex-oss-prod
           predicates:
             - Path=/am-oss/**
           filters:
