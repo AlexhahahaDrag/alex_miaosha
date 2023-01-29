@@ -33,25 +33,32 @@ spring:
           filters:
             - StripPrefix=1
         - id: alex-mission
-          uri: lb://alex-mission
+          uri: lb://alex-mission-prod
           predicates:
             - Path=/am-mission/**
           filters:
             - StripPrefix=1
-            -
+
         - id: alex-oss
           uri: lb://alex-oss-prod
           predicates:
             - Path=/am-oss/**
           filters:
             - StripPrefix=1
+  #
   #        - id: alex-manage
   #          uri: lb://alex-manage
   #          predicates:
   #            - Path=/am-manage/**
   #          filters:
   #            - StripPrefix=1
-
+  #
+  #        - id: alex-monitor
+  #          uri: lb://alex-monitor
+  #          predicates:
+  #            - Path=/aa-monitor/**
+  #          filters:
+  #            - StripPrefix=1
   main:
     allow-bean-definition-overriding: true
 management:
