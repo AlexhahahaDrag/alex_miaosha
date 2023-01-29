@@ -29,13 +29,13 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/oss/
       # 将Dockerfile拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/
-      - cp /drone/src/alex_miaosha_finance/Dockerfile /usr/local/soft/drone/alex_miaosha/finance/
+      - cp /drone/src/alex_miaosha_finance/finance_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/finance/
       - cp /drone/src/alex_miaosha_gateway/Dockerfile /usr/local/soft/drone/alex_miaosha/gateway/
 #      - cp /drone/src/alex_miaosha_mission/Dockerfile /usr/local/soft/drone/alex_miaosha/mission/
-      - cp /drone/src/alex_miaosha_user/Dockerfile /usr/local/soft/drone/alex_miaosha/user/
+      - cp /drone/src/alex_miaosha_user/user_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/user/
       - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/drone/alex_miaosha/generator/
-      - cp /drone/src/alex_miaosha_oss/Dockerfile /usr/local/soft/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/oss/
 
   - name: ssh-monitor
     pull: if-not-exists
