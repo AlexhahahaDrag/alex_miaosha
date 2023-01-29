@@ -26,7 +26,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_user/user_boot/target/user-boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/user/
       - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/generator/
-      - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss-boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/oss/
       # 将Dockerfile拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/Dockerfile /usr/local/soft/drone/alex_miaosha/finance/
