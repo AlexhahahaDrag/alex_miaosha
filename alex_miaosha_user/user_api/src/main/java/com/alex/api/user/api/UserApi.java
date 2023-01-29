@@ -20,7 +20,7 @@ import java.util.List;
  * version:      1.0.0
  */
 @Component
-@FeignClient(name = "alex-user-dev", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
+@FeignClient(name = "alex-user-${spring.profiles.active:dev}", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
 // TODO: 2023/1/13 写配置，写博客 
 //此处读取的配置文件为引用client的配置文件
 public interface UserApi {

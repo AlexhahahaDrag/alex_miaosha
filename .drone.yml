@@ -139,7 +139,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       script:
         - cd /usr/local/soft/drone/alex_miaosha/oss
         - docker build  -t alex_miaosha_oss:latest .
-        - docker rm -f user
+        - docker rm -f oss
         - docker run -p 30009:30009 --name=oss -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
 
 #  - name: ssh-mission
