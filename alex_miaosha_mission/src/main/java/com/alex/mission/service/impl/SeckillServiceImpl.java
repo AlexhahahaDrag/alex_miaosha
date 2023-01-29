@@ -1,6 +1,7 @@
 package com.alex.mission.service.impl;
 
 import cn.hutool.core.lang.UUID;
+import com.alex.api.user.utils.user.UserUtils;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
@@ -8,16 +9,15 @@ import com.alex.common.exception.SeckillException;
 import com.alex.common.obj.SeckillMessage;
 import com.alex.common.redis.key.SeckillGoodsKey;
 import com.alex.common.redis.key.SeckillKey;
+import com.alex.common.utils.redis.LuaUtils;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.mission.manager.OrderManager;
 import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.rabbitmq.ackmodel.manual.ManualAckPublisher;
 import com.alex.mission.service.SeckillService;
-import com.alex.common.utils.redis.LuaUtils;
-import com.alex.common.utils.redis.RedisUtils;
 import com.alex.utils.sm3.SM3Utils;
-import com.alex.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,9 @@
 package com.alex.mission.service.impl;
 
+import com.alex.api.user.utils.user.UserUtils;
 import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.OrderDTO;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.OrderManager;
 import com.alex.mission.mapper.OrderMapper;
@@ -9,8 +11,6 @@ import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.vo.OrderDetailVo;
 import com.alex.mission.service.OrderService;
-import com.alex.common.utils.redis.RedisUtils;
-import com.alex.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
