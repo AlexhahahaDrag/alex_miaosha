@@ -1,6 +1,8 @@
 package com.alex.api.user.vo.user;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 /**
@@ -26,9 +31,11 @@ import java.time.LocalDateTime;
 public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "用户名")
+    @NotBlank(groups = {Insert.class, Update.class}, message = "用户名不能为空！")
     private String username;
 
     @ApiModelProperty(value = "密码")
+    @NotBlank(groups = {Insert.class, Update.class}, message = "密码不能为空！")
     private String password;
 
     @ApiModelProperty(value = "性别(1:男2:女)")
@@ -38,12 +45,14 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String avatar;
 
     @ApiModelProperty(value = "邮箱")
+    @Email
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
     private LocalDateTime birthday;
 
     @ApiModelProperty(value = "手机")
+    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法")
     private String mobile;
 
     @ApiModelProperty(value = "邮箱验证码")

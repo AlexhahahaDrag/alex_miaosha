@@ -3,6 +3,7 @@ package com.alex.user.controller.user;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.user.AccessLimit;
+import com.alex.common.validator.group.Insert;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.service.user.TUserService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +61,7 @@ public class TUserController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增管理员表", notes = "新增管理员表", response = Result.class)
     @PostMapping
-    public Result<TUser> add(@RequestBody TUserVo tUserVo) {
+    public Result<TUser> add(@Validated({Insert.class}) @RequestBody TUserVo tUserVo) {
         return Result.success(tUserService.addTUser(tUserVo));
     }
 
