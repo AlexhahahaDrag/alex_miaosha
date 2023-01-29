@@ -2,7 +2,7 @@ package com.alex.finance.handler;
 
 import cn.afterturn.easypoi.excel.entity.result.ExcelVerifyHandlerResult;
 import cn.afterturn.easypoi.handler.inter.IExcelVerifyHandler;
-import com.alex.finance.vo.finance.ImportFinanceInfoVo;
+import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
 
 /**
  * description:

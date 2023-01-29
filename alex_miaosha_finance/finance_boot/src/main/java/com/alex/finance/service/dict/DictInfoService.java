@@ -1,7 +1,7 @@
 package com.alex.finance.service.dict;
 
+import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.finance.entity.dict.DictInfo;
-import com.alex.finance.vo.dict.DictInfoVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 

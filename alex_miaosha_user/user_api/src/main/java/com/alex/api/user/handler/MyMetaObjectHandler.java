@@ -1,4 +1,4 @@
-package com.alex.user.handler;
+package com.alex.api.user.handler;
 
 import com.alex.api.user.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -25,7 +25,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        log.info("start insert fill ....");
         LocalDateTime now = LocalDateTime.now();
         if (metaObject.hasSetter("isValid")) {
             this.strictInsertFill(metaObject, "isValid", Integer.class, 1);
@@ -53,7 +52,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        log.info("start update fill ....");
         LocalDateTime now = LocalDateTime.now();
         if (metaObject.hasSetter("operateTime")) {
             metaObject.setValue("operateTime", null);

@@ -16,7 +16,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     private Long id;
 
     @ApiModelProperty("创建人")
-    @TableField(value = "creator")
+    @TableField(value = "creator", fill = FieldFill.INSERT, updateStrategy = FieldStrategy.DEFAULT)
     private Long creator;
 
     @ApiModelProperty("创建时间")
@@ -24,7 +24,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     private LocalDateTime createTime;
 
     @ApiModelProperty("更新人")
-    @TableField(value = "updater")
+    @TableField(value = "updater", fill = FieldFill.UPDATE, updateStrategy = FieldStrategy.DEFAULT)
     private Long updater;
 
     @ApiModelProperty("更新时间")
@@ -32,7 +32,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
     private LocalDateTime updateTime;
 
     @ApiModelProperty("操作人")
-    @TableField(value = "operator")
+    @TableField(value = "operator", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
     private Long operator;
 
     @ApiModelProperty("操作时间")

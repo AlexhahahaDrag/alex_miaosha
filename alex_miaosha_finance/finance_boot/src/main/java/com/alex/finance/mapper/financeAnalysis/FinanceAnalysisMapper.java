@@ -1,6 +1,6 @@
 package com.alex.finance.mapper.financeAnalysis;
 
-import com.alex.finance.vo.financeAnalysis.AnalysisVo;
+import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -34,7 +34,7 @@
         dict_info.type_code, dict_info.type_name, dict_info.belong_to, dict_info.belong_to_name, dict_info.order_by, dict_info.is_valid
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+    <select id="getPage" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
         select <include refid="Base_Column_List"></include> from dict_info
         <where>
             dict_info.is_delete = 0 <include refid="queryInfo"></include>
@@ -42,14 +42,14 @@
         order by dict_info.operate_time desc
     </select>
 
-    <select id="queryDictInfo" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+    <select id="queryDictInfo" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
         select <include refid="Base_Column_List"></include> from dict_info
         <where>
             dict_info.is_delete = 0 and id = #{id}
         </where>
     </select>
 
-    <select id="listByBelong" resultType="com.alex.api.finance.api.vo.dict.DictInfoVo">
+    <select id="listByBelong" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
         select <include refid="Base_Column_List"></include> from dict_info
         <where>
             dict_info.is_delete = 0 and is_valid = '1'

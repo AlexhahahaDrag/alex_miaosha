@@ -27,7 +27,7 @@ spring:
             - StripPrefix=1
 
         - id: alex-finance
-          uri: lb://alex-finance
+          uri: lb://alex-finance-prod
           predicates:
             - Path=/am-finance/**
           filters:

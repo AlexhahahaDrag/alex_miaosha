@@ -22,6 +22,10 @@
   <dependencies>
     <dependency>
         <groupId>com.alex</groupId>
+        <artifactId>alex_miaosha_common</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.alex</groupId>
         <artifactId>alex_miaosha_utils</artifactId>
     </dependency>
 
@@ -47,10 +51,15 @@
         <artifactId>minio</artifactId>
     </dependency>
 
-      <dependency>
-          <groupId>com.alex</groupId>
-          <artifactId>oss_api</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>com.alex</groupId>
+      <artifactId>oss_api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alex</groupId>
+      <artifactId>user_api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

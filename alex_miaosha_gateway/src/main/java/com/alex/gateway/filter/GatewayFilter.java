@@ -1,16 +1,12 @@
 package com.alex.gateway.filter;
 
-import com.alex.api.user.api.UserApi;
-import com.alex.api.user.security.SecurityUserFactory;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
-import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,9 +18,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
@@ -37,7 +30,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -125,25 +117,25 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             log.info("解析出来用户: {}", username);
             log.info("解析出来的用户Uid: {}", adminId);
         }
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //关键看这里，在用的时候在获取bean
-            // TODO: 2023/1/28 写博客
-            UserApi userApi = AutowiredBean.getBean(UserApi.class);
-            CompletableFuture<TUserVo> completableFuture = CompletableFuture.supplyAsync(() -> userApi.getUserByUsername(username));
-            // block()/blockFirst()/blockLast() are blocking, which is not supported in thread parallel-1
-            // 通过用户名加载SpringSecurity用户
-            TUserVo result = completableFuture.get();
-            UserDetails userDetails = SecurityUserFactory.create(result);
-            // 校验Token的有效性
-            if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-//                            request));
-                //以后可以security中取得SecurityUser信息
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
+//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//            //关键看这里，在用的时候在获取bean
+//            // TODO: 2023/1/28 写博客
+//            UserApi userApi = AutowiredBean.getBean(UserApi.class);
+//            CompletableFuture<TUserVo> completableFuture = CompletableFuture.supplyAsync(() -> userApi.getUserByUsername(username));
+//            // block()/blockFirst()/blockLast() are blocking, which is not supported in thread parallel-1
+//            // 通过用户名加载SpringSecurity用户
+//            TUserVo result = completableFuture.get();
+//            UserDetails userDetails = SecurityUserFactory.create(result);
+//            // 校验Token的有效性
+//            if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
+//                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+//                        userDetails, null, userDetails.getAuthorities());
+////                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
+////                            request));
+//                //以后可以security中取得SecurityUser信息
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//            }
+//        }
         return chain.filter(exchange);
     }
 

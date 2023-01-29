@@ -23,4 +23,12 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <dependencies>
+        <!--easypoi-->
+        <dependency>
+          <groupId>cn.afterturn</groupId>
+          <artifactId>easypoi-spring-boot-starter</artifactId>
+      </dependency>
+    </dependencies>
 </project>

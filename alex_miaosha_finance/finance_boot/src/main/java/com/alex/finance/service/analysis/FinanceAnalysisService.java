@@ -1,6 +1,7 @@
 package com.alex.finance.service.analysis;
 
-import com.alex.finance.vo.financeAnalysis.AnalysisVo;
+
+import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
 
 import java.util.List;
 

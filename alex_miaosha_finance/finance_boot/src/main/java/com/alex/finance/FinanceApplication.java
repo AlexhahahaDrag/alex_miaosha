@@ -21,7 +21,7 @@ import org.springframework.context.annotation.FilterType;
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.alex.finance", "com.alex.common", "com.alex.utils"},
+@ComponentScan(basePackages = {"com.alex.finance", "com.alex.common", "com.alex.utils", "com.alex.api.user"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                 value = {SeckillInterceptor.class})})
 @EnableEncryptableProperties

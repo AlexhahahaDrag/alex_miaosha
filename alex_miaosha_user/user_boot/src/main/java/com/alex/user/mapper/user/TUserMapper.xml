@@ -76,7 +76,7 @@
     </select>
 
     <select id="getUserInfo" resultType="com.alex.api.user.vo.user.TUserVo">
-        select <include refid="Base_Column_List"></include> from t_user
+        select <include refid="Base_Column_List"></include>,password from t_user
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"></include>
         </where>

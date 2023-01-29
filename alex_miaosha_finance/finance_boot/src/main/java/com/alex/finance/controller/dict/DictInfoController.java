@@ -1,9 +1,9 @@
 package com.alex.finance.controller.dict;
 
+import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.base.common.Result;
 import com.alex.finance.entity.dict.DictInfo;
 import com.alex.finance.service.dict.DictInfoService;
-import com.alex.finance.vo.dict.DictInfoVo;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -41,8 +41,8 @@ public class DictInfoController {
             @ApiImplicitParam(value = "查询条件", name = "dictInfoVo")}
     )
     public Result<Page<DictInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) DictInfoVo dictInfoVo) {
+                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                            @RequestBody(required = false) DictInfoVo dictInfoVo) {
         return Result.success(dictInfoService.getPage(pageNum, pageSize, dictInfoVo));
     }
 

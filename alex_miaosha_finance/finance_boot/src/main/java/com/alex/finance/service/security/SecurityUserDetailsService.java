@@ -1,6 +1,7 @@
-package com.alex.api.user.security;
+package com.alex.finance.service.security;
 
 import com.alex.api.user.api.UserApi;
+import com.alex.api.user.security.SecurityUserFactory;
 import com.alex.api.user.vo.user.TUserVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

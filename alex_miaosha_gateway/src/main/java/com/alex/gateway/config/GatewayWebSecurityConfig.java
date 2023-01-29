@@ -35,6 +35,7 @@ public class GatewayWebSecurityConfig {
                 "/am-user/user/login",
                 "/am-mission/**",
                 "/am-finance/**",
+                "/am-oss/**",
                 "/finance-info/**",
                 "/dict-info/**",
                 "/v3/api-docs",

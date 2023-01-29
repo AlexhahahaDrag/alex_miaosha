@@ -1,7 +1,7 @@
 package com.alex.finance.mapper.dict;
 
+import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.finance.entity.dict.DictInfo;
-import com.alex.finance.vo.dict.DictInfoVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

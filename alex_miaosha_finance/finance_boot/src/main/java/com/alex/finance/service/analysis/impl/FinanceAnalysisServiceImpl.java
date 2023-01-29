@@ -1,8 +1,8 @@
 package com.alex.finance.service.analysis.impl;
 
+import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
 import com.alex.finance.mapper.financeAnalysis.FinanceAnalysisMapper;
 import com.alex.finance.service.analysis.FinanceAnalysisService;
-import com.alex.finance.vo.financeAnalysis.AnalysisVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
