@@ -80,14 +80,14 @@ public class ${table.controllerName} {
     @ApiOperationSupport(order = 30, author = "${author}")
     @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
     @PostMapping
-    public Result<${entity}> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Result<Boolean> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.add${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
     @ApiOperationSupport(order = 40, author = "${author}")
     @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
     @PutMapping
-    public Result<${entity}> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Result<Boolean> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.update${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 

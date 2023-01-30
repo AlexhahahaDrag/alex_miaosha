@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.oss.mapper.fileInfo.FileInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.oss.entity.fileInfo.FileInfo">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="file_name" property="fileName" />
+        <result column="file_size" property="fileSize" />
+        <result column="file_type" property="fileType" />
+        <result column="bucket_name" property="bucketName" />
+        <result column="file_system" property="fileSystem" />
+        <result column="bucket_file_name" property="bucketFileName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        file_info.id,
+        file_info.is_delete,
+        file_info.creator,
+        file_info.updater,
+        file_info.deleter,
+        file_info.create_time,
+        file_info.update_time,
+        file_info.delete_time,
+        file_info.operator,
+        file_info.operate_time,
+        file_info.file_name, file_info.file_size, file_info.file_type, file_info.bucket_name, file_info.file_system, file_info.bucket_file_name
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">
+        select <include refid="Base_Column_List"></include> from file_info
+        <where>
+            file_info.is_delete = 0 <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="queryFileInfo" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">
+        select <include refid="Base_Column_List"></include> from file_info
+        <where>
+            file_info.is_delete = 0 and id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "fileInfoVo != null">
+          <if test = "fileInfoVo.fileName != null">
+            and file_name like concat('%', #{fileInfoVo.fileName}, '%')
+          </if>
+          <if test = "fileInfoVo.fileSize != null">
+            and file_size = #{fileInfoVo.fileSize}
+          </if>
+          <if test = "fileInfoVo.fileType != null">
+            and file_type like concat('%', #{fileInfoVo.fileType}, '%')
+          </if>
+          <if test = "fileInfoVo.bucketName != null">
+            and bucket_name like concat('%', #{fileInfoVo.bucketName}, '%')
+          </if>
+          <if test = "fileInfoVo.fileSystem != null">
+            and file_system like concat('%', #{fileInfoVo.fileSystem}, '%')
+          </if>
+          <if test = "fileInfoVo.bucketFileName != null">
+            and bucket_file_name like concat('%', #{fileInfoVo.bucketFileName}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>

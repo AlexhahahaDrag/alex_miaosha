@@ -36,7 +36,7 @@ public class GeneratorController {
             @ApiImplicitParam(value = "服务名称", name = "moduleName", defaultValue = "alex_miaosha_finance"),
             @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
-            @ApiImplicitParam(value = "作者(Alex)", name = "author", defaultValue = "alex")})
+            @ApiImplicitParam(value = "作者", name = "author", defaultValue = "alex")})
     public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
                                     @RequestParam(value = "javaPath") String javaPath,
                                     @RequestParam(value = "tableNames") String[] tableNames,

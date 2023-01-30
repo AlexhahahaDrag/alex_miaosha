@@ -28,7 +28,6 @@ public interface UserApi {
     @PostMapping(value = "/user/list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
-    // TODO: 2023/1/28 get 为什么不行
     @GetMapping(value = "/user/getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 }

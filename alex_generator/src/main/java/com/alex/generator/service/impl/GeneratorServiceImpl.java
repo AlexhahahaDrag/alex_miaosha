@@ -37,21 +37,22 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     @Override
     public boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
-        String separator = System.getProperty("file.separator");
-        String bootDir = "/java/com/alex" + separator + javaPath;
-        String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
         for (String tableName : tableNames) {
-            executeGenerate(bootDir, apiDir, tableName, moduleName, author);
+            executeGenerate(tableName, moduleName, author, javaPath);
         }
         return true;
     }
 
-    private void executeGenerate(String bootDir, String apiDir, String tableName, String moduleName, String author) {
+    private void executeGenerate(String tableName, String moduleName, String author, String javaPath) {
+        String separator = System.getProperty("file.separator");
+        String bootDir = "/java/com/alex" + separator + javaPath;
+        String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
+
         String dbConfig = databaseConfig.getUrl();
         String dbUser = databaseConfig.getUsername();
         String dbPassword = databaseConfig.getPassword();
         String base = "/src/main/";
-        String separator = System.getProperty("file.separator");
+
         String basePath = System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
         String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
@@ -60,8 +61,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         String entityPath = projectPath + bootDir + "/entity";
         String mapperPath = projectPath + bootDir + "/mapper";
         String servicePath = projectPath + bootDir + "/service";
-        String voPath = clientPathProject + apiDir + "/dto";
+        String voPath = clientPathProject + apiDir + "/vo";
         String clientPath = clientPathProject + apiDir + "/api";
+
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
                 .dbQuery(new MySqlQuery())
@@ -77,23 +79,27 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
+
+        String boot = javaPath + ".";
+        String api = "api." + javaPath + ".";
         FastAutoGenerator.create(dataSourceConfig)
                 .globalConfig(builder -> builder
                         .outputDir(projectPath + "\\java")
                         .author(author)
                         .enableSwagger()
+                        .disableOpenDir()
+                        .fileOverride()
                         .dateType(DateType.TIME_PACK)
                         .commentDate("yyyy-MM-dd HH:mm:ss"))
                 .packageConfig(builder -> {
-                    builder.parent("com.alex" + fileName) // 设置父包名
-                            .entity("entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .service("service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .serviceImpl("service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")
-                            .mapper("mapper" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-//                            .other("common.vo." + fileName)
-                            .controller("controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .vo("vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .client("client" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    builder.parent("com.alex") // 设置父包名
+                            .entity(boot + "entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .service(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .serviceImpl(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")
+                            .mapper(boot + "mapper" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .pathInfo(pathMap); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
@@ -150,9 +156,9 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .addTableFills(list)
                             .enableActiveRecord()
                             //配置client
-//                            .clientBuilder()
-//                            .formatClientFileName("%sFeignClient")
-//                            .enableRestStyle()
+                            .clientBuilder()
+                            .formatClientFileName("%sApi")
+                            .enableRestStyle()
                             .build()
                     ; // 设置过滤表前缀
                 })
