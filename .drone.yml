@@ -96,7 +96,6 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/finance
-        - ls
         - docker build  -t alex_miaosha_finance:latest .
         - docker rm -f finance
         - docker run -p 30008:30008 --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
@@ -122,7 +121,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - docker rm -f user
         - docker run -p 30006:30006 --name=user -v /usr/local/soft/drone/alex_miaosha/user/logs:/logs/alex-user -d alex_miaosha_user:latest
 
-  - name: ssh-user
+  - name: ssh-oss
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
@@ -141,7 +140,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/oss
         - docker build  -t alex_miaosha_oss:latest .
         - docker rm -f oss
-        - docker run -p 300096:30009 --name=user -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
+        - docker run -p 30009:30009 --name=oss -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
 
 #  - name: ssh-mission
 #    pull: if-not-exists
@@ -160,6 +159,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
 #        from_secret: ssh_password
 #      script:
 #        - cd /usr/local/soft/drone/alex_miaosha/mission
+#        - ls
 #        - docker build  -t alex_miaosha_mission:latest .
 #        - docker rm -f mission
 #        - docker run -p 30005:30005 --name=mission -v /usr/local/soft/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
