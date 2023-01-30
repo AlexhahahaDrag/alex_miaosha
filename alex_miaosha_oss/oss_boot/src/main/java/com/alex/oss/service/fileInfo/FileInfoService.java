@@ -4,6 +4,9 @@ import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -19,9 +22,11 @@ public interface FileInfoService extends IService<FileInfo> {
 
     FileInfoVo queryFileInfo(String id);
 
-    FileInfo addFileInfo(FileInfoVo fileInfoVo);
+    Boolean addFileInfo(FileInfoVo fileInfoVo);
 
-    FileInfo updateFileInfo(FileInfoVo fileInfoVo);
+    Boolean updateFileInfo(FileInfoVo fileInfoVo);
 
     Boolean deleteFileInfo(String ids);
+
+    InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response);
 }

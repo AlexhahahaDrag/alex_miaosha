@@ -30,7 +30,7 @@ import java.util.List;
 @Profile({"test", "dev"})
 public class SwaggerConfig {
 
-    @Bean(value = "fileApi")
+    @Bean(value = "ossApi")
     public Docket buildDocket() {
         //添加head参数配置start
         List<RequestParameter> globalRequestParameters = new ArrayList<>();
@@ -43,20 +43,20 @@ public class SwaggerConfig {
                 .build();
         globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
-//                .pathMapping("/am-com.alex.oss")
+                .pathMapping("/am-oss")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.oss.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-oss")
-//                .globalRequestParameters(globalRequestParameters)
+                .globalRequestParameters(globalRequestParameters)
                 ;
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("alex miaosha com.alex.oss document")
+                .title("alex miaosha oss document")
                 .contact(new Contact("alex", "localhost", "734663446@qq.com"))
                 .description("ha ha ha ! be happy")
                 .termsOfServiceUrl("www.baidu.com")

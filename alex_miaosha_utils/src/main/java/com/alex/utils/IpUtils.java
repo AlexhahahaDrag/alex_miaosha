@@ -214,7 +214,7 @@ public class IpUtils {
      * @return:       java.lang.String
      */
     public static String createFtlFileByFtlArray() {
-        String ftlPath = "city/";
+        String ftlPath = "alex_miaosha_utils/src/main/resources/city/";
         return createFtlFile(ftlPath, "ip2region.xdb");
     }
 

@@ -18,6 +18,4 @@ public interface FileService {
     FileInfoVo uploadFile(MultipartFile file, String type) throws Exception;
 
     boolean deleteFile(List<String> filePath, String type) throws Exception;
-
-    InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response);
 }

@@ -18,17 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alex.oss.service.fileInfo.FileInfoService;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @description:  文件信息表restApi
  * @author:       alex
  * @createDate:   2023-01-30 14:08:29
  * @version:      1.0.0
  */
-@ApiSort(105)
+@ApiSort(20)
 @Api(value = "文件信息表相关接口", tags = {"文件信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file-info")
+@RequestMapping("/api/v1/file-info")
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
@@ -74,5 +76,19 @@ public class FileInfoController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(fileInfoService.deleteFileInfo(ids));
+    }
+
+    @ApiOperationSupport(order = 30, author = "alex")
+    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
+    @GetMapping
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文件名", name = "fileName", required = true),
+            @ApiImplicitParam(value = "类型", name = "type"),
+            @ApiImplicitParam(value = "是否删除", name = "delete")}
+    )
+    public Result deleteFile(@RequestParam(value = "fileName") String fileName,
+                             @RequestParam(value = "type", required = false) String type,
+                             @RequestParam(value = "delete", required = false) Boolean delete, HttpServletResponse response) {
+        return Result.success(fileInfoService.fileDownload(type, fileName, delete, response));
     }
 }

@@ -25,9 +25,9 @@ import java.util.List;
 //此处读取的配置文件为引用client的配置文件
 public interface UserApi {
 
-    @PostMapping(value = "/user/list")
+    @PostMapping(value = "/api/v1/user/list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
-    @GetMapping(value = "/user/getUserInfo")
+    @GetMapping(value = "/api/v1/user/getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 }

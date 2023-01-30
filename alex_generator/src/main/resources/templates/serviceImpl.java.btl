@@ -43,19 +43,19 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
-    public ${entity} add${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Boolean add${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         ${entity} ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} = new ${entity}();
         BeanUtil.copyProperties(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
         ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.insert(${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
-        return ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)};
+        return true;
     }
 
     @Override
-    public ${entity} update${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Boolean update${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         ${entity} ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} = new ${entity}();
         BeanUtil.copyProperties(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
         ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.updateById(${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)});
-        return ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)};
+        return true;
     }
 
     @Override

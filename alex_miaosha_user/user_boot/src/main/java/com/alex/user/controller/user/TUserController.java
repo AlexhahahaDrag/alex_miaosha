@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "管理员表相关接口", tags = {"管理员表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 public class TUserController {
 
     private final TUserService tUserService;

@@ -1,5 +1,6 @@
 package com.alex.oss.service.fileInfo.impl;
 
+import com.alex.common.enums.BucketNameEnum;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
@@ -7,11 +8,15 @@ import com.alex.oss.service.fileInfo.FileInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import java.io.InputStream;
 import java.util.List;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import cn.hutool.core.bean.BeanUtil;
 import com.alex.common.utils.string.StringUtils;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -38,19 +43,19 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfo addFileInfo(FileInfoVo fileInfoVo) {
+    public Boolean addFileInfo(FileInfoVo fileInfoVo) {
         FileInfo fileInfo = new FileInfo();
         BeanUtil.copyProperties(fileInfoVo, fileInfo);
         fileInfoMapper.insert(fileInfo);
-        return fileInfo;
+        return true;
     }
 
     @Override
-    public FileInfo updateFileInfo(FileInfoVo fileInfoVo) {
+    public Boolean updateFileInfo(FileInfoVo fileInfoVo) {
         FileInfo fileInfo = new FileInfo();
         BeanUtil.copyProperties(fileInfoVo, fileInfo);
         fileInfoMapper.updateById(fileInfo);
-        return fileInfo;
+        return true;
     }
 
     @Override
@@ -61,5 +66,26 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         List<String> idArr = Arrays.asList(ids.split(","));
         fileInfoMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response) {
+        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
+        return null;
+    }
+
+    private String getBucket(String type) {
+        String bucketName;
+        switch (type) {
+            case "user" :
+                bucketName = BucketNameEnum.USER_BUCKET.getValue();
+                break;
+            case "goods" :
+                bucketName = BucketNameEnum.GOODS_BUCKET.getValue();
+                break;
+            default:
+                bucketName = BucketNameEnum.COMMON_BUCKET.getValue();
+        }
+        return bucketName;
     }
 }
