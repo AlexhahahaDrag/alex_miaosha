@@ -100,6 +100,12 @@
           <if test = "financeInfoVo.isValid != null">
             and finance_info.is_valid = #{financeInfoVo.isValid}
           </if>
+          <if test = "financeInfoVo.infoDateStart != null">
+            and finance_info.info_date >= #{financeInfoVo.infoDateStart}
+          </if>
+          <if test = "financeInfoVo.infoDateEnd != null">
+            and finance_info.info_date &lt;= DATE_ADD(#{financeInfoVo.infoDateEnd}, interval 1 day)
+          </if>
         </if>
      </sql>
 </mapper>

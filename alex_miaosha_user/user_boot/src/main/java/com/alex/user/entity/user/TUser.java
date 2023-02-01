@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -46,7 +47,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "出生年月日")
     @TableField("birthday")
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @ApiModelProperty(value = "手机")
     @TableField("mobile")

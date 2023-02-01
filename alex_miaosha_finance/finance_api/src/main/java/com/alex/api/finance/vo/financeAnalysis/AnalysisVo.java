@@ -32,7 +32,7 @@ public class AnalysisVo {
     @ApiModelProperty(name = "amount", value = "钱数")
     private BigDecimal amount;
 
-    @ApiModelProperty(name = "amount", value = "infoDate")
+    @ApiModelProperty(name = "infoDate", value = "业务日期")
     private String infoDate;
 
     @ApiModelProperty(name = "userId", value = "用户id")

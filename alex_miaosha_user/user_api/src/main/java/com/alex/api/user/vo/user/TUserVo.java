@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -49,7 +50,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @ApiModelProperty(value = "手机")
     @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法")

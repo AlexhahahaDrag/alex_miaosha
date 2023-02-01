@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -51,4 +52,10 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
     @ApiModelProperty(name = "belongTo", value = "属于")
     private String belongToName;
+
+    @ApiModelProperty(name = "infoDateStart", value = "开始业务日期")
+    private LocalDate infoDateStart;
+
+    @ApiModelProperty(name = "infoDateEnd", value = "结束业务日期")
+    private LocalDate infoDateEnd;
 }

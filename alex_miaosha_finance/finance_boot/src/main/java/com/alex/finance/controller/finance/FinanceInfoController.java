@@ -28,7 +28,7 @@ import java.util.List;
 @Api(value = "财务信息表相关接口", tags = {"财务信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/finance-info")
+@RequestMapping("/api/v1/finance-info")
 public class FinanceInfoController {
 
     private final FinanceInfoService financeInfoService;

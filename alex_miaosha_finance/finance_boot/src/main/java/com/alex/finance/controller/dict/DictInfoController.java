@@ -27,7 +27,7 @@ import java.util.List;
 @Api(value = "字典表相关接口", tags = {"字典表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/dict-info")
+@RequestMapping("/api/v1/dict-info")
 public class DictInfoController {
 
     private final DictInfoService dictInfoService;
