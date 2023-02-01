@@ -47,7 +47,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "出生年月日")
     @TableField("birthday")
-    private LocalDate birthday;
+    private LocalDateTime birthday;
 
     @ApiModelProperty(value = "手机")
     @TableField("mobile")

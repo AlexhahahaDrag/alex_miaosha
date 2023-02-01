@@ -50,7 +50,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
-    private LocalDate birthday;
+    private LocalDateTime birthday;
 
     @ApiModelProperty(value = "手机")
     @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法")
