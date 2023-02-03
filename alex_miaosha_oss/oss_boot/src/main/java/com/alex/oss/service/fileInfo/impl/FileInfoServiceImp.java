@@ -70,7 +70,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     @Override
     public InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response) {
-        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
+//        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
         return null;
     }
 

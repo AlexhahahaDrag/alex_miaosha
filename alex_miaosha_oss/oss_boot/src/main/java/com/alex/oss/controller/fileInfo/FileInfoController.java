@@ -78,17 +78,17 @@ public class FileInfoController {
         return Result.success(fileInfoService.deleteFileInfo(ids));
     }
 
-    @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
-    @GetMapping
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "文件名", name = "fileName", required = true),
-            @ApiImplicitParam(value = "类型", name = "type"),
-            @ApiImplicitParam(value = "是否删除", name = "delete")}
-    )
-    public Result deleteFile(@RequestParam(value = "fileName") String fileName,
-                             @RequestParam(value = "type", required = false) String type,
-                             @RequestParam(value = "delete", required = false) Boolean delete, HttpServletResponse response) {
-        return Result.success(fileInfoService.fileDownload(type, fileName, delete, response));
-    }
+//    @ApiOperationSupport(order = 30, author = "alex")
+//    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
+//    @GetMapping
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(value = "文件名", name = "fileName", required = true),
+//            @ApiImplicitParam(value = "类型", name = "type"),
+//            @ApiImplicitParam(value = "是否删除", name = "delete")}
+//    )
+//    public Result deleteFile(@RequestParam(value = "fileName") String fileName,
+//                             @RequestParam(value = "type", required = false) String type,
+//                             @RequestParam(value = "delete", required = false) Boolean delete, HttpServletResponse response) {
+//        return Result.success(fileInfoService.fileDownload(type, fileName, delete, response));
+//    }
 }

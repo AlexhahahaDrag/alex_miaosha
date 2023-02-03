@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                 "/webjars/**",
                 "/actuator/**",
                 "/favicon.ico",
-                "/user/login",
+                "/api/v1/user/login",
                 "/druid/**",
                 "/v3/api-docs",
                 "/error"

@@ -48,11 +48,11 @@ public class MinioFileServiceImpl implements FileService {
         return stringStringMap.get("mes") != null;
     }
 
-    @Override
-    public InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response) {
-        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
-        return null;
-    }
+//    @Override
+//    public InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response) {
+//        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
+//        return null;
+//    }
 
     private String getBucket(String type) {
         String bucketName;
