@@ -1,28 +1,3 @@
 spring:
-  cloud:
-    nacos:
-      server-addr: ${nacos.url}
-      config:
-        server-addr: ${nacos.url}
-        file-extension: ${nacos.file-extension}
-        group: ${nacos.group}
-        namespace: ${nacos.namaspace}
-        extension-configs:
-          - data-id: ${nacos.nacos}.${nacos.file-extension}
-            group: ${nacos.group}
-            refresh: true
-          - data-id: ${nacos.admin}.${nacos.file-extension}
-            group: ${nacos.group}
-            refresh: true
-
-nacos:
-  url: 123.249.83.33:8848
-  group: alex-miaosha
-  namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
-  username: nacos
-  password: nacos
-  file-extension: yaml
-  knife4j: knife4j
-  admin: springbootadmin
-  nacos: nacos-service
-  redis: redis
+  profiles:
+    active: dev
