@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: ${nacos.url}
+      config:
+        server-addr: ${nacos.url}
+        file-extension: ${nacos.file-extension}
+        group: ${nacos.group}
+        namespace: ${nacos.namaspace}
+        extension-configs:
+          - data-id: ${nacos.redis}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
+          - data-id: ${nacos.nacos}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
+          - data-id: ${nacos.knife4j}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
+          - data-id: ${nacos.admin}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
