@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-mission
+    name: alex-mission-dev
 
   task:
     execution:

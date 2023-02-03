@@ -17,12 +17,12 @@ spring:
 
 nacos:
   url: nacos:8848
-  group: alex-miaosha
-  namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
+  group: alex-miaosha-prod
+  namaspace: 439dbcdc-b721-4afd-abee-08184739eb75
   username: nacos
   password: nacos
   file-extension: yaml
   knife4j: knife4j
   admin: springbootadmin
   nacos: nacos-service
-  redis: redis
+  redis: redis-prod

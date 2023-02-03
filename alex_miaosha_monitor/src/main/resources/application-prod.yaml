@@ -2,7 +2,7 @@ server:
   port: 30099
 spring:
   application:
-    name: alex-monitor
+    name: alex-monitor-prod
   boot:
     admin:
       ui:

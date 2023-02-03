@@ -16,7 +16,7 @@ mybatis-plus:
   mapper-locations: classpath*:com/alex/osssys/mapper/**/*Mapper.xml
 
 minio:
-  url: 123.249.83.33
+  url: minio
   port: 6000
   accessKey: TWVBTWYvGjJIRX5q
   secretKey: vgt0Ir16cqrymG3qbYt1c8fD8xMbCX8h
