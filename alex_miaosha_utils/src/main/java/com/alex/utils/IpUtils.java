@@ -1,8 +1,8 @@
 package com.alex.utils;
 
-import cn.hutool.core.io.FileUtil;
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.lionsoul.ip2region.xdb.Searcher;
 
@@ -214,7 +214,7 @@ public class IpUtils {
      * @return:       java.lang.String
      */
     public static String createFtlFileByFtlArray() {
-        String ftlPath = "alex_miaosha_utils/src/main/resources/city/";
+        String ftlPath = "city/";
         return createFtlFile(ftlPath, "ip2region.xdb");
     }
 
@@ -240,7 +240,7 @@ public class IpUtils {
             certStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(ftlPath + ftlName);
             assert certStream != null;
             byte[] certData = IOUtils.toByteArray(certStream);
-            FileUtil.writeBytes(certData, newFile);
+            FileUtils.writeByteArrayToFile(newFile, certData);
             return newFilePath;
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -255,7 +255,6 @@ public class IpUtils {
         }
         return null;
     }
-
 
     /**
      * @param ip
