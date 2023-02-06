@@ -1,6 +1,8 @@
 package com.alex.api.finance.vo.finance;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -41,6 +43,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(name = "incomeAndExpenses", value = "收支类型")
     private String incomeAndExpenses;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(name = "belongTo", value = "属于")
     private Long belongTo;
 
@@ -50,7 +53,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(name = "isValid", value = "是否有效")
     private Integer isValid;
 
-    @ApiModelProperty(name = "belongTo", value = "属于")
+    @ApiModelProperty(name = "belongToName", value = "属于")
     private String belongToName;
 
     @ApiModelProperty(name = "infoDateStart", value = "开始业务日期")

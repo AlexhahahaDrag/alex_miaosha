@@ -1,5 +1,7 @@
 package com.alex.api.finance.vo.financeAnalysis;
 
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -36,6 +38,7 @@ public class AnalysisVo {
     private String infoDate;
 
     @ApiModelProperty(name = "userId", value = "用户id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(name = "username", value = "用户名")
