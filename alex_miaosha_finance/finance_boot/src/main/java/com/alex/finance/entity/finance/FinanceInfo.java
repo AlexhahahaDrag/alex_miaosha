@@ -56,5 +56,5 @@ public class FinanceInfo extends BaseEntity<FinanceInfo>{
 
     @ApiModelProperty(value = "是否有效")
     @TableField(value = "is_valid", fill = FieldFill.INSERT)
-    private Integer isValid;
+    private String isValid;
 }

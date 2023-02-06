@@ -51,7 +51,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     private LocalDateTime infoDate;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")
-    private Integer isValid;
+    private String isValid;
 
     @ApiModelProperty(name = "belongToName", value = "属于")
     private String belongToName;

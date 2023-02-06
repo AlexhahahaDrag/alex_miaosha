@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -75,7 +74,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "状态")
     @TableField("`status`")
-    private Integer status;
+    private String status;
 
     @ApiModelProperty(value = "昵称")
     @TableField("nick_name")
