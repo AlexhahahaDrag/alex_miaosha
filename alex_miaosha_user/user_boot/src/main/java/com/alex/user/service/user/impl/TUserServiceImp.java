@@ -11,6 +11,7 @@ import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.UserException;
+import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.LoginIdKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
@@ -25,9 +26,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -217,11 +221,37 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     public TUserVo getUserInfo(TUserVo tUserVo) {
         return tUserMapper.getUserInfo(tUserVo);
     }
+
     @Override
     public TUserVo getUserByUsername(String username) {
         TUserVo tUserVo = new TUserVo();
         tUserVo.setUsername(username);
         TUserVo userInfo = getUserInfo(tUserVo);
         return userInfo;
+    }
+
+    @Override
+    public Result<Boolean> logout() {
+        ServletRequestAttributes attribute = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attribute.getRequest();
+        String token = request.getAttribute(SysConf.TOKEN).toString();
+        if (StringUtils.isEmpty(token)) {
+            return Result.error(ResultEnum.PARAM_ERROR);
+        } else {
+            // 获取在线用户信息
+            String adminJson = redisUtils.get(UserKey.getById, token);
+//            if (StringUtils.isNotEmpty(adminJson)) {
+//                OnlineAdmin onlineAdmin = JsonUtils.jsonToPojo(adminJson, OnlineAdmin.class);
+//                String tokenUid = onlineAdmin.getTokenId();
+//                // 移除Redis中的TokenUid
+//                redisUtil.delete(RedisConf.LOGIN_UUID_KEY + RedisConf.SEGMENTATION + tokenUid);
+//            }
+            Long adminId = RequestHolder.getAdminId();
+            //过期jwt token
+            // 移除Redis中的用户
+            redisUtils.delete(UserKey.getById, adminId.toString());
+            SecurityContextHolder.clearContext();
+            return Result.success();
+        }
     }
 }

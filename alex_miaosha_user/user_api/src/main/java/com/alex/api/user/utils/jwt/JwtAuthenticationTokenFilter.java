@@ -1,6 +1,9 @@
 package com.alex.api.user.utils.jwt;
 
 import com.alex.base.constants.SysConf;
+import com.alex.common.redis.key.UserKey;
+import com.alex.common.utils.redis.RedisUtils;
+import com.alex.common.utils.string.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +36,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
+    private final RedisUtils redisUtils;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -44,9 +49,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             final String token = authHeader.substring(audience.getTokenHead().length());
             // 私钥
             String base64Secret = audience.getBase64Secret();
+            
+            Long adminId = jwtTokenUtils.getUserId(token, base64Secret);
+            // TODO: 2023/2/9 修改为token
+            String s = redisUtils.get(UserKey.getById, adminId.toString());
+            //校验token
+            if (StringUtils.isEmpty(s) || jwtTokenUtils.isExpiration(token, base64Secret)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             // 获取在线的管理员信息
             String username = jwtTokenUtils.getUsername(token, base64Secret);
-            Long adminId = jwtTokenUtils.getUserId(token, base64Secret);
             request.setAttribute(SysConf.ADMIN_ID, adminId);
             request.setAttribute(SysConf.USERNAME, username);
             request.setAttribute(SysConf.TOKEN, authHeader);

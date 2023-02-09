@@ -1,5 +1,6 @@
 package com.alex.common.handler;
 
+import com.alex.base.constants.SysConf;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -12,19 +13,19 @@ import javax.servlet.http.HttpSession;
 
 
 /**
- *description:  请求持有类
- *author:       alex
- *createDate:   2021/7/14 7:13
- *version:      1.0.0
+ * description:  请求持有类
+ * author:       alex
+ * createDate:   2021/7/14 7:13
+ * version:      1.0.0
  */
 @Slf4j
 public class RequestHolder {
 
     /**
-     * @description:  获取request
-     * @author:       alex
-     * @return:       javax.servlet.http.HttpServletRequest
-    */
+     * @description: 获取request
+     * @author: alex
+     * @return: javax.servlet.http.HttpServletRequest
+     */
     public static HttpServletRequest getRequest() {
         log.debug("getRequest: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -32,10 +33,10 @@ public class RequestHolder {
     }
 
     /**
-     * @description:  获取response
-     * @author:       alex
-     * @return:       javax.servlet.http.HttpServletResponse
-    */
+     * @description: 获取response
+     * @author: alex
+     * @return: javax.servlet.http.HttpServletResponse
+     */
     public static HttpServletResponse getResponse() {
         log.debug("getResponse: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -43,10 +44,10 @@ public class RequestHolder {
     }
 
     /**
-     * @description:  获取session
-     * @author:       alex
-     * @return:       javax.servlet.http.HttpSession
-    */
+     * @description: 获取session
+     * @author: alex
+     * @return: javax.servlet.http.HttpSession
+     */
     public static HttpSession getSession() {
         log.debug("getSession: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
         HttpServletRequest request;
@@ -115,25 +116,26 @@ public class RequestHolder {
 //        return servletRequestAttributes.getAttributeNames(RequestAttributes.SCOPE_SESSION);
 //    }
 //
-//    /**
-//     * @description:  获取adminId
-//     * @author:       alex
-//     * @return:       java.lang.String
-//    */
-//    public  static String  getAdminId() {
-//        HttpServletRequest request = getRequest();
-//        return (String) request.getAttribute(BaseSysConf.ADMIN_ID);
-//}
-//
-//    /*
-//     * @description:  获取token
-//     * @author:       alex
-//     * @return:       java.lang.String
-//    */
-//    public static String getAdminToken() {
-//        HttpServletRequest request = getRequest();
-//        return (String) request.getAttribute(BaseSysConf.TOKEN);
-//    }
+
+    /**
+     * @description: 获取adminId
+     * @author: alex
+     * @return: java.lang.String
+     */
+    public static Long getAdminId() {
+        HttpServletRequest request = getRequest();
+        return (Long) request.getAttribute(SysConf.ADMIN_ID);
+    }
+
+    /*
+     * @description:  获取token
+     * @author:       alex
+     * @return:       java.lang.String
+     */
+    public static String getAdminToken() {
+        HttpServletRequest request = getRequest();
+        return (String) request.getAttribute(SysConf.TOKEN);
+    }
 //
 //    /**
 //     * @description:  检查用户是否登录

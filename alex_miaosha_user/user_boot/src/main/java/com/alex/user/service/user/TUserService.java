@@ -34,4 +34,6 @@ public interface TUserService extends IService<TUser> {
     List<TUserVo> getList(TUserVo tUserVo);
 
     TUserVo getUserByUsername(String username);
+
+    Result<Boolean> logout();
 }

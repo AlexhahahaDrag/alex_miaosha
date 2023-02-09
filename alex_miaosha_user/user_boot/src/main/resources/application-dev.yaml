@@ -19,6 +19,6 @@ logging:
   level:
     com.alex.user.mapper: debug
 
-isRememberMeExpiresSecond: 259200000 #记住密码三天
+isRememberMeExpiresSecond: 259200000 #记住密码两天
 
 defaultPassword: "1234@com"

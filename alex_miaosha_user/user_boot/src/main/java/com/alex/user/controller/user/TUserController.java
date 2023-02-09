@@ -95,6 +95,13 @@ public class TUserController {
         return tUserService.login(request, username, password, isRememberMe);
     }
 
+    @ApiOperationSupport(order = 65, author = "alex")
+    @PostMapping("/logout")
+    @ApiOperation(value = "登出")
+    public Result<Boolean> logout() {
+        return tUserService.logout();
+    }
+
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取管理员列表", notes = "获取管理员列表", response = Result.class)
     @PostMapping(value = "/list")
