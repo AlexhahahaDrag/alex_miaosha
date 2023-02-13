@@ -1,9 +1,11 @@
 package com.alex.oss.service.fileInfo.impl;
 
+import com.alex.api.oss.vo.file.FileVo;
 import com.alex.common.enums.BucketNameEnum;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
+import com.alex.oss.service.MinioFileService;
 import com.alex.oss.service.fileInfo.FileInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import cn.hutool.core.bean.BeanUtil;
 import com.alex.common.utils.string.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +34,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     private final FileInfoMapper fileInfoMapper;
 
+    private MinioFileService minioFileService;
+
     @Override
     public Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo) {
         Page<FileInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
@@ -43,7 +48,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public Boolean addFileInfo(FileInfoVo fileInfoVo) {
+    public Boolean addFileInfo(FileInfoVo fileInfoVo, MultipartFile file) throws Exception {
+        FileVo uploadFile = minioFileService.uploadFile(file, "user");
         FileInfo fileInfo = new FileInfo();
         BeanUtil.copyProperties(fileInfoVo, fileInfo);
         fileInfoMapper.insert(fileInfo);

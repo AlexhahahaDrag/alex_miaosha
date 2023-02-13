@@ -1,10 +1,8 @@
 package com.alex.oss.service;
 
-import com.alex.api.oss.vo.file.FileInfoVo;
+import com.alex.api.oss.vo.file.FileVo;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -13,9 +11,9 @@ import java.util.List;
  * createDate:   2023/1/12 14:40
  * version:      1.0.0
  */
-public interface FileService {
+public interface MinioFileService {
 
-    FileInfoVo uploadFile(MultipartFile file, String type) throws Exception;
+    FileVo uploadFile(MultipartFile file, String type) throws Exception;
 
     boolean deleteFile(List<String> filePath, String type) throws Exception;
 }

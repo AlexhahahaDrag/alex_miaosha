@@ -9,7 +9,7 @@ import lombok.Data;
  * @version: 1.0.0
  */
 @Data
-public class FileInfoVo {
+public class FileVo {
 
     private String fileName;
 }

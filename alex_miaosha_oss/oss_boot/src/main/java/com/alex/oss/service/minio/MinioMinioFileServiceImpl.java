@@ -1,17 +1,16 @@
 package com.alex.oss.service.minio;
 
 import cn.hutool.core.io.FileUtil;
-import com.alex.api.oss.vo.file.FileInfoVo;
+import com.alex.api.oss.vo.file.FileVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.enums.BucketNameEnum;
 import com.alex.oss.config.minio.MinioTemplate;
-import com.alex.oss.service.FileService;
+import com.alex.oss.service.MinioFileService;
 import com.alex.common.utils.date.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +23,19 @@ import java.util.Map;
  */
 @Service
 @AllArgsConstructor
-public class MinioFileServiceImpl implements FileService {
+public class MinioMinioFileServiceImpl implements MinioFileService {
 
     private final MinioTemplate minioTemplate;
 
     @Override
-    public FileInfoVo uploadFile(MultipartFile file, String type) throws Exception {
+    public FileVo uploadFile(MultipartFile file, String type) throws Exception {
         String fileName = file.getOriginalFilename();
         String filename = FileUtil.getPrefix(fileName)  + SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + FileUtil.getSuffix(fileName);
         InputStream inputStream = file.getInputStream();
         Map<String, String> upload = minioTemplate.upload(getBucket(type), filename, inputStream, file.getContentType());
-        FileInfoVo fileInfoVo = new FileInfoVo();
-        fileInfoVo.setFileName(upload.get("url"));
-        return fileInfoVo;
+        FileVo fileVo = new FileVo();
+        fileVo.setFileName(upload.get("url"));
+        return fileVo;
     }
 
     @Override

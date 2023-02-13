@@ -7,7 +7,9 @@ import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import java.util.List;
+
 import com.alex.oss.entity.fileInfo.FileInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,14 +19,15 @@ import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.alex.oss.service.fileInfo.FileInfoService;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @description:  文件信息表restApi
- * @author:       alex
- * @createDate:   2023-01-30 14:08:29
- * @version:      1.0.0
+ * @description: 文件信息表restApi
+ * @author: alex
+ * @createDate: 2023-01-30 14:08:29
+ * @version: 1.0.0
  */
 @ApiSort(20)
 @Api(value = "文件信息表相关接口", tags = {"文件信息表相关接口"})
@@ -44,8 +47,8 @@ public class FileInfoController {
             @ApiImplicitParam(value = "查询条件", name = "fileInfoVo")}
     )
     public Result<Page<FileInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) FileInfoVo fileInfoVo) {
+                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                            @RequestBody(required = false) FileInfoVo fileInfoVo) {
         return Result.success(fileInfoService.getPage(pageNum, pageSize, fileInfoVo));
     }
 
@@ -60,8 +63,8 @@ public class FileInfoController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@RequestBody FileInfoVo fileInfoVo) {
-        return Result.success(fileInfoService.addFileInfo(fileInfoVo));
+    public Result<Boolean> add(@RequestPart(value = "file") MultipartFile file, @RequestBody FileInfoVo fileInfoVo) throws Exception {
+        return Result.success(fileInfoService.addFileInfo(fileInfoVo, file));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")

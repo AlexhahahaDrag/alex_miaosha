@@ -18,6 +18,6 @@ mybatis-plus:
 minio:
   url: minio
   port: 6000
-  accessKey: TWVBTWYvGjJIRX5q
-  secretKey: vgt0Ir16cqrymG3qbYt1c8fD8xMbCX8h
+  accessKey: 3Yz7Yw5tm9XTobf6
+  secretKey: wx566XGHujQ53VwJVvd4BxGu9cbbQ1P7
   bucketName: user-bucket

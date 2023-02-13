@@ -52,24 +52,24 @@
     </select>
 
      <sql id="queryInfo">
-        <if test = "fileInfoVo != null">
-          <if test = "fileInfoVo.fileName != null">
-            and file_name like concat('%', #{fileInfoVo.fileName}, '%')
+        <if test = "fileVo != null">
+          <if test = "fileVo.fileName != null">
+            and file_name like concat('%', #{fileVo.fileName}, '%')
           </if>
-          <if test = "fileInfoVo.fileSize != null">
-            and file_size = #{fileInfoVo.fileSize}
+          <if test = "fileVo.fileSize != null">
+            and file_size = #{fileVo.fileSize}
           </if>
-          <if test = "fileInfoVo.fileType != null">
-            and file_type like concat('%', #{fileInfoVo.fileType}, '%')
+          <if test = "fileVo.fileType != null">
+            and file_type like concat('%', #{fileVo.fileType}, '%')
           </if>
-          <if test = "fileInfoVo.bucketName != null">
-            and bucket_name like concat('%', #{fileInfoVo.bucketName}, '%')
+          <if test = "fileVo.bucketName != null">
+            and bucket_name like concat('%', #{fileVo.bucketName}, '%')
           </if>
-          <if test = "fileInfoVo.fileSystem != null">
-            and file_system like concat('%', #{fileInfoVo.fileSystem}, '%')
+          <if test = "fileVo.fileSystem != null">
+            and file_system like concat('%', #{fileVo.fileSystem}, '%')
           </if>
-          <if test = "fileInfoVo.bucketFileName != null">
-            and bucket_file_name like concat('%', #{fileInfoVo.bucketFileName}, '%')
+          <if test = "fileVo.bucketFileName != null">
+            and bucket_file_name like concat('%', #{fileVo.bucketFileName}, '%')
           </if>
         </if>
      </sql>

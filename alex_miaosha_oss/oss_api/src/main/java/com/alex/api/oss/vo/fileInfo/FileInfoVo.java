@@ -37,5 +37,4 @@ public class FileInfoVo extends BaseVo<FileInfoVo>{
 
     @ApiModelProperty(value = "文件系统文件名称")
     private String bucketFileName;
-
 }

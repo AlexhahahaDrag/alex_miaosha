@@ -20,7 +20,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @Configuration
 @EnableOpenApi
-@Profile({"test", "dev"})
+@Profile({"test", "dev", "prod"})
 // TODO: 2022/7/15 添加参数下拉
 public class SwaggerConfig {
 
