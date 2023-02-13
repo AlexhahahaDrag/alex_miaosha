@@ -41,6 +41,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
         fileVo.setBucketName(bucketName);
         fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
         String separator = System.getProperty("file.separator");
+        // TODO: 2023/2/13 修改minio文件路径 
         String filename = type + separator + DateUtils.getNowTimeStr(YYYYMMDD) + separator + FileUtil.getPrefix(fileName)  + SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + FileUtil.getSuffix(fileName);
         fileVo.setUrl(fileName);
         InputStream inputStream = file.getInputStream();
