@@ -12,6 +12,11 @@ spring:
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
+  servlet:
+    multipart:
+      max-file-size: 10MB     #单个文件最大限制
+      max-request-size: 50MB  #多个文件最大限制
+
 mybatis-plus:
   mapper-locations: classpath*:com/alex/oss/mapper/**/*Mapper.xml
 
@@ -21,7 +26,9 @@ logging:
 
 minio:
   url: 123.249.83.33
-  port: 6000  # 9090访问
+  port: 6000  # 6060访问minio
   accessKey: 3Yz7Yw5tm9XTobf6
   secretKey: wx566XGHujQ53VwJVvd4BxGu9cbbQ1P7
   bucketName: user-bucket
+
+

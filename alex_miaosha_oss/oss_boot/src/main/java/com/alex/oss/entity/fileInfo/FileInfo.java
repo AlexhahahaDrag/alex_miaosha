@@ -43,7 +43,7 @@ public class FileInfo extends BaseEntity<FileInfo>{
     private String fileSystem;
 
     @ApiModelProperty(value = "文件系统文件名称")
-    @TableField("bucket_file_name")
-    private String bucketFileName;
+    @TableField("url")
+    private String url;
 
 }

@@ -1,25 +1,25 @@
 package com.alex.oss.service.fileInfo.impl;
 
-import com.alex.api.oss.vo.file.FileVo;
-import com.alex.common.enums.BucketNameEnum;
-import com.alex.oss.entity.fileInfo.FileInfo;
+import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.enums.BucketNameEnum;
+import com.alex.common.exception.FileException;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
 import com.alex.oss.service.MinioFileService;
 import com.alex.oss.service.fileInfo.FileInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     private final FileInfoMapper fileInfoMapper;
 
-    private MinioFileService minioFileService;
+    private final MinioFileService minioFileService;
 
     @Override
     public Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo) {
@@ -48,10 +48,14 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public Boolean addFileInfo(FileInfoVo fileInfoVo, MultipartFile file) throws Exception {
-        FileVo uploadFile = minioFileService.uploadFile(file, "user");
+    public Boolean addFileInfo(String type, MultipartFile file) throws Exception {
+        if (file == null) {
+            throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
+        }
+        // TODO: 2023/2/13 添加系统配置文件，可以选择不同的文件系统
+        FileInfoVo uploadFile = minioFileService.uploadFile(file, type);
         FileInfo fileInfo = new FileInfo();
-        BeanUtil.copyProperties(fileInfoVo, fileInfo);
+        BeanUtil.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
         return true;
     }

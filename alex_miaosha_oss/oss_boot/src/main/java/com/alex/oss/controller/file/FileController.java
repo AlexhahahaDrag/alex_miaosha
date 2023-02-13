@@ -1,9 +1,7 @@
 package com.alex.oss.controller.file;
 
-import com.alex.api.oss.vo.file.FileVo;
 import com.alex.base.common.Result;
 import com.alex.oss.service.MinioFileService;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
@@ -11,8 +9,10 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -30,17 +30,6 @@ import java.util.List;
 public class FileController {
 
     private final MinioFileService minioFileService;
-
-    // TODO: 2023/1/12 s实现多附件上传
-    @AvoidRepeatableCommit(message = "请不要重复上传文件")
-    @ApiOperationSupport(order = 10, author = "alex")
-    @PostMapping
-    @ApiOperation(value = "文件上传", notes = "文件上传", response = Result.class)
-    public Result<FileVo> uploadFile(@RequestPart(value = "file") MultipartFile file,
-                                     @RequestParam(value = "type", required = false) String type) throws Exception {
-        FileVo fileVo = minioFileService.uploadFile(file, type);
-        return Result.success(fileVo);
-    }
 
     @ApiOperationSupport(order = 20, author = "alex")
     @DeleteMapping

@@ -70,10 +70,11 @@ public enum ResultEnum implements BaseEnum {
     /**
      * 文件模块
      */
-    IMAGE_UPLOAD_FAIL("502", "上传图片失败"),
-    IMAGE_DELETE_FAIL("503", "删除图片失败"),
-    IMAGE_VIOLATION_FAIL("504", "图片违规"),
-    IMAGE_ENUM_NOT_FOUND("501", "上传的类型不正确"),
+    IMAGE_UPLOAD_FAIL("90002", "上传图片失败"),
+    IMAGE_DELETE_FAIL("90003", "删除图片失败"),
+    IMAGE_VIOLATION_FAIL("90004", "图片违规"),
+    IMAGE_ENUM_NOT_FOUND("90001", "上传的类型不正确"),
+    IMAGE_NO_FOUNT("90005", "请上传文件！"),
 
     SYSTEM_UP_ERROR("500", "系统更新中，请稍后尝试！"),
 

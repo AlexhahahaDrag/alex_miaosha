@@ -1,7 +1,6 @@
 package com.alex.api.oss.vo.fileInfo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -36,5 +35,5 @@ public class FileInfoVo extends BaseVo<FileInfoVo>{
     private String fileSystem;
 
     @ApiModelProperty(value = "文件系统文件名称")
-    private String bucketFileName;
+    private String url;
 }

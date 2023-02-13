@@ -1,12 +1,14 @@
 package com.alex.oss.service.minio;
 
 import cn.hutool.core.io.FileUtil;
-import com.alex.api.oss.vo.file.FileVo;
+import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.enums.BucketNameEnum;
+import com.alex.common.enums.FileSystemTypeEnum;
+import com.alex.common.utils.date.DateUtils;
+import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.config.minio.MinioTemplate;
 import com.alex.oss.service.MinioFileService;
-import com.alex.common.utils.date.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,13 +29,22 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
 
     private final MinioTemplate minioTemplate;
 
+    private static final String YYYYMMDD = "YYYY-MM-DD";
     @Override
-    public FileVo uploadFile(MultipartFile file, String type) throws Exception {
+    public FileInfoVo uploadFile(MultipartFile file, String type) throws Exception {
+        FileInfoVo fileVo = new FileInfoVo();
         String fileName = file.getOriginalFilename();
-        String filename = FileUtil.getPrefix(fileName)  + SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + FileUtil.getSuffix(fileName);
+        fileVo.setFileName(fileName);
+        fileVo.setFileSize(file.getSize());
+        fileVo.setFileType(fileName.substring(fileName.lastIndexOf('.') + 1));
+        String bucketName = getBucket(type);
+        fileVo.setBucketName(bucketName);
+        fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
+        String separator = System.getProperty("file.separator");
+        String filename = type + separator + DateUtils.getNowTimeStr(YYYYMMDD) + separator + FileUtil.getPrefix(fileName)  + SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + FileUtil.getSuffix(fileName);
+        fileVo.setUrl(fileName);
         InputStream inputStream = file.getInputStream();
-        Map<String, String> upload = minioTemplate.upload(getBucket(type), filename, inputStream, file.getContentType());
-        FileVo fileVo = new FileVo();
+        Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
         fileVo.setFileName(upload.get("url"));
         return fileVo;
     }
@@ -55,7 +66,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
 
     private String getBucket(String type) {
         String bucketName;
-        switch (type) {
+        switch (StringUtils.isEmpty(type) ? "" : type) {
             case "user" :
                 bucketName = BucketNameEnum.USER_BUCKET.getValue();
                 break;

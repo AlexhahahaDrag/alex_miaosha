@@ -12,6 +12,11 @@ spring:
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
+  servlet:
+    multipart:
+      max-file-size: 10MB     #单个文件最大限制
+      max-request-size: 50MB  #多个文件最大限制
+
 mybatis-plus:
   mapper-locations: classpath*:com/alex/osssys/mapper/**/*Mapper.xml
 

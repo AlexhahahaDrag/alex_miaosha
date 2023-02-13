@@ -1,27 +1,19 @@
 package com.alex.oss.controller.fileInfo;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.base.common.Result;
+import com.alex.oss.service.fileInfo.FileInfoService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import java.util.List;
-
-import com.alex.oss.entity.fileInfo.FileInfo;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.oss.service.fileInfo.FileInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @description: 文件信息表restApi
@@ -59,12 +51,14 @@ public class FileInfoController {
         return Result.success(fileInfoService.queryFileInfo(id));
     }
 
+    // TODO: 2023/1/12 实现多附件上传
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@RequestPart(value = "file") MultipartFile file, @RequestBody FileInfoVo fileInfoVo) throws Exception {
-        return Result.success(fileInfoService.addFileInfo(fileInfoVo, file));
+    public Result<Boolean> add(@RequestParam(value = "type", required = false) String type,
+                               @RequestPart(value = "file") MultipartFile file) throws Exception {
+        return Result.success(fileInfoService.addFileInfo(type, file));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")

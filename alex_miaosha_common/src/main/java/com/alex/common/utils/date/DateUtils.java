@@ -60,6 +60,11 @@ public class DateUtils {
         return LocalDateTime.now().format(dateTimeFormat);
     }
 
+    public static String getNowTimeStr(String dateTimeFormatter) {
+        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(dateTimeFormatter);
+        return LocalDateTime.now().format(dateTimeFormat);
+    }
+
     /**
      * @description:  获取当前时间毫秒数
      * @author:       alex

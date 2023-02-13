@@ -1,14 +1,13 @@
 package com.alex.oss.service.fileInfo;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.oss.entity.fileInfo.FileInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * 文件信息表 服务类
@@ -23,7 +22,7 @@ public interface FileInfoService extends IService<FileInfo> {
 
     FileInfoVo queryFileInfo(String id);
 
-    Boolean addFileInfo(FileInfoVo fileInfoVo, MultipartFile multipartFile) throws Exception;
+    Boolean addFileInfo(String type, MultipartFile multipartFile) throws Exception;
 
     Boolean updateFileInfo(FileInfoVo fileInfoVo);
 
