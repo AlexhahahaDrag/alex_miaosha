@@ -34,7 +34,7 @@
         file_info.delete_time,
         file_info.operator,
         file_info.operate_time,
-        file_info.file_name, file_info.file_size, file_info.file_type, file_info.bucket_name, file_info.file_system, file_info.bucket_file_name
+        file_info.file_name, file_info.file_size, file_info.file_type, file_info.bucket_name, file_info.file_system, file_info.url
     </sql>
 
     <select id="getPage" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">
@@ -68,8 +68,8 @@
           <if test = "fileInfoVo.fileSystem != null">
             and file_system like concat('%', #{fileInfoVo.fileSystem}, '%')
           </if>
-          <if test = "fileInfoVo.bucketFileName != null">
-            and bucket_file_name like concat('%', #{fileInfoVo.bucketFileName}, '%')
+          <if test = "fileInfoVo.url != null">
+            and bucket_file_name like concat('%', #{fileInfoVo.url}, '%')
           </if>
         </if>
      </sql>

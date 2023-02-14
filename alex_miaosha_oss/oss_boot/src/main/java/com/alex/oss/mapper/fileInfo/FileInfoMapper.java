@@ -1,12 +1,11 @@
 package com.alex.oss.mapper.fileInfo;
 
-import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.oss.entity.fileInfo.FileInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @description:  文件信息表 mapper
@@ -19,5 +18,5 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
 
     Page<FileInfoVo> getPage(Page<FileInfoVo> page, @Param("fileInfoVo") FileInfoVo fileInfoVo);
 
-    FileInfoVo queryFileInfo(@Param("id") String id);
+    FileInfoVo queryFileInfo(@Param("id") Long id);
 }

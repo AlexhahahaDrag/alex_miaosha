@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 
 /**
@@ -20,13 +19,13 @@ public interface FileInfoService extends IService<FileInfo> {
 
     Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo);
 
-    FileInfoVo queryFileInfo(String id);
+    FileInfoVo queryFileInfo(Long id);
 
     Boolean addFileInfo(String type, MultipartFile multipartFile) throws Exception;
 
-    Boolean updateFileInfo(FileInfoVo fileInfoVo);
+    Boolean updateFileInfo(Long id, String type, MultipartFile file) throws Exception;
 
     Boolean deleteFileInfo(String ids);
 
-    InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response);
+    InputStream fileDownload(Long id);
 }

@@ -36,4 +36,13 @@ public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable
 
     @ApiModelProperty("操作时间")
     private LocalDateTime operateTime;
+
+    @ApiModelProperty("删除人")
+    private Long deleter;
+
+    @ApiModelProperty("操作时间")
+    private LocalDateTime deleteTime;
+
+    @ApiModelProperty("是否删除")
+    private Integer isDelete;
 }

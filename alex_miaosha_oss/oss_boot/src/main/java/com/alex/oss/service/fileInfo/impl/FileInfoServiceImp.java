@@ -3,13 +3,12 @@ package com.alex.oss.service.fileInfo.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
-import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.exception.FileException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
-import com.alex.oss.service.MinioFileService;
 import com.alex.oss.service.fileInfo.FileInfoService;
+import com.alex.oss.service.minio.MinioFileService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +22,11 @@ import java.util.List;
 
 /**
  * <p>
- * @description:  文件信息表服务实现类
- * @author:       alex
- * @createDate:   2023-01-30 14:08:29
- * @version:      1.0.0
+ *
+ * @description: 文件信息表服务实现类
+ * @author: alex
+ * @createDate: 2023-01-30 14:08:29
+ * @version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo queryFileInfo(String id) {
+    public FileInfoVo queryFileInfo(Long id) {
         return fileInfoMapper.queryFileInfo(id);
     }
 
@@ -52,8 +52,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
-        // TODO: 2023/2/13 添加系统配置文件，可以选择不同的文件系统
-        FileInfoVo uploadFile = minioFileService.uploadFile(file, type);
+        FileInfoVo uploadFile = uploadFile(type, file);
         FileInfo fileInfo = new FileInfo();
         BeanUtil.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
@@ -61,16 +60,19 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public Boolean updateFileInfo(FileInfoVo fileInfoVo) {
-        FileInfo fileInfo = new FileInfo();
-        BeanUtil.copyProperties(fileInfoVo, fileInfo);
+    public Boolean updateFileInfo(Long id, String type, MultipartFile file) throws Exception {
+        FileInfo fileInfo = this.getById(id);
+        if (file != null) {
+            FileInfoVo uploadFile = uploadFile(type, file);
+            BeanUtil.copyProperties(uploadFile, fileInfo, "id");
+        }
         fileInfoMapper.updateById(fileInfo);
         return true;
     }
 
     @Override
     public Boolean deleteFileInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
@@ -79,23 +81,14 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public InputStream fileDownload(String type, String fileName, Boolean delete, HttpServletResponse response) {
-//        minioTemplate.fileDownload(getBucket(type), fileName, delete, response);
-        return null;
+    public InputStream fileDownload(Long id) {
+        FileInfoVo fileInfo = fileInfoMapper.queryFileInfo(id);
+        return minioFileService.fileDownload(fileInfo);
     }
 
-    private String getBucket(String type) {
-        String bucketName;
-        switch (type) {
-            case "user" :
-                bucketName = BucketNameEnum.USER_BUCKET.getValue();
-                break;
-            case "goods" :
-                bucketName = BucketNameEnum.GOODS_BUCKET.getValue();
-                break;
-            default:
-                bucketName = BucketNameEnum.COMMON_BUCKET.getValue();
-        }
-        return bucketName;
+    private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
+        // TODO: 2023/2/13 添加系统配置文件，可以选择不同的文件系统
+        FileInfoVo fileInfoVo = minioFileService.uploadFile(file, type);
+        return fileInfoVo;
     }
 }

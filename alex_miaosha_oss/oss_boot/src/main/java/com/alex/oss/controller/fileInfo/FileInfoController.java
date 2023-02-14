@@ -47,7 +47,7 @@ public class FileInfoController {
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取文件信息表详情", notes = "获取文件信息表详情", response = Result.class)
     @GetMapping
-    public Result<FileInfoVo> query(@RequestParam(value = "id") String id) {
+    public Result<FileInfoVo> query(@RequestParam(value = "id") Long id) {
         return Result.success(fileInfoService.queryFileInfo(id));
     }
 
@@ -64,8 +64,10 @@ public class FileInfoController {
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@RequestBody FileInfoVo fileInfoVo) {
-        return Result.success(fileInfoService.updateFileInfo(fileInfoVo));
+    public Result<Boolean> update(@RequestParam(value = "id") Long id,
+                                  @RequestParam(value = "type", required = false) String type,
+                                  @RequestPart(value = "file") MultipartFile file) throws Exception {
+        return Result.success(fileInfoService.updateFileInfo(id, type, file));
     }
 
     @ApiOperationSupport(order = 50, author = "alex")
@@ -75,17 +77,13 @@ public class FileInfoController {
         return Result.success(fileInfoService.deleteFileInfo(ids));
     }
 
-//    @ApiOperationSupport(order = 30, author = "alex")
-//    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
-//    @GetMapping
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(value = "文件名", name = "fileName", required = true),
-//            @ApiImplicitParam(value = "类型", name = "type"),
-//            @ApiImplicitParam(value = "是否删除", name = "delete")}
-//    )
-//    public Result deleteFile(@RequestParam(value = "fileName") String fileName,
-//                             @RequestParam(value = "type", required = false) String type,
-//                             @RequestParam(value = "delete", required = false) Boolean delete, HttpServletResponse response) {
-//        return Result.success(fileInfoService.fileDownload(type, fileName, delete, response));
-//    }
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
+    @GetMapping("/fileDownload")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "id", name = "id", required = true)}
+    )
+    public Result fileDownload(@RequestParam(value = "id") Long id) {
+        return Result.success(fileInfoService.fileDownload(id));
+    }
 }

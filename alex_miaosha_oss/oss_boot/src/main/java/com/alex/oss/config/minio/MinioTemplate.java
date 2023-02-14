@@ -2,9 +2,10 @@ package com.alex.oss.config.minio;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSONUtil;
-import com.alex.oss.vo.ObjectItem;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.oss.vo.ObjectItem;
 import io.minio.*;
+import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,9 +119,9 @@ public class MinioTemplate implements InitializingBean {
      * @param filename
      * @param inputStream
      * @description: 上传文件到minio
-     * @author:      majf
-     * @return:      java.util.Map<java.lang.String,java.lang.String>
-    */
+     * @author: majf
+     * @return: java.util.Map<java.lang.String, java.lang.String>
+     */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
         existBucket(bucketName);
         // 上传到minio服务器
@@ -193,6 +196,51 @@ public class MinioTemplate implements InitializingBean {
         }
     }
 
+    /**
+     * @param bucketName
+     * @param fileName
+     * @param delete
+     * @description: 下载文件流
+     * @author:      alex
+     * @return:      java.io.InputStream
+    */
+    public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
+        InputStream inputStream = null;
+        try {
+            if (StringUtils.isBlank(fileName)) {
+                return null;
+            }
+            // 获取文件对象
+            inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
+        } catch (ServerException e) {
+            throw new RuntimeException(e);
+        } catch (InsufficientDataException e) {
+            throw new RuntimeException(e);
+        } catch (ErrorResponseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidResponseException e) {
+            throw new RuntimeException(e);
+        } catch (XmlParserException e) {
+            throw new RuntimeException(e);
+        } catch (InternalException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return inputStream;
+    }
 
     /**
      * 查看文件对象
