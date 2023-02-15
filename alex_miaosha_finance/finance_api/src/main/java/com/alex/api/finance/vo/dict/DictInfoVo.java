@@ -36,7 +36,4 @@ public class DictInfoVo extends BaseVo<DictInfoVo>{
 
     @ApiModelProperty(value = "是否有效")
     private String isValid;
-
-    @ApiModelProperty("是否删除")
-    private Integer isDelete;
 }
