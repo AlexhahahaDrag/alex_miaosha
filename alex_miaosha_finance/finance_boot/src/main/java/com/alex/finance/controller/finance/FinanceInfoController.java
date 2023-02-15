@@ -2,6 +2,7 @@ package com.alex.finance.controller.finance;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.base.common.Result;
+import com.alex.common.validator.group.Insert;
 import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.service.finance.FinanceInfoService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,7 +70,7 @@ public class FinanceInfoController {
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "新增财务信息表", notes = "新增财务信息表", response = Result.class)
     @PostMapping
-    public Result<FinanceInfo> add(@RequestBody FinanceInfoVo financeInfoVo) {
+    public Result<FinanceInfo> add(@RequestBody @Validated({Insert.class}) FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.addFinanceInfo(financeInfoVo));
     }
 

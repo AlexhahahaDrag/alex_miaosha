@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
@@ -35,7 +34,6 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String username;
 
     @ApiModelProperty(value = "密码")
-    @NotBlank(groups = {Insert.class, Update.class}, message = "密码不能为空！")
     private String password;
 
     @ApiModelProperty(value = "性别(1:男2:女)")
@@ -45,14 +43,15 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String avatar;
 
     @ApiModelProperty(value = "邮箱")
-    @Email
+//    @Email(message = "邮箱不合法！", groups = {Insert.class, Update.class})
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
     private LocalDateTime birthday;
 
+    // TODO: 2023/2/15 自定义添加，为空时不校验
     @ApiModelProperty(value = "手机")
-    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法")
+    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
     private String mobile;
 
     @ApiModelProperty(value = "邮箱验证码")

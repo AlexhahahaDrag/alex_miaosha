@@ -25,20 +25,17 @@ public enum ResultEnum implements BaseEnum {
     REQUIRE_ILLEGAL("500102", "请求非法"),
     ACCESS_TOO_MANY("500104", "当前访问的人数太多，其稍后尝试"),
 
-
     /**
      * 用户模块
      */
-    MOBILE_NOT_EXIST ("500214", "手机号不存在"),
-    PASSWORD_ERROR("500215", "密码错误"),
-    EMPTY_USERNAME_OR_PASSWORD("500217", "账号密码不能为空!"),
-    LOGIN_ERROR_MORE("500218", "密码输错次数过多，已被锁定30分钟"),
-    NO_LOGIN("500216", "请先登录"),
-    NO_USERNAME("500219", "用户名不能为空！"),
-    NO_MOBILE_EMAIL("500220", "邮箱和手机号至少有一项不能为空!"),
-
-    ERROR_USER_LIST("500221", "获取用户列表数据失败，请联系管理员！"),
-
+    USER_ACCOUNT_OR_PASSWORD_ERROR ("60001", "账号或密码错误!"),
+    USER_USERNAME_OR_PASSWORD_EMPTY("60002", "账号密码不能为空!"),
+    USER_LOGIN_ERROR_MORE("60003", "密码输错次数过多，已被锁定30分钟!"),
+    USER_NO_LOGIN("60004", "请先登录"),
+    USER_USERNAME_EXISTS("60005", "用户名已存在!"),
+    USER_MOBILE_EXISTS("60006", "电话号已存在!"),
+    USER_EMAIL_EXISTS("60007", "邮箱已注册!"),
+    USER_NO_MOBILE_EMAIL("60008", "邮箱和手机号至少有一项不能为空!"),
     /**
      * 商品模块
      */

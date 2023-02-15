@@ -36,16 +36,16 @@ public class UserUtils {
     public Long getUserId(HttpServletRequest request) throws LoginException {
         String authInfo = request.getHeader("Authorization");
         if (StringUtils.isEmpty(authInfo)) {
-            throw new LoginException(ResultEnum.NO_LOGIN);
+            throw new LoginException(ResultEnum.USER_NO_LOGIN);
         }
         String loginToken = authInfo.split("Bearer_")[1];
         // TODO: 2022/8/18 使用断言
         if (StringUtils.isEmpty(loginToken)) {
-            throw new LoginException(ResultEnum.NO_LOGIN);
+            throw new LoginException(ResultEnum.USER_NO_LOGIN);
         }
         Object result = redisUtils.get(UserKey.getById, loginToken);
         if (result == null) {
-            throw new LoginException(ResultEnum.NO_LOGIN);
+            throw new LoginException(ResultEnum.USER_NO_LOGIN);
         }
         return Long.parseLong(result.toString());
     }

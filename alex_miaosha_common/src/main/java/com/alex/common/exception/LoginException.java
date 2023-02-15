@@ -1,6 +1,5 @@
 package com.alex.common.exception;
 
-import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,15 +23,5 @@ public class LoginException extends RuntimeException{
     public LoginException(ResultEnum resultEnum) {
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
-    }
-
-    public LoginException(Result userResult, String mobile) {
-        if (ResultEnum.PASSWORD_ERROR.equals(userResult.getCode())) {
-            log.error("{} 号码登录失败，密码错误", mobile);
-        } else if (ResultEnum.MOBILE_NOT_EXIST.equals(userResult.getCode())) {
-            log.error("{} 号码登录失败，无此手机号", mobile);
-        }
-        this.code = userResult.getCode();
-        this.msg = userResult.getMessage();
     }
 }

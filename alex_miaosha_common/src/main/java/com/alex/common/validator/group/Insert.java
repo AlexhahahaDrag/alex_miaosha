@@ -6,5 +6,5 @@ package com.alex.common.validator.group;
  * @createDate: 2023/1/29 14:12
  * @version: 1.0.0
  */
-public class Insert {
+public interface Insert {
 }

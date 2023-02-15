@@ -25,4 +25,10 @@ public class UserException extends RuntimeException{
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
     }
+
+    public UserException(String code, String message) {
+        log.error(code + ":" + message);
+        this.code = code;
+        this.msg = message;
+    }
 }

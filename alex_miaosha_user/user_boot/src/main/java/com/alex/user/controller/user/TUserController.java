@@ -4,6 +4,7 @@ import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.service.user.TUserService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
@@ -61,14 +62,15 @@ public class TUserController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增管理员表", notes = "新增管理员表", response = Result.class)
     @PostMapping
-    public Result<TUser> add(@Validated({Insert.class}) @RequestBody TUserVo tUserVo) {
+    // TODO: 2023/2/15 代码生成器添加这块的逻辑 
+    public Result<TUser> add( @RequestBody @Validated({Insert.class}) TUserVo tUserVo) {
         return Result.success(tUserService.addTUser(tUserVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改管理员表", notes = "修改管理员表", response = Result.class)
     @PutMapping
-    public Result<TUser> update(@RequestBody TUserVo tUserVo) {
+    public Result<TUser> update(@RequestBody @Validated({Update.class}) TUserVo tUserVo) {
         return Result.success(tUserService.updateTUser(tUserVo));
     }
 

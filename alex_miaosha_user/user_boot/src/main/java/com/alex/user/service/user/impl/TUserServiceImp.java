@@ -21,7 +21,9 @@ import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.user.TUserService;
 import com.alex.utils.IpUtils;
 import com.alex.utils.check.CheckUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,25 +85,43 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         String username = tUserVo.getUsername();
         String mobile = tUserVo.getMobile();
         String email = tUserVo.getEmail();
-        if (StringUtils.isEmpty(username)) {
-            throw new UserException(ResultEnum.NO_USERNAME);
-        }
         if (StringUtils.isEmpty(email) && StringUtils.isEmpty(mobile)) {
-            throw new UserException(ResultEnum.NO_MOBILE_EMAIL);
+            throw new UserException(ResultEnum.USER_NO_MOBILE_EMAIL);
         }
-        // TODO: 2021/9/17 添加手机号和邮箱验证
-        // TODO: 2021/9/5 默认配置信息
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isNotEmpty(username)) {
+            map.put(SysConf.USERNAME, username);
+        }
+        if (StringUtils.isNotEmpty(email)) {
+            map.put(SysConf.EMAIL, email);
+        }
+        if (StringUtils.isNotEmpty(mobile)) {
+            map.put(SysConf.MOBILE, mobile);
+        }
+        //校验username,mobile,email
+        judgeField(map, null);
         TUser tUser = new TUser();
         BeanUtil.copyProperties(tUserVo, tUser);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         tUser.setPassword(encoder.encode(tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword()));
-        // TODO: 2023/1/28 校验username不能重复 
         tUserMapper.insert(tUser);
         return tUser;
     }
 
     @Override
     public TUser updateTUser(TUserVo tUserVo) {
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isNotEmpty(tUserVo.getUsername())) {
+            map.put(SysConf.USERNAME, tUserVo.getUsername());
+        }
+        if (StringUtils.isNotEmpty(tUserVo.getEmail())) {
+            map.put(SysConf.EMAIL, tUserVo.getEmail());
+        }
+        if (StringUtils.isNotEmpty(tUserVo.getMobile())) {
+            map.put(SysConf.MOBILE, tUserVo.getMobile());
+        }
+        //校验username,mobile,email
+        judgeField(map, tUserVo.getId());
         TUser tUser = new TUser();
         BeanUtil.copyProperties(tUserVo, tUser);
         tUserMapper.updateById(tUser);
@@ -120,12 +141,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     @Override
     public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            return Result.error(ResultEnum.EMPTY_USERNAME_OR_PASSWORD);
+            return Result.error(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
         String ip = IpUtils.getIpAddr(request);
         String limitCount = redisUtils.get(LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
         if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
-            return Result.error(ResultEnum.LOGIN_ERROR_MORE);
+            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
         boolean isEmail = CheckUtils.checkEmail(username);
         boolean isMobile = CheckUtils.checkPhone(username);
@@ -142,14 +163,14 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         TUser admin = this.getOne(query);
         if (admin == null) {
             //设置错误登录次数
-            return Result.error(ResultEnum.LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         //对密码进行加盐加密验证，采用SHA-256 + 随机盐【动态加盐】 + 密钥对密码进行加密
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         boolean isPassword = encoder.matches(password, admin.getPassword());
         if (!isPassword) {
             //密码错误，返回提示信息
-            return Result.error(ResultEnum.LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
 //        //设置角色信息
 //        List<String> roleIds = new ArrayList<>();
@@ -253,5 +274,59 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             SecurityContextHolder.clearContext();
             return Result.success();
         }
+    }
+
+    private boolean judgeField(Map<String, Object> map, Long id) {
+        if (map.isEmpty()) {
+            return true;
+        }
+        for(Map.Entry<String, Object> entry: map.entrySet()) {
+            String type = entry.getKey();
+            long count = judgeValueCount(type, entry.getValue(), id);
+            if (count > 0) {
+                switch (type) {
+                    case "username":
+                        throw new UserException(ResultEnum.USER_USERNAME_EXISTS);
+                    case "mobile":
+                        throw new UserException(ResultEnum.USER_MOBILE_EXISTS);
+                    case "email":
+                        throw new UserException(ResultEnum.USER_EMAIL_EXISTS);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param type
+     * @param value
+     * @param id
+     * @description: 判断字段对应的值在数据库中的数量
+     * @author: alex
+     * @return: boolean
+     */
+    private long judgeValueCount(String type, Object value, Long id) {
+        if (StringUtils.isEmpty(type)) {
+            return 0;
+        }
+        LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery().eq(TUser::getIsDelete, 0);
+        if (id != null) {
+            query.ne(TUser::getId, id);
+        }
+        switch (type) {
+            case "username":
+                query.eq(TUser::getUsername, value);
+                break;
+            case "mobile":
+                query.eq(TUser::getMobile, value);
+                break;
+            case "email":
+                query.eq(TUser::getEmail, value);
+                break;
+            default:
+                throw new UserException("400", "请输入正确的字段");
+        }
+        return this.count(query);
     }
 }
