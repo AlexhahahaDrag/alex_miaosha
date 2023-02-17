@@ -43,6 +43,4 @@ public class GeneratorController {
                                     @RequestParam(value = "author", required = false) String author) {
         return Result.success(generatorService.generator(moduleName, javaPath, tableNames, author));
     }
-
-    // TODO: 2022/10/12 修改vo模板集成baseVo 
 }

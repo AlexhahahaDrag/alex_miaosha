@@ -2,6 +2,7 @@ package com.alex.user.service.user;
 
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,11 +30,13 @@ public interface TUserService extends IService<TUser> {
 
     Boolean deleteTUser(String ids);
 
-    Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember);
+    Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
 
     List<TUserVo> getList(TUserVo tUserVo);
 
     TUserVo getUserByUsername(String username);
 
     Result<Boolean> logout();
+
+    void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception;
 }

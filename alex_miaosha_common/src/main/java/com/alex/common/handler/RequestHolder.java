@@ -1,6 +1,8 @@
 package com.alex.common.handler;
 
 import com.alex.base.constants.SysConf;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -136,19 +138,18 @@ public class RequestHolder {
         HttpServletRequest request = getRequest();
         return (String) request.getAttribute(SysConf.TOKEN);
     }
-//
-//    /**
-//     * @description:  检查用户是否登录
-//     * @author:       alex
-//     * @return:       java.lang.String
-//    */
-//    public static String checkLogin() {
-//        String adminId = getAdminId();
-//        if (StringUtils.isEmpty(adminId)) {
-//            log.error("用户未登录");
-//            // TODO: 2021/9/13 添加错误码
-//            throw new AlexException("00008", BaseMessageConf.INVALID_TOKEN);
-//        }
-//        return adminId;
-//    }
+
+    /**
+     * @description:  检查用户是否登录
+     * @author:       alex
+     * @return:       java.lang.String
+    */
+    public static Long checkLogin() {
+        Long adminId = getAdminId();
+        if (adminId == null) {
+            log.error("用户未登录");
+            throw new UserException(ResultEnum.USER_NO_LOGIN);
+        }
+        return adminId;
+    }
 }

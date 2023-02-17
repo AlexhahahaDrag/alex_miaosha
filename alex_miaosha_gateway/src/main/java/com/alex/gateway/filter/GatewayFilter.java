@@ -1,12 +1,16 @@
 package com.alex.gateway.filter;
 
+import com.alex.api.user.api.UserApi;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
+import com.alex.api.user.vo.user.TUserVo;
+import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -81,61 +86,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             return out(response);
         }
         final String token = authHeader.substring(audience.getTokenHead().length());
-        // 私钥
-        String base64Secret = audience.getBase64Secret();
-        // 获取在线的管理员信息
-        if (jwtTokenUtils.isExpiration(token, base64Secret)) {
-            return out(response);
-        }
-        //得到过期时间
-        Date expiration = jwtTokenUtils.getExpiration(token, base64Secret);
-        Instant instant = expiration.toInstant();
-        ZoneId zoneId = ZoneId.systemDefault();
-        LocalDateTime expirationDate = LocalDateTime.ofInstant(instant, zoneId);
-        LocalDateTime nowDate = LocalDateTime.now();
-        String username = jwtTokenUtils.getUsername(token, base64Secret);
-        Long adminId = jwtTokenUtils.getUserId(token, base64Secret);
-        // 得到两个日期相差的间隔，秒
-        long survivalSecond = DateUtils.diffSecondByTwoDays(nowDate, expirationDate) / 1000;
-        // 当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
-        // 而旧的Token将会在不久之后从Redis中过期
-        if (survivalSecond < audience.getRefreshSecond()) {
-            // 生成一个新的Token
-            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
-            // 将新token赋值，用于后续使用
-            authHeader = newToken;
-            // 维护 uuid - token 互相转换的Redis集合【主要用于在线用户管理】
-            redisUtils.setEx(UserKey.getById, adminId.toString(), newToken, audience.getExpiresSecond(), TimeUnit.MINUTES);
-            //把adminUid存储到request中
-            String finalAuthHeader = authHeader;
-            Consumer<HttpHeaders> headers = httpHeaders -> {
-                httpHeaders.add(SysConf.ADMIN_ID, adminId + "");
-                httpHeaders.add(SysConf.ADMIN_ID, username);
-                httpHeaders.add(SysConf.TOKEN, finalAuthHeader);
-            };
-            request.mutate().headers(headers).build();
-            log.info("解析出来用户: {}", username);
-            log.info("解析出来的用户Uid: {}", adminId);
-        }
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            //关键看这里，在用的时候在获取bean
-//            // TODO: 2023/1/28 写博客
-//            UserApi userApi = AutowiredBean.getBean(UserApi.class);
-//            CompletableFuture<TUserVo> completableFuture = CompletableFuture.supplyAsync(() -> userApi.getUserByUsername(username));
-//            // block()/blockFirst()/blockLast() are blocking, which is not supported in thread parallel-1
-//            // 通过用户名加载SpringSecurity用户
-//            TUserVo result = completableFuture.get();
-//            UserDetails userDetails = SecurityUserFactory.create(result);
-//            // 校验Token的有效性
-//            if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
-//                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-//                        userDetails, null, userDetails.getAuthorities());
-////                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-////                            request));
-//                //以后可以security中取得SecurityUser信息
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//            }
-//        }
+        UserApi userApi = AutowiredBean.getBean(UserApi.class);
+        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> userApi.authToken(token));
         return chain.filter(exchange);
     }
 

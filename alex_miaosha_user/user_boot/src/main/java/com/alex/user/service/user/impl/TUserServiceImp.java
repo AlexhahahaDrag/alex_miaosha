@@ -1,8 +1,11 @@
 package com.alex.user.service.user.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.codec.Base64Decoder;
+import cn.hutool.json.JSONUtil;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
+import com.alex.api.user.vo.user.OnlineAdmin;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;
@@ -12,10 +15,12 @@ import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.UserException;
 import com.alex.common.handler.RequestHolder;
-import com.alex.common.redis.key.LoginIdKey;
+import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
+import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.user.TUserService;
@@ -37,10 +42,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -139,27 +142,20 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     }
 
     @Override
-    public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) {
+    public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             return Result.error(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
         String ip = IpUtils.getIpAddr(request);
-        String limitCount = redisUtils.get(LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
+        String limitCount = redisUtils.get(LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
         if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
             return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
-        boolean isEmail = CheckUtils.checkEmail(username);
-        boolean isMobile = CheckUtils.checkPhone(username);
-        QueryWrapper<TUser> query = new QueryWrapper<>();
-        if (isEmail) {
-            query.eq(SysConf.EMAIL, username);
-        } else if (isMobile) {
-            query.eq(SysConf.MOBILE, username);
-        } else {
-            query.eq(SysConf.USERNAME, username);
-        }
-        query.last(SysConf.LIMIT_ONE);
-        query.eq(SysConf.STATUS, EStatus.ENABLE.getCode());
+        LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery()
+                .eq(TUser::getStatus, EStatus.ENABLE.getCode())
+                .last(SysConf.LIMIT_ONE);
+        // TODO: 2023/2/16 校验是否报错
+        query.and(qr -> qr.eq(TUser::getEmail, username).or().eq(TUser::getMobile, username).or().eq(TUser::getUsername, username));
         TUser admin = this.getOne(query);
         if (admin == null) {
             //设置错误登录次数
@@ -191,22 +187,26 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         String token = audience.getTokenHead() + jwtToken;
         HashMap<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         result.put(SysConf.TOKEN, token);
-        //进行登陆相关操作
-        int count = admin.getLoginCount() + 1;
-        admin.setLoginCount(count);
-        admin.setLastLoginIp(ip);
-        admin.setLastLoginTime(LocalDateTime.now());
-        admin.updateById();
-        //设置token到validCode.用于记录用户信息
-        admin.setValidCode(token);
-        //设置tokenId，主要用于换取token令牌，防止token直接暴露到在线用户管理中
-//        admin.setTokenId(StringUtils.getUUID());
+        //保存登录信息
+        Map<String, String> map = IpUtils.getOsAndBrowserInfo(request);
+        String os = map.get(SysConf.OS);
+        String browser = map.get(SysConf.BROWSER);
+        // TODO: 2023/2/16 添加复杂逻辑
+        String uuid = StringUtils.getUUID();
+        TUserLogin userLogin = TUserLogin.builder()
+                .userId(admin.getId())
+                .lastLoginTime(LocalDateTime.now())
+                .tokenId(uuid)
+                .token(token)
+                .os(os)
+                .broswer(browser)
+                .lastLoginIp(ip)
+                .build();
+        userLogin.insert();
 //        admin.setRole(roles.get(0));
         //添加在线用户到redis中，设置过期时间
-        // TODO: 2022/12/26  
-//        adminService.addOnLineAdmin(admin, expiration);
-        redisUtils.setEx(UserKey.getById, admin.getId().toString(), token, expiration, TimeUnit.MILLISECONDS);
-        result.put(SysConf.ADMIN, admin);
+        this.addOnLineAdmin(userLogin, expiration);
+        result.put(SysConf.ADMIN, userLogin);
         return Result.success(result);
     }
 
@@ -219,7 +219,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
      */
     private Integer setLoginCommit(HttpServletRequest request, String username) {
         String ip = IpUtils.getIpAddr(request);
-        String loginCountKey = LoginIdKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
+        String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
         String count = redisUtils.get(loginCountKey);
         int surplusCount = RedisConstants.NUM_FIVE;
         Integer exTime = 30;
@@ -261,26 +261,54 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         } else {
             // 获取在线用户信息
             String adminJson = redisUtils.get(UserKey.getById, token);
-//            if (StringUtils.isNotEmpty(adminJson)) {
-//                OnlineAdmin onlineAdmin = JsonUtils.jsonToPojo(adminJson, OnlineAdmin.class);
-//                String tokenUid = onlineAdmin.getTokenId();
-//                // 移除Redis中的TokenUid
-//                redisUtil.delete(RedisConf.LOGIN_UUID_KEY + RedisConf.SEGMENTATION + tokenUid);
-//            }
-            Long adminId = RequestHolder.getAdminId();
-            //过期jwt token
+            if (StringUtils.isNotEmpty(adminJson)) {
+                OnlineAdmin onlineAdmin = JSONUtil.toBean(adminJson, OnlineAdmin.class);
+                String tokenUid = onlineAdmin.getTokenId();
+                redisUtils.delete(LoginKey.loginUuid, tokenUid);
+            }
             // 移除Redis中的用户
-            redisUtils.delete(UserKey.getById, adminId.toString());
+            redisUtils.delete(LoginKey.loginToken, token);
             SecurityContextHolder.clearContext();
             return Result.success();
         }
+    }
+
+    @Override
+    public void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception {
+        OnlineAdmin onlineAdmin = OnlineAdmin.builder()
+                .userId(userLogin.getUserId())
+                .tokenId(userLogin.getTokenId())
+                .token(userLogin.getToken())
+                .os(userLogin.getOs())
+                .browser(userLogin.getBroswer())
+                .ipaddr(userLogin.getLastLoginIp())
+                .loginTime(DateUtils.getTimeStr(userLogin.getLastLoginTime()))
+                .roleName(null)
+                .username("username")
+                .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.MICROS)))
+                .build();
+        //从Redis中获取IP来源
+        String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLastLoginIp());
+        if (StringUtils.isEmpty(jsonResult)) {
+            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLastLoginIp(), "UTF-8");
+            if (StringUtils.isNotEmpty(addresses)) {
+                onlineAdmin.setLoginLocation(addresses);
+                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLastLoginIp(), addresses, 24, TimeUnit.HOURS);
+            }
+        } else {
+            onlineAdmin.setLoginLocation(jsonResult);
+        }
+        // 将登录的管理员存储到在线用户表
+        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONUtil.toJsonStr(onlineAdmin), expiration, TimeUnit.MILLISECONDS);
+        // 在维护一张表，用于 uuid - token 互相转换
+        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.MILLISECONDS);
     }
 
     private boolean judgeField(Map<String, Object> map, Long id) {
         if (map.isEmpty()) {
             return true;
         }
-        for(Map.Entry<String, Object> entry: map.entrySet()) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             String type = entry.getKey();
             long count = judgeValueCount(type, entry.getValue(), id);
             if (count > 0) {

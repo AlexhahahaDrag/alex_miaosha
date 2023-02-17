@@ -87,7 +87,6 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
-        // TODO: 2023/2/13 添加系统配置文件，可以选择不同的文件系统
         FileInfoVo fileInfoVo = minioFileService.uploadFile(file, type);
         return fileInfoVo;
     }

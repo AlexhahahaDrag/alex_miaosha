@@ -60,18 +60,6 @@ public class TUser extends BaseEntity<TUser>{
     @TableField("summary")
     private String summary;
 
-    @ApiModelProperty(value = "登录次数")
-    @TableField("login_count")
-    private Integer loginCount;
-
-    @ApiModelProperty(value = "最后登录时间")
-    @TableField("last_login_time")
-    private LocalDateTime lastLoginTime;
-
-    @ApiModelProperty(value = "最后登录IP")
-    @TableField("last_login_ip")
-    private String lastLoginIp;
-
     @ApiModelProperty(value = "状态")
     @TableField("`status`")
     private String status;

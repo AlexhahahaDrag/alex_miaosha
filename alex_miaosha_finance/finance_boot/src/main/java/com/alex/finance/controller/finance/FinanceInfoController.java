@@ -3,6 +3,7 @@ package com.alex.finance.controller.finance;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
 import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.service.finance.FinanceInfoService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
@@ -70,14 +71,14 @@ public class FinanceInfoController {
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "新增财务信息表", notes = "新增财务信息表", response = Result.class)
     @PostMapping
-    public Result<FinanceInfo> add(@RequestBody @Validated({Insert.class}) FinanceInfoVo financeInfoVo) {
+    public Result<FinanceInfo> add(@Validated({Insert.class}) @RequestBody FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.addFinanceInfo(financeInfoVo));
     }
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "修改财务信息表", notes = "修改财务信息表", response = Result.class)
     @PutMapping
-    public Result<FinanceInfo> update(@RequestBody FinanceInfoVo financeInfoVo) {
+    public Result<FinanceInfo> update(@Validated({Update.class}) @RequestBody FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.updateFinanceInfo(financeInfoVo));
     }
 

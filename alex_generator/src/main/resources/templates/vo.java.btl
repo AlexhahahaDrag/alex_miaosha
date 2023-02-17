@@ -1,5 +1,7 @@
 package ${package.Vo};
 
+import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
 <% for(pkg in table.importVoPackages){ %>
 import ${pkg};
 <% } %>

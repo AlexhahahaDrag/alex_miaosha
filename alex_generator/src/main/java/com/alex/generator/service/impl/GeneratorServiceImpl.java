@@ -36,7 +36,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final DatabaseConfig databaseConfig;
 
     @Override
-    public boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
+    public Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
         for (String tableName : tableNames) {
             executeGenerate(tableName, moduleName, author, javaPath);
         }
@@ -87,7 +87,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .outputDir(projectPath + "\\java")
                         .author(author)
                         .enableSwagger()
-                        .disableOpenDir()
+//                        .disableOpenDir()
                         .fileOverride()
                         .dateType(DateType.TIME_PACK)
                         .commentDate("yyyy-MM-dd HH:mm:ss"))

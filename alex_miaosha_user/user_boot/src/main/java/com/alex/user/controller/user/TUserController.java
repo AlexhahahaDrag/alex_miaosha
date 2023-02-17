@@ -62,8 +62,7 @@ public class TUserController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增管理员表", notes = "新增管理员表", response = Result.class)
     @PostMapping
-    // TODO: 2023/2/15 代码生成器添加这块的逻辑 
-    public Result<TUser> add( @RequestBody @Validated({Insert.class}) TUserVo tUserVo) {
+    public Result<TUser> add(@RequestBody @Validated({Insert.class}) TUserVo tUserVo) {
         return Result.success(tUserService.addTUser(tUserVo));
     }
 
@@ -93,7 +92,7 @@ public class TUserController {
     public Result<Object> doLogin(HttpServletRequest request,
                                   @RequestParam(value = "username", required = false) String username,
                                   @RequestParam(value = "password", required = false) String password,
-                                  @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) {
+                                  @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
         return tUserService.login(request, username, password, isRememberMe);
     }
 

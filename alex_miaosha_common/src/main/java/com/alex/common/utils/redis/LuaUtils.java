@@ -21,13 +21,11 @@ import java.util.Collections;
  *createDate:   2022/7/14 11:26
  *version:      1.0.0
  */
-// TODO: 2022/8/13 学习lua脚本
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LuaUtils {
 
-    // TODO: 2022/7/14 学习lua脚本
     private final RedisTemplate<String, Object> redisTemplate;
 
     /**

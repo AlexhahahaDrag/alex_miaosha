@@ -6,6 +6,7 @@ import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.AccessKey;
 import com.alex.common.utils.redis.RedisUtils;
+import com.alex.utils.IpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -49,8 +50,7 @@ public class AccessLimitAspect {
         int timeout = accessLimit.timeout();
 
         AccessKey accessKey = AccessKey.withExpire;
-        // TODO: 2022/8/8 修改为更准确的获取ip的办法
-        String ip = request.getRemoteAddr();
+        String ip = IpUtils.getIpAddr(request);
         //当前获取指定url的访问次数
         Integer count = redisUtils.get(accessKey, ip, Integer.class);
         if (count == null) {

@@ -6,11 +6,18 @@ import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.builders.RequestParameterBuilder;
 import springfox.documentation.oas.annotations.EnableOpenApi;
+import springfox.documentation.schema.ScalarType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.ParameterType;
+import springfox.documentation.service.RequestParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *description:  swagger配置类
@@ -21,29 +28,29 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 @EnableOpenApi
 @Profile({"test", "dev"})
-// TODO: 2022/7/15 添加参数下拉
 public class SwaggerConfig {
 
     @Bean(value = "webApi")
     public Docket buildDocket() {
-//        //添加head参数配置start
-//        List<RequestParameter> globalRequestParameters = new ArrayList<>();
-//        RequestParameter requestParameter = new RequestParameterBuilder()
-//                .name("Authorization")
-//                .description("令牌")
-//                .in(ParameterType.HEADER)
-//                .required(true)
-//                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-//                .build();
-//        globalRequestParameters.add(requestParameter);
+        //添加head参数配置start
+        List<RequestParameter> globalRequestParameters = new ArrayList<>();
+        RequestParameter requestParameter = new RequestParameterBuilder()
+                .name("Authorization")
+                .description("令牌")
+                .in(ParameterType.HEADER)
+                .required(true)
+                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
+                .build();
+        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
+                .pathMapping("alex-user")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.alex.web.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("web")
-//                .globalRequestParameters(globalRequestParameters)
+                .groupName("am-web")
+                .globalRequestParameters(globalRequestParameters)
                 ;//注意这里
     }
 

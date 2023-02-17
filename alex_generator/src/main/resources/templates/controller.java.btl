@@ -8,6 +8,9 @@ import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.List;
+import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
+import org.springframework.validation.annotation.Validated;
 import ${package.Entity}.${entity};
 <% if(swagger){ %>
 import io.swagger.annotations.Api;
@@ -80,14 +83,14 @@ public class ${table.controllerName} {
     @ApiOperationSupport(order = 30, author = "${author}")
     @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.add${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
     @ApiOperationSupport(order = 40, author = "${author}")
     @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+    public Result<Boolean> update(@Validated({Update.class}) @RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.update${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 

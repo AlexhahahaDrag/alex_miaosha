@@ -2,6 +2,8 @@ package com.alex.finance.controller.dict;
 
 import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.base.common.Result;
+import com.alex.common.validator.group.Insert;
+import com.alex.common.validator.group.Update;
 import com.alex.finance.entity.dict.DictInfo;
 import com.alex.finance.service.dict.DictInfoService;
 import com.alex.utils.annotations.AvoidRepeatableCommit;
@@ -13,6 +15,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,14 +60,14 @@ public class DictInfoController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增字典表", notes = "新增字典表", response = Result.class)
     @PostMapping
-    public Result<DictInfo> add(@RequestBody DictInfoVo dictInfoVo) {
+    public Result<DictInfo> add(@Validated({Insert.class}) @RequestBody DictInfoVo dictInfoVo) {
         return Result.success(dictInfoService.addDictInfo(dictInfoVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改字典表", notes = "修改字典表", response = Result.class)
     @PutMapping
-    public Result<DictInfo> update(@RequestBody DictInfoVo dictInfoVo) {
+    public Result<DictInfo> update(@Validated({Update.class}) @RequestBody DictInfoVo dictInfoVo) {
         return Result.success(dictInfoService.updateDictInfo(dictInfoVo));
     }
 

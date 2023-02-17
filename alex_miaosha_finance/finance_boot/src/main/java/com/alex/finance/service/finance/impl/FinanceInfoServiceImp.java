@@ -124,7 +124,6 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
      * @return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
      */
     private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) throws Exception {
-        // TODO: 2022/10/14 添加校验信息，报错信息 
         ExcelImportResult<ImportFinanceInfoVo> result;
         ImportParams importParams = new ImportParams();
         //设置导入位置

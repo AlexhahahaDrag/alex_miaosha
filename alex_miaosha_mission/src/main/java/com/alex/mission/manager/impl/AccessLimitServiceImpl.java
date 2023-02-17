@@ -24,7 +24,6 @@ public class AccessLimitServiceImpl implements AccessLimitService {
 
     @Override
     public boolean tryAcquireToken() {
-//        return seckillRateLimiter.tryAcquire();
         return seckillRateLimiter.tryAcquire(3, TimeUnit.SECONDS);
     }
 

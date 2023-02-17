@@ -30,4 +30,7 @@ public interface UserApi {
 
     @GetMapping(value = "/api/v1/user/getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
+
+    @GetMapping(value = "/api/v1/user/authToken")
+    Result<Boolean> authToken(@RequestParam("token") String token);
 }

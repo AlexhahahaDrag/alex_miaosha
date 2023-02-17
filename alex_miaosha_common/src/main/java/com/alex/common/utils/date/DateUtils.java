@@ -10,6 +10,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *description:  时间工具类  DateTimeFormatter线程安全
@@ -424,7 +425,7 @@ public class DateUtils {
      * @author:       alex
      * @return:       java.lang.String
     */
-    public static String addHout(double hour) {
+    public static String addHour(double hour) {
         long time = (long) (hour * 60 * 60 * 1000);
         return getTimeStr(addTime(LocalDateTime.now(), time, ChronoUnit.MILLIS));
     }
