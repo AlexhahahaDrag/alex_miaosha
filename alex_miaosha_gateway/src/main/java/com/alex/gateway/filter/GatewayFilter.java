@@ -1,16 +1,8 @@
 package com.alex.gateway.filter;
 
-import com.alex.api.user.api.UserApi;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
-import com.alex.api.user.vo.user.TUserVo;
-import com.alex.base.common.Result;
-import com.alex.base.constants.SysConf;
-import com.alex.common.redis.key.UserKey;
-import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alex.common.utils.string.StringUtils;
-import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -19,8 +11,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -29,14 +19,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * @description: 过滤器打印请求地址
@@ -74,20 +56,17 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             }
         }
         log.info("当前请求地址：{}", path);
-        ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse response = exchange.getResponse();
-        //得到请求头信息authorization信息
-        String authHeader = Optional.ofNullable(request)
-                .map(re -> re.getHeaders())
-                .map(header -> header.getFirst(audience.getTokenHeader()))
-                .orElse(null);
-
-        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(audience.getTokenHead())) {
-            return out(response);
-        }
-        final String token = authHeader.substring(audience.getTokenHead().length());
-        UserApi userApi = AutowiredBean.getBean(UserApi.class);
-        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> userApi.authToken(token));
+        // TODO: 2023/2/17 修改成调用api 
+//        ServerHttpRequest request = exchange.getRequest();
+//        ServerHttpResponse response = exchange.getResponse();
+//        //得到请求头信息authorization信息
+//        String authHeader = Optional.ofNullable(request)
+//                .map(re -> re.getHeaders())
+//                .map(header -> header.getFirst(audience.getTokenHeader()))
+//                .orElse(null);
+//        
+//        UserApi userApi = AutowiredBean.getBean(UserApi.class);
+//        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> userApi.authToken(token));
         return chain.filter(exchange);
     }
 

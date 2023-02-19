@@ -26,9 +26,9 @@ public class SysConf {
 
     public static final String POINT = ".";
 
-    public static final String OS = "os";
+    public static final String OS = "OS";
 
-    public static final String BROWSER = "browser";
+    public static final String BROWSER = "BROWSER";
 
     public static final String IP = "ip";
 }

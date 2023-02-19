@@ -101,7 +101,8 @@ public class IpUtils {
      * @return:       boolean
      */
     private static boolean checkNotIp(String ip) {
-        return ip == null || StringUtils.isEmpty(ip) || "unknown".equalsIgnoreCase(ip);
+        return ip == null || StringUtils.isEmpty(ip) ||
+                "unknown".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equals(ip);
     }
 
     /**
@@ -130,7 +131,6 @@ public class IpUtils {
         } else  {
             os = "Unknown, More-Inof:" + userAgent;
         }
-
         //browser
         try {
             if (user.contains("edge")) {
@@ -138,6 +138,17 @@ public class IpUtils {
             } else if (user.contains("msie")) {
                 String substring = userAgent.substring(userAgent.indexOf("MSIE")).split(";")[0];
                 browser = substring.split(";")[0].split(" ")[0].replace("MSIE", "IE") + "-" + substring.split(" ")[1];
+            } else if (user.contains("chrome")) {
+                browser = (userAgent.substring(userAgent.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
+            } else if ((user.contains("mozilla/7.0")) || (user.contains("netscape6")) ||
+                    (user.contains("mozilla/4.7")) || (user.contains("mozilla/4.78")) ||
+                    (user.contains("mozilla/4.08")) || (user.contains("mozilla/3"))) {
+                browser = "Netscape-?";
+            } else if (user.contains("firefox")) {
+                browser = (userAgent.substring(userAgent.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
+            } else if (user.contains("rv")) {
+                String IEVersion = (userAgent.substring(userAgent.indexOf("rv")).split(" ")[0]).replace("rv:", "-");
+                browser = "IE" + IEVersion.substring(0, IEVersion.length() - 1);
             } else {
                 String[] split2 = userAgent.substring(userAgent.indexOf("Version")).split(" ");
                 if (user.contains("safari") && user.contains("version")) {
@@ -152,18 +163,6 @@ public class IpUtils {
                         browser = ((userAgent.substring(userAgent.indexOf("OPR")).split(" ")[0]).replace("/", "-"))
                                 .replace("OPR", "Opera");
                     }
-                } else if (user.contains("chrome")) {
-                    browser = (userAgent.substring(userAgent.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
-                } else if ((user.contains("mozilla/7.0")) || (user.contains("netscape6")) ||
-                        (user.contains("mozilla/4.7")) || (user.contains("mozilla/4.78")) ||
-                        (user.contains("mozilla/4.08")) || (user.contains("mozilla/3"))) {
-                    browser = "Netscape-?";
-
-                } else if (user.contains("firefox")) {
-                    browser = (userAgent.substring(userAgent.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
-                } else if (user.contains("rv")) {
-                    String IEVersion = (userAgent.substring(userAgent.indexOf("rv")).split(" ")[0]).replace("rv:", "-");
-                    browser = "IE" + IEVersion.substring(0, IEVersion.length() - 1);
                 } else {
                     browser = "UnKnown";
                 }
@@ -173,7 +172,6 @@ public class IpUtils {
             log.error(e.getMessage());
             browser = "UnKnown";
         }
-
         Map<String, String> result = new HashMap<>(2);
         result.put("OS", os);
         result.put("BROWSER", browser);
