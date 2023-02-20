@@ -29,6 +29,14 @@ public class TUserLogin extends BaseEntity<TUserLogin>{
     @TableField("user_id")
     private Long userId;
 
+    @ApiModelProperty(value = "用户名")
+    @TableField(exist = false)
+    private String username;
+
+    @ApiModelProperty(value = "昵称")
+    @TableField(exist = false)
+    private String nickName;
+
     @ApiModelProperty(value = "最后登录时间")
     @TableField("last_login_time")
     private LocalDateTime lastLoginTime;

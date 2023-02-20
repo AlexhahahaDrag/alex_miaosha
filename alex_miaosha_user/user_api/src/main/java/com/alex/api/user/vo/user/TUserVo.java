@@ -60,15 +60,6 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "自我简介最多150字")
     private String summary;
 
-    @ApiModelProperty(value = "登录次数")
-    private Integer loginCount;
-
-    @ApiModelProperty(value = "最后登录时间")
-    private LocalDateTime lastLoginTime;
-
-    @ApiModelProperty(value = "最后登录IP")
-    private String lastLoginIp;
-
     @ApiModelProperty(value = "状态")
     private String status;
 

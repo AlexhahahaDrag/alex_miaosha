@@ -154,7 +154,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery()
                 .eq(TUser::getStatus, EStatus.ENABLE.getCode())
                 .last(SysConf.LIMIT_ONE);
-        // TODO: 2023/2/16 校验是否报错
         query.and(qr -> qr.eq(TUser::getEmail, username).or().eq(TUser::getMobile, username).or().eq(TUser::getUsername, username));
         TUser admin = this.getOne(query);
         if (admin == null) {
@@ -181,20 +180,22 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //        }
 //        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
         String roleName = "";
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond() * 1000;
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
-                , expiration, audience.getBase64Secret());
+                , expiration * 1000, audience.getBase64Secret());
         String token = audience.getTokenHead() + jwtToken;
         HashMap<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
-        result.put(SysConf.TOKEN, token);
         //保存登录信息
         Map<String, String> map = IpUtils.getOsAndBrowserInfo(request);
         String os = map.get(SysConf.OS);
         String browser = map.get(SysConf.BROWSER);
         // TODO: 2023/2/16 添加复杂逻辑
         String uuid = StringUtils.getUUID();
+        result.put(SysConf.TOKEN, uuid);
         TUserLogin userLogin = TUserLogin.builder()
                 .userId(admin.getId())
+                .username(admin.getUsername())
+                .nickName(admin.getNickName())
                 .lastLoginTime(LocalDateTime.now())
                 .tokenId(uuid)
                 .token(token)
@@ -206,7 +207,9 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //        admin.setRole(roles.get(0));
         //添加在线用户到redis中，设置过期时间
         this.addOnLineAdmin(userLogin, expiration);
-        result.put(SysConf.ADMIN, userLogin);
+        //不返回密码到前端
+        admin.setPassword(null);
+        result.put(SysConf.ADMIN, admin);
         return Result.success(result);
     }
 
@@ -293,15 +296,15 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLastLoginIp(), "UTF-8");
             if (StringUtils.isNotEmpty(addresses)) {
                 onlineAdmin.setLoginLocation(addresses);
-                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLastLoginIp(), addresses, 24, TimeUnit.HOURS);
+                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLastLoginIp(), addresses, expiration * 24, TimeUnit.SECONDS);
             }
         } else {
             onlineAdmin.setLoginLocation(jsonResult);
         }
         // 将登录的管理员存储到在线用户表
-        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONUtil.toJsonStr(onlineAdmin), expiration, TimeUnit.MILLISECONDS);
+        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONUtil.toJsonStr(onlineAdmin), expiration, TimeUnit.SECONDS);
         // 在维护一张表，用于 uuid - token 互相转换
-        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.MILLISECONDS);
+        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
     }
 
     private boolean judgeField(Map<String, Object> map, Long id) {
