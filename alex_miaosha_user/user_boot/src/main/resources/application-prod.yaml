@@ -15,6 +15,6 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:com/alex/user/mapper/**/*Mapper.xml
 
-isRememberMeExpiresSecond: 259200000 #记住密码三天
+isRememberMeExpiresSecond: 259200 #记住密码三天
 
 defaultPassword: "1234@com"

@@ -68,9 +68,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 得到两个日期相差的间隔，秒
         long survivalSecond = DateUtils.diffSecondByTwoDays(sdf.format(expirationDate), DateUtils.getTimeStr(LocalDateTime.now()));
         // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
-        if (survivalSecond < audience.getExpiresSecond()) {
+        if (survivalSecond < audience.getRefreshSecond()) {
             //生成新的token
-            String newToken = audience.getTokenHeader() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
+            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
             redisUtils.setEx(LoginKey.loginUuid, tokenUuid, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
             String onlineAdminStr = redisUtils.get(LoginKey.loginToken, token);
             if (StringUtils.isNotBlank(onlineAdminStr)) {

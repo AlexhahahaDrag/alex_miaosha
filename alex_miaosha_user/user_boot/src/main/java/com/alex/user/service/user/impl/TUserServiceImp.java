@@ -1,7 +1,6 @@
 package com.alex.user.service.user.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.json.JSONUtil;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
@@ -14,7 +13,6 @@ import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.UserException;
-import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.date.DateUtils;
@@ -25,9 +23,7 @@ import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.user.TUserService;
 import com.alex.utils.IpUtils;
-import com.alex.utils.check.CheckUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,7 +39,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
