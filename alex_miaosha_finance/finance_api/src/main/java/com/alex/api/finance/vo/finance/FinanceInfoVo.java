@@ -39,7 +39,6 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(value = "类别")
     private String typeName;
 
-    @NotBlank(groups = {Insert.class, Update.class}, message = "金额不能为空！")
     @ApiModelProperty(name = "amount", value = "金额")
     private BigDecimal amount;
 
@@ -51,7 +50,6 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(name = "incomeAndExpenses", value = "收支类型")
     private String incomeAndExpenses;
 
-    @NotBlank(groups = {Insert.class, Update.class}, message = "属于不能为空！")
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(name = "belongTo", value = "属于")
     private Long belongTo;

@@ -40,6 +40,7 @@ public class WebSecurityConfig {
                 "/favicon.ico",
                 "/api/v1/user/login",
                 "/druid/**",
+                "/api/v1/user/getUserInfo",
                 "/v3/api-docs",
                 "/error"
         };
