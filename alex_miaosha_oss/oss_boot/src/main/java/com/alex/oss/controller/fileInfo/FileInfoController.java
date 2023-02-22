@@ -56,7 +56,7 @@ public class FileInfoController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@RequestParam(value = "type", required = false) String type,
+    public Result<FileInfoVo> add(@RequestParam(value = "type", required = false) String type,
                                @RequestPart(value = "file") MultipartFile file) throws Exception {
         return Result.success(fileInfoService.addFileInfo(type, file));
     }
@@ -64,7 +64,7 @@ public class FileInfoController {
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@RequestParam(value = "id") Long id,
+    public Result<FileInfoVo> update(@RequestParam(value = "id") Long id,
                                   @RequestParam(value = "type", required = false) String type,
                                   @RequestPart(value = "file") MultipartFile file) throws Exception {
         return Result.success(fileInfoService.updateFileInfo(id, type, file));

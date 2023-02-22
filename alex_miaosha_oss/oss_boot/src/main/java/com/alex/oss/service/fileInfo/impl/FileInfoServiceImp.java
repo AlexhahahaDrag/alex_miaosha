@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +47,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public Boolean addFileInfo(String type, MultipartFile file) throws Exception {
+    public FileInfoVo addFileInfo(String type, MultipartFile file) throws Exception {
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
@@ -56,18 +55,21 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         FileInfo fileInfo = new FileInfo();
         BeanUtil.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
-        return true;
+        BeanUtil.copyProperties(fileInfo, uploadFile);
+        return uploadFile;
     }
 
     @Override
-    public Boolean updateFileInfo(Long id, String type, MultipartFile file) throws Exception {
+    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file) throws Exception {
         FileInfo fileInfo = this.getById(id);
+        FileInfoVo uploadFile = null;
         if (file != null) {
-            FileInfoVo uploadFile = uploadFile(type, file);
+            uploadFile = uploadFile(type, file);
             BeanUtil.copyProperties(uploadFile, fileInfo, "id");
         }
         fileInfoMapper.updateById(fileInfo);
-        return true;
+        BeanUtil.copyProperties(fileInfo, uploadFile);
+        return uploadFile;
     }
 
     @Override
