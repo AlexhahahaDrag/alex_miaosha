@@ -21,6 +21,11 @@ public class TemplateConfig {
     private String serviceImpl;
     private String vo;
     private String client;
+    private String detailVue;
+    private String detailTs;
+    private String listTs;
+    private String listVue;
+    private String tsTs;
     private boolean disableEntity;
 
     private TemplateConfig() {
@@ -33,6 +38,11 @@ public class TemplateConfig {
         this.serviceImpl = "/templates/serviceImpl.java";
         this.vo = "/templates/vo.java";
         this.client = "/templates/feignClient.java";
+        this.detailTs = "/templates/detail.ts";
+        this.detailVue = "/templates/detail.vue";
+        this.listTs = "/templates/list.ts";
+        this.listVue = "/templates/list.vue";
+        this.tsTs = "/templates/ts.ts";
     }
 
     private void logger(String value, TemplateType templateType) {
@@ -85,6 +95,16 @@ public class TemplateConfig {
                         this.vo = null;
                     case CLIENT:
                         this.client = null;
+                    case DETAILVUE:
+                        this.detailVue = null;
+                    case DETAILTS:
+                        this.detailTs = null;
+                    case LISTVUE:
+                        this.listVue = null;
+                    case LISTTS:
+                        this.listTs = null;
+                    case TSTS:
+                        this.tsTs = null;
                 }
             }
         }
@@ -122,6 +142,26 @@ public class TemplateConfig {
 
     public String getClient() {
         return client;
+    }
+
+    public String getDetailVue() {
+        return detailVue;
+    }
+
+    public String getDetailTs() {
+        return detailTs;
+    }
+
+    public String getListTs() {
+        return listTs;
+    }
+
+    public String getListVue() {
+        return listVue;
+    }
+
+    public String getTsTs() {
+        return tsTs;
     }
 
     public static class Builder implements IConfigBuilder<TemplateConfig> {

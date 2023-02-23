@@ -13,7 +13,13 @@ public enum TemplateType {
     MAPPER,
     XML,
     VO,
-    CLIENT;
+    CLIENT,
+    DETAILVUE,
+    DETAILTS,
+    LISTVUE,
+    LISTTS,
+    TSTS,
+    ;
 
     private TemplateType() {
     }

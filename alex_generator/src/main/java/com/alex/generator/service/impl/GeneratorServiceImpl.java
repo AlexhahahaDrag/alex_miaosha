@@ -79,6 +79,11 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.detailVue, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.detailTs, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.listTs, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.listVue, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.tsTs, controllerPath + separator + fileName);
 
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
@@ -100,6 +105,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+
                             .pathInfo(pathMap); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {

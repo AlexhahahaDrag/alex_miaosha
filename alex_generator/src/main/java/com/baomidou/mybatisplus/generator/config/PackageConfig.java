@@ -24,6 +24,11 @@ public class PackageConfig {
     private String other;
     private String vo;
     private String client;
+    private String detailVue;
+    private String detailTs;
+    private String listTs;
+    private String listVue;
+    private String tsTs;
     private Map<OutputFile, String> pathInfo;
     private final Map<String, String> packageInfo;
 
@@ -38,6 +43,11 @@ public class PackageConfig {
         this.controller = "controller";
         this.vo = "vo";
         this.client = "client";
+        this.detailVue = "detailVue";
+        this.detailTs = "detailTs";
+        this.listTs = "listTs";
+        this.listVue = "listVue";
+        this.tsTs = "tsTs";
         this.other = "other";
         this.packageInfo = new HashMap();
     }
@@ -65,6 +75,11 @@ public class PackageConfig {
             this.packageInfo.put("Controller", this.joinPackage(this.getController()));
             this.packageInfo.put("Vo", this.joinPackage(this.getVo()));
             this.packageInfo.put("Client", this.joinPackage(this.getClient()));
+            this.packageInfo.put("DetailVue", this.joinPackage(this.getDetailVue()));
+            this.packageInfo.put("DetailTs", this.joinPackage(this.getDetailTs()));
+            this.packageInfo.put("ListTs", this.joinPackage(this.getListTs()));
+            this.packageInfo.put("ListVue", this.joinPackage(this.getListVue()));
+            this.packageInfo.put("TsTs", this.joinPackage(this.getTsTs()));
             this.packageInfo.put("Other", this.joinPackage(this.getOther()));
             this.packageInfo.put("Parent", this.getParent());
         }
@@ -114,6 +129,26 @@ public class PackageConfig {
 
     public String getClient() {
         return this.client;
+    }
+
+    public String getDetailVue() {
+        return this.detailVue;
+    }
+
+    public String getDetailTs() {
+        return this.detailTs;
+    }
+
+    public String getListTs() {
+        return this.listTs;
+    }
+
+    public String getListVue() {
+        return this.listVue;
+    }
+
+    public String getTsTs() {
+        return this.tsTs;
     }
 
     public Map<OutputFile, String> getPathInfo() {
@@ -180,6 +215,31 @@ public class PackageConfig {
 
         public Builder client(@NotNull String client) {
             this.packageConfig.client = client;
+            return this;
+        }
+
+        public Builder detailVue(@NotNull String detailVue) {
+            this.packageConfig.detailVue = detailVue;
+            return this;
+        }
+
+        public Builder detailTs(@NotNull String detailTs) {
+            this.packageConfig.detailTs = detailTs;
+            return this;
+        }
+
+        public Builder listTs(@NotNull String listTs) {
+            this.packageConfig.listTs = listTs;
+            return this;
+        }
+
+        public Builder listVue(@NotNull String listVue) {
+            this.packageConfig.listVue = listVue;
+            return this;
+        }
+
+        public Builder tsTs(@NotNull String tsTs) {
+            this.packageConfig.tsTs = tsTs;
             return this;
         }
 
