@@ -152,19 +152,73 @@ public abstract class AbstractTemplateEngine {
                 throw new RuntimeException(var6);
             }
         }
+    }
 
+    protected void outputDetailTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String detailTsPath = this.getPathInfo(OutputFile.detailTs);
+        if (StringUtils.isNotBlank(tableInfo.getDetailTsName()) && StringUtils.isNotBlank(detailTsPath)) {
+            this.getTemplateFilePath(TemplateConfig::getDetailTs).ifPresent((detailTs) -> {
+                String detailTsName = tableInfo.getDetailTsName();
+                String detailTsFile = String.format(detailTsPath + File.separator + tableInfo.getDetailTsName() + this.suffixJavaOrKt(), detailTsName);
+                this.outputFile(new File(detailTsFile), objectMap, detailTs);
+            });
+        }
+    }
+
+    protected void outputDetailVue(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String detailVuePath = this.getPathInfo(OutputFile.detailVue);
+        if (StringUtils.isNotBlank(tableInfo.getDetailVueName()) && StringUtils.isNotBlank(detailVuePath)) {
+            this.getTemplateFilePath(TemplateConfig::getDetailVue).ifPresent((detailVue) -> {
+                String detailVueName = tableInfo.getDetailVueName();
+                String detailVueFile = String.format(detailVuePath + File.separator + tableInfo.getDetailVueName() + this.suffixJavaOrKt(), detailVueName);
+                this.outputFile(new File(detailVueFile), objectMap, detailVue);
+            });
+        }
+    }
+
+    protected void outputListTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String listTsPath = this.getPathInfo(OutputFile.listTs);
+        if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(listTsPath)) {
+            this.getTemplateFilePath(TemplateConfig::getListTs).ifPresent((listTs) -> {
+                String clientName = tableInfo.getClientName();
+                String tsTsFile = String.format(listTsPath + File.separator + tableInfo.getListTsName() + this.suffixJavaOrKt(), clientName);
+                this.outputFile(new File(tsTsFile), objectMap, listTs);
+            });
+        }
+    }
+
+    protected void outputListVue(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String listVuePath = this.getPathInfo(OutputFile.listVue);
+        if (StringUtils.isNotBlank(tableInfo.getListVueName()) && StringUtils.isNotBlank(listVuePath)) {
+            this.getTemplateFilePath(TemplateConfig::getListVue).ifPresent((listVue) -> {
+                String listVueName = tableInfo.getListVueName();
+                String listVueFile = String.format(listVuePath + File.separator + tableInfo.getListVueName() + this.suffixJavaOrKt(), listVueName);
+                this.outputFile(new File(listVueFile), objectMap, listVue);
+            });
+        }
+    }
+
+    protected void outputTsTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String tsTsPath = this.getPathInfo(OutputFile.tsTs);
+        if (StringUtils.isNotBlank(tableInfo.getTsTsName()) && StringUtils.isNotBlank(tsTsPath)) {
+            this.getTemplateFilePath(TemplateConfig::getTsTs).ifPresent((tsTs) -> {
+                String tsTsName = tableInfo.getTsTsName();
+                String tsTsFile = String.format(tsTsPath + File.separator + tableInfo.getTsTsName() + this.suffixJavaOrKt(), tsTsName);
+                this.outputFile(new File(tsTsFile), objectMap, tsTs);
+            });
+        }
     }
 
     @NotNull
     protected Optional<String> getTemplateFilePath(@NotNull Function<TemplateConfig, String> function) {
         TemplateConfig templateConfig = this.getConfigBuilder().getTemplateConfig();
-        String filePath = (String)function.apply(templateConfig);
+        String filePath = function.apply(templateConfig);
         return StringUtils.isNotBlank(filePath) ? Optional.of(this.templateFilePath(filePath)) : Optional.empty();
     }
 
     @Nullable
     protected String getPathInfo(@NotNull OutputFile outputFile) {
-        return (String)this.getConfigBuilder().getPathInfo().get(outputFile);
+        return this.getConfigBuilder().getPathInfo().get(outputFile);
     }
 
     @NotNull
@@ -184,6 +238,11 @@ public abstract class AbstractTemplateEngine {
                 this.outputController(tableInfo, objectMap);
                 this.outputVo(tableInfo, objectMap);
                 this.outputClient(tableInfo, objectMap);
+                this.outputDetailVue(tableInfo, objectMap);
+                this.outputDetailTs(tableInfo, objectMap);
+                this.outputListVue(tableInfo, objectMap);
+                this.outputListTs(tableInfo, objectMap);
+                this.outputTsTs(tableInfo, objectMap);
             });
             return this;
         } catch (Exception var3) {
@@ -191,7 +250,9 @@ public abstract class AbstractTemplateEngine {
         }
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     protected void writerFile(Map<String, Object> objectMap, String templatePath, String outputFile) throws Exception {
         if (StringUtils.isNotBlank(templatePath)) {
@@ -200,7 +261,9 @@ public abstract class AbstractTemplateEngine {
 
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     public void writer(@NotNull Map<String, Object> objectMap, @NotNull String templatePath, @NotNull String outputFile) throws Exception {
     }
@@ -266,7 +329,9 @@ public abstract class AbstractTemplateEngine {
     @NotNull
     public abstract String templateFilePath(@NotNull String filePath);
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     protected boolean isCreate(String filePath) {
         return this.isCreate(new File(filePath));

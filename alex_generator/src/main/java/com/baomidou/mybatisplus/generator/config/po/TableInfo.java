@@ -10,9 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
-import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
-import com.baomidou.mybatisplus.generator.config.builder.Entity;
-import com.baomidou.mybatisplus.generator.config.builder.Vo;
+import com.baomidou.mybatisplus.generator.config.builder.*;
 import com.baomidou.mybatisplus.generator.config.rules.IColumnType;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,14 +38,29 @@ public class TableInfo {
     private String fieldNames;
     private String voName;
     private String clientName;
+    private String detailVueName;
+    private String detailTsName;
+    private String listVueName;
+    private String listTsName;
+    private String tsTsName;
     private final Entity entity;
     private final Vo vo;
+    private final DetailTs detailTs;
+    private final DetailVue detailVue;
+    private final ListTs listTs;
+    private final ListVue listVue;
+    private final TsTs tsTs;
 
     public TableInfo(@NotNull ConfigBuilder configBuilder, @NotNull String name) {
         this.strategyConfig = configBuilder.getStrategyConfig();
         this.globalConfig = configBuilder.getGlobalConfig();
         this.entity = configBuilder.getStrategyConfig().entity();
         this.vo = configBuilder.getStrategyConfig().vo();
+        this.detailVue = configBuilder.getStrategyConfig().detailVue();
+        this.detailTs = configBuilder.getStrategyConfig().detailTs();
+        this.listVue = configBuilder.getStrategyConfig().listVue();
+        this.listTs = configBuilder.getStrategyConfig().listTs();
+        this.tsTs = configBuilder.getStrategyConfig().tsTs();
         this.name = name;
     }
 
@@ -91,7 +104,6 @@ public class TableInfo {
 
     public String getFieldNames() {
         if (StringUtils.isBlank(this.fieldNames)) {
-//            this.fieldNames = (String)this.fields.stream().map(TableField::getColumnName).collect(Collectors.joining(", "));
             this.fieldNames = (String)this.fields.stream().map(item -> name + "." + item.getColumnName()).collect(Collectors.joining(", "));
         }
         return this.fieldNames;
@@ -210,6 +222,11 @@ public class TableInfo {
         this.controllerName = this.strategyConfig.controller().getConverterFileName().convert(entityName);
         this.voName = this.strategyConfig.vo().getConverterFileName().convert(entityName);
         this.clientName = this.strategyConfig.client().getConverterFileName().convert(entityName);
+        this.detailVueName = this.strategyConfig.detailVue().getConverterFileName().convert(entityName);
+        this.detailTsName = this.strategyConfig.detailTs().getConverterFileName().convert(entityName);
+        this.listVueName = this.strategyConfig.listVue().getConverterFileName().convert(entityName);
+        this.listTsName = this.strategyConfig.listTs().getConverterFileName().convert(entityName);
+        this.tsTsName = this.strategyConfig.tsTs().getConverterFileName().convert(entityName);
         this.importPackage();
         this.importVoPackage();
     }
@@ -295,5 +312,45 @@ public class TableInfo {
 
     public String getClientName() {
         return clientName;
+    }
+
+    public String getDetailVueName() {
+        return detailVueName;
+    }
+
+    public void setDetailVueName(String detailVueName) {
+        this.detailVueName = detailVueName;
+    }
+
+    public String getDetailTsName() {
+        return detailTsName;
+    }
+
+    public void setDetailTsName(String detailTsName) {
+        this.detailTsName = detailTsName;
+    }
+
+    public String getListVueName() {
+        return listVueName;
+    }
+
+    public String getListTsName() {
+        return listTsName;
+    }
+
+    public void setListTsName(String listTsName) {
+        this.listTsName = listTsName;
+    }
+
+    public void setListVueName(String listVueName) {
+        this.listVueName = listVueName;
+    }
+
+    public String getTsTsName() {
+        return tsTsName;
+    }
+
+    public void setTsTsName(String tsTsName) {
+        this.tsTsName = tsTsName;
     }
 }

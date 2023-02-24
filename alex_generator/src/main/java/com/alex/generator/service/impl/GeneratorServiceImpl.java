@@ -92,7 +92,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .outputDir(projectPath + "\\java")
                         .author(author)
                         .enableSwagger()
-//                        .disableOpenDir()
+                        .disableOpenDir()
                         .fileOverride()
                         .dateType(DateType.TIME_PACK)
                         .commentDate("yyyy-MM-dd HH:mm:ss"))
@@ -105,7 +105,11 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-
+                            .detailTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .detailVue(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .listTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .listVue(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .tsTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .pathInfo(pathMap); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
@@ -157,8 +161,8 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .enableTableFieldAnnotation()
                             .columnNaming(NamingStrategy.underline_to_camel)
                             .addSuperVoColumns("id", "creator", "create_at", "updater", "update_at",
-                                    "deleter", "delete_at", "is_valid", "is_delete", "operator", "operate_at")
-////                            .addIgnoreColumns("age")
+                                    "deleter", "delete_at", "is_valid", "is_delete", "operator", "operate_at")//设置super类字段
+                            .addIgnoreColumns("") //设置忽略字段
                             .addTableFills(list)
                             .enableActiveRecord()
                             //配置client
@@ -170,15 +174,12 @@ public class GeneratorServiceImpl implements GeneratorService {
                 })
                 .injectionConfig(builder -> {
                     builder.beforeOutputFile((tableInfo, objectMap) -> {
-                        System.out.println("tableInfo: " + tableInfo.getEntityName() + " objectMap: " + objectMap.size());
 //                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
 //                                //配置other模板及类名
 //                                Map<String, String> customFile = Objects.requireNonNull(config.getInjectionConfig()).getCustomFile();
 //                                customFile.put(tableInfo.getEntityName() + "Vo.java", "/templates/vo.java.btl");
 //                                customFile.put(tableInfo.getEntityName() + "FeignClient.java", "/templates/feignClient.java.btl");
                     })
-                            //配置全局变量
-//                            .customMap(Collections.singletonMap("vo11", "aaaVo"))
                             .build();
                 })
                 .templateEngine(new BeetlTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

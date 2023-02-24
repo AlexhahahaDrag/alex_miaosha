@@ -36,12 +36,22 @@ public class StrategyConfig {
     private final com.baomidou.mybatisplus.generator.config.builder.Service.Builder serviceBuilder;
     private final com.baomidou.mybatisplus.generator.config.builder.Vo.Builder voBuilder;
     private final com.baomidou.mybatisplus.generator.config.builder.Client.Builder clientBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.DetailTs.Builder detailTsBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.DetailVue.Builder detailVueBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.ListTs.Builder listTsBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.ListVue.Builder listVueBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.TsTs.Builder tsTsBuilder;
     private Entity entity;
     private Controller controller;
     private Mapper mapper;
     private Service service;
     private Vo vo;
     private Client client;
+    private DetailVue detailVue;
+    private DetailTs detailTs;
+    private ListVue listVue;
+    private ListTs listTs;
+    private TsTs tsTs;
 
     private StrategyConfig() {
         this.tablePrefix = new HashSet();
@@ -57,6 +67,11 @@ public class StrategyConfig {
         this.serviceBuilder = new com.baomidou.mybatisplus.generator.config.builder.Service.Builder(this);
         this.voBuilder = new com.baomidou.mybatisplus.generator.config.builder.Vo.Builder(this);
         this.clientBuilder = new com.baomidou.mybatisplus.generator.config.builder.Client.Builder(this);
+        this.detailTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.DetailTs.Builder(this);
+        this.detailVueBuilder = new com.baomidou.mybatisplus.generator.config.builder.DetailVue.Builder(this);
+        this.listTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.ListTs.Builder(this);
+        this.listVueBuilder = new com.baomidou.mybatisplus.generator.config.builder.ListVue.Builder(this);
+        this.tsTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.TsTs.Builder(this);
     }
 
     @NotNull
@@ -125,7 +140,6 @@ public class StrategyConfig {
         if (this.vo == null) {
             this.vo = this.voBuilder.get();
         }
-
         return this.vo;
     }
 
@@ -139,8 +153,72 @@ public class StrategyConfig {
         if (this.client == null) {
             this.client = this.clientBuilder.get();
         }
-
         return this.client;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.DetailTs.Builder detailTsBuilder() {
+        return this.detailTsBuilder;
+    }
+
+    @NotNull
+    public DetailTs detailTs() {
+        if (this.detailTs == null) {
+            this.detailTs = this.detailTsBuilder.get();
+        }
+        return this.detailTs;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.DetailVue.Builder detailVueBuilder() {
+        return this.detailVueBuilder;
+    }
+
+    @NotNull
+    public DetailVue detailVue() {
+        if (this.detailVue == null) {
+            this.detailVue = this.detailVueBuilder.get();
+        }
+        return this.detailVue;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.ListVue.Builder listVueBuilder() {
+        return this.listVueBuilder;
+    }
+
+    @NotNull
+    public ListVue listVue() {
+        if (this.listVue == null) {
+            this.listVue = this.listVueBuilder.get();
+        }
+        return this.listVue;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.ListTs.Builder listTsBuilder() {
+        return this.listTsBuilder;
+    }
+
+    @NotNull
+    public ListTs listTs() {
+        if (this.listTs == null) {
+            this.listTs = this.listTsBuilder.get();
+        }
+        return this.listTs;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.TsTs.Builder tsTsBuilder() {
+        return this.tsTsBuilder;
+    }
+
+    @NotNull
+    public TsTs tsTs() {
+        if (this.tsTs == null) {
+            this.tsTs = this.tsTsBuilder.get();
+        }
+        return this.tsTs;
     }
 
     public boolean isCapitalModeNaming(@NotNull String word) {
