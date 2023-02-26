@@ -31,6 +31,10 @@ public abstract class AbstractTemplateEngine {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private ConfigBuilder configBuilder;
 
+    private static final String TS = ".ts";
+
+    private static final String VUE = ".vue";
+
     public AbstractTemplateEngine() {
     }
 
@@ -50,9 +54,7 @@ public abstract class AbstractTemplateEngine {
         String entityName = tableInfo.getEntityName();
         String entityPath = this.getPathInfo(OutputFile.entity);
         if (StringUtils.isNotBlank(entityName) && StringUtils.isNotBlank(entityPath)) {
-            this.getTemplateFilePath((template) -> {
-                return template.getEntity(this.getConfigBuilder().getGlobalConfig().isKotlin());
-            }).ifPresent((entity) -> {
+            this.getTemplateFilePath((template) -> template.getEntity(this.getConfigBuilder().getGlobalConfig().isKotlin())).ifPresent((entity) -> {
                 String entityFile = String.format(entityPath + File.separator + "%s" + this.suffixJavaOrKt(), entityName);
                 this.outputFile(new File(entityFile), objectMap, entity);
             });
@@ -159,7 +161,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getDetailTsName()) && StringUtils.isNotBlank(detailTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getDetailTs).ifPresent((detailTs) -> {
                 String detailTsName = tableInfo.getDetailTsName();
-                String detailTsFile = String.format(detailTsPath + File.separator + tableInfo.getDetailTsName() + this.suffixJavaOrKt(), detailTsName);
+                String detailTsFile = String.format(detailTsPath + File.separator + tableInfo.getDetailTsName() + TS, detailTsName);
                 this.outputFile(new File(detailTsFile), objectMap, detailTs);
             });
         }
@@ -170,7 +172,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getDetailVueName()) && StringUtils.isNotBlank(detailVuePath)) {
             this.getTemplateFilePath(TemplateConfig::getDetailVue).ifPresent((detailVue) -> {
                 String detailVueName = tableInfo.getDetailVueName();
-                String detailVueFile = String.format(detailVuePath + File.separator + tableInfo.getDetailVueName() + this.suffixJavaOrKt(), detailVueName);
+                String detailVueFile = String.format(detailVuePath + File.separator + tableInfo.getDetailVueName() + VUE, detailVueName);
                 this.outputFile(new File(detailVueFile), objectMap, detailVue);
             });
         }
@@ -181,7 +183,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(listTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getListTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
-                String tsTsFile = String.format(listTsPath + File.separator + tableInfo.getListTsName() + this.suffixJavaOrKt(), clientName);
+                String tsTsFile = String.format(listTsPath + File.separator + tableInfo.getListTsName() + TS, clientName);
                 this.outputFile(new File(tsTsFile), objectMap, listTs);
             });
         }
@@ -192,7 +194,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getListVueName()) && StringUtils.isNotBlank(listVuePath)) {
             this.getTemplateFilePath(TemplateConfig::getListVue).ifPresent((listVue) -> {
                 String listVueName = tableInfo.getListVueName();
-                String listVueFile = String.format(listVuePath + File.separator + tableInfo.getListVueName() + this.suffixJavaOrKt(), listVueName);
+                String listVueFile = String.format(listVuePath + File.separator + tableInfo.getListVueName() + VUE, listVueName);
                 this.outputFile(new File(listVueFile), objectMap, listVue);
             });
         }

@@ -27,7 +27,7 @@ export let pagination = ref<pageInfo>({
   // 每页条数
   pageSize: 10,
   // 展示总数
-  showTotal: (total: number) => `共 ${total} 条`,
+  showTotal: (total: number) => `共 \${total} 条`,
   // 是否可以改变pageSize
   showSizeChanger: true,
   // 设置每页可以展示多少条的选项

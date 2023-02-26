@@ -28,12 +28,8 @@ public class Mapper implements ITemplate {
 
     private Mapper() {
         this.superClass = "com.baomidou.mybatisplus.core.mapper.BaseMapper";
-        this.converterMapperFileName = (entityName) -> {
-            return entityName + "Mapper";
-        };
-        this.converterXmlFileName = (entityName) -> {
-            return entityName + "Mapper";
-        };
+        this.converterMapperFileName = (entityName) -> entityName + "Mapper";
+        this.converterXmlFileName = (entityName) -> entityName + "Mapper";
     }
 
     @NotNull
