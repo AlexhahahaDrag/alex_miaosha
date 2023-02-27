@@ -1,55 +1,10 @@
-import { ref } from "vue";
-
-export interface SearchInfo {
+import { Dayjs } from 'dayjs';
+export interface ${entity}Detail {
 <% for(field in table.fields){ %>
-    ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+<% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
+    ${field.propertyName}?: number;
+<% } else { %>
+    ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+<% } % >
 <% } %>
-}
-
-export interface pageInfo {
-  current?: number;
-  pageSize?: number;
-  total?: number;
-  showTotal: Function;
-  showSizeChanger: boolean;
-  pageSizeOptions: string[];
-  showSizeChange: Function;
-  size: string;
-  showQuickJumper: boolean;
-  defaultPageSize: number;
-}
-
-export const columns = [
-<% for(field in table.fields){ %>
-  {
-    title: "${field.comment}",
-    dataIndex: "${field.propertyName}",
-    key: "${field.propertyName}",
-  },
-<% } %>
-  {
-    title: "操作",
-    key: "operation",
-    fixed: 'right',
-    width: '8',
-  },
-];
-
-
-export interface DataItem {
-<% for(field in table.fields){ %>
-    ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-<% } %>
-}
-
-export interface ModelInfo {
-  title?: string;
-  width?: string;
-  id?: number | undefined;
-  confirmLoading?: boolean;
-}
-
-export interface dictInfo {
-  typeCode?: string | number | undefined,
-  typeName?: string | undefined,
 }

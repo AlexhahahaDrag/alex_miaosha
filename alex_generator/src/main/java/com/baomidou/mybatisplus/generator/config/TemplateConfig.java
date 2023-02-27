@@ -108,7 +108,6 @@ public class TemplateConfig {
                 }
             }
         }
-
         return this;
     }
 
@@ -224,6 +223,31 @@ public class TemplateConfig {
 
         public Builder client(@NotNull String clientTemplate) {
             this.templateConfig.client = clientTemplate;
+            return this;
+        }
+
+        public Builder detailVue(@NotNull String detailVueTemplate) {
+            this.templateConfig.detailVue = detailVueTemplate;
+            return this;
+        }
+
+        public Builder detailTs(@NotNull String detailTsTemplate) {
+            this.templateConfig.detailTs = detailTsTemplate;
+            return this;
+        }
+
+        public Builder listVue(@NotNull String listVueTemplate) {
+            this.templateConfig.listVue = listVueTemplate;
+            return this;
+        }
+
+        public Builder listTs(@NotNull String listTsTemplate) {
+            this.templateConfig.listTs = listTsTemplate;
+            return this;
+        }
+
+        public Builder tsTs(@NotNull String tsTsTemplate) {
+            this.templateConfig.tsTs = tsTsTemplate;
             return this;
         }
 

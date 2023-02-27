@@ -28,22 +28,7 @@ public class ListVue implements ITemplate {
     private ConverterFileName converterFileName;
 
     private ListVue() {
-        this.converterFileName = (entityName) -> {
-            return entityName + "Detail";
-        };
-    }
-
-    public boolean isRestStyle() {
-        return this.restStyle;
-    }
-
-    public boolean isHyphenStyle() {
-        return this.hyphenStyle;
-    }
-
-    @Nullable
-    public String getSuperClass() {
-        return this.superClass;
+        this.converterFileName = (entityName) -> entityName + "List";
     }
 
     @NotNull
@@ -54,54 +39,28 @@ public class ListVue implements ITemplate {
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
         Map<String, Object> data = new HashMap();
-        data.put("controllerMappingHyphen", StringUtils.camelToHyphen(tableInfo.getEntityPath()));
-        data.put("controllerMappingHyphenStyle", this.hyphenStyle);
-        data.put("restControllerStyle", this.restStyle);
-        data.put("superControllerClassPackage", StringUtils.isBlank(this.superClass) ? null : this.superClass);
-        data.put("superControllerClass", ClassUtils.getSimpleName(this.superClass));
         return data;
     }
 
     public static class Builder extends BaseBuilder {
-        private final ListVue detailVue = new ListVue();
+        private final ListVue listVue = new ListVue();
 
         public Builder(@NotNull StrategyConfig strategyConfig) {
             super(strategyConfig);
         }
 
-        public Builder superClass(@NotNull Class<?> clazz) {
-            return this.superClass(clazz.getName());
-        }
-
-        public Builder superClass(@NotNull String superClass) {
-            this.detailVue.superClass = superClass;
-            return this;
-        }
-
-        public Builder enableHyphenStyle() {
-            this.detailVue.hyphenStyle = true;
-            return this;
-        }
-
-        public Builder enableRestStyle() {
-            this.detailVue.restStyle = true;
-            return this;
-        }
-
         public Builder convertFileName(@NotNull ConverterFileName converter) {
-            this.detailVue.converterFileName = converter;
+            this.listVue.converterFileName = converter;
             return this;
         }
 
-        public Builder formatClientFileName(@NotNull String format) {
-            return this.convertFileName((entityName) -> {
-                return String.format(format, entityName);
-            });
+        public Builder formatListVueFileName(@NotNull String format) {
+            return this.convertFileName((entityName) -> String.format(format, entityName));
         }
 
         @NotNull
         public ListVue get() {
-            return this.detailVue;
+            return this.listVue;
         }
     }
 }

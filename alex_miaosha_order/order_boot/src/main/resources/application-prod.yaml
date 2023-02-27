@@ -1,20 +1,16 @@
 server:
-  port: 30006
+  port: 30005
 
 spring:
   application:
-    name: alex-user-prod
+    name: alex-order-prod
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
-    url: jdbc:mysql://mysql:3306/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://mysql:3306/alex_order?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
 mybatis-plus:
-  mapper-locations: classpath*:com/alex/user/mapper/**/*Mapper.xml
-
-isRememberMeExpiresSecond: 24*60*60 #记住密码一天
-
-defaultPassword: 1234@com
+  mapper-locations: classpath*:com/alex/product/mapper/**/*Mapper.xml

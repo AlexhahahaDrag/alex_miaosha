@@ -43,11 +43,11 @@ public class PackageConfig {
         this.controller = "controller";
         this.vo = "vo";
         this.client = "client";
-        this.detailVue = "detailVue";
-        this.detailTs = "detail.ts";
-        this.listTs = "list.ts";
-        this.listVue = "list.vue";
-        this.tsTs = "ts.ts";
+        this.detailVue = "vue.detail";
+        this.detailTs = "vue.detail";
+        this.listTs = "vue";
+        this.listVue = "vue";
+        this.tsTs = "ts";
         this.other = "other";
         this.packageInfo = new HashMap();
     }

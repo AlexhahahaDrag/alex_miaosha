@@ -66,12 +66,12 @@ public class Vo implements ITemplate {
     public void convertSuperVoColumns(Object clazz) {
         Class clazz1 = (Class) clazz;
         List<Field> fields = TableInfoHelper.getAllFields(clazz1);
-        this.superVoColumns.addAll((Collection)fields.stream().map((field) -> {
-            TableId tableId = (TableId)field.getAnnotation(TableId.class);
+        this.superVoColumns.addAll(fields.stream().map((field) -> {
+            TableId tableId = field.getAnnotation(TableId.class);
             if (tableId != null && StringUtils.isNotBlank(tableId.value())) {
                 return tableId.value();
             } else {
-                TableField tableField = (TableField)field.getAnnotation(TableField.class);
+                TableField tableField = field.getAnnotation(TableField.class);
                 if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
                     return tableField.value();
                 } else {
@@ -329,7 +329,6 @@ public class Vo implements ITemplate {
             } else if (!this.vo.superVoColumns.isEmpty()) {
                 Vo.LOGGER.warn("Forgot to set Vo supper class ?");
             }
-
             return this.vo;
         }
 

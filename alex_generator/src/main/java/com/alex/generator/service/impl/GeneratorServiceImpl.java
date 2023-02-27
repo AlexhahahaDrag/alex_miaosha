@@ -105,16 +105,16 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .detailTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .detailVue(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .listTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .listVue(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .tsTs(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .detailTs(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .detailVue(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .listTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .listVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                            .tsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                             .pathInfo(pathMap); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
                     builder.addInclude(tableName)
-//                            .addTablePrefix("t_")
+                            .addTablePrefix("t_")
                             //配置entity
                             .entityBuilder()
                             .superClass(BaseEntity.class)
@@ -169,6 +169,8 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .clientBuilder()
                             .formatClientFileName("%sApi")
                             .enableRestStyle()
+                            .tsTsBuilder()
+                            .formatTsTsFileName("")
                             .build()
                     ; // 设置过滤表前缀
                 })

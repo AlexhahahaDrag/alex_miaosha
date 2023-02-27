@@ -205,7 +205,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getTsTsName()) && StringUtils.isNotBlank(tsTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getTsTs).ifPresent((tsTs) -> {
                 String tsTsName = tableInfo.getTsTsName();
-                String tsTsFile = String.format(tsTsPath + File.separator + tableInfo.getTsTsName() + this.suffixJavaOrKt(), tsTsName);
+                String tsTsFile = String.format(tsTsPath + File.separator + tableInfo.getTsTsName() + TS, tsTsName);
                 this.outputFile(new File(tsTsFile), objectMap, tsTs);
             });
         }

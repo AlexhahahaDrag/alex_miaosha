@@ -45,7 +45,7 @@ public class DetailVue implements ITemplate {
             return this;
         }
 
-        public Builder formatVueFileName(@NotNull String format) {
+        public Builder formatDetailVueFileName(@NotNull String format) {
             return this.convertFileName((entityName) -> String.format(format, entityName));
         }
 

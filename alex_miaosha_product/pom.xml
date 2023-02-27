@@ -7,13 +7,15 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>alex_miaosha_product</artifactId>
-    <modules>
-        <module>prodcut_api</module>
-        <module>product_boot</module>
-    </modules>
+  <packaging>pom</packaging>
 
-      <properties>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-    </properties>
+  <modules>
+    <module>product_api</module>
+    <module>product_boot</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
 </project>

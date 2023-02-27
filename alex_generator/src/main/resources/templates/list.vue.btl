@@ -58,9 +58,9 @@
     </div>
     <div class="button">
       <a-space>
-        <a-button type="primary" @click="editFinance('add')">新增</a-button>
+        <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
         <a-button type="primary" @click="query">导入</a-button>
-        <a-button type="danger" @click="batchDelFinanceManager">删除</a-button>
+        <a-button type="danger" @click="batchDel${entity}Manager">删除</a-button>
       </a-space>
     </div>
     <div class="content">
@@ -70,7 +70,7 @@
           <template v-if="column.key === 'operation'">
             <a-space>
               <a-button type="primary" size="small" @click="editFinance('update', record.id)">编辑</a-button>
-              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="delFinance(record.id)"
+              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.id)"
                 @cancel="cancel">
                 <a-button type="primary" size="small" danger>删除</a-button>
               </a-popconfirm>
@@ -122,8 +122,8 @@ import {
   fromSourceTransferList,
   dictInfo,
   pageInfo,
-} from "./financeManager";
-import { getFinanceMangerPage, deleteFinanceManger } from "@/api/finance/financeManager";
+} from "./${entity}List";
+import { get${entity}MangerPage, delete${entity}Manger } from "@/api/${entity}/${entity}Manager";
 import { getDictList } from "@/api/finance/dict/dictManager";
 import { message } from "ant-design-vue";
 import Detail from "./detail/index.vue";
@@ -170,25 +170,25 @@ let infoDateEnd = ref<Dayjs | null>();
 function query() {
   searchInfo.value.infoDateStart = infoDateStart.value ? infoDateStart.value.format('YYYY-MM-DD') : null;
   searchInfo.value.infoDateEnd = infoDateEnd.value ? infoDateEnd.value.format('YYYY-MM-DD') : null;
-  getFinancePage(searchInfo.value, pagination.value);
+  get${entity}Page(searchInfo.value, pagination.value);
 }
 
 function handleTableChange(pagination) {
-  getFinancePage(searchInfo.value, pagination);
+  get${entity}Page(searchInfo.value, pagination);
 }
 
 function delFinance(ids: string) {
-  deleteFinanceManger(ids).then((res) => {
+  delete${entity}Manger(ids).then((res) => {
     if (res.code == "200") {
       message.success((res && "删除" + res.message) || "删除成功！", 3);
-      getFinancePage(searchInfo.value, pagination.value);
+      get${entity}Page(searchInfo.value, pagination.value);
     } else {
       message.error((res && res.message) || "删除失败！", 3);
     }
   });
 }
 
-function batchDelFinanceManager() {
+function batchDel${entity}Manager() {
   let ids = "";
   if (rowIds && rowIds.length > 0) {
     rowIds.forEach((item: string) => {
@@ -199,7 +199,7 @@ function batchDelFinanceManager() {
     message.warning("请先选择数据！", 3);
     return;
   }
-  delFinance(ids);
+  del${entity}(ids);
 }
 
 let loading = ref<boolean>(false);
@@ -210,9 +210,9 @@ const cancel = (e: MouseEvent) => {
   console.log(e);
 }
 
-function getFinancePage(param: SearchInfo, cur: pageInfo) {
+function get${entity}Page(param: SearchInfo, cur: pageInfo) {
   loading.value = true;
-  getFinanceMangerPage(param, cur.current, cur.pageSize)
+  get${entity}MangerPage(param, cur.current, cur.pageSize)
     .then((res) => {
       if (res.code == "200") {
         dataSource.value = res.data.records;
@@ -257,7 +257,7 @@ function init() {
   //获取字典列表
   getDictInfoList();
   //获取财务管理页面数据
-  getFinancePage(searchInfo.value, pagination.value);
+  get${entity}Page(searchInfo.value, pagination.value);
   //获取用户信息
   getUserInfoList();
 }
@@ -269,7 +269,7 @@ let visible = ref<boolean>(false);
 let modelInfo = ref<ModelInfo>({});
 
 //新增和修改弹窗
-function editFinance(type: string, id?: number) {
+function edit${entity}(type: string, id?: number) {
   if (type == "add") {
     modelInfo.value.title = "新增明细";
     modelInfo.value.id = undefined;
@@ -283,7 +283,7 @@ function editFinance(type: string, id?: number) {
 
 const handleOk = (v: boolean) => {
   visible.value = v;
-  getFinancePage(searchInfo.value, pagination.value);
+  get${entity}Page(searchInfo.value, pagination.value);
 };
 
 const handleCancel = (v: boolean) => {

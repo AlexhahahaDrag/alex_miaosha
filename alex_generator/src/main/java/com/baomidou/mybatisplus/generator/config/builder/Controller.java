@@ -24,9 +24,7 @@ public class Controller implements ITemplate {
     private ConverterFileName converterFileName;
 
     private Controller() {
-        this.converterFileName = (entityName) -> {
-            return entityName + "Controller";
-        };
+        this.converterFileName = (entityName) -> entityName + "Controller";
     }
 
     public boolean isRestStyle() {

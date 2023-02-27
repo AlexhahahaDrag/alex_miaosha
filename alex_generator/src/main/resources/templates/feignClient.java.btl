@@ -1,7 +1,5 @@
 package ${package.Client};
 
-import com.alex.api.oss.api.fallback.OssFallbackFactory;
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import ${package.Vo}.${table.voName};
 
 /**
  * @description:  ${table.comment!}controller
@@ -20,38 +19,38 @@ import org.springframework.web.bind.annotation.*;
  * @version:      1.0.0
  */
 @Component
-@FeignClient(name = "alex-oss-dev", fallback = OssFallbackFactory.class, configuration = FeignConfig.class)
+@FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", fallback = OssFallbackFactory.class, configuration = FeignConfig.class)
 public interface ${table.clientName} {
 
-    @ApiOperationSupport(order = 10, author = "alex")
-    @ApiOperation(value = "获取文件信息表分页", notes = "获取文件信息表分页", response = Result.class)
+    @ApiOperationSupport(order = 10, author = "${author}")
+    @ApiOperation(value = "获取${table.comment!}分页", notes = "获取${table.comment!}分页", response = Result.class)
     @PostMapping(value = "/api/v1/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum"),
             @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "fileVo")}
+            @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}")}
     )
-    Result<Page<FileInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+    Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                            @RequestBody(required = false) FileInfoVo fileVo);
+                                            @RequestBody(required = false) ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
-    @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "获取文件信息表详情", notes = "获取文件信息表详情", response = Result.class)
-    @GetMapping
-    Result<FileInfoVo> query(@RequestParam(value = "id") String id);
+    @ApiOperationSupport(order = 20, author = "${author}")
+    @ApiOperation(value = "获取${table.comment!}详情", notes = "获取${table.comment!}详情", response = Result.class)
+    @GetMapping(value = "/api/v1")
+    Result<${table.voName}> query(@RequestParam(value = "id") String id);
 
-    @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
+    @ApiOperationSupport(order = 30, author = "${author}")
+    @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
     @PostMapping("/api/v1")
-    Result<Boolean> add(@RequestBody FileInfoVo fileVo);
+    Result<Boolean> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
-    @ApiOperationSupport(order = 40, author = "alex")
-    @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
+    @ApiOperationSupport(order = 40, author = "${author}")
+    @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
     @PutMapping("/api/v1")
-    Result<Boolean> update(@RequestBody FileInfoVo fileVo);
+    Result<Boolean> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
-    @ApiOperationSupport(order = 50, author = "alex")
-    @ApiOperation(value = "刪除文件信息表", notes = "刪除文件信息表", response = Result.class)
+    @ApiOperationSupport(order = 50, author = "${author}")
+    @ApiOperation(value = "刪除${table.comment!}", notes = "刪除${table.comment!}", response = Result.class)
     @DeleteMapping("/api/v1")
     Result<Boolean> delete(@RequestParam("ids") String ids);
 }
