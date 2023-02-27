@@ -22,6 +22,8 @@
         <module>alex_miaosha_finance</module>
         <module>alex_generator</module>
         <module>alex_miaosha_oss</module>
+        <module>alex_miaosha_product</module>
+        <module>alex_miaosha_order</module>
     </modules>
 
     <parent>
