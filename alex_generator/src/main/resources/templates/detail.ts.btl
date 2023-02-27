@@ -2,9 +2,9 @@ import { Dayjs } from 'dayjs';
 export interface ${entity}Detail {
 <% for(field in table.fields){ %>
 <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
-    ${field.propertyName}?: number;
-<% } else { %>
-    ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-<% } % >
+  ${field.propertyName}?: number;
+<% }else{ %>
+  ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+<% } %>
 <% } %>
 }

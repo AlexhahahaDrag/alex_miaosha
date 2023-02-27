@@ -9,7 +9,7 @@
         <a-button key="back" @click="handleCancel">取消</a-button>
         <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button>
       </template>
-      <a-form ref="formRef" name="financeForm" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
+      <a-form ref="formRef" name="${entity}Form" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
         @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-row :gutter="24">
           <a-col :span="12">
@@ -78,10 +78,10 @@ import { ${entity}Detail } from "./detail";
 import {
   get${entity}MangerDetail,
   addOrEdit${entity}Manger,
-} from "@/api/finance/${entity}List";
+} from "@/api/${entity}/${entity}List";
 import { getDictList } from "@/api/${entity}/dict/dictManager";
 import { message, FormInstance } from "ant-design-vue";
-import { ModelInfo, dictInfo } from "../financeManager";
+import { ModelInfo, dictInfo } from "../${entity}Manager";
 import dayjs from "dayjs";
 import { getUserManagerList } from "@/api/user/userManager";
 
@@ -118,30 +118,6 @@ const rulesRef = reactive({
       message: '支付方式不能为空！',
     },
   ],
-  incomeAndExpenses: [
-    {
-      required: true,
-      message: '收支类型不能为空！',
-    },
-  ],
-  isValid: [
-    {
-      required: true,
-      message: '状态不能为空！',
-    },
-  ],
-  infoDate: [
-    {
-      required: true,
-      message: '业务时间不能为空！',
-    },
-  ],
-  belongTo: [
-    {
-      required: true,
-      message: '属于不能为空！',
-    },
-  ],
 });
 
 let userList = ref([]);
@@ -175,7 +151,7 @@ const handleCancel = () => {
   emit("handleCancel", false);
 };
 
-//保存财务信息
+//保存${table.comment!}信息
 function save${entity}Manager() {
   let method = "";
   if (formState.value.id) {

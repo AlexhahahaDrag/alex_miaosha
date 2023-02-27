@@ -157,7 +157,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputDetailTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String detailTsPath = this.getPathInfo(OutputFile.detailTs);
+        String detailTsPath = this.getPathInfo(OutputFile.detail);
         if (StringUtils.isNotBlank(tableInfo.getDetailTsName()) && StringUtils.isNotBlank(detailTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getDetailTs).ifPresent((detailTs) -> {
                 String detailTsName = tableInfo.getDetailTsName();
@@ -168,7 +168,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputDetailVue(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String detailVuePath = this.getPathInfo(OutputFile.detailVue);
+        String detailVuePath = this.getPathInfo(OutputFile.detail);
         if (StringUtils.isNotBlank(tableInfo.getDetailVueName()) && StringUtils.isNotBlank(detailVuePath)) {
             this.getTemplateFilePath(TemplateConfig::getDetailVue).ifPresent((detailVue) -> {
                 String detailVueName = tableInfo.getDetailVueName();
@@ -179,7 +179,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputListTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String listTsPath = this.getPathInfo(OutputFile.listTs);
+        String listTsPath = this.getPathInfo(OutputFile.list);
         if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(listTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getListTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
@@ -190,7 +190,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputListVue(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String listVuePath = this.getPathInfo(OutputFile.listVue);
+        String listVuePath = this.getPathInfo(OutputFile.list);
         if (StringUtils.isNotBlank(tableInfo.getListVueName()) && StringUtils.isNotBlank(listVuePath)) {
             this.getTemplateFilePath(TemplateConfig::getListVue).ifPresent((listVue) -> {
                 String listVueName = tableInfo.getListVueName();
@@ -201,7 +201,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputTsTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String tsTsPath = this.getPathInfo(OutputFile.tsTs);
+        String tsTsPath = this.getPathInfo(OutputFile.list);
         if (StringUtils.isNotBlank(tableInfo.getTsTsName()) && StringUtils.isNotBlank(tsTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getTsTs).ifPresent((tsTs) -> {
                 String tsTsName = tableInfo.getTsTsName();

@@ -10,11 +10,8 @@ public enum OutputFile {
     vo,
     client,
     other,
-    detailVue,
-    detailTs,
-    listVue,
-    listTs,
-    tsTs,
+    detail,
+    list,
     feign;
     private OutputFile() {
     }

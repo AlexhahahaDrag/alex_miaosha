@@ -3,9 +3,9 @@ import { ref } from "vue";
 export interface SearchInfo {
 <% for(field in table.fields){ %>
 <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
-    ${field.propertyName}: number;
+  ${field.propertyName}: number;
 <% } else { %>
-    ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+  ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
 <% } %>
 <% } %>
 }
@@ -68,10 +68,10 @@ export const columns = [
 export interface DataItem {
 <% for(field in table.fields){ %>
 <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
-    ${field.propertyName}: number;
+  ${field.propertyName}: number;
 <% } else { %>
-    ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-<% } % >
+  ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+<% } %>
 <% } %>
 }
 

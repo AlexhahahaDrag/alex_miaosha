@@ -57,12 +57,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
         String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
         String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
-        String controllerPath = projectPath + bootDir + "/controller";
-        String entityPath = projectPath + bootDir + "/entity";
-        String mapperPath = projectPath + bootDir + "/mapper";
-        String servicePath = projectPath + bootDir + "/service";
-        String voPath = clientPathProject + apiDir + "/vo";
-        String clientPath = clientPathProject + apiDir + "/api";
+        String controllerPath = projectPath + bootDir + separator + "controller";
+        String entityPath = projectPath + bootDir + separator + "entity";
+        String mapperPath = projectPath + bootDir + separator + "mapper";
+        String servicePath = projectPath + bootDir + separator + "service";
+        String voPath = clientPathProject + apiDir + separator + "vo";
+        String clientPath = clientPathProject + apiDir + separator + "api";
+        String detailPath = projectPath + bootDir + separator + "vue" + separator + "detail";
+        String listPath = projectPath + bootDir + separator + "vue";
 
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
@@ -79,12 +81,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detailVue, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detailTs, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.listTs, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.listVue, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.tsTs, controllerPath + separator + fileName);
-
+        pathMap.put(OutputFile.detail, detailPath + separator + fileName);
+        pathMap.put(OutputFile.list, listPath + separator + fileName);
+        // TODO: 2023/2/27 配置前端代码生成开关 feign生成开关
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
         FastAutoGenerator.create(dataSourceConfig)
@@ -170,7 +169,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                             .formatClientFileName("%sApi")
                             .enableRestStyle()
                             .tsTsBuilder()
-                            .formatTsTsFileName("")
+                            .formatTsTsFileName("%sTs")
                             .build()
                     ; // 设置过滤表前缀
                 })
@@ -181,7 +180,7 @@ public class GeneratorServiceImpl implements GeneratorService {
 //                                Map<String, String> customFile = Objects.requireNonNull(config.getInjectionConfig()).getCustomFile();
 //                                customFile.put(tableInfo.getEntityName() + "Vo.java", "/templates/vo.java.btl");
 //                                customFile.put(tableInfo.getEntityName() + "FeignClient.java", "/templates/feignClient.java.btl");
-                    })
+                            })
                             .build();
                 })
                 .templateEngine(new BeetlTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

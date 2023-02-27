@@ -19,7 +19,7 @@ public class TsTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private TsTs() {
-        this.converterFileName = (entityName) -> entityName;
+        this.converterFileName = (entityName) -> entityName + "Ts";
     }
 
     @NotNull

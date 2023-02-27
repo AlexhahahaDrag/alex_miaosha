@@ -69,7 +69,7 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'operation'">
             <a-space>
-              <a-button type="primary" size="small" @click="editFinance('update', record.id)">编辑</a-button>
+              <a-button type="primary" size="small" @click="edit${entity}('update', record.id)">编辑</a-button>
               <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.id)"
                 @cancel="cancel">
                 <a-button type="primary" size="small" danger>删除</a-button>
@@ -177,7 +177,7 @@ function handleTableChange(pagination) {
   get${entity}Page(searchInfo.value, pagination);
 }
 
-function delFinance(ids: string) {
+function del${entity}(ids: string) {
   delete${entity}Manger(ids).then((res) => {
     if (res.code == "200") {
       message.success((res && "删除" + res.message) || "删除成功！", 3);
