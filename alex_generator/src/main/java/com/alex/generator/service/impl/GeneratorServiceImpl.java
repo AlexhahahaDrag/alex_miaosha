@@ -3,6 +3,7 @@ package com.alex.generator.service.impl;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
 import com.alex.generator.config.DatabaseConfig;
+import com.alex.generator.config.GeneratorConfig;
 import com.alex.generator.service.GeneratorService;
 import com.alex.common.utils.string.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
@@ -34,6 +35,8 @@ import java.util.Map;
 public class GeneratorServiceImpl implements GeneratorService {
 
     private final DatabaseConfig databaseConfig;
+
+    private final GeneratorConfig generatorConfig;
 
     @Override
     public Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
@@ -83,108 +86,113 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
         pathMap.put(OutputFile.detail, detailPath + separator + fileName);
         pathMap.put(OutputFile.list, listPath + separator + fileName);
-        // TODO: 2023/2/27 配置前端代码生成开关 feign生成开关
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
-        FastAutoGenerator.create(dataSourceConfig)
-                .globalConfig(builder -> builder
-                        .outputDir(projectPath + "\\java")
-                        .author(author)
-                        .enableSwagger()
-                        .disableOpenDir()
-                        .fileOverride()
-                        .dateType(DateType.TIME_PACK)
-                        .commentDate("yyyy-MM-dd HH:mm:ss"))
-                .packageConfig(builder -> {
-                    builder.parent("com.alex") // 设置父包名
-                            .entity(boot + "entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .service(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .serviceImpl(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")
-                            .mapper(boot + "mapper" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .detailTs(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .detailVue(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .listTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .listVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .tsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                            .pathInfo(pathMap); // 设置mapperXml生成路径
-                })
-                .strategyConfig(builder -> {
-                    builder.addInclude(tableName)
-                            .addTablePrefix("t_")
-                            //配置entity
-                            .entityBuilder()
-                            .superClass(BaseEntity.class)
-                            .disableSerialVersionUID()
-                            .enableChainModel()
-                            .enableLombok()
+        FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfig);
+        fastAutoGenerator.globalConfig(builder -> {
+            builder.outputDir(projectPath + "\\java")
+                    .author(author)
+                    .enableSwagger()
+                    .disableOpenDir()
+                    .fileOverride()
+                    .dateType(DateType.TIME_PACK)
+                    .commentDate("yyyy-MM-dd HH:mm:ss");
+            if (generatorConfig.isFeign()) {
+                builder.enableFeignGenerator();
+            }
+            if (generatorConfig.isVue()) {
+                builder.enableVueGenerator();
+            }
+        });
+        fastAutoGenerator.packageConfig(builder -> {
+            builder.parent(generatorConfig.getParentPackage()) // 设置父包名
+                    .entity(boot + "entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .service(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .serviceImpl(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")
+                    .mapper(boot + "mapper" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .detailTs(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .detailVue(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .listTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .listVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .tsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .pathInfo(pathMap); // 设置mapperXml生成路径
+        });
+        fastAutoGenerator.strategyConfig(builder -> {
+            builder.addInclude(tableName)
+                    .addTablePrefix(generatorConfig.getTablePrefix())
+                    //配置entity
+                    .entityBuilder()
+                    .superClass(BaseEntity.class)
+                    .disableSerialVersionUID()
+                    .enableChainModel()
+                    .enableLombok()
 //                            .enableRemoveIsPrefix()
-                            .enableTableFieldAnnotation()
-                            .enableActiveRecord()
+                    .enableTableFieldAnnotation()
+                    .enableActiveRecord()
 //                            .versionColumnName("version")
 //                            .versionPropertyName("version")
-                            .logicDeleteColumnName("is_delete")
-                            .logicDeletePropertyName("isDelete")
+                    .logicDeleteColumnName(generatorConfig.getLogicDeleteColumnName())
+                    .logicDeletePropertyName(generatorConfig.getLogicDeletePropertyName())
 //                            .naming(NamingStrategy.no_change)
-                            .columnNaming(NamingStrategy.underline_to_camel)
-                            .addSuperEntityColumns("id", "creator", "createTime", "updater", "updateTime",
-                                    "deleter", "deleteTime", "isDelete", "operator", "operateTime")
+                    .columnNaming(NamingStrategy.underline_to_camel)
+                    .addSuperEntityColumns(generatorConfig.getSuperEntityColumns())
 ////                            .addIgnoreColumns("age")
-                            .addTableFills(list)
-                            //配置controller
-                            .controllerBuilder()
-                            .formatFileName("%sController")
-                            .enableRestStyle()
+                    .addTableFills(list)
+                    //配置controller
+                    .controllerBuilder()
+                    .formatFileName("%sController")
+                    .enableRestStyle()
 //                            //配置service
-                            .serviceBuilder()
+                    .serviceBuilder()
 //                            .superServiceClass(SuperService.class)
 //                            .superServiceImplClass(SuperServiceImpl.class)
-                            .formatServiceFileName("%sService")
-                            .formatServiceImplFileName("%sServiceImp")
-                            //配置mapper
-                            .mapperBuilder()
+                    .formatServiceFileName("%sService")
+                    .formatServiceImplFileName("%sServiceImp")
+                    //配置mapper
+                    .mapperBuilder()
 //                            .superClass(SuperMapper.class)
-                            .enableMapperAnnotation()
-                            .enableBaseResultMap()
-                            .enableBaseColumnList()
-                            .formatMapperFileName("%sMapper")
-                            .formatXmlFileName("%sMapper")
-                            .voBuilder()
-                            .formatVoFileName("%sVo")
-                            .superVoClass(BaseVo.class)
-                            .enableChainModel()
-                            .enableLombok()
-                            .disableSerialVersionUID()
-                            .enableTableFieldAnnotation()
-                            .columnNaming(NamingStrategy.underline_to_camel)
-                            .addSuperVoColumns("id", "creator", "create_at", "updater", "update_at",
-                                    "deleter", "delete_at", "is_valid", "is_delete", "operator", "operate_at")//设置super类字段
-                            .addIgnoreColumns("") //设置忽略字段
-                            .addTableFills(list)
-                            .enableActiveRecord()
-                            //配置client
-                            .clientBuilder()
-                            .formatClientFileName("%sApi")
-                            .enableRestStyle()
-                            .tsTsBuilder()
-                            .formatTsTsFileName("%sTs")
-                            .build()
-                    ; // 设置过滤表前缀
-                })
-                .injectionConfig(builder -> {
-                    builder.beforeOutputFile((tableInfo, objectMap) -> {
+                    .enableMapperAnnotation()
+                    .enableBaseResultMap()
+                    .enableBaseColumnList()
+                    .formatMapperFileName("%sMapper")
+                    .formatXmlFileName("%sMapper")
+                    .voBuilder()
+                    .formatVoFileName("%sVo")
+                    .superVoClass(BaseVo.class)
+                    .enableChainModel()
+                    .enableLombok()
+                    .disableSerialVersionUID()
+                    .enableTableFieldAnnotation()
+                    .columnNaming(NamingStrategy.underline_to_camel)
+                    .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())//设置super类字段
+                    .addIgnoreColumns("") //设置忽略字段
+                    .addTableFills(list)
+                    .enableActiveRecord()
+                    //配置client
+                    .clientBuilder()
+                    .formatClientFileName("%sApi")
+                    .enableRestStyle()
+                    //配置ts
+                    .tsTsBuilder()
+                    .formatTsTsFileName("%sTs")
+                    .build()
+            ; // 设置过滤表前缀
+        });
+        fastAutoGenerator.injectionConfig(builder -> {
+            builder.beforeOutputFile((tableInfo, objectMap) -> {
 //                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
 //                                //配置other模板及类名
 //                                Map<String, String> customFile = Objects.requireNonNull(config.getInjectionConfig()).getCustomFile();
 //                                customFile.put(tableInfo.getEntityName() + "Vo.java", "/templates/vo.java.btl");
 //                                customFile.put(tableInfo.getEntityName() + "FeignClient.java", "/templates/feignClient.java.btl");
-                            })
-                            .build();
-                })
-                .templateEngine(new BeetlTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
-                .execute();
+            })
+                    .build();
+        });
+        fastAutoGenerator.templateEngine(new BeetlTemplateEngine());
+        fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
     }
 
     private static String getPath(String add, String separator) {

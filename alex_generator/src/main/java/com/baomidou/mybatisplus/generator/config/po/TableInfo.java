@@ -50,6 +50,8 @@ public class TableInfo {
     private final ListTs listTs;
     private final ListVue listVue;
     private final TsTs tsTs;
+    private Boolean vueGenerator;
+    private Boolean feignGenerator;
 
     public TableInfo(@NotNull ConfigBuilder configBuilder, @NotNull String name) {
         this.strategyConfig = configBuilder.getStrategyConfig();
@@ -61,6 +63,8 @@ public class TableInfo {
         this.listVue = configBuilder.getStrategyConfig().listVue();
         this.listTs = configBuilder.getStrategyConfig().listTs();
         this.tsTs = configBuilder.getStrategyConfig().tsTs();
+        this.vueGenerator = configBuilder.getGlobalConfig().isVueGenerator();
+        this.feignGenerator = configBuilder.getGlobalConfig().isFeignGenerator();
         this.name = name;
     }
 
@@ -352,5 +356,21 @@ public class TableInfo {
 
     public void setTsTsName(String tsTsName) {
         this.tsTsName = tsTsName;
+    }
+
+    public Boolean getVueGenerator() {
+        return vueGenerator;
+    }
+
+    public void setVueGenerator(Boolean vueGenerator) {
+        this.vueGenerator = vueGenerator;
+    }
+
+    public Boolean getFeignGenerator() {
+        return feignGenerator;
+    }
+
+    public void setFeignGenerator(Boolean feignGenerator) {
+        this.feignGenerator = feignGenerator;
     }
 }

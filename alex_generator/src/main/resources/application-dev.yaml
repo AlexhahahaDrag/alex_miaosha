@@ -18,3 +18,13 @@ mybatis:
 logging:
   level:
     com.alex.generator.mapper: debug
+
+generator:
+  parentPackage: com.alex
+  vue: true
+  feign: false
+  tablePrefix: t_
+  logicDeleteColumnName: is_delete
+  logicDeletePropertyName: isDelete
+  superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime

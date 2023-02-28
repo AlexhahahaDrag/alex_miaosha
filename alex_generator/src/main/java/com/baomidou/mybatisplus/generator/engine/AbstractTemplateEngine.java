@@ -239,12 +239,17 @@ public abstract class AbstractTemplateEngine {
                 this.outputService(tableInfo, objectMap);
                 this.outputController(tableInfo, objectMap);
                 this.outputVo(tableInfo, objectMap);
-                this.outputClient(tableInfo, objectMap);
-                this.outputDetailVue(tableInfo, objectMap);
-                this.outputDetailTs(tableInfo, objectMap);
-                this.outputListVue(tableInfo, objectMap);
-                this.outputListTs(tableInfo, objectMap);
-                this.outputTsTs(tableInfo, objectMap);
+                if (tableInfo.getFeignGenerator()) {
+                    this.outputClient(tableInfo, objectMap);
+                }
+                //设置是否生成前端代码
+                if (tableInfo.getVueGenerator()) {
+                    this.outputDetailVue(tableInfo, objectMap);
+                    this.outputDetailTs(tableInfo, objectMap);
+                    this.outputListVue(tableInfo, objectMap);
+                    this.outputListTs(tableInfo, objectMap);
+                    this.outputTsTs(tableInfo, objectMap);
+                }
             });
             return this;
         } catch (Exception var3) {
