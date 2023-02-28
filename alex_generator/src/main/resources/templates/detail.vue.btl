@@ -11,6 +11,14 @@
       </template>
       <a-form ref="formRef" name="${entity}Form" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
         @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <% for(field in table.fields){ %>
+      <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
+        ${field.propertyName}: number;
+      <% } else { %>
+        ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+      <% } %>
+      <% } %>
+
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="name" label="名称">
@@ -23,63 +31,17 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item name="amount" label="金额">
-              <a-input v-model:value="formState.amount" type="number" placeholder="请填写金额" prefix="￥" suffix="RMB" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item name="fromSource" label="支付方式">
-              <a-select ref="select" v-model:value="formState.fromSource" mode="combobox" placeholder="请输入来源"
-                :field-names="{ label: 'typeName', value: 'typeCode' }" :options="fromSourceList" :allowClear="true">
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item name="incomeAndExpenses" label="收支类型">
-              <a-select ref="select" v-model:value="formState.incomeAndExpenses" mode="combobox" placeholder="请输入收支类型"
-                :field-names="{ label: 'typeName', value: 'typeCode' }" :options="incomeAndExpensesList"
-                :allowClear="true"></a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item name="isValid" label="状态">
-              <a-select ref="select" v-model:value="formState.isValid" mode="combobox" placeholder="请输入有效状态"
-                :field-names="{ label: 'typeName', value: 'typeCode' }" :options="validList" :allowClear="true">
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item name="infoDate" label="业务时间">
-              <a-date-picker v-model:value="formState.infoDate" :format="dateFormatter"
-                :getPopupContainer="triggerNode => { return triggerNode.parentNode }" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item name="belongTo" label="属于">
-              <a-select ref="select" v-model:value="formState.belongTo" mode="combobox"
-                :field-names="{ label: 'username', value: 'id' }" :options="userList">
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
       </a-form>
     </a-modal>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, watch, reactive } from "vue";
-import { ${entity}Detail } from "./detail";
+import { ${entity}Detail } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs";
 import {
   get${entity}MangerDetail,
   addOrEdit${entity}Manger,
 } from "@/api/${entity}/${entity}List";
-import { getDictList } from "@/api/${entity}/dict/dictManager";
 import { message, FormInstance } from "ant-design-vue";
 import { ModelInfo, dictInfo } from "../${entity}Manager";
 import dayjs from "dayjs";

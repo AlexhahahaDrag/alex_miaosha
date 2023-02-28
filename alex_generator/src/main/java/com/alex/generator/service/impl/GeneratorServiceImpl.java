@@ -66,7 +66,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         String servicePath = projectPath + bootDir + separator + "service";
         String voPath = clientPathProject + apiDir + separator + "vo";
         String clientPath = clientPathProject + apiDir + separator + "api";
-        String detailPath = projectPath + bootDir + separator + "vue" + separator + "detail";
+        String detailPath = projectPath + bootDir + separator + "vue";
         String listPath = projectPath + bootDir + separator + "vue";
 
         List<IFill> list = new ArrayList<>();
@@ -84,7 +84,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detail, detailPath + separator + fileName);
+        pathMap.put(OutputFile.detail, detailPath + separator + fileName + separator + "detail");
         pathMap.put(OutputFile.list, listPath + separator + fileName);
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";

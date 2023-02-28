@@ -60,7 +60,7 @@
       <a-space>
         <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
         <a-button type="primary" @click="query">导入</a-button>
-        <a-button type="danger" @click="batchDel${entity}Manager">删除</a-button>
+        <a-button type="danger" @click="batchDel${entity}">删除</a-button>
       </a-space>
     </div>
     <div class="content">
@@ -119,28 +119,19 @@ import {
   columns,
   DataItem,
   ModelInfo,
-  fromSourceTransferList,
   dictInfo,
   pageInfo,
-} from "./${entity}List";
-import { get${entity}MangerPage, delete${entity}Manger } from "@/api/${entity}/${entity}Manager";
-import { getDictList } from "@/api/finance/dict/dictManager";
+} from "./${entity}ListTs";
+import { get${entity}Page, delete${entity} } from "@/api/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message } from "ant-design-vue";
 import Detail from "./detail/index.vue";
 import svgIcon from "@v/common/icons/svgIcon.vue";
-import { getUserManagerList } from "@/api/user/userManager";
 import { Dayjs } from 'dayjs'
 
 const labelCol = ref({ span: 5 });
 const wrapperCol = ref({ span: 19 });
 
-let userList = ref([]);
-
 let rowIds = [] as any;
-
-const fromSourceList = ref<dictInfo[]>([]);
-
-const incomeAndExpensesList = ref<dictInfo[]>([]);
 
 const rowSelection = ref({
   checkStrictly: false,
@@ -168,8 +159,6 @@ let infoDateStart = ref<Dayjs | null>();
 let infoDateEnd = ref<Dayjs | null>();
 
 function query() {
-  searchInfo.value.infoDateStart = infoDateStart.value ? infoDateStart.value.format('YYYY-MM-DD') : null;
-  searchInfo.value.infoDateEnd = infoDateEnd.value ? infoDateEnd.value.format('YYYY-MM-DD') : null;
   get${entity}Page(searchInfo.value, pagination.value);
 }
 
@@ -178,7 +167,7 @@ function handleTableChange(pagination) {
 }
 
 function del${entity}(ids: string) {
-  delete${entity}Manger(ids).then((res) => {
+  delete${entity}(ids).then((res) => {
     if (res.code == "200") {
       message.success((res && "删除" + res.message) || "删除成功！", 3);
       get${entity}Page(searchInfo.value, pagination.value);
@@ -188,7 +177,7 @@ function del${entity}(ids: string) {
   });
 }
 
-function batchDel${entity}Manager() {
+function batchDel${entity}() {
   let ids = "";
   if (rowIds && rowIds.length > 0) {
     rowIds.forEach((item: string) => {
@@ -243,23 +232,9 @@ function getDictInfoList() {
   });
 }
 
-function getUserInfoList() {
-  getUserManagerList({}).then((res) => {
-    if (res.code == "200") {
-      userList.value = res.data;
-    } else {
-      message.error((res && res.message) || "查询列表失败！");
-    }
-  });
-}
-
 function init() {
-  //获取字典列表
-  getDictInfoList();
-  //获取财务管理页面数据
+  //获取${table.comment!}页面数据
   get${entity}Page(searchInfo.value, pagination.value);
-  //获取用户信息
-  getUserInfoList();
 }
 
 init();

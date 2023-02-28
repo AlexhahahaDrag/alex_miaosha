@@ -1,4 +1,3 @@
-import { Dayjs } from 'dayjs';
 export interface ${entity}Detail {
 <% for(field in table.fields){ %>
 <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>

@@ -22,7 +22,7 @@ logging:
 generator:
   parentPackage: com.alex
   vue: true
-  feign: false
+  feign: true
   tablePrefix: t_
   logicDeleteColumnName: is_delete
   logicDeletePropertyName: isDelete
