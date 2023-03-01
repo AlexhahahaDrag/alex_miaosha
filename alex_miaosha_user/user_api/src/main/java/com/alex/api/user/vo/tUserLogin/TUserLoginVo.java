@@ -38,7 +38,9 @@ public class TUserLoginVo extends BaseVo<TUserLoginVo>{
     @ApiModelProperty(value = "登录浏览器")
     private String broswer;
 
-    @ApiModelProperty(value = "最后登录IP")
-    private String lastLoginIp;
+    @ApiModelProperty(value = "登录IP")
+    private String loginIp;
 
+    @ApiModelProperty(value = "登录地址")
+    private String loginLocation;
 }

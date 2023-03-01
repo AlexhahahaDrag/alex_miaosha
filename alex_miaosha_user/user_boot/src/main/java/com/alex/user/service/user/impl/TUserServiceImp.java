@@ -188,6 +188,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         Map<String, String> map = IpUtils.getOsAndBrowserInfo(request);
         String os = map.get(SysConf.OS);
         String browser = map.get(SysConf.BROWSER);
+        String location = map.get(SysConf.LOCATION);
         // TODO: 2023/2/16 添加复杂逻辑
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
@@ -200,7 +201,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .token(token)
                 .os(os)
                 .broswer(browser)
-                .lastLoginIp(ip)
+                .loginIp(ip)
+                .loginLocation(location)
                 .build();
         userLogin.insert();
 //        admin.setRole(roles.get(0));
@@ -283,19 +285,20 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .token(userLogin.getToken())
                 .os(userLogin.getOs())
                 .browser(userLogin.getBroswer())
-                .ipaddr(userLogin.getLastLoginIp())
+                .ipaddr(userLogin.getLoginIp())
+                .loginLocation(userLogin.getLoginLocation())
                 .loginTime(DateUtils.getTimeStr(userLogin.getLastLoginTime()))
                 .roleName(null)
                 .username("username")
                 .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.MICROS)))
                 .build();
         //从Redis中获取IP来源
-        String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLastLoginIp());
+        String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLoginIp());
         if (StringUtils.isEmpty(jsonResult)) {
-            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLastLoginIp(), "UTF-8");
+            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp(), "UTF-8");
             if (StringUtils.isNotEmpty(addresses)) {
                 onlineAdmin.setLoginLocation(addresses);
-                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLastLoginIp(), addresses, expiration * 24, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24, TimeUnit.SECONDS);
             }
         } else {
             onlineAdmin.setLoginLocation(jsonResult);

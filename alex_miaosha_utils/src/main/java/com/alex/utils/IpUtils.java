@@ -111,7 +111,7 @@ public class IpUtils {
      * @author:       alex
      * @return:       java.util.Map<java.lang.String,java.lang.String>
      */
-    public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) {
+    public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("User-Agent");
         String user = userAgent.toLowerCase();
         String os = "";
@@ -175,6 +175,8 @@ public class IpUtils {
         Map<String, String> result = new HashMap<>(2);
         result.put("OS", os);
         result.put("BROWSER", browser);
+        String cityInfo = getCityInfo(getRealIp(request));
+        result.put("LOCATION", cityInfo);
         return result;
     }
 
@@ -301,7 +303,7 @@ public class IpUtils {
     }
 
     public static void main(String args[]) throws Exception {
-        String ip = "112.39.99.214";
+        String ip = "116.2.203.240";
         String cityIpString = getCityInfo(ip);
         System.out.println(cityIpString);
     }

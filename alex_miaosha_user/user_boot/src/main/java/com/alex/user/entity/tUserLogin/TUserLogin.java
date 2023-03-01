@@ -57,7 +57,11 @@ public class TUserLogin extends BaseEntity<TUserLogin>{
     @TableField("broswer")
     private String broswer;
 
-    @ApiModelProperty(value = "最后登录IP")
-    @TableField("last_login_ip")
-    private String lastLoginIp;
+    @ApiModelProperty(value = "登录IP")
+    @TableField("login_ip")
+    private String loginIp;
+
+    @ApiModelProperty(value = "登录地址")
+    @TableField("login_location")
+    private String loginLocation;
 }
