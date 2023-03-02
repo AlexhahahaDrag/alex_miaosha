@@ -23,14 +23,14 @@
     <select id="getPage" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
         select <include refid="Base_Column_List"></include> from pms_attr
         <where>
-            pms_attr.is_delete = 0 <include refid="queryInfo"></include>
+            <include refid="queryInfo"></include>
         </where>
     </select>
 
     <select id="queryPmsAttr" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
         select <include refid="Base_Column_List"></include> from pms_attr
         <where>
-            pms_attr.is_delete = 0 and id = #{id}
+            id = #{id}
         </where>
     </select>
 

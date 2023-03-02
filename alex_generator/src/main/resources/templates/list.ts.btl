@@ -1,8 +1,11 @@
 import { ref } from "vue";
 
 export interface SearchInfo {
-<% for(field in table.fields){ %>
-<% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+        continue;
+    }
+    if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
   ${field.propertyName}?: number;
 <% } else { %>
   ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
@@ -49,7 +52,11 @@ export let pagination = ref<pageInfo>({
 });
 
 export const columns = [
-<% for(field in table.fields){ %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+        continue;
+    }
+%>
   {
     title: "${field.comment}",
     dataIndex: "${field.propertyName}",

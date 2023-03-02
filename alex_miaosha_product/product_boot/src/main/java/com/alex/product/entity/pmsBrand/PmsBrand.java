@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  品牌类
  * @author:       alex
- * @createDate: 2023-03-02 15:31:52
+ * @createDate: 2023-03-02 19:16:11
  * @version:      1.0.0
  */
 @Getter
@@ -22,7 +22,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("pms_brand")
 @ApiModel(value = "PmsBrand对象", description = "品牌")
-public class PmsBrand extends BaseEntity<PmsBrand>{
+public class PmsBrand {
 
     @ApiModelProperty(value = "品牌id")
     @TableId(value = "brand_id", type = IdType.AUTO)

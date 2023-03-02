@@ -14,7 +14,7 @@ const ${entity}Url = {
 };
 
 export function get${entity}Page(params: any, pageNo: number | null | undefined, pageSize : number | null| undefined): Promise<any> {
-  let url = baseService.${javaPath} + ${entity}Url.page + "?pageNum=" + (pageNo ? pageNo : 1) + "&pageSize=" + (pageSize ? pageSize : 10);
+  let url = baseService.${javaPath} + base${entity} + ${entity}Url.page + "?pageNum=" + (pageNo ? pageNo : 1) + "&pageSize=" + (pageSize ? pageSize : 10);
   return postData(url, params);
 }
 
@@ -33,6 +33,6 @@ export function addOrEdit${entity}(
   if ("put" == method) {
     return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
   } else {
-    return postData(baseService.${javaPath} + ${entity}Url.url, params);
+    return postData(baseService.${javaPath} + base${entity} +  ${entity}Url.url, params);
   }
 }

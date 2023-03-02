@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  商品属性类
  * @author:       alex
- * @createDate: 2023-03-02 16:21:13
+ * @createDate: 2023-03-02 19:15:30
  * @version:      1.0.0
  */
 @Getter
@@ -21,7 +21,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("pms_attr")
 @ApiModel(value = "PmsAttr对象", description = "商品属性")
-public class PmsAttr extends BaseEntity<PmsAttr>{
+public class PmsAttr {
 
     @ApiModelProperty(value = "属性id")
     @TableId("attr_id")

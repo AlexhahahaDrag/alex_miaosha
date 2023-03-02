@@ -12,14 +12,14 @@ import lombok.experimental.Accessors;
 /**
  * @description:  商品属性Vo
  * @author:       alex
- * @createDate:   2023-03-02 16:21:13
+ * @createDate:   2023-03-02 19:15:30
  * @version:      1.0.0
  */
 @Getter
 @Setter
 @Accessors(chain = true)
 @ApiModel(value = "PmsAttrVo", description = "商品属性Vo")
-public class PmsAttrVo extends BaseVo<PmsAttrVo>{
+public class PmsAttrVo {
 
     @ApiModelProperty(value = "属性id")
     private Long attrId;

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @description:  品牌restApi
  * @author:       alex
- * @createDate:   2023-03-02 15:31:52
+ * @createDate:   2023-03-02 19:16:11
  * @version:      1.0.0
  */
 @ApiSort(105)

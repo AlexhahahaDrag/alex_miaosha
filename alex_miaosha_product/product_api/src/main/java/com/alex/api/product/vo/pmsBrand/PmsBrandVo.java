@@ -13,14 +13,14 @@ import lombok.experimental.Accessors;
 /**
  * @description:  品牌Vo
  * @author:       alex
- * @createDate:   2023-03-02 15:31:52
+ * @createDate:   2023-03-02 19:16:11
  * @version:      1.0.0
  */
 @Getter
 @Setter
 @Accessors(chain = true)
 @ApiModel(value = "PmsBrandVo", description = "品牌Vo")
-public class PmsBrandVo extends BaseVo<PmsBrandVo>{
+public class PmsBrandVo {
 
     @ApiModelProperty(value = "品牌id")
     private Long brandId;

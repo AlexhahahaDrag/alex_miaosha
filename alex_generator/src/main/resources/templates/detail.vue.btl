@@ -13,7 +13,11 @@
         @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
 <% var num = 0; %>
 <% var pre = 0; %>
-<% for(field in table.fields){ %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+        continue;
+    }
+  %>
   <% if(num % 2 == 0){ %>
         <a-row :gutter="24">
   <% } %>
@@ -52,7 +56,11 @@ let loading = ref<boolean>(false);
 const formRef = ref<FormInstance>();
 
 const rulesRef = reactive({
-<% for(field in table.fields){ %>
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            continue;
+       }
+  %>
   ${field.propertyName}: [
     {
       required: true,

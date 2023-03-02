@@ -192,6 +192,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         // TODO: 2023/2/16 添加复杂逻辑
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
+        // TODO: 2023/3/2 开启新线程 
         TUserLogin userLogin = TUserLogin.builder()
                 .userId(admin.getId())
                 .username(admin.getUsername())
