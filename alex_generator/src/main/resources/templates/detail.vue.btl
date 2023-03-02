@@ -12,6 +12,7 @@
       <a-form ref="formRef" name="${entity}Form" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
         @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
 <% var num = 0; %>
+<% var pre = 0; %>
 <% for(field in table.fields){ %>
   <% if(num % 2 == 0){ %>
         <a-row :gutter="24">
@@ -21,10 +22,13 @@
               <a-input v-model:value="formState.${field.propertyName}" placeholder="请填写${field.comment}"></a-input>
             </a-form-item>
           </a-col>
+    <% num++; %>
   <% if(num % 2 == 0){ %>
         </a-row>
   <% } %>
-  <% num++; %>
+<% } %>
+<% if(num % 2 != 0){ %>
+        </a-row>
 <% } %>
       </a-form>
     </a-modal>
@@ -36,7 +40,7 @@ import { ${entity}Detail } from "./${strutil.toLowerCase(strutil.subStringTo(ent
 import {
   get${entity}Detail,
   addOrEdit${entity},
-} from "@/api/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
+} from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message, FormInstance } from "ant-design-vue";
 import { ModelInfo } from "../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
 

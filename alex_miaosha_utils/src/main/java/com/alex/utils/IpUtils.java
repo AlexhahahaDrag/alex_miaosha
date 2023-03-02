@@ -175,7 +175,7 @@ public class IpUtils {
         Map<String, String> result = new HashMap<>(2);
         result.put("OS", os);
         result.put("BROWSER", browser);
-        String cityInfo = getCityInfo(getRealIp(request));
+        String cityInfo = getCityInfo(getIpAddr(request));
         result.put("LOCATION", cityInfo);
         return result;
     }

@@ -3,20 +3,33 @@
     <div class="search">
       <div class="search-box">
         <a-form :model="searchInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
+<% var pre = 0; %>
 <% var num = 0; %>
 <% for(field in table.fields){ %>
-  <% if(num % 2 == 0){ %>
+  <% if(num % 4 == 0){ %>
          <a-row :gutter="24">
   <% } %>
+    <% num++; %>
             <a-col :span="6">
               <a-form-item name="${field.propertyName}" label="${field.comment}">
                 <a-input v-model:value="searchInfo.${field.propertyName}" placeholder="${field.comment}" allow-clear />
               </a-form-item>
             </a-col>
-  <% if(num % 2 == 0){ %>
+  <% if(num % 4 == 0){ %>
           </a-row>
   <% } %>
 <% } %>
+  <% if(num % 4 != 0){ %>
+          </a-row>
+  <% } %>
+            <a-row :gutter="24">
+                <a-col :span="6" style="text-align: right">
+                  <a-space>
+                    <a-button type="primary" @click="query"> 查找</a-button>
+                    <a-button type="primary" @click="cancelQuery">清空</a-button>
+                  </a-space>
+                </a-col>
+            </a-row>
         </a-form>
       </div>
     </div>
@@ -58,9 +71,9 @@ import {
   ModelInfo,
   pageInfo,
 } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
-import { get${entity}Page, delete${entity} } from "@/api/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
+import { get${entity}Page, delete${entity} } from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message } from "ant-design-vue";
-import Detail from "./detail/index.vue";
+import Detail from "./detail/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail.vue";
 import { Dayjs } from 'dayjs'
 
 const labelCol = ref({ span: 5 });

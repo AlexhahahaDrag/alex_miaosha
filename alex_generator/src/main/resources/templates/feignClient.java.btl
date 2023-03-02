@@ -24,33 +24,33 @@ public interface ${table.clientName} {
 
     @ApiOperationSupport(order = 10, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}分页", notes = "获取${table.comment!}分页", response = Result.class)
-    @PostMapping(value = "/api/v1/page")
+    @PostMapping(value = "/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum"),
             @ApiImplicitParam(value = "每页大小", name = "pageSize"),
             @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}")}
     )
-    Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+    Result<Page<${table.voName}>> get${entity}Page(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
                                             @RequestBody(required = false) ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
     @ApiOperationSupport(order = 20, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}详情", notes = "获取${table.comment!}详情", response = Result.class)
-    @GetMapping(value = "/api/v1")
-    Result<${table.voName}> query(@RequestParam(value = "id") String id);
+    @GetMapping(value = "/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>")
+    Result<${table.voName}> query${entity}(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "${author}")
     @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
-    @PostMapping("/api/v1")
-    Result<Boolean> add(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+    @PostMapping("/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>")
+    Result<Boolean> add${entity}(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
     @ApiOperationSupport(order = 40, author = "${author}")
     @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
-    @PutMapping("/api/v1")
-    Result<Boolean> update(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+    @PutMapping("/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>")
+    Result<Boolean> update${entity}(@RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
     @ApiOperationSupport(order = 50, author = "${author}")
     @ApiOperation(value = "刪除${table.comment!}", notes = "刪除${table.comment!}", response = Result.class)
     @DeleteMapping("/api/v1")
-    Result<Boolean> delete(@RequestParam("ids") String ids);
+    Result<Boolean> delete${entity}(@RequestParam("ids") String ids);
 }

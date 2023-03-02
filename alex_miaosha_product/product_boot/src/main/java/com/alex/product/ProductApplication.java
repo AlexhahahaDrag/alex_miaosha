@@ -11,9 +11,15 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ *description:  product启动类
+ *author:       majf
+ *createDate:   2023/3/2 14:41
+ *version:      1.0.0
+ */
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.alex.product", "com.alex.common", "com.alex.utils", "com.alex.api.product"})
+@ComponentScan(basePackages = {"com.alex.product", "com.alex.common", "com.alex.utils", "com.alex.api.user"})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class ProductApplication {

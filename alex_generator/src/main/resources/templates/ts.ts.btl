@@ -14,16 +14,16 @@ const ${entity}Url = {
 };
 
 export function get${entity}Page(params: any, pageNo: number | null | undefined, pageSize : number | null| undefined): Promise<any> {
-  let url = baseService.${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} + base${entity} + ${entity}Url.page + "?pageNum=" + (pageNo ? pageNo : 1) + "&pageSize=" + (pageSize ? pageSize : 10);
+  let url = baseService.${javaPath} + ${entity}Url.page + "?pageNum=" + (pageNo ? pageNo : 1) + "&pageSize=" + (pageSize ? pageSize : 10);
   return postData(url, params);
 }
 
 export function get${entity}Detail(id: number): Promise<any> {
-  return getDataOne(baseService.${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} + base${entity} + ${entity}Url.url + "?id=" + id);
+  return getDataOne(baseService.${javaPath} + base${entity} + ${entity}Url.url + "?id=" + id);
 }
 
 export function delete${entity}(ids: string) : Promise<any>{
-  return deleteData(baseService.${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} + base${entity} + ${entity}Url.url + "?ids=" + ids);
+  return deleteData(baseService.${javaPath} + base${entity} + ${entity}Url.url + "?ids=" + ids);
 }
 
 export function addOrEdit${entity}(
@@ -31,8 +31,8 @@ export function addOrEdit${entity}(
   params: any
 ): Promise<any> {
   if ("put" == method) {
-    return putData(baseService.${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} + base${entity} + ${entity}Url.url, params);
+    return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
   } else {
-    return postData(baseService.${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)} + base${entity} + ${entity}Url.url, params);
+    return postData(baseService.${javaPath} + ${entity}Url.url, params);
   }
 }

@@ -19,10 +19,7 @@ import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @description:
@@ -67,8 +64,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         String voPath = clientPathProject + apiDir + separator + "vo";
         String clientPath = clientPathProject + apiDir + separator + "api";
         String vuePath = StringUtils.isNotEmpty(
-                generatorConfig.getVuePath()) ? generatorConfig.getVuePath() : projectPath + bootDir + separator + "vue";
-        String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() : projectPath + bootDir + separator + "vue";
+                generatorConfig.getVuePath()) ? generatorConfig.getVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
+        String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
 
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
@@ -132,7 +129,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .disableSerialVersionUID()
                     .enableChainModel()
                     .enableLombok()
-//                            .enableRemoveIsPrefix()
+                    .enableRemoveIsPrefix()
                     .enableTableFieldAnnotation()
                     .enableActiveRecord()
 //                            .versionColumnName("version")
@@ -188,11 +185,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             builder.beforeOutputFile((tableInfo, objectMap) -> {
 //                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
 //                                //配置other模板及类名
-//                                Map<String, String> customFile = Objects.requireNonNull(config.getInjectionConfig()).getCustomFile();
-//                                customFile.put(tableInfo.getEntityName() + "Vo.java", "/templates/vo.java.btl");
-//                                customFile.put(tableInfo.getEntityName() + "FeignClient.java", "/templates/feignClient.java.btl");
-            })
-                    .build();
+            }).customMap(Collections.singletonMap("javaPath", javaPath)).build();
         });
         fastAutoGenerator.templateEngine(new BeetlTemplateEngine());
         fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
