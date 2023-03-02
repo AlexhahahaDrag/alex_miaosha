@@ -20,7 +20,7 @@ public class DetailTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private DetailTs() {
-        this.converterFileName = (entityName) -> entityName + "DetailTs";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "DetailTs";
     }
 
     @NotNull

@@ -5,30 +5,21 @@
 
 package com.baomidou.mybatisplus.generator.config.builder;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.ITemplate;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.function.ConverterFileName;
-import com.baomidou.mybatisplus.generator.util.ClassUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ListVue implements ITemplate {
 
-    private boolean restStyle;
-
-    private boolean hyphenStyle;
-
-    private String superClass;
-
     private ConverterFileName converterFileName;
 
     private ListVue() {
-        this.converterFileName = (entityName) -> entityName + "List";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "List";
     }
 
     @NotNull

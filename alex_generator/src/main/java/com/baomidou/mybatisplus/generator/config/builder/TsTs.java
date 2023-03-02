@@ -19,7 +19,7 @@ public class TsTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private TsTs() {
-        this.converterFileName = (entityName) -> entityName + "Ts";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "Ts";
     }
 
     @NotNull
@@ -46,7 +46,7 @@ public class TsTs implements ITemplate {
         }
 
         public Builder formatTsTsFileName(@NotNull String format) {
-            return this.convertFileName((entityName) -> String.format(format, entityName));
+            return this.convertFileName((entityName) -> String.format(format, Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1)));
         }
 
         @NotNull

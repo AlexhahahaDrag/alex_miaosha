@@ -19,7 +19,7 @@ public class ListTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private ListTs() {
-        this.converterFileName = (entityName) -> entityName + "ListTs";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "ListTs";
     }
 
     @NotNull

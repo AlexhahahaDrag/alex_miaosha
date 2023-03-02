@@ -56,7 +56,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         String dbPassword = databaseConfig.getPassword();
         String base = "/src/main/";
 
-        String basePath = System.getProperty("user.dir");
+        String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
         String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
         String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
@@ -66,8 +66,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         String servicePath = projectPath + bootDir + separator + "service";
         String voPath = clientPathProject + apiDir + separator + "vo";
         String clientPath = clientPathProject + apiDir + separator + "api";
-        String detailPath = projectPath + bootDir + separator + "vue";
-        String listPath = projectPath + bootDir + separator + "vue";
+        String vuePath = StringUtils.isNotEmpty(
+                generatorConfig.getVuePath()) ? generatorConfig.getVuePath() : projectPath + bootDir + separator + "vue";
+        String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() : projectPath + bootDir + separator + "vue";
 
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
@@ -76,6 +77,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
         String fileName = StringUtils.camel(tableName);
+        String lowerFileName = Character.toLowerCase(fileName.charAt(0)) + fileName.substring(1);
         pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
@@ -84,8 +86,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detail, detailPath + separator + fileName + separator + "detail");
-        pathMap.put(OutputFile.list, listPath + separator + fileName);
+        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + "detail");
+        pathMap.put(OutputFile.list, vuePath + separator + fileName);
+        pathMap.put(OutputFile.ts, tsPath + separator + fileName);
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
         FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfig);

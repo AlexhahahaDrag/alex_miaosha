@@ -19,7 +19,7 @@ import ${package.Vo}.${table.voName};
  * @version:      1.0.0
  */
 @Component
-@FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", fallback = OssFallbackFactory.class, configuration = FeignConfig.class)
+@FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", configuration = FeignConfig.class)
 public interface ${table.clientName} {
 
     @ApiOperationSupport(order = 10, author = "${author}")

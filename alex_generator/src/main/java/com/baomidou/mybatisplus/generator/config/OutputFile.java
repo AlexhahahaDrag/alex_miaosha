@@ -12,7 +12,8 @@ public enum OutputFile {
     other,
     detail,
     list,
+    ts,
     feign;
-    private OutputFile() {
+    OutputFile() {
     }
 }

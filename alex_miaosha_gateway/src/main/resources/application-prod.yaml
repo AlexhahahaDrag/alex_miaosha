@@ -45,6 +45,14 @@ spring:
             - Path=/am-oss/**
           filters:
             - StripPrefix=1
+
+        - id: alex-product
+          uri: lb://alex-product-dev
+          predicates:
+            - Path=/am-product/**
+          filters:
+            - StripPrefix=1
+
   #
   #        - id: alex-manage
   #          uri: lb://alex-manage
@@ -61,11 +69,13 @@ spring:
   #            - StripPrefix=1
   main:
     allow-bean-definition-overriding: true
+
 management:
   endpoints:
     #   在访问/actuator/health时显示完整信息
     logfile:
       external-file: log/alex-gateway/gateway.log
+
 logging:
   # 日志文件地址
   config: classpath:logback-spring.xml

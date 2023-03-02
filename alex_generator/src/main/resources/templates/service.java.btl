@@ -4,7 +4,6 @@ import ${package.Vo}.${table.voName};
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import ${package.Entity}.${entity};
 import ${superServiceClassPackage};
-import java.util.List;
 
 /**
  * ${table.comment!} 服务类

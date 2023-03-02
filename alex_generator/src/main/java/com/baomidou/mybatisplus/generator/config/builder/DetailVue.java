@@ -19,7 +19,7 @@ public class DetailVue implements ITemplate {
     private ConverterFileName converterFileName;
 
     private DetailVue() {
-        this.converterFileName = (entityName) -> entityName + "Detail";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "Detail";
     }
 
     @NotNull

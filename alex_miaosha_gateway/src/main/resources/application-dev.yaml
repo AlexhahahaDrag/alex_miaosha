@@ -32,6 +32,7 @@ spring:
             - Path=/am-finance/**
           filters:
             - StripPrefix=1
+
         - id: alex-mission
           uri: lb://alex-mission-dev
           predicates:
@@ -45,6 +46,14 @@ spring:
             - Path=/am-oss/**
           filters:
             - StripPrefix=1
+
+        - id: alex-product
+          uri: lb://alex-product-dev
+          predicates:
+            - Path=/am-product/**
+          filters:
+            - StripPrefix=1
+
   #
 #        - id: alex-manage
 #          uri: lb://alex-manage

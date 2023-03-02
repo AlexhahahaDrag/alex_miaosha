@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Configuration
 @EnableOpenApi
-@Profile({"test", "dev", "prod"})
+@Profile({"test", "dev"})
 public class SwaggerConfig {
 
     @Bean(value = "financeApi")

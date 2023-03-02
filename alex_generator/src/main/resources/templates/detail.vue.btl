@@ -11,26 +11,21 @@
       </template>
       <a-form ref="formRef" name="${entity}Form" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
         @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <% for(field in table.fields){ %>
-      <% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
-        ${field.propertyName}: number;
-      <% } else { %>
-        ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-      <% } %>
-      <% } %>
-
+<% var num = 0; %>
+<% for(field in table.fields){ %>
+  <% if(num % 2 == 0){ %>
         <a-row :gutter="24">
+  <% } %>
           <a-col :span="12">
-            <a-form-item name="name" label="名称">
-              <a-input v-model:value="formState.name" placeholder="请填写名称"></a-input>
+            <a-form-item name="${field.propertyName}" label="${field.comment}">
+              <a-input v-model:value="formState.${field.propertyName}" placeholder="请填写${field.comment}"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item name="typeCode" label="类别">
-              <a-input v-model:value="formState.typeCode" placeholder="请填写类别"></a-input>
-            </a-form-item>
-          </a-col>
+  <% if(num % 2 == 0){ %>
         </a-row>
+  <% } %>
+  <% num++; %>
+<% } %>
       </a-form>
     </a-modal>
   </div>
@@ -39,50 +34,29 @@
 import { ref, watch, reactive } from "vue";
 import { ${entity}Detail } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs";
 import {
-  get${entity}MangerDetail,
-  addOrEdit${entity}Manger,
-} from "@/api/${entity}/${entity}List";
+  get${entity}Detail,
+  addOrEdit${entity},
+} from "@/api/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message, FormInstance } from "ant-design-vue";
-import { ModelInfo, dictInfo } from "../${entity}Manager";
-import dayjs from "dayjs";
-import { getUserManagerList } from "@/api/user/userManager";
+import { ModelInfo } from "../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
 
 const labelCol = ref({ span: 5 });
 const wrapperCol = ref({ span: 19 });
 
-const dateFormatter = "YYYY-MM-DD HH:mm:ss";
 let loading = ref<boolean>(false);
 
 const formRef = ref<FormInstance>();
 
 const rulesRef = reactive({
-  name: [
+<% for(field in table.fields){ %>
+  ${field.propertyName}: [
     {
       required: true,
-      message: '名称不能为空！',
+      message: '${field.comment}不能为空！',
     },
   ],
-  amount: [
-    {
-      required: true,
-      message: '金额不能为空！',
-    },
-  ],
-  typeCode: [
-    {
-      required: true,
-      message: '类别不能为空！',
-    },
-  ],
-  fromSource: [
-    {
-      required: true,
-      message: '支付方式不能为空！',
-    },
-  ],
+<% } %>
 });
-
-let userList = ref([]);
 
 const modelConfig = {
   confirmLoading: true,
@@ -116,12 +90,18 @@ const handleCancel = () => {
 //保存${table.comment!}信息
 function save${entity}Manager() {
   let method = "";
-  if (formState.value.id) {
+  <% var id = "id";
+   for(field in table.fields){
+       if(field.keyFlag){
+           id = field.propertyName;
+       }
+  } %>
+  if (formState.value.${id}) {
     method = "put";
   } else {
     method = "post";
   }
-  addOrEdit${entity}Manger(method, formState.value)
+  addOrEdit${entity}(method, formState.value)
     .then((res) => {
       if (res.code == "200") {
         message.success((res && res.message) || "保存成功！");
@@ -146,52 +126,13 @@ const onFinishFailed = (errorInfo: any) => {
   console.log("Failed:", errorInfo);
 };
 
-let fromSourceList = ref<dictInfo[]>([]);
-
-let incomeAndExpensesList = ref<dictInfo[]>([]);
-
-let validList = ref<dictInfo[]>([]);
-
-function getDictInfoList() {
-  getDictList("pay_way,income_expense_type,is_valid").then((res) => {
-    if (res.code == "200") {
-      fromSourceList.value = res.data.filter(
-        (item: { belongTo: string }) => item.belongTo == "pay_way"
-      );
-      incomeAndExpensesList.value = res.data.filter(
-        (item: { belongTo: string }) => item.belongTo == "income_expense_type"
-      );
-      validList.value = res.data.filter(
-        (item: { belongTo: string }) => item.belongTo == "is_valid"
-      );
-    } else {
-      message.error((res && res.message) || "查询列表失败！");
-    }
-  });
-}
-
-function getUserInfoList() {
-  getUserManagerList({}).then((res) => {
-    if (res.code == "200") {
-      userList.value = res.data;
-    } else {
-      message.error((res && res.message) || "查询列表失败！");
-    }
-  });
-}
-
 function init() {
-  //获取用户信息
-  getUserInfoList();
-  //获取字典信息
-  getDictInfoList();
   if (props.modelInfo) {
     if (props.modelInfo.id) {
-      get${entity}MangerDetail(props.modelInfo.id)
+      get${entity}Detail(props.modelInfo.id)
         .then((res) => {
           if (res.code == "200") {
             formState.value = res.data;
-            formState.value.infoDate = dayjs(formState.value.infoDate);
             modelConfig.confirmLoading = false;
           } else {
             message.error((res && res.message) || "查询失败！");
@@ -203,10 +144,6 @@ function init() {
     } else {
       modelConfig.confirmLoading = false;
       formState.value = {
-        isValid: '1',
-        incomeAndExpenses: "expense",
-        infoDate: dayjs(),
-        belongTo: '2',
       };
     }
   }

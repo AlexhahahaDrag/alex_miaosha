@@ -3,7 +3,6 @@ package ${package.Mapper};
 import ${package.Entity}.${entity};
 import ${package.Vo}.${table.voName};
 import ${superMapperClassPackage};
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 <% if(mapperAnnotation){ %>

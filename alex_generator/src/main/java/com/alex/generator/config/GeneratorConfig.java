@@ -30,4 +30,14 @@ public class GeneratorConfig {
     private String logicDeleteColumnName;
 
     private String logicDeletePropertyName;
+
+    private String javaPath;
+
+    private String voPath;
+
+    private String feignPath;
+
+    private String vuePath;
+
+    private String tsPath;
 }

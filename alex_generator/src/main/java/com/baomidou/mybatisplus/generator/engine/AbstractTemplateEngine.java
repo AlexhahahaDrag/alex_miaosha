@@ -179,11 +179,11 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputListTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String listTsPath = this.getPathInfo(OutputFile.list);
-        if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(listTsPath)) {
+        String tsPath = this.getPathInfo(OutputFile.list);
+        if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(tsPath)) {
             this.getTemplateFilePath(TemplateConfig::getListTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
-                String tsTsFile = String.format(listTsPath + File.separator + tableInfo.getListTsName() + TS, clientName);
+                String tsTsFile = String.format(tsPath + File.separator + tableInfo.getListTsName() + TS, clientName);
                 this.outputFile(new File(tsTsFile), objectMap, listTs);
             });
         }
@@ -201,7 +201,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputTsTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String tsTsPath = this.getPathInfo(OutputFile.list);
+        String tsTsPath = this.getPathInfo(OutputFile.ts);
         if (StringUtils.isNotBlank(tableInfo.getTsTsName()) && StringUtils.isNotBlank(tsTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getTsTs).ifPresent((tsTs) -> {
                 String tsTsName = tableInfo.getTsTsName();
