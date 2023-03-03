@@ -45,7 +45,7 @@ public class FinanceAnalysisController {
     }
 
     @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "获取余额", notes = "获取余额", response = Result.class)
+    @ApiOperation(value = "获取收入", notes = "获取收入", response = Result.class)
     @GetMapping(value = "/getIncomeAndExpense")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "人员", name = "belongTo"),

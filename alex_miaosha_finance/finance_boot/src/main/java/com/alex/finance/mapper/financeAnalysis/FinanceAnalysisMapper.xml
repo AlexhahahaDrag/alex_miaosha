@@ -76,8 +76,8 @@
             <if test="type != null and type != ''">
                 AND income_and_expenses = #{type}
             </if>
-            AND operate_time >= cast( concat( #{searchDate}, '-', '01' ) AS datetime )
-            AND operate_time &lt; DATE_ADD( cast( concat( #{searchDate}, '-', '01' ) AS datetime ), INTERVAL 1 MONTH )
+            AND info_date >= cast( concat( #{searchDate}, '-', '01' ) AS datetime )
+            AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-', '01' ) AS datetime ), INTERVAL 1 MONTH )
         GROUP BY
             type_code,
             income_and_expenses
