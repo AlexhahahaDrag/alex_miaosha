@@ -50,6 +50,11 @@
             <groupId>com.alex</groupId>
             <artifactId>user_api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>oss_api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

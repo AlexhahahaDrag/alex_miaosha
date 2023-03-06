@@ -39,8 +39,11 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "性别(1:男2:女)")
     private Integer gender;
 
-    @ApiModelProperty(value = "个人头像")
-    private String avatar;
+    @ApiModelProperty(value = "个人头像id")
+    private Long avatar;
+
+    @ApiModelProperty(value = "个人头像url")
+    private String avatarUrl;
 
     @ApiModelProperty(value = "邮箱")
 //    @Email(message = "邮箱不合法！", groups = {Insert.class, Update.class})

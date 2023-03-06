@@ -2,6 +2,8 @@ package com.alex.user.service.user.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.alex.api.oss.api.OssApi;
+import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.api.user.utils.jwt.Audience;
 import com.alex.api.user.utils.jwt.JwtTokenUtils;
 import com.alex.api.user.vo.user.OnlineAdmin;
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -68,13 +71,36 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     private final Audience audience;
 
+    private final OssApi ossApi;
+
     @Value(value = "${defaultPassword}")
     private String defaultPassword;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
         Page<TUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
-        return tUserMapper.getPage(page, tUserVo);
+        Page<TUserVo> userPage = tUserMapper.getPage(page, tUserVo);
+        List<TUserVo> records = userPage.getRecords();
+        if (records == null || records.isEmpty()) {
+            return userPage;
+        }
+        List<Long> fileIdList = records.parallelStream()
+                .filter(item -> item.getAvatar() != null)
+                .map(TUserVo::getAvatar)
+                .collect(Collectors.toList());
+        Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+        if ("200".equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+            Map<Long, List<FileInfoVo>> fileMap = result.getData()
+                    .parallelStream()
+                    .collect(Collectors.groupingBy(FileInfoVo::getId));
+            records.forEach(item -> {
+                List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
+                if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
+                    item.setAvatarUrl(fileInfoVos.get(0).getUrl());
+                }
+            });
+        }
+        return userPage;
     }
 
     @Override
@@ -299,7 +325,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp(), "UTF-8");
             if (StringUtils.isNotEmpty(addresses)) {
                 onlineAdmin.setLoginLocation(addresses);
-                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24, TimeUnit.MICROSECONDS);
             }
         } else {
             onlineAdmin.setLoginLocation(jsonResult);

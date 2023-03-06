@@ -9,6 +9,8 @@ import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
 import com.alex.oss.service.fileInfo.FileInfoService;
 import com.alex.oss.service.minio.MinioFileService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -91,5 +94,19 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
         FileInfoVo fileInfoVo = minioFileService.uploadFile(file, type);
         return fileInfoVo;
+    }
+
+    @Override
+    public List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+        LambdaQueryWrapper<FileInfo> query = Wrappers.<FileInfo>lambdaQuery().in(FileInfo::getId, fileIdList);
+        List<FileInfo> fileInfos = fileInfoMapper.selectList(query);
+        if (fileInfos == null || fileInfos.isEmpty()) {
+            return null;
+        }
+        return fileInfos.parallelStream().map(item -> {
+            FileInfoVo fileInfoVo = new FileInfoVo();
+            BeanUtil.copyProperties(item, fileInfoVo);
+            return fileInfoVo;
+        }).collect(Collectors.toList());
     }
 }

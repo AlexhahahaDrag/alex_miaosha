@@ -1,6 +1,5 @@
 package com.alex.product.entity.pmsBrand;
 
-import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  品牌类
  * @author:       alex
- * @createDate: 2023-03-02 19:16:11
+ * @createDate: 2023-03-05 21:39:54
  * @version:      1.0.0
  */
 @Getter

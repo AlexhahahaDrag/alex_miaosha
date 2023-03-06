@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @description: 文件信息表restApi
  * @author: alex
@@ -85,5 +87,15 @@ public class FileInfoController {
     )
     public Result fileDownload(@RequestParam(value = "id") Long id) {
         return Result.success(fileInfoService.fileDownload(id));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "获取文件信息", notes = "获取文件信息", response = Result.class)
+    @GetMapping("/getFileInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true)}
+    )
+    public Result<List<FileInfoVo>> getFileInfo(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
+        return Result.success(fileInfoService.getFileInfo(fileIdList));
     }
 }

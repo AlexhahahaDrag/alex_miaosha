@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex.user", "com.alex.common", "com.alex.utils", "com.alex.api.user"})
 @EnableEncryptableProperties
-@EnableFeignClients(basePackages = {"com.alex.api.user"})
+@EnableFeignClients(basePackages = {"com.alex.api.user", "com.alex.api.oss"})
 public class UserApplication {
 
     public static void main(String[] args) {

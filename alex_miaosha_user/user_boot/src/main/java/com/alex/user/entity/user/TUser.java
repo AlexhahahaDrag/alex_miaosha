@@ -38,7 +38,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "个人头像")
     @TableField("avatar")
-    private String avatar;
+    private Long avatar;
 
     @ApiModelProperty(value = "邮箱")
     @TableField("email")

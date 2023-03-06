@@ -1,9 +1,5 @@
 package com.alex.api.product.vo.pmsBrand;
 
-import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -13,7 +9,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  品牌Vo
  * @author:       alex
- * @createDate:   2023-03-02 19:16:11
+ * @createDate:   2023-03-05 21:39:54
  * @version:      1.0.0
  */
 @Getter

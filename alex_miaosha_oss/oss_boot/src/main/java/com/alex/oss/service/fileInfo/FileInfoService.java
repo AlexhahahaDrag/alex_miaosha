@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * 文件信息表 服务类
@@ -28,4 +29,12 @@ public interface FileInfoService extends IService<FileInfo> {
     Boolean deleteFileInfo(String ids);
 
     InputStream fileDownload(Long id);
+
+    /*
+     * @param fileIdList
+     * @description: 根据文件id列表获取文件信息
+     * @author:      alex
+     * @return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
+    */
+    List<FileInfoVo> getFileInfo(List<Long> fileIdList);
 }
