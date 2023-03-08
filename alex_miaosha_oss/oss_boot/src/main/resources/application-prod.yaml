@@ -18,7 +18,7 @@ spring:
       max-request-size: 50MB  #多个文件最大限制
 
 mybatis-plus:
-  mapper-locations: classpath*:com/alex/osssys/mapper/**/*Mapper.xml
+  mapper-locations: classpath*:com/alex/oss/mapper/**/*Mapper.xml
 
 minio:
   url: minio
