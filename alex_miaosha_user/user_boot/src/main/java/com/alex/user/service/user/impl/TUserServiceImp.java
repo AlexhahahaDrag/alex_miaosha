@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,7 +97,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             records.forEach(item -> {
                 List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
                 if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                    item.setAvatarUrl(fileInfoVos.get(0).getUrl());
+                    item.setAvatarUrl(fileInfoVos.get(0).getPreUrl());
                 }
             });
         }
@@ -237,7 +238,14 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         this.addOnLineAdmin(userLogin, expiration);
         //不返回密码到前端
         admin.setPassword(null);
-        result.put(SysConf.ADMIN, admin);
+        TUserVo tUserVo = new TUserVo();
+        BeanUtil.copyProperties(admin, tUserVo, "password");
+        Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(admin.getAvatar()));
+        //查询用户图片
+        if (fileInfo != null && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
+            tUserVo.setAvatarUrl(fileInfo.getData().get(0).getPreUrl());
+        }
+        result.put(SysConf.ADMIN, tUserVo);
         return Result.success(result);
     }
 

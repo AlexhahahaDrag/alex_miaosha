@@ -9,13 +9,17 @@ import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.config.minio.MinioTemplate;
 import com.alex.oss.service.minio.MinioFileService;
+import io.minio.errors.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -87,5 +91,10 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
             default:
                 return type + "-bucket";
         }
+    }
+
+    @Override
+    public String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
+        return minioTemplate.preview(bucketName, objectName);
     }
 }

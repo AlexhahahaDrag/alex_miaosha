@@ -13,13 +13,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -103,9 +109,34 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (fileInfos == null || fileInfos.isEmpty()) {
             return null;
         }
+        Map<Long, String> map = new HashMap<>();
+        fileInfos.forEach(item -> {
+            try {
+                map.put(item.getId(), minioFileService.preview(item.getBucketName(), item.getUrl()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidResponseException e) {
+                e.printStackTrace();
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (ServerException e) {
+                e.printStackTrace();
+            } catch (ErrorResponseException e) {
+                e.printStackTrace();
+            } catch (XmlParserException e) {
+                e.printStackTrace();
+            } catch (InsufficientDataException e) {
+                e.printStackTrace();
+            } catch (InternalException e) {
+                e.printStackTrace();
+            }
+        });
         return fileInfos.parallelStream().map(item -> {
             FileInfoVo fileInfoVo = new FileInfoVo();
             BeanUtil.copyProperties(item, fileInfoVo);
+            fileInfoVo.setPreUrl(map.get(item.getId()));
             return fileInfoVo;
         }).collect(Collectors.toList());
     }

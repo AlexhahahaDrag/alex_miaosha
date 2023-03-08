@@ -7,6 +7,7 @@ import com.alex.common.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ import java.util.List;
 public interface OssApi {
 
     @GetMapping(value = "/api/v1/file-info/getFileInfo")
-    Result<List<FileInfoVo>> getFileInfo(List<Long> fileIdList);
+    Result<List<FileInfoVo>> getFileInfo(@RequestParam("fileIdList") List<Long> fileIdList);
 }

@@ -6,6 +6,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.vo.ObjectItem;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +75,7 @@ public class MinioTemplate implements InitializingBean {
         try {
             boolean exist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(name).build());
             if (!exist) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(name).build());
+                makeBucket(name);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,9 +203,9 @@ public class MinioTemplate implements InitializingBean {
      * @param fileName
      * @param delete
      * @description: 下载文件流
-     * @author:      alex
-     * @return:      java.io.InputStream
-    */
+     * @author: alex
+     * @return: java.io.InputStream
+     */
     public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
         InputStream inputStream = null;
         try {
@@ -286,5 +288,19 @@ public class MinioTemplate implements InitializingBean {
         }
         resultMap.put("mes", "删除成功");
         return resultMap;
+    }
+
+    // TODO: 2023/3/7 暂时生成的路径不能访问  minio客户端分享也不能访问
+    public String preview(String bucketName, String objectKey) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("response-content-type", "application/json");
+        return minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                        .method(Method.PUT)
+                        .bucket(bucketName)
+                        .object(objectKey)
+                        .expiry(60 * 60 * 24 * 7, TimeUnit.SECONDS)
+                        .extraQueryParams(headers)
+                        .build());
     }
 }
