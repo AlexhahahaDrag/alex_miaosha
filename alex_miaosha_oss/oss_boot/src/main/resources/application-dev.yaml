@@ -26,9 +26,9 @@ logging:
 
 minio:
   url: 123.249.83.33
-  port: 6000  # 6060访问minio
-  accessKey: 3Yz7Yw5tm9XTobf6
-  secretKey: wx566XGHujQ53VwJVvd4BxGu9cbbQ1P7
+  port: 9000  # 6060访问minio
+  accessKey: MSP7zXLCPvZrbhP1
+  secretKey: PFaF4R9G27FM2VTkEGteuGP1zzWtMcp1
   bucketName: user-bucket
 
 

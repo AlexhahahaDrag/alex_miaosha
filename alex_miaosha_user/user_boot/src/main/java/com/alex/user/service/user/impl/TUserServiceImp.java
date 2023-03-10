@@ -240,10 +240,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         admin.setPassword(null);
         TUserVo tUserVo = new TUserVo();
         BeanUtil.copyProperties(admin, tUserVo, "password");
-        Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(admin.getAvatar()));
-        //查询用户图片
-        if (fileInfo != null && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
-            tUserVo.setAvatarUrl(fileInfo.getData().get(0).getPreUrl());
+        if (admin.getAvatar() != null) {
+            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(admin.getAvatar()));
+            //查询用户图片
+            if (fileInfo != null && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
+                tUserVo.setAvatarUrl(fileInfo.getData().get(0).getPreUrl());
+            }
         }
         result.put(SysConf.ADMIN, tUserVo);
         return Result.success(result);

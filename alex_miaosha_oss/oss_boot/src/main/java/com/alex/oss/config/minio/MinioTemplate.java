@@ -290,17 +290,14 @@ public class MinioTemplate implements InitializingBean {
         return resultMap;
     }
 
-    // TODO: 2023/3/7 暂时生成的路径不能访问  minio客户端分享也不能访问
+    // TODO: 2023/3/10 看看修改minio端口，如何生效 
     public String preview(String bucketName, String objectKey) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("response-content-type", "application/json");
         return minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
-                        .method(Method.PUT)
+                        .method(Method.GET)
                         .bucket(bucketName)
                         .object(objectKey)
-                        .expiry(60 * 60 * 24 * 7, TimeUnit.SECONDS)
-                        .extraQueryParams(headers)
+                        .expiry(60 * 60, TimeUnit.SECONDS)
                         .build());
     }
 }

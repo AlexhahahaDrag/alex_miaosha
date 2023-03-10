@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,6 +105,9 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     @Override
     public List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+        if (fileIdList == null || fileIdList.isEmpty()) {
+            return Lists.newArrayList();
+        }
         LambdaQueryWrapper<FileInfo> query = Wrappers.<FileInfo>lambdaQuery().in(FileInfo::getId, fileIdList);
         List<FileInfo> fileInfos = fileInfoMapper.selectList(query);
         if (fileInfos == null || fileInfos.isEmpty()) {
