@@ -27,7 +27,7 @@ spring:
             group: ${nacos.group}
             refresh: true
 nacos:
-  url: nacos:8848
+  url: nacos1:8811,nacos2:8822,nacos3:8833
   group: alex-miaosha-prod
   namaspace: 439dbcdc-b721-4afd-abee-08184739eb75
   username: nacos
