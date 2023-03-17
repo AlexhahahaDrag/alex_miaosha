@@ -205,37 +205,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //            sb.append(role.getRoleName()).append(Constants.SYMBOL_COMMA);
 //        }
 //        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
-        String roleName = "";
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-        String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
-                , expiration * 1000, audience.getBase64Secret());
-        String token = audience.getTokenHead() + jwtToken;
         HashMap<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
-        //保存登录信息
-        Map<String, String> map = IpUtils.getOsAndBrowserInfo(request);
-        String os = map.get(SysConf.OS);
-        String browser = map.get(SysConf.BROWSER);
-        String location = map.get(SysConf.LOCATION);
-        // TODO: 2023/2/16 添加复杂逻辑
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
-        // TODO: 2023/3/2 开启新线程 
-        TUserLogin userLogin = TUserLogin.builder()
-                .userId(admin.getId())
-                .username(admin.getUsername())
-                .nickName(admin.getNickName())
-                .lastLoginTime(LocalDateTime.now())
-                .tokenId(uuid)
-                .token(token)
-                .os(os)
-                .broswer(browser)
-                .loginIp(ip)
-                .loginLocation(location)
-                .build();
-        userLogin.insert();
+        //保存登录信息
+        saveLoginLog(request, admin, uuid, ip, isRemember);
 //        admin.setRole(roles.get(0));
-        //添加在线用户到redis中，设置过期时间
-        this.addOnLineAdmin(userLogin, expiration);
         //不返回密码到前端
         admin.setPassword(null);
         TUserVo tUserVo = new TUserVo();
@@ -253,6 +228,48 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
         result.put(SysConf.ADMIN, tUserVo);
         return Result.success(result);
+    }
+
+    private void saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {
+        String roleName = "";
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
+                , expiration * 1000, audience.getBase64Secret());
+        new Thread(() -> {
+            Map<String, String> map = null;
+            try {
+                map = IpUtils.getOsAndBrowserInfo(request);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            String token = audience.getTokenHead() + jwtToken;
+            String os = map.get(SysConf.OS);
+            String browser = map.get(SysConf.BROWSER);
+            TUserLogin userLogin = null;
+            try {
+                userLogin = TUserLogin.builder()
+                        .userId(admin.getId())
+                        .username(admin.getUsername())
+                        .nickName(admin.getNickName())
+                        .lastLoginTime(LocalDateTime.now())
+                        .tokenId(uuid)
+                        .token(token)
+                        .os(os)
+                        .broswer(browser)
+                        .loginIp(ip)
+                        .loginLocation(IpUtils.getCityInfo(ip))
+                        .build();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            userLogin.insert();
+            //添加在线用户到redis中，设置过期时间
+            try {
+                this.addOnLineAdmin(userLogin, expiration);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

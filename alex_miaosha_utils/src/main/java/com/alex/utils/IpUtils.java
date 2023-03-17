@@ -175,8 +175,6 @@ public class IpUtils {
         Map<String, String> result = new HashMap<>(2);
         result.put("OS", os);
         result.put("BROWSER", browser);
-        String cityInfo = getCityInfo(getIpAddr(request));
-        result.put("LOCATION", cityInfo);
         return result;
     }
 
@@ -262,7 +260,7 @@ public class IpUtils {
      * @author:       alex
      * @return:       java.lang.String
      */
-    private static String getCityInfo(String ip) throws Exception {
+    public static String getCityInfo(String ip) throws Exception {
         if (StringUtils.isEmpty(dbPath)) {
             log.error("Error: Invalid ip2orgin.db file");
             return null;
