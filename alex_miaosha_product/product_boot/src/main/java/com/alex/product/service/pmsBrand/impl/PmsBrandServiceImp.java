@@ -1,17 +1,18 @@
 package com.alex.product.service.pmsBrand.impl;
 
-import com.alex.product.entity.pmsBrand.PmsBrand;
+import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.product.entity.pmsBrand.PmsBrand;
 import com.alex.product.mapper.pmsBrand.PmsBrandMapper;
 import com.alex.product.service.pmsBrand.PmsBrandService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -61,5 +62,10 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
         List<String> idArr = Arrays.asList(ids.split(","));
         pmsBrandMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public String test() {
+        return "123";
     }
 }

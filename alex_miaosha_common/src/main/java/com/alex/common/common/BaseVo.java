@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable {
@@ -21,27 +21,27 @@ public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable
     private Long creator;
 
     @ApiModelProperty("创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty("更新人")
     private Long updater;
 
     @ApiModelProperty("更新时间")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty("操作人")
     private Long operator;
 
     @ApiModelProperty("操作时间")
-    private LocalDateTime operateTime;
+    private Date operateTime;
 
     @ApiModelProperty("删除人")
     private Long deleter;
 
     @ApiModelProperty("操作时间")
-    private LocalDateTime deleteTime;
+    private Date deleteTime;
 
     @ApiModelProperty("是否删除")
     private Integer isDelete;

@@ -202,4 +202,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
         return sb.toString();
     }
+
+    @Override
+    public String test() {
+        return "test";
+    }
 }

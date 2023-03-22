@@ -23,4 +23,6 @@ public interface PmsBrandService extends IService<PmsBrand> {
     Boolean updatePmsBrand(PmsBrandVo pmsBrandVo);
 
     Boolean deletePmsBrand(String ids);
+
+    String test();
 }

@@ -43,4 +43,11 @@ public class GeneratorController {
                                     @RequestParam(value = "author", required = false) String author) {
         return Result.success(generatorService.generator(moduleName, javaPath, tableNames, author));
     }
+
+    @ApiOperationSupport(order = 2, author = "alex")
+    @GetMapping(value = "test")
+    @ApiOperation(value = "test", notes = "test")
+    public Result<String> test() {
+        return Result.success(generatorService.test());
+    }
 }

@@ -8,7 +8,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
-    url: jdbc:mysql://123.249.83.33:3306/alex_oss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://123.249.83.33:3336/alex_oss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
@@ -26,9 +26,9 @@ logging:
 
 minio:
   url: 123.249.83.33
-  port: 9000  # 6060访问minio
-  accessKey: MSP7zXLCPvZrbhP1
-  secretKey: PFaF4R9G27FM2VTkEGteuGP1zzWtMcp1
+  port: 9000  # 9001 访问minio
+  accessKey: pVDpdy8XAWyfwdp4
+  secretKey: 6rsHfzT1tk1XdtuVmvnPv2lZxedSg3rN
   bucketName: user-bucket
 
 

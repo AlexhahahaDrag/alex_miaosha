@@ -5,60 +5,60 @@ spring:
   application:
     name: alex-finance-prod
 
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-    driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
-    url: jdbc:mysql://mysql:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ENC(wzGvorwuoFra8yDJA66Xfg==)
-    password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
-#  shardingsphere:
-#    #    mode:
-#    #      type: Standalone
-#    #      repository:
-#    #        type: JDBC
-#    datasource:
-#      name: master, slave1, slave2
-#      master:
-#        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-#        driver-class-name: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://123.249.83.33:3336/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-#        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
-#        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
-#      slave1:
-#        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-#        driver-class-name: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://123.249.83.33:3316/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-#        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
-#        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
-#      slave2:
-#        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-#        driver-class-name: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://123.249.83.33:3326/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-#        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
-#        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
-#    sharding:
-#      master-slave-rules:
-#        master-test0: # 哪一个主节点
-#          master-datasource-name: master                                          # 指定主节点名字
-#          slave-data-source-names: slave1,slave2                                # 指定读节点名字,多个读节点用逗号分开
-#        # 配置从库选择策略，提供轮询与随机，这里选择用轮询
-#      masterslave:
-#        load-balance-algorithm-type: round_robin
-#      props:
-#        sql:
-#          show: false   # 日志显示SQL
-#    rules:
-#      dataSources:
-#        readwrite_ds:
-#          staticStrategy:
-#            writeDataSourceName: master
-#            readDataSourceNames:
-#              - slave1
-#              - slave2
-#          loadBalancerName: random
-#      loadBalancers:
-#        random:
-#          type: RANDOM
+#   datasource:
+#     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+#     driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
+#     url: jdbc:mysql://mysql:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+#     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+#     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+  shardingsphere:
+    #    mode:
+    #      type: Standalone
+    #      repository:
+    #        type: JDBC
+    datasource:
+      name: master, slave1, slave2
+      master:
+        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql-master:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+      slave1:
+        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql-slave1:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+      slave2:
+        type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql-slave2:3306/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+        password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+    sharding:
+      master-slave-rules:
+        master-test0: # 哪一个主节点
+          master-datasource-name: master                                          # 指定主节点名字
+          slave-data-source-names: slave1,slave2                                # 指定读节点名字,多个读节点用逗号分开
+        # 配置从库选择策略，提供轮询与随机，这里选择用轮询
+      masterslave:
+        load-balance-algorithm-type: round_robin
+      props:
+        sql:
+          show: false   # 日志显示SQL
+    rules:
+      dataSources:
+        readwrite_ds:
+          staticStrategy:
+            writeDataSourceName: master
+            readDataSourceNames:
+              - slave1
+              - slave2
+          loadBalancerName: random
+      loadBalancers:
+        random:
+          type: RANDOM
 
 mybatis-plus:
   mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml

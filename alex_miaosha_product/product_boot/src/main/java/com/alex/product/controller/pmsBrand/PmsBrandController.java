@@ -1,25 +1,21 @@
 package com.alex.product.controller.pmsBrand;
 
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
+import com.alex.base.common.Result;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
-import com.alex.product.entity.pmsBrand.PmsBrand;
+import com.alex.product.service.pmsBrand.PmsBrandService;
+import com.alex.utils.annotations.AvoidRepeatableCommit;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.product.service.pmsBrand.PmsBrandService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @description:  品牌restApi
@@ -77,5 +73,12 @@ public class PmsBrandController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(pmsBrandService.deletePmsBrand(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "test", notes = "刪除品牌", response = Result.class)
+    @GetMapping(value = "test")
+    public Result<String> test() {
+        return Result.success(pmsBrandService.test());
     }
 }
