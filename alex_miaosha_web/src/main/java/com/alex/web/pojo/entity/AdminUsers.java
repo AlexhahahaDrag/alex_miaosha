@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @description:  用户表类
@@ -59,10 +59,10 @@ public class AdminUsers extends Model<AdminUsers> {
 
     @ApiModelProperty(value = "创建时间")
     @TableField("created_at")
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @ApiModelProperty(value = "更新时间")
     @TableField("updated_at")
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 
 }

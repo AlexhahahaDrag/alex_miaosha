@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @description:  管理员表Vo
@@ -50,7 +50,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String email;
 
     @ApiModelProperty(value = "出生年月日")
-    private LocalDateTime birthday;
+    private Date birthday;
 
     // TODO: 2023/2/15 自定义添加，为空时不校验
     @ApiModelProperty(value = "手机")

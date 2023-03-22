@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Accessors(chain = true)
@@ -47,10 +47,10 @@ public class GoodsDTO {
 
     @ApiModelProperty("秒杀开始时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startTime;
+    private Date startTime;
 
     @ApiModelProperty("秒杀结束时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endTime;
+    private Date endTime;
 }
 

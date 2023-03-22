@@ -89,17 +89,21 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .filter(item -> item.getAvatar() != null)
                 .map(TUserVo::getAvatar)
                 .collect(Collectors.toList());
-        Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
-        if ("200".equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
-            Map<Long, List<FileInfoVo>> fileMap = result.getData()
-                    .parallelStream()
-                    .collect(Collectors.groupingBy(FileInfoVo::getId));
-            records.forEach(item -> {
-                List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
-                if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                    item.setAvatarUrl(fileInfoVos.get(0).getPreUrl());
-                }
-            });
+        try {
+            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+            if ("200".equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+                Map<Long, List<FileInfoVo>> fileMap = result.getData()
+                        .parallelStream()
+                        .collect(Collectors.groupingBy(FileInfoVo::getId));
+                records.forEach(item -> {
+                    List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
+                    if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
+                        item.setAvatarUrl(fileInfoVos.get(0).getPreUrl());
+                    }
+                });
+            }
+        } catch (Exception e) {
+            log.error("获取用户头像失败！");
         }
         return userPage;
     }
@@ -235,41 +239,42 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
                 , expiration * 1000, audience.getBase64Secret());
-        new Thread(() -> {
-            Map<String, String> map = null;
-            try {
-                map = IpUtils.getOsAndBrowserInfo(request);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            String token = audience.getTokenHead() + jwtToken;
-            String os = map.get(SysConf.OS);
-            String browser = map.get(SysConf.BROWSER);
-            TUserLogin userLogin = null;
-            try {
-                userLogin = TUserLogin.builder()
-                        .userId(admin.getId())
-                        .username(admin.getUsername())
-                        .nickName(admin.getNickName())
-                        .lastLoginTime(LocalDateTime.now())
-                        .tokenId(uuid)
-                        .token(token)
-                        .os(os)
-                        .broswer(browser)
-                        .loginIp(ip)
-                        .loginLocation(IpUtils.getCityInfo(ip))
-                        .build();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        Map<String, String> map = null;
+        try {
+            map = IpUtils.getOsAndBrowserInfo(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String token = audience.getTokenHead() + jwtToken;
+        String os = map.get(SysConf.OS);
+        String browser = map.get(SysConf.BROWSER);
+        TUserLogin userLogin = null;
+        try {
+            userLogin = TUserLogin.builder()
+                    .userId(admin.getId())
+                    .username(admin.getUsername())
+                    .nickName(admin.getNickName())
+                    .lastLoginTime(LocalDateTime.now())
+                    .tokenId(uuid)
+                    .token(token)
+                    .os(os)
+                    .broswer(browser)
+                    .loginIp(ip)
+                    .loginLocation(IpUtils.getCityInfo(ip))
+                    .build();
             userLogin.insert();
-            //添加在线用户到redis中，设置过期时间
-            try {
-                this.addOnLineAdmin(userLogin, expiration);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //添加在线用户到redis中，设置过期时间
+        try {
+            this.addOnLineAdmin(userLogin, expiration);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        new Thread(() -> {
+//
+//        });
     }
 
     /**

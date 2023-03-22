@@ -68,7 +68,7 @@
         <!--国密sm-->
         <bcprov.version>1.71</bcprov.version>
         <mysql.version>8.0.27</mysql.version>
-        <druid.version>1.2.2</druid.version>
+        <druid.version>1.2.15</druid.version>
         <jwt.version>4.0.0</jwt.version>
         <jjwt.version>0.9.1</jjwt.version>
         <spring-security.version>5.7.3</spring-security.version>
