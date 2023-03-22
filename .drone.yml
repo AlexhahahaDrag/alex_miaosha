@@ -56,7 +56,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/monitor
         - docker build  -t alex_miaosha_monitor:latest .
         - docker rm -f monitor
-        - docker run -p 30099:30099 --network=alex_net --name=monitor -v /usr/local/soft/drone/alex_miaosha/monitor/logs:/logs/alex-monitor -d alex_miaosha_monitor:latest
+        - docker run -p 30099:30099 --network=alex_net --memory=128m --name=monitor -v /usr/local/soft/drone/alex_miaosha/monitor/logs:/logs/alex-monitor -d alex_miaosha_monitor:latest
 
   - name: ssh-gateway
     pull: if-not-exists
@@ -77,7 +77,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/gateway
         - docker build  -t alex_miaosha_gateway:latest .
         - docker rm -f gateway
-        - docker run -p 30001:30001 --network=alex_net --name=gateway -v /usr/local/soft/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
+        - docker run -p 30001:30001 --network=alex_net --memory=128m --name=gateway -v /usr/local/soft/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
 
   - name: ssh-finance
     pull: if-not-exists
@@ -98,7 +98,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/finance
         - docker build  -t alex_miaosha_finance:latest .
         - docker rm -f finance
-        - docker run -p 30008:30008 --network=alex_net --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
+        - docker run -p 30008:30008 --network=alex_net --memory=128m --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
 
   - name: ssh-user
     pull: if-not-exists
@@ -119,7 +119,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/user
         - docker build  -t alex_miaosha_user:latest .
         - docker rm -f user
-        - docker run -p 30006:30006 --network=alex_net --name=user -v /usr/local/soft/drone/alex_miaosha/user/logs:/logs/alex-user -d alex_miaosha_user:latest
+        - docker run -p 30006:30006 --network=alex_net --memory=128m --name=user -v /usr/local/soft/drone/alex_miaosha/user/logs:/logs/alex-user -d alex_miaosha_user:latest
 
   - name: ssh-oss
     pull: if-not-exists
@@ -140,7 +140,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/oss
         - docker build  -t alex_miaosha_oss:latest .
         - docker rm -f oss
-        - docker run -p 30009:30009 --network=alex_net --name=oss -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
+        - docker run -p 30009:30009 --network=alex_net --memory=128m --name=oss -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
 
 #  - name: ssh-mission
 #    pull: if-not-exists
@@ -162,7 +162,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
 #        - ls
 #        - docker build  -t alex_miaosha_mission:latest .
 #        - docker rm -f mission
-#        - docker run -p 30005:30005 --network=alex_net --name=mission -v /usr/local/soft/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
+#        - docker run -p 30005:30005 --network=alex_net --memory=128m --name=mission -v /usr/local/soft/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
 
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载

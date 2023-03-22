@@ -7,6 +7,8 @@ import com.alex.common.pojo.dto.GoodsDTO;
 import com.alex.common.pojo.dto.SeckillGoodsDTO;
 import com.alex.common.redis.key.GoodsKey;
 import com.alex.common.redis.key.SeckillGoodsKey;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.SeckillGoodsManager;
 import com.alex.mission.mapper.GoodsMapper;
@@ -14,8 +16,6 @@ import com.alex.mission.pojo.entity.Goods;
 import com.alex.mission.pojo.vo.GoodsDetailVo;
 import com.alex.mission.service.GoodsService;
 import com.alex.utils.POJOConverter;
-import com.alex.common.utils.bean.BeanUtils;
-import com.alex.common.utils.redis.RedisUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -180,8 +179,10 @@ public class GoodsServiceImpl implements GoodsService {
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {
         //从redis中获取库存信息
         Integer stockCount = Integer.parseInt(redisUtils.get(SeckillGoodsKey.seckillCount, goodsId + ""));
-        long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
-        long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
+//        long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
+//        long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
+        long startTime = 0l;
+        long endTime = 0l;
         long now = System.currentTimeMillis();
         int remainSeconds;
         if (now < startTime) {
