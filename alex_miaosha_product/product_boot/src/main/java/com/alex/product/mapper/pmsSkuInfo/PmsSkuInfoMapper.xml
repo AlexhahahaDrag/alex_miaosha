@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsSkuInfo.PmsSkuInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsSkuInfo.PmsSkuInfo">
+        <id column="sku_id" property="skuId" />
+        <result column="spu_id" property="spuId" />
+        <result column="sku_name" property="skuName" />
+        <result column="sku_desc" property="skuDesc" />
+        <result column="catalog_id" property="catalogId" />
+        <result column="brand_id" property="brandId" />
+        <result column="sku_default_img" property="skuDefaultImg" />
+        <result column="sku_title" property="skuTitle" />
+        <result column="sku_subtitle" property="skuSubtitle" />
+        <result column="price" property="price" />
+        <result column="sale_count" property="saleCount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_sku_info.sku_id, pms_sku_info.spu_id, pms_sku_info.sku_name, pms_sku_info.sku_desc, pms_sku_info.catalog_id, pms_sku_info.brand_id, pms_sku_info.sku_default_img, pms_sku_info.sku_title, pms_sku_info.sku_subtitle, pms_sku_info.price, pms_sku_info.sale_count
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo">
+        select <include refid="Base_Column_List"></include> from pms_sku_info
+        <where>
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="queryPmsSkuInfo" resultType="com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo">
+        select <include refid="Base_Column_List"></include> from pms_sku_info
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsSkuInfoVo != null">
+          <if test = "pmsSkuInfoVo.skuId != null">
+            and sku_id = #{pmsSkuInfoVo.skuId}
+          </if>
+          <if test = "pmsSkuInfoVo.spuId != null">
+            and spu_id = #{pmsSkuInfoVo.spuId}
+          </if>
+          <if test = "pmsSkuInfoVo.skuName != null">
+            and sku_name like concat('%', #{pmsSkuInfoVo.skuName}, '%')
+          </if>
+          <if test = "pmsSkuInfoVo.skuDesc != null">
+            and sku_desc like concat('%', #{pmsSkuInfoVo.skuDesc}, '%')
+          </if>
+          <if test = "pmsSkuInfoVo.catalogId != null">
+            and catalog_id = #{pmsSkuInfoVo.catalogId}
+          </if>
+          <if test = "pmsSkuInfoVo.brandId != null">
+            and brand_id = #{pmsSkuInfoVo.brandId}
+          </if>
+          <if test = "pmsSkuInfoVo.skuDefaultImg != null">
+            and sku_default_img like concat('%', #{pmsSkuInfoVo.skuDefaultImg}, '%')
+          </if>
+          <if test = "pmsSkuInfoVo.skuTitle != null">
+            and sku_title like concat('%', #{pmsSkuInfoVo.skuTitle}, '%')
+          </if>
+          <if test = "pmsSkuInfoVo.skuSubtitle != null">
+            and sku_subtitle like concat('%', #{pmsSkuInfoVo.skuSubtitle}, '%')
+          </if>
+          <if test = "pmsSkuInfoVo.price != null">
+            and price = #{pmsSkuInfoVo.price}
+          </if>
+          <if test = "pmsSkuInfoVo.saleCount != null">
+            and sale_count = #{pmsSkuInfoVo.saleCount}
+          </if>
+        </if>
+     </sql>
+</mapper>

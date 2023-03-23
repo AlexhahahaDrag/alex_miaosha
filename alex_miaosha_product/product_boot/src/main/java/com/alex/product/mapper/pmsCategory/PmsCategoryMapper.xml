@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsCategory.PmsCategoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsCategory.PmsCategory">
+        <id column="cat_id" property="catId" />
+        <result column="name" property="name" />
+        <result column="parent_cid" property="parentCid" />
+        <result column="cat_level" property="catLevel" />
+        <result column="show_status" property="showStatus" />
+        <result column="sort" property="sort" />
+        <result column="icon" property="icon" />
+        <result column="product_unit" property="productUnit" />
+        <result column="product_count" property="productCount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_category.cat_id, pms_category.`name`, pms_category.parent_cid, pms_category.cat_level, pms_category.show_status, pms_category.sort, pms_category.icon, pms_category.product_unit, pms_category.product_count
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsCategory.PmsCategoryVo">
+        select <include refid="Base_Column_List"></include> from pms_category
+        <where>
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="queryPmsCategory" resultType="com.alex.api.product.vo.pmsCategory.PmsCategoryVo">
+        select <include refid="Base_Column_List"></include> from pms_category
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsCategoryVo != null">
+          <if test = "pmsCategoryVo.catId != null">
+            and cat_id = #{pmsCategoryVo.catId}
+          </if>
+          <if test = "pmsCategoryVo.name != null">
+            and name like concat('%', #{pmsCategoryVo.name}, '%')
+          </if>
+          <if test = "pmsCategoryVo.parentCid != null">
+            and parent_cid = #{pmsCategoryVo.parentCid}
+          </if>
+          <if test = "pmsCategoryVo.catLevel != null">
+            and cat_level = #{pmsCategoryVo.catLevel}
+          </if>
+          <if test = "pmsCategoryVo.showStatus != null">
+            and show_status = #{pmsCategoryVo.showStatus}
+          </if>
+          <if test = "pmsCategoryVo.sort != null">
+            and sort = #{pmsCategoryVo.sort}
+          </if>
+          <if test = "pmsCategoryVo.icon != null">
+            and icon like concat('%', #{pmsCategoryVo.icon}, '%')
+          </if>
+          <if test = "pmsCategoryVo.productUnit != null">
+            and product_unit like concat('%', #{pmsCategoryVo.productUnit}, '%')
+          </if>
+          <if test = "pmsCategoryVo.productCount != null">
+            and product_count = #{pmsCategoryVo.productCount}
+          </if>
+        </if>
+     </sql>
+</mapper>

@@ -240,8 +240,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
                 , expiration * 1000, audience.getBase64Secret());
         Map<String, String> map = null;
+        String location = null;
         try {
             map = IpUtils.getOsAndBrowserInfo(request);
+            location = IpUtils.getCityInfo(ip);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -260,7 +262,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                     .os(os)
                     .broswer(browser)
                     .loginIp(ip)
-                    .loginLocation(IpUtils.getCityInfo(ip))
+                    .loginLocation(location)
                     .build();
             userLogin.insert();
         } catch (Exception e) {
