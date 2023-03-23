@@ -20,10 +20,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-        <groupId>com.alex</groupId>
-        <artifactId>alex_miaosha_common</artifactId>
-    </dependency>
 
     <dependency>
         <groupId>com.alex</groupId>

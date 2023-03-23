@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializable {
@@ -21,7 +21,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
 
     @ApiModelProperty("创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT, updateStrategy = FieldStrategy.DEFAULT)
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @ApiModelProperty("更新人")
     @TableField(value = "updater", fill = FieldFill.UPDATE, updateStrategy = FieldStrategy.DEFAULT)
@@ -29,7 +29,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
 
     @ApiModelProperty("更新时间")
     @TableField(value = "update_time", fill = FieldFill.UPDATE, updateStrategy = FieldStrategy.DEFAULT)
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty("操作人")
     @TableField(value = "operator", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
@@ -37,7 +37,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
 
     @ApiModelProperty("操作时间")
     @TableField(value = "operate_time", fill = FieldFill.INSERT_UPDATE, updateStrategy = FieldStrategy.DEFAULT)
-    private Date operateTime;
+    private LocalDateTime operateTime;
 
     @ApiModelProperty("删除人")
     @TableField(value = "deleter")
@@ -45,7 +45,7 @@ public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializ
 
     @ApiModelProperty("操作时间")
     @TableField(value = "delete_time")
-    private Date deleteTime;
+    private LocalDateTime deleteTime;
 
     @ApiModelProperty("是否删除")
     @TableLogic

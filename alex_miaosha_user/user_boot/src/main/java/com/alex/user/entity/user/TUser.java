@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @description:  管理员表类
@@ -46,7 +46,7 @@ public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "出生年月日")
     @TableField("birthday")
-    private Date birthday;
+    private LocalDateTime birthday;
 
     @ApiModelProperty(value = "手机")
     @TableField("mobile")

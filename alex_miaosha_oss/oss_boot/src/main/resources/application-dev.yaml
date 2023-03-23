@@ -22,13 +22,6 @@ mybatis-plus:
 
 logging:
   level:
-    com.alex.osssys.mapper: debug
-
-minio:
-  url: 123.249.83.33
-  port: 9000  # 9001 访问minio
-  accessKey: pVDpdy8XAWyfwdp4
-  secretKey: 6rsHfzT1tk1XdtuVmvnPv2lZxedSg3rN
-  bucketName: user-bucket
+    com.alex.oss.mapper: debug
 
 

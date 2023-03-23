@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -22,8 +22,8 @@ public class OrderDetailVo extends BaseVo {
     private String goodsName;
 
     @ApiModelProperty(value = "创建时间")
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
     @ApiModelProperty(value = "创建时间")
-    private Date updatedTime;
+    private LocalDateTime updatedTime;
 }

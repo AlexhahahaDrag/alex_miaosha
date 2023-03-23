@@ -26,6 +26,9 @@ spring:
           - data-id: ${nacos.audience}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+          - data-id: ${nacos.minio}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
 nacos:
   url: nacos1:8848,nacos2:8848,nacos3:8848
   group: alex-miaosha-prod
@@ -39,3 +42,4 @@ nacos:
   redis: redis
   jasypt: jasypt-user
   audience: audience
+  minio: minio

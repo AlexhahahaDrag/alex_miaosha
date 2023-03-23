@@ -19,10 +19,3 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath*:com/alex/oss/mapper/**/*Mapper.xml
-
-minio:
-  url: minio
-  port: 9000
-  accessKey: MSP7zXLCPvZrbhP1
-  secretKey: PFaF4R9G27FM2VTkEGteuGP1zzWtMcp1
-  bucketName: user-bucket

@@ -96,9 +96,6 @@
           <if test = "tUserVo.email != null">
             and email like concat('%', #{tUserVo.email}, '%')
           </if>
-          <if test = "tUserVo.birthday != null">
-            and birthday = #{tUserVo.birthday}
-          </if>
           <if test = "tUserVo.mobile != null">
             and mobile like concat('%', #{tUserVo.mobile}, '%')
           </if>

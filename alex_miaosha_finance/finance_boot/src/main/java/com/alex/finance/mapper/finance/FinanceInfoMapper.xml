@@ -49,8 +49,7 @@
         <where>
             finance_info.is_delete = 0
             <include refid="queryInfo"></include>
-            order by IF(ISNULL(finance_info.operate_time),1,0), finance_info.info_date desc,
-                finance_info.operate_time desc
+            order by finance_info.info_date desc, finance_info.operate_time desc
         </where>
     </select>
 
@@ -59,8 +58,7 @@
         <where>
             is_delete = 0 <include refid="queryInfo"></include>
         </where>
-            order by IF(ISNULL(finance_info.operate_time),1,0), finance_info.info_date desc,
-                finance_info.operate_time desc
+            order by finance_info.info_date desc, finance_info.operate_time desc
     </select>
 
     <select id="queryFinanceInfo" resultType="com.alex.api.finance.vo.finance.FinanceInfoVo">
