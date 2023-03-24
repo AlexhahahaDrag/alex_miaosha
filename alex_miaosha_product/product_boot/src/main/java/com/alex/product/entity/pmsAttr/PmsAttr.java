@@ -1,9 +1,11 @@
 package com.alex.product.entity.pmsAttr;
 
-import com.alex.common.common.BaseEntity;
+import com.alex.common.config.Long2StringSerializer;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,7 +26,7 @@ import lombok.experimental.Accessors;
 public class PmsAttr {
 
     @ApiModelProperty(value = "属性id")
-    @TableId("attr_id")
+    @TableId(value = "attr_id", type = IdType.ASSIGN_ID)
     private Long attrId;
 
     @ApiModelProperty(value = "属性名")

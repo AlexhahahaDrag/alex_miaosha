@@ -8,6 +8,9 @@ spring:
         group: ${nacos.group}
         namespace: ${nacos.namaspace}
         extension-configs:
+          - data-id: ${nacos.minio}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
           - data-id: ${nacos.redis}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
@@ -24,9 +27,6 @@ spring:
             group: ${nacos.group}
             refresh: true
           - data-id: ${nacos.audience}.${nacos.file-extension}
-            group: ${nacos.group}
-            refresh: true
-          - data-id: ${nacos.minio}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
 

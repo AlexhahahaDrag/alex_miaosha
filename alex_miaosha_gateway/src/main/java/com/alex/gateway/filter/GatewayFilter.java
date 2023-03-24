@@ -1,8 +1,6 @@
 package com.alex.gateway.filter;
 
 import com.alex.api.user.utils.jwt.Audience;
-import com.alex.api.user.utils.jwt.JwtTokenUtils;
-import com.alex.common.utils.redis.RedisUtils;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,10 +35,6 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
     private final Audience audience;
 
-    private final RedisUtils redisUtils;
-
-    private final JwtTokenUtils jwtTokenUtils;
-
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
 
     @SneakyThrows
@@ -56,7 +50,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             }
         }
         log.info("当前请求地址：{}", path);
-        // TODO: 2023/2/17 修改成调用api 
+        // TODO: 2023/2/17 修改成调用api
 //        ServerHttpRequest request = exchange.getRequest();
 //        ServerHttpResponse response = exchange.getResponse();
 //        //得到请求头信息authorization信息
@@ -64,7 +58,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 //                .map(re -> re.getHeaders())
 //                .map(header -> header.getFirst(audience.getTokenHeader()))
 //                .orElse(null);
-//        
+//
 //        UserApi userApi = AutowiredBean.getBean(UserApi.class);
 //        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> userApi.authToken(token));
         return chain.filter(exchange);

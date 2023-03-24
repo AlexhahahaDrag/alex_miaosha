@@ -1,15 +1,15 @@
 package com.alex.api.product.vo.pmsSkuInfo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.math.BigDecimal;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 
 /**
  * @description:  sku信息Vo
@@ -24,6 +24,7 @@ import lombok.experimental.Accessors;
 public class PmsSkuInfoVo extends BaseVo<PmsSkuInfoVo>{
 
     @ApiModelProperty(value = "skuId")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long skuId;
 
     @ApiModelProperty(value = "spuId")

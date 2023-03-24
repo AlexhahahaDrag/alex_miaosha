@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 public class PmsBrand {
 
     @ApiModelProperty(value = "品牌id")
-    @TableId(value = "brand_id", type = IdType.AUTO)
+    @TableId(value = "brand_id", type = IdType.ASSIGN_ID)
     private Long brandId;
 
     @ApiModelProperty(value = "品牌名")
@@ -33,7 +33,7 @@ public class PmsBrand {
 
     @ApiModelProperty(value = "品牌logo地址")
     @TableField("logo")
-    private String logo;
+    private Long logo;
 
     @ApiModelProperty(value = "介绍")
     @TableField("descript")

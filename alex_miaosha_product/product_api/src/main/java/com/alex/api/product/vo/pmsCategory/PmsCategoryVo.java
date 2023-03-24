@@ -1,9 +1,8 @@
 package com.alex.api.product.vo.pmsCategory;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -23,6 +22,7 @@ import lombok.experimental.Accessors;
 public class PmsCategoryVo extends BaseVo<PmsCategoryVo>{
 
     @ApiModelProperty(value = "分类id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long catId;
 
     @ApiModelProperty(value = "分类名称")

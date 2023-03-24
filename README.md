@@ -3,7 +3,7 @@
 <img src="https://img.shields.io/badge/license-Apache--2.0-blue" />
 <img src="https://img.shields.io/badge/JDK-1.8%2B-green"/>
 <img href="https://github.com/AlexhahahaDrag/alex_miaosha" src="https://img.shields.io/badge/springcloud-2021.0.3-green"/>
-<img src="https://img.shields.io/badge/springboot-2.6.8-green" href="https://github.com/AlexhahahaDrag/alex_miaosha"/>
+<img src="https://img.shields.io/badge/springboot-2.7.2-green" href="https://github.com/AlexhahahaDrag/alex_miaosha"/>
 <img src="https://img.shields.io/badge/knife4j-3.0.3-green"/>
 
 ## 前言
@@ -26,22 +26,33 @@
 &nbsp;&nbsp;目前项目托管在[github](https://github.com/AlexhahahaDrag/alex_miaosha.git)平台上，欢迎大家Star和Fork支持。
 
 - 后端github地址： https://github.com/AlexhahahaDrag/alex_miaosha.git
+- 后端github地址：https://github.com/AlexhahahaDrag/alex_miaosha_front
 
 ## **项目模块**
 
-alex_miaosha_base:
++ alex_generator: 代码生成模块，同时生成前后端代码，提高开发效率。
 
-+ alex_miaosha_common: **todo**
++ alex_miaosha_base：基础模块，项目一些基本配置
+
++ alex_miaosha_common: **todo
+
++ alex_miaosha_finance:：财务管理模块，
+
++ alex_miaosha_gateway：网关模块
+
++ alex_miaosha_misssion：
 
 + alex_miaosha_monitor：todo
 
-+ alex_miaosha_gateway：todo
++ alex_miaosha_order：订单模块
 
-+ alex_miaosha_user：todo
++ alex_miaosha_oss：文件管理模块
+
++ alex_miaosha_product：产品管理模块
+
++ alex_miaosha_user：用户模块，管理用户、角色及机构等相关信息。
 
 + alex_miaosha_web：
-
-+ alex_miaosha_misssion：
 
 ## 项目使用
 
@@ -49,7 +60,7 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 
 ## 站点演示
 
-[网站演示](mjzp.xyz:3000)。
+[**站点**](http://mjzp.xyz)
 
 ## 技术选型
 

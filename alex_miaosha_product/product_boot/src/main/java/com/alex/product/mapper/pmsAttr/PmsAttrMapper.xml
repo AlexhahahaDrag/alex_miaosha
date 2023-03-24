@@ -30,7 +30,7 @@
     <select id="queryPmsAttr" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
         select <include refid="Base_Column_List"></include> from pms_attr
         <where>
-            id = #{id}
+            attr_id = #{id}
         </where>
     </select>
 

@@ -28,7 +28,7 @@
     <select id="queryPmsBrand" resultType="com.alex.api.product.vo.pmsBrand.PmsBrandVo">
         select <include refid="Base_Column_List"></include> from pms_brand
         <where>
-            id = #{id}
+            brand_id = #{id}
         </where>
     </select>
 

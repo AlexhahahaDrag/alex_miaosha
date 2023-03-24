@@ -1,5 +1,7 @@
 package com.alex.api.product.vo.pmsBrand;
 
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -19,13 +21,17 @@ import lombok.experimental.Accessors;
 public class PmsBrandVo {
 
     @ApiModelProperty(value = "品牌id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long brandId;
 
     @ApiModelProperty(value = "品牌名")
     private String name;
 
     @ApiModelProperty(value = "品牌logo地址")
-    private String logo;
+    private Long logo;
+
+    @ApiModelProperty(value = "品牌logo地址url")
+    private String logoUrl;
 
     @ApiModelProperty(value = "介绍")
     private String descript;

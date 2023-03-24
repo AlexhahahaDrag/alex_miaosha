@@ -31,6 +31,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,10 +43,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -59,6 +57,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements TUserService {
 
     private final TUserMapper tUserMapper;
@@ -216,19 +215,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         saveLoginLog(request, admin, uuid, ip, isRemember);
 //        admin.setRole(roles.get(0));
         //不返回密码到前端
-        admin.setPassword(null);
         TUserVo tUserVo = new TUserVo();
         BeanUtil.copyProperties(admin, tUserVo, "password");
         if (admin.getAvatar() != null) {
-            try {
-                Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(admin.getAvatar()));
-                //查询用户图片
-                if (fileInfo != null && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
-                    tUserVo.setAvatarUrl(fileInfo.getData().get(0).getPreUrl());
-                }
-            } catch (Exception e) {
-                log.error("获取用户头像失败！");
-            }
+            tUserVo.setAvatarUrl(getFileUrl(admin.getAvatar()));
         }
         result.put(SysConf.ADMIN, tUserVo);
         return Result.success(result);
@@ -309,7 +299,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     }
 
     public TUserVo getUserInfo(TUserVo tUserVo) {
-        return tUserMapper.getUserInfo(tUserVo);
+        TUserVo userInfo = tUserMapper.getUserInfo(tUserVo);
+        if (userInfo == null || userInfo.getAvatar() == null) {
+            return userInfo;
+        }
+        tUserVo.setAvatarUrl(getFileUrl(userInfo.getAvatar()));
+        return userInfo;
     }
 
     @Override
@@ -426,5 +421,19 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 throw new UserException("400", "请输入正确的字段");
         }
         return this.count(query);
+    }
+
+    private String getFileUrl(Long fileId) {
+        if (fileId == null) {
+            return null;
+        }
+        try {
+            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(fileId));
+            return Optional.ofNullable(fileInfo).map(item -> item.getData().get(0).getPreUrl()).orElse("");
+        } catch (Exception e) {
+            log.error("获取头像文件错误：{}", e.getMessage());
+            return null;
+        }
+        //查询用户图片
     }
 }

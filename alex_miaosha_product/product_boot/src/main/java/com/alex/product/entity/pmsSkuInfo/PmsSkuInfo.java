@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 public class PmsSkuInfo {
 
     @ApiModelProperty(value = "skuId")
-    @TableId(value = "sku_id", type = IdType.AUTO)
+    @TableId(value = "sku_id", type = IdType.ASSIGN_ID)
     private Long skuId;
 
     @ApiModelProperty(value = "spuId")

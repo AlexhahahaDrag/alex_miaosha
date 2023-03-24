@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 public class PmsCategory {
 
     @ApiModelProperty(value = "分类id")
-    @TableId(value = "cat_id", type = IdType.AUTO)
+    @TableId(value = "cat_id", type = IdType.ASSIGN_ID)
     private Long catId;
 
     @ApiModelProperty(value = "分类名称")

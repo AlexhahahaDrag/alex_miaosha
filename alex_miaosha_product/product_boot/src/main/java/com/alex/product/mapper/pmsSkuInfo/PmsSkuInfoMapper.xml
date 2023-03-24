@@ -32,7 +32,7 @@
     <select id="queryPmsSkuInfo" resultType="com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo">
         select <include refid="Base_Column_List"></include> from pms_sku_info
         <where>
-            id = #{id}
+            sku_id = #{id}
         </where>
     </select>
 

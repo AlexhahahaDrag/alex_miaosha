@@ -1,8 +1,7 @@
 package com.alex.api.product.vo.pmsAttr;
 
-import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -22,6 +21,7 @@ import lombok.experimental.Accessors;
 public class PmsAttrVo {
 
     @ApiModelProperty(value = "属性id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long attrId;
 
     @ApiModelProperty(value = "属性名")

@@ -30,7 +30,7 @@
     <select id="queryPmsCategory" resultType="com.alex.api.product.vo.pmsCategory.PmsCategoryVo">
         select <include refid="Base_Column_List"></include> from pms_category
         <where>
-            id = #{id}
+            cat_id = #{id}
         </where>
     </select>
 
