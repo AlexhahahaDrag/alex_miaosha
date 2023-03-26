@@ -122,4 +122,14 @@ public class TUserController {
     public TUserVo getUserByUsername(@RequestParam(value = "username") String username) {
         return tUserService.getUserByUsername(username);
     }
+
+    @ApiOperationSupport(order = 90, author = "alex")
+    @ApiOperation(value = "根据token校验用户权限", notes = "根据token校验用户权限", response = Result.class)
+    @GetMapping(value = "/authToken")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "token", name = "token")}
+    )
+    public Result<Boolean> authToken(@RequestParam(value = "token") String token) {
+        return Result.success(true) ;
+    }
 }

@@ -1,6 +1,9 @@
 package com.alex.gateway.filter;
 
+import com.alex.api.user.api.UserApi;
 import com.alex.api.user.utils.jwt.Audience;
+import com.alex.base.common.Result;
+import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -9,14 +12,20 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @description: 过滤器打印请求地址
@@ -51,16 +60,27 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         }
         log.info("当前请求地址：{}", path);
         // TODO: 2023/2/17 修改成调用api
-//        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpRequest request = exchange.getRequest();
 //        ServerHttpResponse response = exchange.getResponse();
-//        //得到请求头信息authorization信息
-//        String authHeader = Optional.ofNullable(request)
-//                .map(re -> re.getHeaders())
-//                .map(header -> header.getFirst(audience.getTokenHeader()))
-//                .orElse(null);
-//
-//        UserApi userApi = AutowiredBean.getBean(UserApi.class);
-//        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> userApi.authToken(token));
+        Map<String, Object> attributes1 = exchange.getAttributes();
+        //得到请求头信息authorization信息
+        String token = Optional.ofNullable(request)
+                .map(re -> re.getHeaders())
+                .map(header -> header.getFirst(audience.getTokenHeader()))
+                .orElse(null);
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        UserApi userApi = AutowiredBean.getBean(UserApi.class);
+        CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> {
+                    // 复制主线程的 线程共享数据
+                    RequestContextHolder.setRequestAttributes(attributes);
+                    Result<Boolean> res = userApi.authToken(token);
+                    return res;
+                }
+        );
+        Result<Boolean> booleanResult = completableFuture.get();
+        // WebFlux异步调用，同步会报错
+//        Future<Result> future = executorService.submit(() -> userApi.authToken(token));
+//        Result result = future.get();
         return chain.filter(exchange);
     }
 
