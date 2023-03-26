@@ -1,4 +1,4 @@
-package com.alex.api.user.utils.jwt;
+package com.alex.user.utils.jwt;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

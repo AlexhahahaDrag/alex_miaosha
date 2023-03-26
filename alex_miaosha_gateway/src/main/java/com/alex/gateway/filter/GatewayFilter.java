@@ -1,8 +1,8 @@
 package com.alex.gateway.filter;
 
 import com.alex.api.user.api.UserApi;
-import com.alex.api.user.utils.jwt.Audience;
 import com.alex.base.common.Result;
+import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @description: 过滤器打印请求地址
@@ -42,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class GatewayFilter implements GlobalFilter, Ordered {
 
-    private final Audience audience;
+    private final GatewayAudience audience;
 
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
 
@@ -59,9 +60,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             }
         }
         log.info("当前请求地址：{}", path);
-        // TODO: 2023/2/17 修改成调用api
         ServerHttpRequest request = exchange.getRequest();
-//        ServerHttpResponse response = exchange.getResponse();
+        ServerHttpResponse response = exchange.getResponse();
         Map<String, Object> attributes1 = exchange.getAttributes();
         //得到请求头信息authorization信息
         String token = Optional.ofNullable(request)
@@ -77,11 +77,19 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                     return res;
                 }
         );
-        Result<Boolean> booleanResult = completableFuture.get();
-        // WebFlux异步调用，同步会报错
-//        Future<Result> future = executorService.submit(() -> userApi.authToken(token));
-//        Result result = future.get();
-        return chain.filter(exchange);
+        Boolean result = Optional.ofNullable(completableFuture).map(item -> {
+            try {
+                return item.get().getData();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }).get();
+        if (result) {
+            return chain.filter(exchange);
+        }
+        return out(response);
     }
 
     /**

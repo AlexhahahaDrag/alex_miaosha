@@ -1,6 +1,6 @@
 package com.alex.user.service.security;
 
-import com.alex.api.user.security.SecurityUserFactory;
+import com.alex.user.security.SecurityUserFactory;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.user.service.user.TUserService;
 import lombok.RequiredArgsConstructor;

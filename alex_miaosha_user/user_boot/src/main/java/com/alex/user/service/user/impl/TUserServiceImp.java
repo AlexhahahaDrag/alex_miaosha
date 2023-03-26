@@ -4,8 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
-import com.alex.api.user.utils.jwt.Audience;
-import com.alex.api.user.utils.jwt.JwtTokenUtils;
+import com.alex.user.security.SecurityUserFactory;
+import com.alex.user.utils.jwt.Audience;
+import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.api.user.vo.user.OnlineAdmin;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
@@ -33,7 +34,10 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +45,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -435,5 +440,52 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             return null;
         }
         //查询用户图片
+    }
+
+    @Override
+    public Boolean authToken(String uuidToken) {
+        String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
+        if (StringUtils.isEmpty(barToken) || !barToken.startsWith(audience.getTokenHead())) {
+            return false;
+        }
+        // 私钥
+        String base64Secret = audience.getBase64Secret();
+        String token = barToken.substring(audience.getTokenHead().length());
+        //校验token
+        if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
+            return false;
+        }
+        // TODO: 2023/2/16 校验token是否正确
+        Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // 得到两个日期相差的间隔，秒
+        long survivalSecond = DateUtils.diffSecondByTwoDays(sdf.format(expirationDate), DateUtils.getTimeStr(LocalDateTime.now()));
+        // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
+        if (survivalSecond < audience.getRefreshSecond()) {
+            //生成新的token
+            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
+            redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
+            String onlineAdminStr = redisUtils.get(LoginKey.loginToken, token);
+            if (StringUtils.isNotBlank(onlineAdminStr)) {
+                OnlineAdmin onlineAdmin = JSONUtil.toBean(onlineAdminStr, OnlineAdmin.class);
+                onlineAdmin.setToken(newToken);
+                redisUtils.setEx(LoginKey.loginToken, newToken, JSONUtil.toJsonStr(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
+            }
+        }
+        // 获取在线的管理员信息
+        String username = jwtTokenUtils.getUsername(token, base64Secret);
+        SecurityContextHolder.getContext().getAuthentication();
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // 通过用户名加载SpringSecurity用户
+            UserDetails userDetails = SecurityUserFactory.create(getUserByUsername(username));
+            // 校验Token的有效性
+            if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                //以后可以security中取得SecurityUser信息
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+        return true;
     }
 }

@@ -1,7 +1,7 @@
-package com.alex.api.user.utils.jwt;
+package com.alex.user.utils.jwt;
 
-import com.alex.api.user.security.SecurityUser;
 import com.alex.base.constants.SysConf;
+import com.alex.user.SecurityUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;

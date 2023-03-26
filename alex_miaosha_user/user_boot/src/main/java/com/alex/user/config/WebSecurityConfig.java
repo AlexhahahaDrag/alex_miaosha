@@ -1,6 +1,6 @@
-package com.alex.api.user.config;
+package com.alex.user.config;
 
-import com.alex.api.user.utils.jwt.JwtAuthenticationTokenFilter;
+import com.alex.user.utils.jwt.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

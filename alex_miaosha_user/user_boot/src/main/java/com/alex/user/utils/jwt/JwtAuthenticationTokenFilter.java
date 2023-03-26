@@ -1,4 +1,4 @@
-package com.alex.api.user.utils.jwt;
+package com.alex.user.utils.jwt;
 
 import cn.hutool.json.JSONUtil;
 import com.alex.api.user.vo.user.OnlineAdmin;

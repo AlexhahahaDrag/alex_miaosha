@@ -130,6 +130,6 @@ public class TUserController {
             @ApiImplicitParam(value = "token", name = "token")}
     )
     public Result<Boolean> authToken(@RequestParam(value = "token") String token) {
-        return Result.success(true) ;
+        return Result.success(tUserService.authToken(token)) ;
     }
 }

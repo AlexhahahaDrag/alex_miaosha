@@ -81,3 +81,8 @@ logging:
   config: classpath:logback-spring.xml
   level:
     org.springframework.cloud.gateway: debug
+
+gateway:
+  audience:
+    tokenHeader: Authorization
+    whiteList: /am-user/api/v1/user/login,/swagger-resources/**,/doc.html,/**/v3/api-docs/**

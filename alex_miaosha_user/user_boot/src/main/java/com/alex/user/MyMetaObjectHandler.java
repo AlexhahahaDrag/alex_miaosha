@@ -1,6 +1,6 @@
-package com.alex.api.user.handler;
+package com.alex.user;
 
-import com.alex.api.user.utils.user.UserUtils;
+import com.alex.user.user.UserUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

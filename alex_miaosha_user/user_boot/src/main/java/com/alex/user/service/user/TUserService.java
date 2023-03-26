@@ -39,4 +39,12 @@ public interface TUserService extends IService<TUser> {
     Result<Boolean> logout();
 
     void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception;
+
+    /**
+     * @param token
+     * @description: 校验token
+     * @author:      alex
+     * @return:      java.lang.Boolean
+    */
+    Boolean authToken(String token);
 }

@@ -1,6 +1,6 @@
-package com.alex.api.user.utils.user;
+package com.alex.user.user;
 
-import com.alex.api.user.security.SecurityUser;
+import com.alex.user.SecurityUser;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.UserKey;

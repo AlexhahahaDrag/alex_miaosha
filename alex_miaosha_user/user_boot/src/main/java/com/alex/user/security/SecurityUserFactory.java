@@ -1,5 +1,6 @@
-package com.alex.api.user.security;
+package com.alex.user.security;
 
+import com.alex.user.SecurityUser;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.common.enums.EStatus;
 import org.springframework.security.core.GrantedAuthority;
