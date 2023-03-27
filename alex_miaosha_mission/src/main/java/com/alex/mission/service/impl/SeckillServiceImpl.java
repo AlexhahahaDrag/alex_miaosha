@@ -1,7 +1,6 @@
 package com.alex.mission.service.impl;
 
 import cn.hutool.core.lang.UUID;
-import com.alex.api.user.utils.user.UserUtils;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
@@ -55,8 +54,6 @@ public class SeckillServiceImpl implements SeckillService {
 
     private final LuaUtils redisLua;
 
-    private final UserUtils userUtils;
-
     /**
      * @description: 初始化库存数量
      * @author:      majf
@@ -87,7 +84,7 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     @Transactional
     public Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request) {
-        Long userId = userUtils.getUserId(request);
+        Long userId = 0l;
         // TODO: 2022/8/30 验证重复秒杀 
         //验证path
 //        checkPath(goodsId, path, userId);
@@ -118,7 +115,7 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public Result<Long> seckillResult(Long goodsId, HttpServletRequest request) {
-        Long userId = userUtils.getUserId(request);
+        Long userId = 0l;
         //秒杀结果： orderId：成功， 0：排队中， -1：秒杀失败
         long result = 0;
         //查询订单数据
@@ -146,7 +143,7 @@ public class SeckillServiceImpl implements SeckillService {
     */
     @Override
     public Result<String> getSeckillPath(Long goodsId, HttpServletRequest request) {
-        Long userId = userUtils.getUserId(request);
+        Long userId = 0l;
         return Result.success(ResultEnum.SUCCESS.getValue(), createSeckillPath(userId, goodsId));
     }
 

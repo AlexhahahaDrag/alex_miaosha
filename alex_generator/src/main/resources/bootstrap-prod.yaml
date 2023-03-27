@@ -20,14 +20,11 @@ spring:
           - data-id: ${nacos.admin}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
-          - data-id: ${nacos.audience}.${nacos.file-extension}
-            group: ${nacos.group}
-            refresh: true
 
 nacos:
   url: nacos:8848
-  group: alex-miaosha-prod
-  namaspace: 439dbcdc-b721-4afd-abee-08184739eb75
+  group: alex-miaosha
+  namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
   username: nacos
   password: nacos
   file-extension: yaml
@@ -35,4 +32,3 @@ nacos:
   admin: springbootadmin
   nacos: nacos-service
   redis: redis
-  audience: audience

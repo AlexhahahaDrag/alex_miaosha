@@ -3,7 +3,7 @@ package com.alex.oss.controller.fileInfo;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.oss.service.fileInfo.FileInfoService;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;

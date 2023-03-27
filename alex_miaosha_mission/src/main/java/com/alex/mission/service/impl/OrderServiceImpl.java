@@ -1,9 +1,7 @@
 package com.alex.mission.service.impl;
 
-import com.alex.api.user.utils.user.UserUtils;
 import com.alex.base.common.Result;
 import com.alex.common.pojo.dto.OrderDTO;
-import com.alex.common.utils.redis.RedisUtils;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.OrderManager;
 import com.alex.mission.mapper.OrderMapper;
@@ -31,16 +29,11 @@ public class OrderServiceImpl implements OrderService {
 
     private final GoodsManager goodsManager;
 
-    private final RedisUtils redisUtils;
-
     private final OrderMapper orderMapper;
-
-    private final UserUtils userUtils;
 
     @Override
     public Result<List<OrderDetailVo>> getOrderList(HttpServletRequest request) {
-        Long userId = userUtils.getUserId(request);
-        return getListResult(userId);
+        return null;
     }
 
     @Override

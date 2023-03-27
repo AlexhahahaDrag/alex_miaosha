@@ -6,7 +6,7 @@ import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.CommonKey;
 import com.alex.utils.IpUtils;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class AvoidRepeatableCommitAspect {
      * @author:       alex
      * @return:       java.lang.Object
      */
-    @Around("@annotation(com.alex.utils.annotations.AvoidRepeatableCommit)")
+    @Around("@annotation(com.alex.common.annotations.AvoidRepeatableCommit)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         HttpServletRequest request = RequestHolder.getRequest();
         String ip = IpUtils.getIpAddr(request);

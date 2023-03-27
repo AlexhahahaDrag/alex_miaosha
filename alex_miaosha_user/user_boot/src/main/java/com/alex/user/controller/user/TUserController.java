@@ -7,7 +7,7 @@ import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.service.user.TUserService;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;

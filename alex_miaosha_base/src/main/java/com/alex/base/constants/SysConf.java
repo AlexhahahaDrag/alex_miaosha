@@ -30,7 +30,5 @@ public class SysConf {
 
     public static final String BROWSER = "BROWSER";
 
-    public static final String LOCATION = "LOCATION";
-
     public static final String IP = "ip";
 }

@@ -98,7 +98,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/finance
         - docker build  -t alex_miaosha_finance:latest .
         - docker rm -f finance
-        - docker run -p 30008:30008 --network=alex_net --memory=512m --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
+        - docker run -p 30008:30008 --network=alex_net --memory=1024m --name=finance -v /usr/local/soft/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
 
   - name: ssh-user
     pull: if-not-exists
