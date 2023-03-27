@@ -19,7 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.alex.oss", "com.alex.common", "com.alex.api.user"})
+@ComponentScan(basePackages = {"com.alex.oss", "com.alex.common", "com.alex.utils", "com.alex.api.user"})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class OssApplication {

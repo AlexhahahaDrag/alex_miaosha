@@ -1,4 +1,4 @@
-package com.alex.user;
+package com.alex.user.utils.security;
 
 
 import org.springframework.security.core.GrantedAuthority;

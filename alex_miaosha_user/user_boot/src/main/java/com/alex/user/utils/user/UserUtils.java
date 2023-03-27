@@ -1,10 +1,10 @@
-package com.alex.user.user;
+package com.alex.user.utils.user;
 
-import com.alex.user.SecurityUser;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
+import com.alex.user.utils.security.SecurityUser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

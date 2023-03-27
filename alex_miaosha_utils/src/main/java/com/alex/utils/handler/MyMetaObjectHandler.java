@@ -1,6 +1,5 @@
-package com.alex.user;
+package com.alex.utils.handler;
 
-import com.alex.user.user.UserUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +7,6 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  *description:  设置新增和修改的默认时间
@@ -21,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
-    private final UserUtils userUtils;
+//    private final UserUtils userUtils;
 
     @Override
     public void insertFill(MetaObject metaObject) {
@@ -39,15 +37,15 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             metaObject.setValue("operateTime", null);
             this.strictInsertFill(metaObject, "operateTime", LocalDateTime.class, now);
         }
-        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
-        if (id != null) {
-            if (metaObject.hasSetter("creator")) {
-                this.strictInsertFill(metaObject, "creator", Long.class, id);
-            }
-            if (metaObject.hasSetter("operator")) {
-                this.strictInsertFill(metaObject, "operator", Long.class, id);
-            }
-        }
+//        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
+//        if (id != null) {
+//            if (metaObject.hasSetter("creator")) {
+//                this.strictInsertFill(metaObject, "creator", Long.class, id);
+//            }
+//            if (metaObject.hasSetter("operator")) {
+//                this.strictInsertFill(metaObject, "operator", Long.class, id);
+//            }
+//        }
     }
 
     @Override
@@ -61,16 +59,16 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             metaObject.setValue("updateTime", null);
             this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class,  now);
         }
-        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
-        if (id != null) {
-            if (metaObject.hasSetter("updater")) {
-                metaObject.setValue("updater", null);
-                this.strictUpdateFill(metaObject, "updater", Long.class, id);
-            }
-            if (metaObject.hasSetter("operator")) {
-                metaObject.setValue("operator", null);
-                this.strictUpdateFill(metaObject, "operator", Long.class, id);
-            }
-        }
+//        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
+//        if (id != null) {
+//            if (metaObject.hasSetter("updater")) {
+//                metaObject.setValue("updater", null);
+//                this.strictUpdateFill(metaObject, "updater", Long.class, id);
+//            }
+//            if (metaObject.hasSetter("operator")) {
+//                metaObject.setValue("operator", null);
+//                this.strictUpdateFill(metaObject, "operator", Long.class, id);
+//            }
+//        }
     }
 }

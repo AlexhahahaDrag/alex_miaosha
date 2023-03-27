@@ -48,6 +48,11 @@
       <groupId>com.alex</groupId>
       <artifactId>order_api</artifactId>
     </dependency>
+
+      <dependency>
+          <groupId>com.alex</groupId>
+          <artifactId>user_api</artifactId>
+      </dependency>
   </dependencies>
 
 <build>

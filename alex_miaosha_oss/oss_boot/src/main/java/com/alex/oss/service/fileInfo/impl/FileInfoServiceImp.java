@@ -104,7 +104,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+    public List<FileInfoVo>     getFileInfo(List<Long> fileIdList) {
         if (fileIdList == null || fileIdList.isEmpty()) {
             return Lists.newArrayList();
         }

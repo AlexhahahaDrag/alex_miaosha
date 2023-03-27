@@ -4,9 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
-import com.alex.user.security.SecurityUserFactory;
-import com.alex.user.utils.jwt.Audience;
-import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.api.user.vo.user.OnlineAdmin;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
@@ -24,7 +21,10 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
+import com.alex.user.utils.security.SecurityUserFactory;
 import com.alex.user.service.user.TUserService;
+import com.alex.user.utils.jwt.Audience;
+import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.utils.IpUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -114,7 +113,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Override
     public TUserVo queryTUser(String id) {
-        return tUserMapper.queryTUser(id);
+        TUserVo user = tUserMapper.queryTUser(id);
+        if (user.getAvatar() != null) {
+            user.setAvatarUrl(getFileUrl(user.getAvatar()));
+        }
+        return user;
     }
 
     @Override
@@ -434,6 +437,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
         try {
             Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(fileId));
+            log.info("");
             return Optional.ofNullable(fileInfo).map(item -> item.getData().get(0).getPreUrl()).orElse("");
         } catch (Exception e) {
             log.error("获取头像文件错误：{}", e.getMessage());
