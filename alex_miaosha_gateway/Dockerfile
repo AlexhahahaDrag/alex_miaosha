@@ -9,7 +9,7 @@ ARG JAR_FILE=./*.jar
 
 COPY ${JAR_FILE} alex_miaosha_gateway-1.0-SNAPSHOT.jar
 
-ENTRYPOINT ["java", "-Xmx128m", "-jar", "alex_miaosha_gateway-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "alex_miaosha_gateway-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
 
 EXPOSE 30001

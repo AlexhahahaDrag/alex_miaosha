@@ -77,7 +77,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - cd /usr/local/soft/drone/alex_miaosha/gateway
         - docker build  -t alex_miaosha_gateway:latest .
         - docker rm -f gateway
-        - docker run -p 30001:30001 --network=alex_net --memory=128m --name=gateway -v /usr/local/soft/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
+        - docker run -p 30001:30001 --network=alex_net --memory=512m --name=gateway -v /usr/local/soft/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
 
   - name: ssh-finance
     pull: if-not-exists
