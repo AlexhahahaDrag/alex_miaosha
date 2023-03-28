@@ -9,7 +9,7 @@ ARG JAR_FILE=./*.jar
 
 COPY ${JAR_FILE} user_boot-1.0-SNAPSHOT.jar
 
-ENTRYPOINT ["java", "-Xmx512m", "-jar", "user_boot-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-Xmx128m", "-jar", "user_boot-1.0-SNAPSHOT.jar"]
 CMD ["--spring.profiles.active=prod"]
 
 EXPOSE 30006

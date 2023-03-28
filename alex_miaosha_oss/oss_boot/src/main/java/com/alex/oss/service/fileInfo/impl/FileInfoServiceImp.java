@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -116,7 +113,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         Map<Long, String> map = new HashMap<>();
         fileInfos.forEach(item -> {
             try {
-                map.put(item.getId(), minioFileService.preview(item.getBucketName(), item.getUrl()));
+                String url = minioFileService.preview(item.getBucketName(), item.getUrl());
+                map.put(item.getId(), Optional.ofNullable(url).map(ii -> ii.replace("http://minio", "http://123.249.83.33")).orElse(""));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InvalidResponseException e) {
