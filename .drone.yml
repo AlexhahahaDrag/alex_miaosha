@@ -18,6 +18,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - mkdir -p /usr/local/soft/drone/alex_miaosha/web
       - mkdir -p /usr/local/soft/drone/alex_miaosha/generator
       - mkdir -p /usr/local/soft/drone/alex_miaosha/oss
+      - mkdir -p /usr/local/soft/drone/alex_miaosha/product
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/finance_boot/target/finance_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/finance/
@@ -27,6 +28,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_product/product_boot/target/product_boot-1.0-SNAPSHOT.jar  /usr/local/soft/drone/alex_miaosha/product/
       # 将Dockerfile拷贝到挂载目录
       - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/drone/alex_miaosha/monitor/
       - cp /drone/src/alex_miaosha_finance/finance_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/finance/
@@ -36,6 +38,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_product/product_boot/Dockerfile /usr/local/soft/drone/alex_miaosha/product/
 
   - name: ssh-monitor
     pull: if-not-exists
@@ -141,6 +144,27 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         - docker build  -t alex_miaosha_oss:latest .
         - docker rm -f oss
         - docker run -p 30009:30009 --network=alex_net --memory=512m --cpus=0.5 --name=oss -v /usr/local/soft/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
+
+  - name: ssh-product
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/drone/alex_miaosha/product
+        - docker build  -t alex_miaosha_prodcut:latest .
+        - docker rm -f product
+        - docker run -p 30007:30007 --network=alex_net --memory=512m --cpus=0.5 --name=product -v /usr/local/soft/drone/alex_miaosha/product/logs:/logs/alex-product -d alex_miaosha_product:latest
 
 #  - name: ssh-mission
 #    pull: if-not-exists
