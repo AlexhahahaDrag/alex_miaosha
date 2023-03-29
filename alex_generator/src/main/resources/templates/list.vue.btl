@@ -5,8 +5,10 @@
         <a-form :model="searchInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
 <% var pre = 0; %>
 <% var num = 0; %>
+ <% var id = "id";
 <% for(field in table.fields){
        if(field.keyFlag) {
+            id = field.propertyName;
             continue;
        }
        if(num % 4 == 0){ %>
@@ -44,13 +46,13 @@
       </a-space>
     </div>
     <div class="content">
-      <a-table :dataSource="dataSource" :columns="columns" :loading="loading" :row-key="(record) => record.id"
+      <a-table :dataSource="dataSource" :columns="columns" :loading="loading" :row-key="(record) => record.${id}"
         :pagination="pagination" @change="handleTableChange" :scroll="{ x: 1100 }" :row-selection="rowSelection">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'operation'">
             <a-space>
-              <a-button type="primary" size="small" @click="edit${entity}('update', record.id)">编辑</a-button>
-              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.id)"
+              <a-button type="primary" size="small" @click="edit${entity}('update', record.${id})">编辑</a-button>
+              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.${id})"
                 @cancel="cancel">
                 <a-button type="primary" size="small" danger>删除</a-button>
               </a-popconfirm>

@@ -140,8 +140,8 @@ const onFinishFailed = (errorInfo: any) => {
 
 function init() {
   if (props.modelInfo) {
-    if (props.modelInfo.id) {
-      get${entity}Detail(props.modelInfo.id)
+    if (props.modelInfo.${id}) {
+      get${entity}Detail(props.modelInfo.${id})
         .then((res) => {
           if (res.code == "200") {
             formState.value = res.data;
