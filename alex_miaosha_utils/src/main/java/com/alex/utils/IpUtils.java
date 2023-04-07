@@ -301,7 +301,7 @@ public class IpUtils {
     }
 
     public static void main(String args[]) throws Exception {
-        String ip = "116.2.203.240";
+        String ip = "112.39.99.209";
         String cityIpString = getCityInfo(ip);
         System.out.println(cityIpString);
     }

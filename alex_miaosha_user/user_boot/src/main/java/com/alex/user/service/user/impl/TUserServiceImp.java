@@ -242,6 +242,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         try {
             map = IpUtils.getOsAndBrowserInfo(request);
             location = IpUtils.getCityInfo(ip);
+            log.info("ip:{}", ip);
+            log.info("地址：{}", location);
         } catch (Exception e) {
             e.printStackTrace();
         }
