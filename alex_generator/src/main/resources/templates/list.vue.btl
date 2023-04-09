@@ -5,7 +5,7 @@
         <a-form :model="searchInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
 <% var pre = 0; %>
 <% var num = 0; %>
- <% var id = "id";
+ <% var id = "id"; %>
 <% for(field in table.fields){
        if(field.keyFlag) {
             id = field.propertyName;

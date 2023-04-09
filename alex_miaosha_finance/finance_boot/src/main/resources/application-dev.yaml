@@ -55,3 +55,22 @@ mybatis-plus:
 logging:
   level:
     com.alex.finance.mapper: debug
+
+accountNotice:
+  difDay: 2
+
+wechat:
+  #测试号信息中的appID
+  appId: wxec93a0ddb72c8cff
+  #测试号信息中的appsecret
+  secret: 1240434ae0be6dc4b0ba979d7c1f9b7a
+  #用户列表中的微信号id
+  userId:
+  #模板消息接口中模板ID
+  templateId:
+  #在一起的时间
+  loveDate: 2022-05-20
+  #生日
+  birthday: 1994-02-10
+  #彩虹屁平台apiKey
+  rainbowKey:

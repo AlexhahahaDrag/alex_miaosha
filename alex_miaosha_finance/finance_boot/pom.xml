@@ -1,64 +1,74 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <parent>
-    <artifactId>alex_miaosha_finance</artifactId>
-    <groupId>com.alex</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>finance_boot</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <dependencies>
-      <dependency>
-          <groupId>com.alex</groupId>
-          <artifactId>alex_miaosha_utils</artifactId>
-      </dependency>
-
-      <!--druid-->
-      <dependency>
-          <groupId>com.alibaba</groupId>
-          <artifactId>druid</artifactId>
-      </dependency>
-
-      <!--mysql-connector-java-->
-      <dependency>
-          <groupId>mysql</groupId>
-          <artifactId>mysql-connector-java</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>de.codecentric</groupId>
-          <artifactId>spring-boot-admin-starter-client</artifactId>
-      </dependency>
-
-      <!--  guava  -->
-      <dependency>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>org.yaml</groupId>
-          <artifactId>snakeyaml</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>com.alex</groupId>
-          <artifactId>user_api</artifactId>
-      </dependency>
-
-      <dependency>
+    <parent>
+        <artifactId>alex_miaosha_finance</artifactId>
         <groupId>com.alex</groupId>
-        <artifactId>finance_api</artifactId>
-      </dependency>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>finance_boot</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>alex_miaosha_utils</artifactId>
+        </dependency>
+
+        <!--druid-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+
+        <!--mysql-connector-java-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+        <!--  guava  -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>user_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>finance_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

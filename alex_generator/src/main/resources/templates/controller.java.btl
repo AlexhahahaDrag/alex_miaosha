@@ -3,7 +3,7 @@ package ${package.Controller};
 import ${package.Vo}.${table.voName};
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
-import com.alex.utils.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

@@ -1,12 +1,18 @@
 import { ref } from "vue";
-
+<% for(field in table.fields){
+ if(field.propertyType == 'BigDecimal'){ %>
+import { Dayjs } from 'dayjs';
+<%  break;}
+ } %>
 export interface SearchInfo {
 <% for(field in table.fields){
     if(field.keyFlag) {
         continue;
     }
-    if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
+    if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
   ${field.propertyName}?: number;
+  <% } else if (field.propertyType == 'LocalDateTime') { %>
+    ${field.propertyName}?: Dayjs | string;
 <% } else { %>
   ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
 <% } %>
@@ -74,11 +80,13 @@ export const columns = [
 
 export interface DataItem {
 <% for(field in table.fields){ %>
-<% if(field.propertyType == 'Long' || field.propertyType == 'Integer'){ %>
+    <% if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
   ${field.propertyName}: number;
-<% } else { %>
+    <% } else if (field.propertyType == 'LocalDateTime') { %>
+  ${field.propertyName}?: Dayjs | string;
+    <% } else { %>
   ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-<% } %>
+    <% } %>
 <% } %>
 }
 
