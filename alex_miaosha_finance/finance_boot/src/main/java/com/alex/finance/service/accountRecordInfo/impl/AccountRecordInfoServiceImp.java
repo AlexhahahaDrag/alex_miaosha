@@ -6,15 +6,18 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.accountRecordInfo.AccountRecordInfo;
 import com.alex.finance.mapper.accountRecordInfo.AccountRecordInfoMapper;
 import com.alex.finance.service.accountRecordInfo.AccountRecordInfoService;
-import com.alex.finance.utils.MemoryDayUtil;
+import com.alex.finance.service.weixin.WeiXinService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -32,7 +35,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     @Value("${accountNotice.difDay}")
     private Integer difDay;
 
-
+    private final WeiXinService weiXinService;
 
     @Override
     public Page<AccountRecordInfoVo> getPage(Long pageNum, Long pageSize, AccountRecordInfoVo accountRecordInfoVo) {
@@ -72,15 +75,19 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     }
 
     @Override
-    public List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif) {
+    public List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException {
         if (dif == null) {
             dif = difDay;
         }
         List<AccountRecordInfoVo> list = accountRecordInfoMapper.queryRemindRecordInfo(dif);
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
         //发送微信消息提醒
-//        String rainbow = RainbowUtil.getRainbow();
-//        Weather weather = WeatherUtil.getWeather();
-        long l = MemoryDayUtil.calculationBirthday("1991-11.25");
+        Map<String, Long> longMap = list.stream().collect(Collectors.groupingBy(AccountRecordInfoVo::getAccount, Collectors.counting()));
+        for(Map.Entry<String, Long> entry : longMap.entrySet()) {
+            weiXinService.sentMessage(entry.getKey(), entry.getValue());
+        }
         return list;
     }
 }

@@ -61,13 +61,14 @@ accountNotice:
 
 wechat:
   #测试号信息中的appID
-  appId: wxec93a0ddb72c8cff
+  appId:
   #测试号信息中的appsecret
-  secret: 1240434ae0be6dc4b0ba979d7c1f9b7a
+  secret:
   #用户列表中的微信号id
   userId:
+  url: https://api.weixin.qq.com
   #模板消息接口中模板ID
-  templateId:
+  accountTimeOutTemplateId:
   #在一起的时间
   loveDate: 2022-05-20
   #生日

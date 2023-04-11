@@ -4,6 +4,7 @@ import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.entity.accountRecordInfo.AccountRecordInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.chanjar.weixin.common.error.WxErrorException;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface AccountRecordInfoService extends IService<AccountRecordInfo> {
 
     Boolean deleteAccountRecordInfo(String ids);
 
-    List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif);
+    List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException;
 }

@@ -9,7 +9,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "wechat")
 public class WechatAccountConfig {
 
+    private String url;
+
     private String appId;
 
     private String secret;
+
+    private String accountTimeOutTemplateId;
+
+    private String userId;
 }
