@@ -14,7 +14,7 @@ public class AccountRecordNoticeJob {
 
     private final AccountRecordInfoService accountRecordInfoService;
 
-    @Scheduled(cron = "0 0 9/18 * * ?")
+    @Scheduled(cron = "0 30 8/18 * * ?")
     public void accountRecordNotice() throws WxErrorException {
         log.info("=================开始调用快过期账号查询=================");
         accountRecordInfoService.queryRemindRecordInfo(null);

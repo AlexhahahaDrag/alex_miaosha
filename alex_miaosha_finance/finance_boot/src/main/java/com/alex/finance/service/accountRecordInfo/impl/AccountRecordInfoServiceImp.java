@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -41,7 +39,8 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     @Override
     public Page<AccountRecordInfoVo> getPage(Long pageNum, Long pageSize, AccountRecordInfoVo accountRecordInfoVo) {
         Page<AccountRecordInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
-        return accountRecordInfoMapper.getPage(page, accountRecordInfoVo);
+        Page<AccountRecordInfoVo> page1 = accountRecordInfoMapper.getPage(page, accountRecordInfoVo);
+        return page1;
     }
 
     @Override

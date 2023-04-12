@@ -20,9 +20,12 @@
 
     <select id="getPage" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo">
         select <include refid="Base_Column_List"></include>,
-        IF(account_record_info.avli_date &lt; now(), 0,
-        IF( account_record_info.avli_date &lt; DATE_ADD( now(), INTERVAL 2 DAY ), 1, 2 )) as status
-            from account_record_info
+            IF(account_record_info.avli_date &lt; now(), 0,
+            IF( account_record_info.avli_date &lt; DATE_ADD( now(), INTERVAL 2 DAY ), 1, 2 )) as status,
+            dict_info.type_name as account_name
+        from account_record_info
+        left join dict_info
+        on account_record_info.account = dict_info.type_code and dict_info.belong_to = 'account_type'
         <where>
             <include refid="queryInfo"></include>
         </where>

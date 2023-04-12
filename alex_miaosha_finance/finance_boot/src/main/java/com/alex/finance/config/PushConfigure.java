@@ -17,6 +17,7 @@ public class PushConfigure {
 
     @Autowired
     private WechatAccountConfig accountConfig;
+
     @Bean
     public WxMpService wxMpService() {
         WxMpService wxMpService = new WxMpServiceImpl();

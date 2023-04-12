@@ -1,17 +1,15 @@
 package com.alex.api.finance.vo.accountRecordInfo;
 
-import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description:  Vo
@@ -40,6 +38,9 @@ public class AccountRecordInfoVo {
 
     @ApiModelProperty(value = "账号")
     private String account;
+
+    @ApiModelProperty(value = "账号名称")
+    private String accountName;
 
     @ApiModelProperty(value = "是否发送提醒")
     private Integer isSend;
