@@ -1,6 +1,7 @@
 package com.alex.finance.service.accountRecordInfo.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.accountRecordInfo.AccountRecordInfo;
@@ -75,18 +76,17 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     }
 
     @Override
-    public List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException {
+    public List<AccountCountInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException {
         if (dif == null) {
             dif = difDay;
         }
-        List<AccountRecordInfoVo> list = accountRecordInfoMapper.queryRemindRecordInfo(dif);
+        List<AccountCountInfoVo> list = accountRecordInfoMapper.queryRemindRecordInfo(dif);
         if (list == null || list.isEmpty()) {
             return null;
         }
         //发送微信消息提醒
-        Map<String, Long> longMap = list.stream().collect(Collectors.groupingBy(AccountRecordInfoVo::getAccount, Collectors.counting()));
-        for(Map.Entry<String, Long> entry : longMap.entrySet()) {
-            weiXinService.sentMessage(entry.getKey(), entry.getValue());
+        for(AccountCountInfoVo cur : list) {
+            weiXinService.sentMessage(cur.getAccountName(), cur.getNum());
         }
         return list;
     }

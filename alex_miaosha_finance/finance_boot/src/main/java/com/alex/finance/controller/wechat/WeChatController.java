@@ -1,4 +1,4 @@
-package com.alex.finance.controller;
+package com.alex.finance.controller.wechat;
 
 
 import lombok.RequiredArgsConstructor;

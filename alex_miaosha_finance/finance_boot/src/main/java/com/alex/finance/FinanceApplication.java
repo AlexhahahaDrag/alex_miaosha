@@ -12,6 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * description:
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.FilterType;
                 value = {SeckillInterceptor.class})})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
+@EnableScheduling
 public class FinanceApplication {
 
     public static void main(String[] args) {
