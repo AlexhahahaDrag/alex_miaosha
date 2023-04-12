@@ -1,5 +1,6 @@
 package com.alex.finance.controller.accountRecordInfo;
 
+import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
@@ -84,7 +85,7 @@ public class AccountRecordInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "间距日期", name = "difDays")}
     )
-    public Result<List<AccountRecordInfoVo>> queryRemindRecordInfo(@RequestParam(value = "difDays", required = false) Integer difDays) throws WxErrorException {
+    public Result<List<AccountCountInfoVo>> queryRemindRecordInfo(@RequestParam(value = "difDays", required = false) Integer difDays) throws WxErrorException {
         return Result.success(accountRecordInfoService.queryRemindRecordInfo(difDays));
     }
 }

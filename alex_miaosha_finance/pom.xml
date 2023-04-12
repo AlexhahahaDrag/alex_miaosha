@@ -29,6 +29,6 @@
         <dependency>
           <groupId>cn.afterturn</groupId>
           <artifactId>easypoi-spring-boot-starter</artifactId>
-      </dependency>
+        </dependency>
     </dependencies>
 </project>

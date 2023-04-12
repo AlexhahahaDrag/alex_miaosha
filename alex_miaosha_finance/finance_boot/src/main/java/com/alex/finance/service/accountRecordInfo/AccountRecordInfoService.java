@@ -1,5 +1,6 @@
 package com.alex.finance.service.accountRecordInfo;
 
+import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.entity.accountRecordInfo.AccountRecordInfo;
@@ -27,5 +28,5 @@ public interface AccountRecordInfoService extends IService<AccountRecordInfo> {
 
     Boolean deleteAccountRecordInfo(String ids);
 
-    List<AccountRecordInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException;
+    List<AccountCountInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException;
 }

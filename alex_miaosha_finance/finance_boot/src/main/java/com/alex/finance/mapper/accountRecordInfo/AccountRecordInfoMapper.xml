@@ -36,12 +36,17 @@
         </where>
     </select>
 
-    <select id="queryRemindRecordInfo" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo">
-        select <include refid="Base_Column_List"></include> from account_record_info
-        <where>
-            avli_date >= now()
-            AND avli_date &lt; DATE_ADD( now(), INTERVAL #{dif} DAY )
-        </where>
+    <select id="queryRemindRecordInfo" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo">
+        select
+            account_record_info.account,
+            dict_info.type_name as account_name
+            count(account_record_info.account) as num
+        from account_record_info
+        left join dict_info
+        on account_record_info.account = dict_info.type_code and dict_info.belong_to = 'account_type'
+        where avli_date >= now()
+          AND avli_date &lt; DATE_ADD( now(), INTERVAL #{dif} DAY )
+        group by account_record_info.account, dict_info.type_name
     </select>
 
      <sql id="queryInfo">

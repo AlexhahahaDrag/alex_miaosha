@@ -23,8 +23,6 @@ public class WeiXinServiceImpl implements WeiXinService {
     private final WxMpService wxMpService;
 
     public String getToken() throws WxErrorException {
-        // 配置
-        // 调用方法
         return wxMpService.getAccessToken();
     }
 
