@@ -40,6 +40,7 @@ public class WeiXinServiceImpl implements WeiXinService {
                 .url(wechatAccountConfig.getUrl() + "/wxaapi/newtmpl/getpubtemplatetitles?access_token=" + result)
                 .data(dataList)
                 .build();
+        // TODO: 2023/4/12 添加查询用户列表 
         String msgId = wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
         WxMpTemplateMessage templateMessage1 = WxMpTemplateMessage.builder()
                 .templateId(wechatAccountConfig.getAccountTimeOutTemplateId())

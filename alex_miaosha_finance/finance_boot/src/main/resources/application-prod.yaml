@@ -66,6 +66,3 @@ mybatis-plus:
 logging:
   level:
     com.alex.finance.mapper: debug
-
-accountNotice:
-  difDay: 2
