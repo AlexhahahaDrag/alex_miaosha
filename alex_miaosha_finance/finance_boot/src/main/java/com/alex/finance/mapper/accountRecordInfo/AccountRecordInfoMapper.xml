@@ -42,7 +42,7 @@
     <select id="queryRemindRecordInfo" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo">
         select
             account_record_info.account,
-            dict_info.type_name as account_name
+            dict_info.type_name as account_name,
             count(account_record_info.account) as num
         from account_record_info
         left join dict_info
