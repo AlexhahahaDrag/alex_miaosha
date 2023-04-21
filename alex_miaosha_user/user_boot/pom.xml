@@ -110,8 +110,6 @@
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
                     <include>**/*.xlsx</include>
-                    <!--todo ip2region打包报错的问题-->
-<!--                    <include>city/ip2region.xdb</include>-->
                 </includes>
                 <filtering>true</filtering>
             </resource>

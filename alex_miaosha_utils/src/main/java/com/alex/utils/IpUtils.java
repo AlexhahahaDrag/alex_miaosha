@@ -1,5 +1,6 @@
 package com.alex.utils;
 
+import cn.hutool.core.io.resource.ClassPathResource;
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -32,14 +33,13 @@ public class IpUtils {
     public static Searcher searcher = null;
 
     static {
-        dbPath = createFtlFileByFtlArray();
+        dbPath = new ClassPathResource("city/ip2region.xdb").getFile().getPath();
         try {
             searcher = Searcher.newWithFileOnly(dbPath);
         } catch (IOException e) {
             System.out.printf("failed to create searcher with `%s`: %s\n", dbPath, e);
         }
     }
-
 
     /**
      * @param request
