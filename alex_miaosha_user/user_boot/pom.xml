@@ -110,7 +110,6 @@
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
                     <include>**/*.xlsx</include>
-                    <include>**/*.xdb</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
