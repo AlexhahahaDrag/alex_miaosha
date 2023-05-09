@@ -1,13 +1,12 @@
 package com.alex.utils;
 
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.ClassLoaderUtil;
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.lionsoul.ip2region.xdb.Searcher;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -18,11 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *description:  ip工具类
+ * description:  ip工具类
  * 因为使用静态块，如果初始化的时候报错，系统就找不到这个类，后续就会一直报java.lang.NoClassDefFoundError: Could not initialize class com.alex.blog.utils.utils.IpUtils错
- *author:       alex
- *createDate:   2021/7/17 21:02
- *version:      1.0.0
+ * author:       alex
+ * createDate:   2021/7/17 21:02
+ * version:      1.0.0
  */
 @Slf4j
 public class IpUtils {
