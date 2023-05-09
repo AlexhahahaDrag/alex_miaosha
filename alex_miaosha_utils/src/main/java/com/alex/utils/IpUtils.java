@@ -1,6 +1,5 @@
 package com.alex.utils;
 
-import cn.hutool.core.io.resource.ClassPathResource;
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -28,24 +27,24 @@ import java.util.regex.Pattern;
 @Slf4j
 public class IpUtils {
 
-    private static String dbPath;
+    private static String dbPath = "city/ip2region.xdb";
 
-    public static Searcher searcher = null;
+    public static Searcher searcher;
 
     static {
-        dbPath = new ClassPathResource("city/ip2region.xdb").getFile().getPath();
-        try {
-            searcher = Searcher.newWithFileOnly(dbPath);
+        ClassLoader classLoader = ClassLoaderUtil.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(dbPath)) {
+            searcher = Searcher.newWithBuffer(IoUtil.readBytes(inputStream));
         } catch (IOException e) {
-            System.out.printf("failed to create searcher with `%s`: %s\n", dbPath, e);
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * @param request
-     * @description:  根据请求获取ip地址
-     * @author:       alex
-     * @return:       java.lang.String
+     * @description: 根据请求获取ip地址
+     * @author: alex
+     * @return: java.lang.String
      */
     public static String getIpAddr(HttpServletRequest request) {
         if (request == null) {
@@ -69,7 +68,6 @@ public class IpUtils {
                     log.error("查不到本机ip,", e);
                     e.printStackTrace();
                 }
-
             }
         }
         //对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照
@@ -83,22 +81,22 @@ public class IpUtils {
 
     /**
      * @param request
-     * @description:  获取真实ip
-     * @author:       alex
-     * @return:       java.lang.String
+     * @description: 获取真实ip
+     * @author: alex
+     * @return: java.lang.String
      */
     public static String getRealIp(HttpServletRequest request) {
         String ip;
         return checkNotIp(ip = request.getHeader("x-forwarded-for")) ?
                 (checkNotIp(ip = request.getHeader("Proxy-Client-IP")) ?
-                        (checkNotIp(ip = request.getHeader("WL-Proxy-Client-IP")) ? request.getRemoteAddr(): ip): ip) : ip;
+                        (checkNotIp(ip = request.getHeader("WL-Proxy-Client-IP")) ? request.getRemoteAddr() : ip) : ip) : ip;
     }
 
     /**
      * @param ip
-     * @description:  校验ip
-     * @author:       alex
-     * @return:       boolean
+     * @description: 校验ip
+     * @author: alex
+     * @return: boolean
      */
     private static boolean checkNotIp(String ip) {
         return ip == null || StringUtils.isEmpty(ip) ||
@@ -107,9 +105,9 @@ public class IpUtils {
 
     /**
      * @param request
-     * @description:  根据请求获取系统和浏览器信息
-     * @author:       alex
-     * @return:       java.util.Map<java.lang.String,java.lang.String>
+     * @description: 根据请求获取系统和浏览器信息
+     * @author: alex
+     * @return: java.util.Map<java.lang.String, java.lang.String>
      */
     public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("User-Agent");
@@ -128,7 +126,7 @@ public class IpUtils {
             os = "Android";
         } else if (user.contains("iphone")) {
             os = "IPhone";
-        } else  {
+        } else {
             os = "Unknown, More-Inof:" + userAgent;
         }
         //browser
@@ -194,9 +192,9 @@ public class IpUtils {
     /**
      * @param content
      * @param encodingString
-     * @description:  根据ip地址获取城市信息
-     * @author:       alex
-     * @return:       java.lang.String
+     * @description: 根据ip地址获取城市信息
+     * @author: alex
+     * @return: java.lang.String
      */
     public static String getAddresses(String content, String encodingString) throws Exception {
         String ip = content.substring(3);
@@ -207,58 +205,10 @@ public class IpUtils {
     }
 
     /**
-     * @description:  创建ip2region.db文件
-     * @author:       alex
-     * @return:       java.lang.String
-     */
-    public static String createFtlFileByFtlArray() {
-        String ftlPath = "city/";
-        return createFtlFile(ftlPath, "ip2region.xdb");
-    }
-
-    /**
-     * @param ftlPath
-     * @param ftlName
-     * @description:  创建ip2region文件
-     * @author:       alex
-     * @return:       java.lang.String
-     */
-    private static String createFtlFile(String ftlPath, String ftlName) {
-        InputStream certStream = null;
-        try {
-            //获取当前下项目所在的绝对路径
-            String proFilePath = System.getProperty("user.dir");
-            String newFilePath = proFilePath + File.separator + ftlPath;
-            newFilePath = newFilePath.replace("/", File.separator);
-            //检查对应目录下是否存在文件
-            File newFile = new File(newFilePath + ftlName);
-            if (newFile.isFile() && newFile.exists()) {
-                return newFile.getPath();
-            }
-            certStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(ftlPath + ftlName);
-            assert certStream != null;
-            byte[] certData = IOUtils.toByteArray(certStream);
-            FileUtils.writeByteArrayToFile(newFile, certData);
-            return newFilePath;
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        } finally {
-            try {
-                if (certStream != null) {
-                    certStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    /**
      * @param ip
-     * @description:  根据ip获取城市信息
-     * @author:       alex
-     * @return:       java.lang.String
+     * @description: 根据ip获取城市信息
+     * @author: alex
+     * @return: java.lang.String
      */
     public static String getCityInfo(String ip) throws Exception {
         if (StringUtils.isEmpty(dbPath)) {
@@ -273,10 +223,10 @@ public class IpUtils {
     }
 
     /**
-     * @description:  获取主机ip
-     * @author:       alex
-     * @return:       java.lang.String
-    */
+     * @description: 获取主机ip
+     * @author: alex
+     * @return: java.lang.String
+     */
     public static String getHostIp() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
@@ -287,10 +237,10 @@ public class IpUtils {
     }
 
     /**
-     * @description:  获取主机名称
-     * @author:       alex
-     * @return:       java.lang.String
-    */
+     * @description: 获取主机名称
+     * @author: alex
+     * @return: java.lang.String
+     */
     public static String getHostName() {
         try {
             return InetAddress.getLocalHost().getHostName();
