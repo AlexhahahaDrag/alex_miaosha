@@ -48,19 +48,20 @@
       <artifactId>product_api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.alex</groupId>
-      <artifactId>user_api</artifactId>
-    </dependency>
-      <dependency>
-          <groupId>com.alex</groupId>
-          <artifactId>oss_api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.jsoup</groupId>
-          <artifactId>jsoup</artifactId>
-      </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>user_api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>oss_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
       <plugins>
