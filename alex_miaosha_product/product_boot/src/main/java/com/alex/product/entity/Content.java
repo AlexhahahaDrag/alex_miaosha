@@ -26,4 +26,6 @@ public class Content {
     private String icons;
 
     private String productUrl;
+
+    private String source;
 }
