@@ -14,3 +14,12 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath*:com/alex/product/mapper/**/*Mapper.xml
+
+xxl:
+  job:
+    admin:
+      addresses: http://xxl-job-admin:8123/xxl-job-admin
+    executor:
+      appname: xxl-product-prod
+      logretentiondays: 30
+      port: 8007

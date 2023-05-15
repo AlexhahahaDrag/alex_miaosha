@@ -1,6 +1,6 @@
 package com.alex.product.enums;
 
-import lombok.Data;
+import java.util.Arrays;
 
 public enum SourceType {
     JD("jd", "京东"),
@@ -30,5 +30,10 @@ public enum SourceType {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public static SourceType getSourceTypeByName(String name) {
+        SourceType[] values = SourceType.values();
+        return Arrays.stream(values).filter(item -> item.getCode().equals(name)).findFirst().orElse(null);
     }
 }

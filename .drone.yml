@@ -162,7 +162,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
         from_secret: ssh_password
       script:
         - cd /usr/local/soft/drone/alex_miaosha/product
-        - docker build  -t alex_miaosha_prodcut:latest .
+        - docker build  -t alex_miaosha_product:latest .
         - docker rm -f product
         - docker run -p 30007:30007 --network=alex_net --memory=512m --cpus=0.5 --name=product -v /usr/local/soft/drone/alex_miaosha/product/logs:/logs/alex-product -d alex_miaosha_product:latest
 
