@@ -65,10 +65,10 @@
             <artifactId>fastjson</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>me.chanjar</groupId>
-            <artifactId>weixin-java-tools-spring-boot-starter</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>me.chanjar</groupId>-->
+<!--            <artifactId>weixin-java-tools-spring-boot-starter</artifactId>-->
+<!--        </dependency>-->
 
     </dependencies>
 
