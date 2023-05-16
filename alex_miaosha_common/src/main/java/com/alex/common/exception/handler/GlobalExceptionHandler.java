@@ -65,6 +65,14 @@ public class GlobalExceptionHandler {
         return Result.error("400", errorMsg);
     }
 
+    @ExceptionHandler(ProductException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<String> handle(ProductException e) {
+        e.printStackTrace();
+        return Result.error(e.getCode(), e.getMsg());
+    }
+
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(Exception ex) {

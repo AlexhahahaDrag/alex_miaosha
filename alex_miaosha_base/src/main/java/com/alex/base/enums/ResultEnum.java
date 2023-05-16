@@ -43,6 +43,8 @@ public enum ResultEnum implements BaseEnum {
     GOODS_UPDATE_ERROR("500301", "商品更新失败"),
     GOODS_NOT_EXISTS("500302", "商品不存在"),
 
+    GOODS_SOURCE_TYPE_NO_EXISTS("500303", "来源系统并未接入系统，敬请期待"),
+
     /**
      * 秒杀模块
      */

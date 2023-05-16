@@ -84,6 +84,7 @@
         <jasypt.version>3.0.4</jasypt.version>
         <minio.version>8.5.1</minio.version>
         <weixin.version>4.4.0</weixin.version>
+        <xxl-job.version>2.3.1</xxl-job.version>
     </properties>
 
     <dependencyManagement>
@@ -453,6 +454,18 @@
                 <groupId>me.chanjar</groupId>
                 <artifactId>weixin-java-tools-spring-boot-starter</artifactId>
                 <version>3.4.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.15.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

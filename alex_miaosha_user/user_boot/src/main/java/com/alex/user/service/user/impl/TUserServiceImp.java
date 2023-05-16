@@ -465,13 +465,13 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // 得到两个日期相差的间隔，秒
-        long survivalSecond = DateUtils.diffSecondByTwoDays(sdf.format(expirationDate), DateUtils.getTimeStr(LocalDateTime.now()));
+        long survivalSecond = DateUtils.diffSecondByTwoDays(DateUtils.getTimeStr(LocalDateTime.now()), sdf.format(expirationDate));
         // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
         if (survivalSecond < audience.getRefreshSecond()) {
             //生成新的token
             String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
             redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
-            String onlineAdminStr = redisUtils.get(LoginKey.loginToken, token);
+            String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
             if (StringUtils.isNotBlank(onlineAdminStr)) {
                 OnlineAdmin onlineAdmin = JSONUtil.toBean(onlineAdminStr, OnlineAdmin.class);
                 onlineAdmin.setToken(newToken);
