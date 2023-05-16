@@ -18,7 +18,7 @@ mybatis-plus:
 xxl:
   job:
     admin:
-      addresses: http://xxl-job-admin:8123/xxl-job-admin
+      addresses: http://xxl-job-admin:8080/xxl-job-admin
     executor:
       appname: xxl-product-prod
       logretentiondays: 30
