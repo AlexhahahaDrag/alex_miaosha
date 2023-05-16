@@ -33,7 +33,8 @@ public class ShopProductServiceImpl implements ShopProductService {
             throw new ProductException(ResultEnum.GOODS_SOURCE_TYPE_NO_EXISTS);
         }
         // TODO: 2023/5/15 获取商品描述列表
-        List<String> productList = Lists.newArrayList("airPods2耳机");
+        List<String> productList = Lists.newArrayList("苹果airpods二代pro", "16升燃气热水器天然气全密闭稳燃舱",
+                "石头扫地机器人g20", "海尔冰箱三门风冷无霜");
         List<Content> result = Lists.newArrayList();
         // TODO: 2023/5/15 添加从淘宝获取数据
         switch (sourceType) {
