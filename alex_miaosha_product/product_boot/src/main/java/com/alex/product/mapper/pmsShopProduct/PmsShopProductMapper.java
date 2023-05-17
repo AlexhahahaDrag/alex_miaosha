@@ -19,4 +19,6 @@ public interface PmsShopProductMapper extends BaseMapper<PmsShopProduct> {
     Page<PmsShopProductVo> getPage(Page<PmsShopProductVo> page, @Param("pmsShopProductVo") PmsShopProductVo pmsShopProductVo);
 
     PmsShopProductVo queryPmsShopProduct(@Param("id") String id);
+
+    Page<PmsShopProductVo> getNewestProductPage(Page<PmsShopProductVo> page, @Param("pmsShopProductVo") PmsShopProductVo pmsShopProductVo);
 }

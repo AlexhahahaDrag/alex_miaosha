@@ -40,9 +40,10 @@
         pms_shop_product.`name`,
         pms_shop_product.shop,
         pms_shop_product.icons,
-        pms_shop_product.productUrl,
+        pms_shop_product.product_url,
         pms_shop_product.`source`,
-        pms_shop_product.search_key
+        pms_shop_product.search_key,
+        pms_shop_product.sku_id
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
@@ -51,6 +52,28 @@
             pms_shop_product.is_delete = 0
             <include refid="queryInfo"></include>
         </where>
+    </select>
+
+    <select id="getNewestProductPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+          <include refid="Base_Column_List"></include>
+        from(
+            select
+              <include refid="Base_Column_List"></include>,
+              row_number() over (
+                partition by sku_id
+                order by
+                  create_time desc
+              ) as rm
+            from
+              alex_product.pms_shop_product
+            <where>
+                pms_shop_product.is_delete = 0
+                <include refid="queryInfo"></include>
+            </where>
+          ) pms_shop_product
+        where
+          rm = 1
     </select>
 
     <select id="queryPmsShopProduct" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">

@@ -55,4 +55,8 @@ public class PmsShopProduct extends BaseEntity<PmsShopProduct>{
     @ApiModelProperty(value = "查询关键字")
     @TableField("search_key")
     private String searchKey;
+
+    @ApiModelProperty(value = "商品id")
+    @TableField("sku_id")
+    private String skuId;
 }

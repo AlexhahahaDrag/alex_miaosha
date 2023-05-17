@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class JdProductServiceImpl implements JdProductService {
             String name = element.getElementsByClass("p-name").eq(0).text();
             String shop = element.getElementsByClass("p-shop").eq(0).text();
             String icons = element.getElementsByClass("p-icons").eq(0).text();
+            String skuId = Optional.ofNullable(productUrl).map(i -> i.substring(i.indexOf("com/") + 4, i.length() - 12)).orElse(null);
             Content content = Content.builder()
                     .image(img)
                     .name(name)
@@ -55,9 +57,15 @@ public class JdProductServiceImpl implements JdProductService {
                     .productUrl(productUrl)
                     .source(SourceType.JD.getCode())
                     .searchKey(keyword)
+                    .skuId(skuId)
                     .build();
             list.add(content);
         }
         return list;
+    }
+
+    public static void main(String[] args) throws IOException {
+        JdProductServiceImpl jdProductService = new JdProductServiceImpl();
+        System.out.println(jdProductService.parseJd("airPods2耳机"));
     }
 }

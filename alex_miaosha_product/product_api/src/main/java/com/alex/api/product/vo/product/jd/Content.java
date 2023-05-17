@@ -30,4 +30,6 @@ public class Content {
     private String source;
 
     private String searchKey;
+
+    private String skuId;
 }
