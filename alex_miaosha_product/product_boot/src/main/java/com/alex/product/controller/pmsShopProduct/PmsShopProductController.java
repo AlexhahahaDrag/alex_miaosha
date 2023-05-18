@@ -18,16 +18,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description:  商品网上商品信息restApi
- * @author:       alex
- * @createDate:   2023-05-15 14:11:10
- * @version:      1.0.0
+ * @description: 商品网上商品信息restApi
+ * @author: alex
+ * @createDate: 2023-05-15 14:11:10
+ * @version: 1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品网上商品信息相关接口", tags = {"商品网上商品信息相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//pms-shop-product")
+@RequestMapping("/api/v1/pms-shop-product")
 public class PmsShopProductController {
 
     private final PmsShopProductService pmsShopProductService;
@@ -41,8 +41,8 @@ public class PmsShopProductController {
             @ApiImplicitParam(value = "查询条件", name = "pmsShopProductVo")}
     )
     public Result<Page<PmsShopProductVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) PmsShopProductVo pmsShopProductVo) {
+                                                  @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                  @RequestBody(required = false) PmsShopProductVo pmsShopProductVo) {
         return Result.success(pmsShopProductService.getPage(pageNum, pageSize, pmsShopProductVo));
     }
 
@@ -73,5 +73,19 @@ public class PmsShopProductController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(pmsShopProductService.deletePmsShopProduct(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "获取商品网上最新商品信息分页", notes = "获取商品网上最新商品信息分页", response = Result.class)
+    @PostMapping(value = "/newestPage")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "页码", name = "pageNum"),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "查询条件", name = "pmsShopProductVo")}
+    )
+    public Result<Page<PmsShopProductVo>> getNewestProductPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+                                                               @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                               @RequestBody(required = false) PmsShopProductVo pmsShopProductVo) {
+        return Result.success(pmsShopProductService.getNewestProductPage(pageNum, pageSize, pmsShopProductVo));
     }
 }

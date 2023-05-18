@@ -15,6 +15,9 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:com/alex/product/mapper/**/*Mapper.xml
 
+shop:
+  jdUrl: https://search.jd.com
+
 xxl:
   job:
     admin:

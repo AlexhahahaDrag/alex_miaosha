@@ -23,4 +23,6 @@ public interface PmsShopProductService extends IService<PmsShopProduct> {
     Boolean updatePmsShopProduct(PmsShopProductVo pmsShopProductVo);
 
     Boolean deletePmsShopProduct(String ids);
+
+    Page<PmsShopProductVo> getNewestProductPage(Long pageNum, Long pageSize, PmsShopProductVo pmsShopProductVo);
 }

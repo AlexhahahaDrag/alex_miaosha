@@ -19,7 +19,6 @@
         <result column="token_id" property="tokenId" />
         <result column="os" property="os" />
         <result column="broswer" property="broswer" />
-        <result column="last_login_ip" property="lastLoginIp" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -34,7 +33,12 @@
         t_user_login.is_delete,
         t_user_login.operator,
         t_user_login.operate_time,
-        t_user_login.user_id, t_user_login.last_login_time, t_user_login.token_id, t_user_login.os, t_user_login.broswer, t_user_login.last_login_ip
+        t_user_login.user_id,
+        t_user_login.last_login_time,
+        t_user_login.token_id,
+        t_user_login.os,
+        t_user_login.broswer,
+        t_user_login.login_location
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
@@ -42,6 +46,7 @@
         <where>
             t_user_login.is_delete = 0 <include refid="queryInfo"></include>
         </where>
+        order by create_time desc
     </select>
 
     <select id="queryTUserLogin" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">

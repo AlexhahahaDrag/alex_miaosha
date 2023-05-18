@@ -28,7 +28,7 @@ public class ShopProductController {
     private final ShopProductService shopProductService;
 
     @ApiOperationSupport(order = 10, author = "alex")
-    @ApiOperation(value = "获取sku信息分页", notes = "获取sku信息分页", response = Result.class)
+    @ApiOperation(value = "获取商城商品", notes = "获取商城商品", response = Result.class)
     @ApiImplicitParams({
             @ApiImplicitParam(value = "商品来源", name = "type")}
     )

@@ -99,8 +99,8 @@ public class TUserController {
     @ApiOperationSupport(order = 65, author = "alex")
     @PostMapping("/logout")
     @ApiOperation(value = "登出")
-    public Result<Boolean> logout() {
-        return tUserService.logout();
+    public Result<Boolean> logout(HttpServletRequest request) {
+        return tUserService.logout(request);
     }
 
     @ApiOperationSupport(order = 70, author = "alex")

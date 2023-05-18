@@ -19,6 +19,9 @@ logging:
   level:
     com.alex.product.mapper: debug
 
+shop:
+  jdUrl: https://search.jd.com
+
 xxl:
   job:
     admin:
