@@ -44,4 +44,7 @@ public class PmsShopProductVo extends BaseVo<PmsShopProductVo>{
 
     @ApiModelProperty(value = "查询关键字")
     private String searchKey;
+
+    @ApiModelProperty(value = "比较价格")
+    private BigDecimal comparePrice;
 }

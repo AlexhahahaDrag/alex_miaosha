@@ -56,22 +56,31 @@
 
     <select id="getNewestProductPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
         select
+          compare_info.price as compare_pirce,
           <include refid="Base_Column_List"></include>
         from(
             select
-              <include refid="Base_Column_List"></include>,
+             <include refid="Base_Column_List"></include>,
               row_number() over (
                 partition by sku_id
                 order by
                   create_time desc
               ) as rm
             from
-              alex_product.pms_shop_product
-            <where>
-                pms_shop_product.is_delete = 0
-                <include refid="queryInfo"></include>
-            </where>
+              alex_product.pms_shop_product pms_shop_product
+            where
+              pms_shop_product.is_delete = 0
+              <include refid="queryInfo"></include>
           ) pms_shop_product
+          left join (
+            select
+              <include refid="Base_Column_List"></include>
+            from
+              alex_product.pms_shop_product
+            where
+              is_delete = 0
+              and is_compare = 1
+          ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
         where
           rm = 1
     </select>

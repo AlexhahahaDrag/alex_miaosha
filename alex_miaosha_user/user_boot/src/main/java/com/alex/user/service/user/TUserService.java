@@ -36,7 +36,7 @@ public interface TUserService extends IService<TUser> {
 
     TUserVo getUserByUsername(String username);
 
-    Result<Boolean> logout();
+    Result<Boolean> logout(HttpServletRequest request);
 
     void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception;
 

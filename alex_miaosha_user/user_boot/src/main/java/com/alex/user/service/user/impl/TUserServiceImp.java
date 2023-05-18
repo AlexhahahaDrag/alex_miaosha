@@ -14,17 +14,16 @@ import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
-import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
-import com.alex.user.utils.security.SecurityUserFactory;
 import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
+import com.alex.user.utils.security.SecurityUserFactory;
 import com.alex.utils.IpUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -40,8 +39,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
@@ -326,22 +323,16 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     }
 
     @Override
-    public Result<Boolean> logout() {
-        ServletRequestAttributes attribute = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attribute.getRequest();
-        String token = request.getAttribute(SysConf.TOKEN).toString();
-        if (StringUtils.isEmpty(token)) {
+    public Result<Boolean> logout(HttpServletRequest request) {
+        String uuidToken = request.getHeader(audience.getTokenHeader());
+        if (StringUtils.isEmpty(uuidToken)) {
             return Result.error(ResultEnum.PARAM_ERROR);
         } else {
             // 获取在线用户信息
-            String adminJson = redisUtils.get(UserKey.getById, token);
-            if (StringUtils.isNotEmpty(adminJson)) {
-                OnlineAdmin onlineAdmin = JSONUtil.toBean(adminJson, OnlineAdmin.class);
-                String tokenUid = onlineAdmin.getTokenId();
-                redisUtils.delete(LoginKey.loginUuid, tokenUid);
-            }
+            String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
+            redisUtils.delete(LoginKey.loginUuid, uuidToken);
             // 移除Redis中的用户
-            redisUtils.delete(LoginKey.loginToken, token);
+            redisUtils.delete(LoginKey.loginToken, barToken);
             SecurityContextHolder.clearContext();
             return Result.success();
         }
@@ -461,7 +452,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
             return false;
         }
-        // TODO: 2023/2/16 校验token是否正确
         Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // 得到两个日期相差的间隔，秒
