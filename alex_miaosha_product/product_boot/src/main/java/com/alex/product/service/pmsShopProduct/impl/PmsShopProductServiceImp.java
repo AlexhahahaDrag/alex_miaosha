@@ -67,6 +67,6 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
     @Override
     public Page<PmsShopProductVo> getNewestProductPage(Long pageNum, Long pageSize, PmsShopProductVo pmsShopProductVo) {
         Page<PmsShopProductVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
-        return pmsShopProductMapper.getNewestProductPage(page, pmsShopProductVo);
+       return pmsShopProductMapper.getNewestProductPage(page, pmsShopProductVo);
     }
 }

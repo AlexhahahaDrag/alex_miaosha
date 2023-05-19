@@ -56,7 +56,7 @@
 
     <select id="getNewestProductPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
         select
-          compare_info.price as compare_pirce,
+          compare_info.price as compare_price,
           <include refid="Base_Column_List"></include>
         from(
             select
@@ -83,6 +83,7 @@
           ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
         where
           rm = 1
+        order by pms_shop_product.operate_time desc, sku_id desc
     </select>
 
     <select id="queryPmsShopProduct" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">

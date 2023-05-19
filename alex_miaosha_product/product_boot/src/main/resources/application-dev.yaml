@@ -30,4 +30,4 @@ xxl:
       appname: xxl-product-dev
       logretentiondays: 30
       port: 8007
-      logPath: C:\alex
+      logPath: F:\logs\alex

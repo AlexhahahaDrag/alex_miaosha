@@ -139,7 +139,7 @@
     </select>
 
     <select id="getMonthExpense" resultType="com.alex.api.finance.vo.financeAnalysis.AnalysisVo">
-        WITH recursive c ( n ) AS ( SELECT 1 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
+        WITH recursive c ( n ) AS ( SELECT 0 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
         SELECT
             date_info.n as info_Date,
             ifnull( info.amount, 0 ) AS amount
