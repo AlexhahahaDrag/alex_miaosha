@@ -47,4 +47,7 @@ public class PmsShopProductVo extends BaseVo<PmsShopProductVo>{
 
     @ApiModelProperty(value = "比较价格")
     private BigDecimal comparePrice;
+
+    @ApiModelProperty(value = "是否是比较")
+    private Boolean isCompare;
 }

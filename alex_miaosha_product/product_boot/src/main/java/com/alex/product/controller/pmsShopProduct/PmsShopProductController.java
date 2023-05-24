@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @description: 商品网上商品信息restApi
  * @author: alex
@@ -87,5 +89,35 @@ public class PmsShopProductController {
                                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                                @RequestBody(required = false) PmsShopProductVo pmsShopProductVo) {
         return Result.success(pmsShopProductService.getNewestProductPage(pageNum, pageSize, pmsShopProductVo));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "获取商品网上历史数据", notes = "获取商品网上历史数据", response = Result.class)
+    @GetMapping(value = "/hisInfo")
+    @ApiImplicitParams({@ApiImplicitParam(value = "商品id", name = "skuId", required = true),
+            @ApiImplicitParam(value = "开始时间", name = "startTime")})
+    public Result<List<PmsShopProductVo>> getProductHisInfo(@RequestParam(value = "skuId") String skuId,
+                                                            @RequestParam(value = "startTime", required = false) String startTime) {
+        return Result.success(pmsShopProductService.getProductHisInfo(skuId, startTime));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "获取商品对比数据", notes = "获取商品对比数据", response = Result.class)
+    @GetMapping(value = "/compareInfo")
+    @ApiImplicitParams({@ApiImplicitParam(value = "商品id", name = "skuId", required = true),
+            @ApiImplicitParam(value = "时间", name = "searchTime")})
+    public Result<List<PmsShopProductVo>> getCompareInfo(@RequestParam(value = "skuId") String skuId,
+                                                         @RequestParam(value = "searchTime") String searchTime) {
+        return Result.success(pmsShopProductService.getCompareInfo(skuId, searchTime));
+    }
+
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "修改需要对比的商品版本", notes = "修改需要对比的商品版本", response = Result.class)
+    @GetMapping(value = "/updateCompareInfo")
+    @ApiImplicitParams({@ApiImplicitParam(value = "商品id", name = "skuId", required = true),
+            @ApiImplicitParam(value = "选中的记录id", name = "chooseId")})
+    public Result<Boolean> updateCompareInfo(@RequestParam(value = "skuId") String skuId,
+                                             @RequestParam(value = "chooseId") Long chooseId) {
+        return Result.success(pmsShopProductService.updateCompareInfo(skuId, chooseId));
     }
 }

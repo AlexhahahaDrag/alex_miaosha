@@ -1,9 +1,11 @@
 package com.alex.product.service.pmsShopProduct;
 
 import com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.product.entity.pmsShopProduct.PmsShopProduct;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * 商品网上商品信息 服务类
@@ -25,4 +27,10 @@ public interface PmsShopProductService extends IService<PmsShopProduct> {
     Boolean deletePmsShopProduct(String ids);
 
     Page<PmsShopProductVo> getNewestProductPage(Long pageNum, Long pageSize, PmsShopProductVo pmsShopProductVo);
+
+    List<PmsShopProductVo> getProductHisInfo(String skuId, String startTime);
+
+    List<PmsShopProductVo>  getCompareInfo(String key, String searchTime);
+
+    Boolean updateCompareInfo(String skuId, Long chooseId);
 }

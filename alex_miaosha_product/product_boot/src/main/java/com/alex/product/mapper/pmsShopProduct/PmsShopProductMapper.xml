@@ -83,13 +83,24 @@
           ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
         where
           rm = 1
-        order by pms_shop_product.operate_time desc, sku_id desc
+        order by pms_shop_product.create_time desc, sku_id desc
     </select>
 
     <select id="queryPmsShopProduct" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
-        select <include refid="Base_Column_List"></include> from pms_shop_product
+        select <include refid="Base_Column_List"></include>,
+            compare_info.price as compare_price
+        from pms_shop_product
+        left join (
+        select
+          <include refid="Base_Column_List"></include>
+        from
+          alex_product.pms_shop_product
+        where
+          is_delete = 0
+          and is_compare = 1
+      ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
         <where>
-            id = #{id}
+            pms_shop_product.id = #{id}
             and pms_shop_product.is_delete = 0
         </where>
     </select>
@@ -119,4 +130,28 @@
           </if>
         </if>
      </sql>
+
+    <select id="getProductHisInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+            <include refid="Base_Column_List"></include>
+        from
+            alex_product.pms_shop_product
+        where
+            is_delete = 0
+          and sku_id = ${skuId}
+          and create_time >= cast(${startTime} as datetime)
+        order by create_time
+    </select>
+
+    <select id="getCompareInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+            <include refid="Base_Column_List"></include>
+        from
+            alex_product.pms_shop_product
+        where
+            is_delete = 0
+          and key = ${key}
+          and create_time = cast(${searchTime} as datetime)
+        order by sku_id
+    </select>
 </mapper>

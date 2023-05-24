@@ -25,7 +25,7 @@ shop:
 xxl:
   job:
     admin:
-      addresses: http://localhost:8123/xxl-job-admin
+      addresses: http://123.248.83.33:8123/xxl-job-admin
     executor:
       appname: xxl-product-dev
       logretentiondays: 30

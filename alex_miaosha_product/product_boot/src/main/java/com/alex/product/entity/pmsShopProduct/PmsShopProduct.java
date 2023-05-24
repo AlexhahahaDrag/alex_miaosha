@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -22,6 +21,9 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @TableName("pms_shop_product")
 @ApiModel(value = "PmsShopProduct对象", description = "商品网上商品信息")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PmsShopProduct extends BaseEntity<PmsShopProduct>{
 
     @ApiModelProperty(value = "图片url")
@@ -59,4 +61,8 @@ public class PmsShopProduct extends BaseEntity<PmsShopProduct>{
     @ApiModelProperty(value = "商品id")
     @TableField("sku_id")
     private String skuId;
+
+    @ApiModelProperty(value = "是否比较")
+    @TableField("is_compare")
+    private Boolean isCompare;
 }
