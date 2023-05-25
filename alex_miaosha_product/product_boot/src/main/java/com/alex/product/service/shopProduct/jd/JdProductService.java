@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface JdProductService {
 
-    List<Content> parseJD(List<String> keywords) throws Exception;
+    List<Content> parse(List<String> keywords, String type) throws Exception;
 }

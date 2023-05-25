@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ShopProductService {
 
-    List<Content> getShopProduct(String type) throws Exception;
+    List<Content> getShopProduct() throws Exception;
 }

@@ -20,7 +20,7 @@ public class SearchProductJob {
     public void searchJdProductJobHandler() throws Exception {
         log.info("===============开始执行查询jd商品===================");
         long startTime = System.nanoTime();
-        shopProductService.getShopProduct(SourceType.JD.getCode());
+        shopProductService.getShopProduct();
         log.info("===============结束执行查询jd商品===================耗时：{}", Duration.ofNanos(System.nanoTime() - startTime));
     }
 }

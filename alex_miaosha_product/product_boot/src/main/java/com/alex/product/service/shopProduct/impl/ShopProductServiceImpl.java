@@ -1,11 +1,11 @@
 package com.alex.product.service.shopProduct.impl;
 
+import com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo;
 import com.alex.api.product.vo.product.jd.Content;
-import com.alex.base.enums.ResultEnum;
-import com.alex.common.exception.ProductException;
 import com.alex.product.entity.pmsShopProduct.PmsShopProduct;
 import com.alex.product.enums.SourceType;
 import com.alex.product.service.pmsShopProduct.PmsShopProductService;
+import com.alex.product.service.pmsShopWantProduct.PmsShopWantProductService;
 import com.alex.product.service.shopProduct.ShopProductService;
 import com.alex.product.service.shopProduct.jd.JdProductService;
 import com.google.common.collect.Lists;
@@ -26,19 +26,38 @@ public class ShopProductServiceImpl implements ShopProductService {
 
     private final PmsShopProductService pmsShopProductService;
 
+    private final PmsShopWantProductService pmsShopWantProductService;
+
     @Override
-    public List<Content> getShopProduct(String type) throws Exception {
-        SourceType sourceType = SourceType.getSourceTypeByName(type);
-        if (sourceType == null) {
-            throw new ProductException(ResultEnum.GOODS_SOURCE_TYPE_NO_EXISTS);
-        }
-        // TODO: 2023/5/15 获取商品描述列表
-        List<String> productList = Lists.newArrayList("苹果airpods二代pro", "16升燃气热水器天然气全密闭稳燃舱",
-                "石头扫地机器人g20", "海尔冰箱三门风冷无霜");
+    public List<Content> getShopProduct() throws Exception {
+
+        PmsShopWantProductVo pmsShopWantProductVo = PmsShopWantProductVo.builder().status(1).build();
+        List<PmsShopWantProductVo> productList = pmsShopWantProductService.getList(pmsShopWantProductVo);
         List<Content> result = Lists.newArrayList();
-        // TODO: 2023/5/15 添加从淘宝获取数据
-        switch (sourceType) {
-            case JD -> result = jdProductService.parseJD(productList);
+        SourceType[] sourceTypeArr = SourceType.values();
+        for (SourceType sourceType : sourceTypeArr) {
+            switch (sourceType) {
+                case JD:
+                    List<String> jdList = productList.parallelStream()
+                            .filter(item -> SourceType.JD.getCode().equals(item.getSource()))
+                            .map(item -> getStr(item))
+                            .collect(Collectors.toList());
+                    if (jdList == null || jdList.isEmpty()) {
+                        break;
+                    }
+                    result.addAll(jdProductService.parse(jdList, sourceType.getCode()));
+                    break;
+                case TB:
+                    List<String> tbList = productList.parallelStream()
+                            .filter(item -> SourceType.TB.getCode().equals(item.getSource()))
+                            .map(item -> getStr(item))
+                            .collect(Collectors.toList());
+                    if (tbList == null || tbList.isEmpty()) {
+                        break;
+                    }
+                    result.addAll(jdProductService.parse(tbList, sourceType.getCode()));
+                    break;
+            }
         }
         if (result != null && !result.isEmpty()) {
             List<PmsShopProduct> collect = result.parallelStream().map(item -> {
@@ -50,5 +69,13 @@ public class ShopProductServiceImpl implements ShopProductService {
             pmsShopProductService.saveBatch(collect);
         }
         return result;
+    }
+
+    private String getStr(PmsShopWantProductVo pmsShopWantProductVo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getName()).orElse(""))
+                .append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getShop()).orElse(""))
+                .append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getIcons()).orElse(""));
+        return sb.toString();
     }
 }

@@ -25,13 +25,21 @@ public class JdProductServiceImpl implements JdProductService {
     @Value("${shop.jdUrl}")
     private String jdUrl;
 
-    public List<Content> parseJD(List<String> keywords) throws Exception {
+    public List<Content> parse(List<String> keywords, String type) throws Exception {
         if (keywords == null || keywords.isEmpty()) {
             throw new Exception("请填写关键字");
         }
         List<Content> res = Lists.newArrayList();
         for (String keyword : keywords) {
-            res.addAll(parseJd(keyword));
+            switch (type) {
+                case "jd":
+                    res.addAll(parseJd(keyword));
+                    break;
+                case "tb":
+                    res.addAll(parseTB(keyword));
+                    break;
+            }
+            Thread.sleep(2000);
         }
         return res;
     }
@@ -64,5 +72,16 @@ public class JdProductServiceImpl implements JdProductService {
             list.add(content);
         }
         return list;
+    }
+
+    /**
+     * @param keyword
+     * @description: 获取淘宝信息
+     * @author:      alex
+     * @return:      java.util.List<com.alex.api.product.vo.product.jd.Content>
+    */
+    // TODO: 2023/5/25 获取淘宝信息
+    private List<Content> parseTB(String keyword) throws IOException {
+        return Lists.newArrayList();
     }
 }

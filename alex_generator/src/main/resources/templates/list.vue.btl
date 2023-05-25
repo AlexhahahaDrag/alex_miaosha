@@ -79,7 +79,6 @@ import {
 import { get${entity}Page, delete${entity} } from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message } from "ant-design-vue";
 import Detail from "./detail/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail.vue";
-import { Dayjs } from 'dayjs'
 
 const labelCol = ref({ span: 5 });
 const wrapperCol = ref({ span: 19 });
@@ -104,12 +103,7 @@ let searchInfo = ref<SearchInfo>({});
 
 function cancelQuery() {
   searchInfo.value = {};
-  infoDateStart.value = null;
-  infoDateEnd.value = null;
 }
-
-let infoDateStart = ref<Dayjs | null>();
-let infoDateEnd = ref<Dayjs | null>();
 
 function query() {
   get${entity}ListPage(searchInfo.value, pagination.value);

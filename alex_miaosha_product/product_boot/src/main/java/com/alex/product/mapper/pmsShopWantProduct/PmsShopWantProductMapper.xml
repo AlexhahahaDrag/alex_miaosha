@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsShopWantProduct.PmsShopWantProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsShopWantProduct.PmsShopWantProduct">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="name" property="name" />
+        <result column="shop" property="shop" />
+        <result column="icons" property="icons" />
+        <result column="source" property="source" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_shop_want_product.id,
+        pms_shop_want_product.creator,
+        pms_shop_want_product.create_time,
+        pms_shop_want_product.updater,
+        pms_shop_want_product.update_time,
+        pms_shop_want_product.deleter,
+        pms_shop_want_product.delete_time,
+        pms_shop_want_product.is_delete,
+        pms_shop_want_product.operator,
+        pms_shop_want_product.operate_time,
+        pms_shop_want_product.`name`, pms_shop_want_product.shop, pms_shop_want_product.icons, pms_shop_want_product.`source`,
+        pms_shop_want_product.status
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
+        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        <where>
+            pms_shop_want_product.is_delete = 0
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="getList" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
+        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        <where>
+            pms_shop_want_product.is_delete = 0
+            <include refid="queryInfo"></include>
+        </where>
+    </select>
+
+    <select id="queryPmsShopWantProduct" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
+        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        <where>
+            id = #{id}
+            and pms_shop_want_product.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsShopWantProductVo != null">
+          <if test = "pmsShopWantProductVo.name != null">
+            and name like concat('%', #{pmsShopWantProductVo.name}, '%')
+          </if>
+          <if test = "pmsShopWantProductVo.shop != null">
+            and shop like concat('%', #{pmsShopWantProductVo.shop}, '%')
+          </if>
+          <if test = "pmsShopWantProductVo.icons != null">
+            and icons like concat('%', #{pmsShopWantProductVo.icons}, '%')
+          </if>
+          <if test = "pmsShopWantProductVo.source != null">
+            and source like concat('%', #{pmsShopWantProductVo.source}, '%')
+          </if>
+           <if test = "pmsShopWantProductVo.status != null">
+            and status = #{pmsShopWantProductVo.status}
+          </if>
+        </if>
+     </sql>
+</mapper>
