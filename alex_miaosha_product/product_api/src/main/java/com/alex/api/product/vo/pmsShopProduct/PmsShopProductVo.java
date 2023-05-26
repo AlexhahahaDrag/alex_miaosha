@@ -50,4 +50,7 @@ public class PmsShopProductVo extends BaseVo<PmsShopProductVo>{
 
     @ApiModelProperty(value = "是否是比较")
     private Boolean isCompare;
+
+    @ApiModelProperty(value = "商品id")
+    private String skuId;
 }

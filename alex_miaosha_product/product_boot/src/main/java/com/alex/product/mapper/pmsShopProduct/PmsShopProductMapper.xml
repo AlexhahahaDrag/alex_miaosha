@@ -139,7 +139,7 @@
         where
             is_delete = 0
           and sku_id = ${skuId}
-          and create_time >= cast(${startTime} as datetime)
+          and create_time >= cast(#{startTime} as datetime)
         order by create_time
     </select>
 
