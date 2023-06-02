@@ -47,7 +47,7 @@ spring:
             - StripPrefix=1
 
         - id: alex-product
-          uri: lb://alex-product-dev
+          uri: lb://alex-product-prod
           predicates:
             - Path=/am-product/**
           filters:
