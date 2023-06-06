@@ -54,7 +54,7 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     // TODO: 2023/2/15 自定义添加，为空时不校验
     @ApiModelProperty(value = "手机")
-    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
+    @Pattern(regexp = "^\s{0}$|^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
     private String mobile;
 
     @ApiModelProperty(value = "邮箱验证码")
