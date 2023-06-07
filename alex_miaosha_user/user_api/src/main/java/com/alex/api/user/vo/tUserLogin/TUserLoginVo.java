@@ -1,15 +1,15 @@
 package com.alex.api.user.vo.tUserLogin;
 
-import com.alex.common.validator.group.Insert;
-import com.alex.common.validator.group.Update;
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.time.LocalDateTime;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * @description:  用户登录表Vo
@@ -24,6 +24,7 @@ import lombok.experimental.Accessors;
 public class TUserLoginVo extends BaseVo<TUserLoginVo>{
 
     @ApiModelProperty(value = "用户id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "最后登录时间")

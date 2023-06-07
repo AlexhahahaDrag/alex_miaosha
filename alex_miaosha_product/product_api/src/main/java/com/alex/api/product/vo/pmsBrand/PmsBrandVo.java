@@ -28,6 +28,7 @@ public class PmsBrandVo {
     private String name;
 
     @ApiModelProperty(value = "品牌logo地址")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long logo;
 
     @ApiModelProperty(value = "品牌logo地址url")
