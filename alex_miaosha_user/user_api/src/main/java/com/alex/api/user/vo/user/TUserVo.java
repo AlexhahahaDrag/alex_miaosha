@@ -1,8 +1,10 @@
 package com.alex.api.user.vo.user;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -40,6 +42,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private Integer gender;
 
     @ApiModelProperty(value = "个人头像id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long avatar;
 
     @ApiModelProperty(value = "个人头像url")
@@ -54,7 +57,7 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     // TODO: 2023/2/15 自定义添加，为空时不校验
     @ApiModelProperty(value = "手机")
-    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
+    @Pattern(regexp = "^\s{0}$|^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
     private String mobile;
 
     @ApiModelProperty(value = "邮箱验证码")

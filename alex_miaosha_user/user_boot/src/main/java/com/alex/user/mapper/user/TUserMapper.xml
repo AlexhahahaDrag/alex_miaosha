@@ -67,7 +67,9 @@
     <select id="getList" resultType="com.alex.api.user.vo.user.TUserVo">
         select <include refid="Base_Column_List"></include> from t_user
         <where>
-            t_user.is_delete = 0 <include refid="queryInfo"></include>
+            t_user.is_delete = 0
+            and t_user.status = 1
+            <include refid="queryInfo"></include>
         </where>
         order by t_user.id
     </select>
@@ -75,7 +77,8 @@
     <select id="getUserInfo" resultType="com.alex.api.user.vo.user.TUserVo">
         select <include refid="Base_Column_List"></include>,password from t_user
         <where>
-            t_user.is_delete = 0 <include refid="queryInfo"></include>
+            t_user.is_delete = 0
+            <include refid="queryInfo"></include>
         </where>
     </select>
 
