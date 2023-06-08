@@ -114,7 +114,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         fileInfos.forEach(item -> {
             try {
                 String url = minioFileService.preview(item.getBucketName(), item.getUrl());
-                map.put(item.getId(), Optional.ofNullable(url).map(ii -> ii.replace("http://minio:9000", "http://123.249.83.33:9000")).orElse(""));
+                map.put(item.getId(), Optional.ofNullable(url).map(ii -> ii.replace("http://minio:9000", "https://mjzp.xyz")).orElse(""));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InvalidResponseException e) {
