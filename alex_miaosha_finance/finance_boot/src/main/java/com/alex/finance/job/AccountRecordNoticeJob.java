@@ -14,6 +14,7 @@ public class AccountRecordNoticeJob {
 
     private final AccountRecordInfoService accountRecordInfoService;
 
+    // TODO: 2023/6/20 修改成xxl-job调用 
     @Scheduled(cron = "0 30 8/18 * * ?")
     public void accountRecordNotice() throws WxErrorException {
         log.info("=================开始调用快过期账号查询=================");

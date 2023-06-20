@@ -35,7 +35,7 @@ public class LocalDateTimeFormatConfig {
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN)));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_PATTERN)));
         objectMapper.setDateFormat(new SimpleDateFormat(DEFAULT_DATE_TIME_PATTERN));
-        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         objectMapper.registerModule(javaTimeModule);
         return objectMapper;
     }
