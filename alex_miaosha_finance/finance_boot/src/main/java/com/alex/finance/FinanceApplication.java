@@ -27,7 +27,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 value = {SeckillInterceptor.class})})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
-@EnableScheduling
 public class FinanceApplication {
 
     public static void main(String[] args) {
