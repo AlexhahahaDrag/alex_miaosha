@@ -22,3 +22,4 @@ xxl:
       appname: xxl-finance-prod
       logretentiondays: 30
       port: 8008
+      accessToken: asdfghjkl

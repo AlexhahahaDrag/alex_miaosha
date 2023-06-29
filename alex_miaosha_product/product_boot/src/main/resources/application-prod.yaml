@@ -26,3 +26,4 @@ xxl:
       appname: xxl-product-prod
       logretentiondays: 30
       port: 8007
+      accessToken: asdfghjkl
