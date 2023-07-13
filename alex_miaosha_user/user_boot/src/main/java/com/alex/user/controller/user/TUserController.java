@@ -2,12 +2,12 @@ package com.alex.user.controller.user;
 
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.service.user.TUserService;
-import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -16,10 +16,15 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -96,6 +101,18 @@ public class TUserController {
         return tUserService.login(request, username, password, isRememberMe);
     }
 
+    @GetMapping("/third/{appName}")
+    public void renderAuth(@PathVariable(value = "appName")String appName, HttpServletResponse response) throws IOException {
+        AuthRequest authRequest = tUserService.getAuthRequest(appName);
+        response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
+    }
+
+    @GetMapping("/callback")
+    public Object login(AuthCallback callback) {
+        AuthRequest authRequest = tUserService.getAuthRequest("baidu");
+        return authRequest.login(callback);
+    }
+
     @ApiOperationSupport(order = 65, author = "alex")
     @PostMapping("/logout")
     @ApiOperation(value = "登出")
@@ -130,6 +147,6 @@ public class TUserController {
             @ApiImplicitParam(value = "token", name = "token")}
     )
     public Result<Boolean> authToken(@RequestParam(value = "token") String token) {
-        return Result.success(tUserService.authToken(token)) ;
+        return Result.success(tUserService.authToken(token));
     }
 }

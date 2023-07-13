@@ -6,6 +6,7 @@ import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.zhyd.oauth.request.AuthRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -47,4 +48,6 @@ public interface TUserService extends IService<TUser> {
      * @return:      java.lang.Boolean
     */
     Boolean authToken(String token);
+
+    AuthRequest getAuthRequest(String appName);
 }
