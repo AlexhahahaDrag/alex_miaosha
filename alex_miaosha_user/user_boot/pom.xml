@@ -22,13 +22,13 @@
             <groupId>com.alex</groupId>
             <artifactId>alex_miaosha_utils</artifactId>
         </dependency>
-
+    
         <!--druid-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
         </dependency>
-
+    
         <!--mysql-connector-java-->
         <dependency>
             <groupId>mysql</groupId>
@@ -39,25 +39,25 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
-
+    
         <!--    skywalking整合logback    -->
         <dependency>
             <groupId>org.apache.skywalking</groupId>
             <artifactId>apm-toolkit-logback-1.x</artifactId>
         </dependency>
-
+    
         <!--security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
+    
         <!-- jwt -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
         </dependency>
-
+    
         <!--jwt-->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -72,6 +72,18 @@
         <dependency>
             <groupId>com.alex</groupId>
             <artifactId>oss_api</artifactId>
+        </dependency>
+        
+        <dependency>
+          <groupId>me.zhyd.oauth</groupId>
+          <artifactId>JustAuth</artifactId>
+          <version>1.16.5</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+            <version>5.1.0</version>
         </dependency>
     </dependencies>
 

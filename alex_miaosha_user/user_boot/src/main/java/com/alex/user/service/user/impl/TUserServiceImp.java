@@ -17,6 +17,7 @@ import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.user.config.WechatAccountConfig;
 import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
@@ -32,6 +33,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.config.AuthConfig;
+import me.zhyd.oauth.enums.scope.AuthBaiduScope;
+import me.zhyd.oauth.request.AuthBaiduRequest;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.request.AuthWeChatMpRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,6 +82,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Value(value = "${defaultPassword}")
     private String defaultPassword;
+
+    private final WechatAccountConfig wechatAccountConfig;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
@@ -483,5 +491,33 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             }
         }
         return true;
+    }
+
+    public AuthRequest getAuthRequest(String appName) {
+        AuthRequest authRequest = null;
+        switch (appName) {
+            case "wechat_mp":
+                authRequest = new AuthWeChatMpRequest(AuthConfig.builder()
+                        .clientId("wxec93a0ddb72c8cff")
+                        .clientSecret("1240434ae0be6dc4b0ba979d7c1f9b7a")
+                        .redirectUri("https://mjzp.xyz/login")
+                        .build());
+                break;
+            case "baidu":
+                authRequest = new AuthBaiduRequest(AuthConfig.builder()
+                        .clientId("w7kcpHna8w8irDiMA4tdnnnQ")
+                        .clientSecret("8LTOzDkpVv5LkzPR9yyptsq7MMENyCVS")
+                        .redirectUri("https://mjzp.xyz/login")
+                        .scopes(Arrays.asList(
+                                AuthBaiduScope.BASIC.getScope(),
+                                AuthBaiduScope.SUPER_MSG.getScope(),
+                                AuthBaiduScope.NETDISK.getScope()
+                        ))
+//                        .clientId("")
+//                        .clientSecret("")
+//                        .redirectUri("http://localhost:9001/oauth/baidu/callback")
+                        .build());
+        }
+        return authRequest;
     }
 }

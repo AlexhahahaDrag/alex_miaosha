@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                 "/druid/**",
                 "/api/v1/user/getUserInfo",
                 "/api/v1/user/authToken",
+                "/api/v1/user/third",
                 "/api/v1/file-info/getFileInfo",
                 "/v3/api-docs",
                 "/error"
