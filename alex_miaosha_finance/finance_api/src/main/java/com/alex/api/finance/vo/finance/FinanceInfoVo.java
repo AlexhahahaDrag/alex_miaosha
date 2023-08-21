@@ -4,6 +4,7 @@ import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,6 +56,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     private Long belongTo;
 
     @ApiModelProperty(name = "infoDate", value = "业务日期")
+    @JsonFormat(timezone = "GMT+8")
     private LocalDateTime infoDate;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")

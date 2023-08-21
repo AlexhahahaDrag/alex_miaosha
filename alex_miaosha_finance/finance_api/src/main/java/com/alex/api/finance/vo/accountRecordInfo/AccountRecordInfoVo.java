@@ -1,7 +1,6 @@
 package com.alex.api.finance.vo.accountRecordInfo;
 
 import com.alex.common.config.Long2StringSerializer;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @description:  Vo
@@ -32,8 +31,7 @@ public class AccountRecordInfoVo {
     private String name;
 
     @ApiModelProperty(value = "有效期")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
-    private Date avliDate;
+    private LocalDateTime avliDate;
 
     @ApiModelProperty(value = "金额")
     private BigDecimal amount;
