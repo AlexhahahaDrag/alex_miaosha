@@ -49,8 +49,8 @@
         <where>
             finance_info.is_delete = 0
             <include refid="queryInfo"></include>
-            order by finance_info.info_date desc, finance_info.operate_time desc
         </where>
+        order by finance_info.info_date desc, finance_info.operate_time desc
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.vo.finance.FinanceInfoVo">
