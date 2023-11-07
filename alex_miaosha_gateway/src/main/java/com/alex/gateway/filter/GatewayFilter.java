@@ -1,7 +1,9 @@
 package com.alex.gateway.filter;
 
+import cn.hutool.json.JSONUtil;
 import com.alex.api.user.api.UserApi;
 import com.alex.base.common.Result;
+import com.alex.common.utils.secret.AESUtils;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
@@ -122,7 +124,6 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
             @Override
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-                System.out.println(888);
                 if (body instanceof Flux) {
                     Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
                     return super.writeWith(fluxBody.map(dataBuffer -> {
@@ -132,7 +133,12 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, Charset.forName("UTF-8"));
                         System.out.println(s);
                         //TODO，s就是response的值，想修改、查看就随意而为了
-                        byte[] uppedContent = new String(content, Charset.forName("UTF-8")).getBytes();
+                        byte[] uppedContent;
+                        try {
+                            uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                         return bufferFactory.wrap(uppedContent);
                     }));
                 }
