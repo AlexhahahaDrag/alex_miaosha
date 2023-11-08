@@ -1,12 +1,16 @@
 package com.alex.common.utils.secret;
 
+import org.springframework.util.Base64Utils;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * @description:  Java使用AES加密算法进行加密解密
@@ -20,12 +24,12 @@ public class AESUtils {
 
     }
 
-    private static Cipher getCipher(String key, String iv, String type) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private static Cipher getCipher(String key, String iv, String type, Integer mode) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
         Cipher cipher = Cipher.getInstance("AES/CBC/" + type);
-        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
-        IvParameterSpec ips = new IvParameterSpec(iv.getBytes());
+        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+        IvParameterSpec ips = new IvParameterSpec(iv.getBytes("UTF-8"));
         // 初始化为加密模式，并将密钥注入到算法中
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ips);
+        cipher.init(mode, keySpec, ips);
         return cipher;
     }
 
@@ -36,12 +40,11 @@ public class AESUtils {
      * @Param:key密钥
      */
     public static String encrypt(String text, String key, String iv, String type) throws Exception {
-        Cipher cipher = getCipher(key, iv, type);
+        Cipher cipher = getCipher(key, iv, type, Cipher.ENCRYPT_MODE);
         // 将传入的文本加密
-        byte[] encrypted = cipher.doFinal(text.getBytes());
+        byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
         // 将密文进行Base64编码，方便传输
-//        return Base64.getEncoder().encodeToString(encrypted);
-        return new String(encrypted);
+        return Base64Utils.encodeToString(encrypted);
     }
 
     /**
@@ -51,12 +54,12 @@ public class AESUtils {
      * @Param:key密钥
      */
     public static String decrypt(String base64Encrypted, String key, String iv, String type) throws Exception {
-        Cipher cipher = getCipher(key, iv, type);
+        Cipher cipher = getCipher(key, iv, type, Cipher.DECRYPT_MODE);
         // 将Base64编码的密文解码
-//        byte[] encrypted = Base64.getDecoder().decode(base64Encrypted);
+        byte[] encrypted = Base64Utils.decodeFromString(base64Encrypted);
         // 解密
-        byte[] decrypted = cipher.doFinal(base64Encrypted.getBytes());
-        return new String(decrypted);
+        byte[] decrypted = cipher.doFinal(encrypted);
+        return new String(decrypted, "UTF-8");
     }
     public static void main(String[] args) throws Exception {
         //明文
