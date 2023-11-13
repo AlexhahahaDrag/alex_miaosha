@@ -2,6 +2,8 @@ spring:
   cloud:
     nacos:
       server-addr: ${nacos.url}
+      username: ${nacos.username}
+      password: ${nacos.password}
       config:
         server-addr: ${nacos.url}
         file-extension: ${nacos.file-extension}
@@ -31,7 +33,7 @@ spring:
             refresh: true
 
 nacos:
-  url: 123.249.83.33:8848
+  url: 81.70.158.140:8848
   group: alex-miaosha
   namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
   username: nacos
