@@ -29,6 +29,15 @@ public class PackageConfig {
     private String listTs;
     private String listVue;
     private String tsTs;
+
+    private String mobileTs;
+
+    private String mobileVue;
+
+    private String mobileDetailTs;
+
+    private String mobileDetail;
+
     private Map<OutputFile, String> pathInfo;
     private final Map<String, String> packageInfo;
 
@@ -49,6 +58,10 @@ public class PackageConfig {
         this.listVue = "vue";
         this.tsTs = "ts";
         this.other = "other";
+        this.mobileTs = "mobileTs";
+        this.mobileVue = "mobileVue";
+        this.mobileDetailTs = "mobileDetailTs";
+        this.mobileDetail = "mobileDetail";
         this.packageInfo = new HashMap();
     }
 
@@ -81,6 +94,10 @@ public class PackageConfig {
             this.packageInfo.put("ListVue", this.joinPackage(this.getListVue()));
             this.packageInfo.put("TsTs", this.joinPackage(this.getTsTs()));
             this.packageInfo.put("Other", this.joinPackage(this.getOther()));
+            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
+            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
+            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
+            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
             this.packageInfo.put("Parent", this.getParent());
         }
 
@@ -149,6 +166,22 @@ public class PackageConfig {
 
     public String getTsTs() {
         return this.tsTs;
+    }
+
+    private String getMobileTs() {
+        return this.mobileTs;
+    }
+
+    private String getMobileVue() {
+        return this.mobileVue;
+    }
+
+    private String getMobileDetailTs() {
+        return this.mobileDetailTs;
+    }
+
+    private String getMobileDetail() {
+        return this.mobileDetail;
     }
 
     public Map<OutputFile, String> getPathInfo() {
@@ -240,6 +273,26 @@ public class PackageConfig {
 
         public Builder tsTs(@NotNull String tsTs) {
             this.packageConfig.tsTs = tsTs;
+            return this;
+        }
+
+        public Builder mobileTs(@NotNull String mobileTs) {
+            this.packageConfig.mobileTs = mobileTs;
+            return this;
+        }
+
+        public Builder mobileVue(@NotNull String mobileVue) {
+            this.packageConfig.mobileVue = mobileVue;
+            return this;
+        }
+
+        public Builder mobileDetailTs(@NotNull String mobileDetailTs) {
+            this.packageConfig.mobileDetailTs = mobileDetailTs;
+            return this;
+        }
+
+        public Builder mobileDetail(@NotNull String mobileDetail) {
+            this.packageConfig.mobileDetail = mobileDetail;
             return this;
         }
 

@@ -46,6 +46,7 @@
         from finance_info
         left join dict_info
         on finance_info.from_source = dict_info.type_code and dict_info.is_delete = 0
+       and dict_info.belongTo = 'pay_way'
         <where>
             finance_info.is_delete = 0
             <include refid="queryInfo"></include>

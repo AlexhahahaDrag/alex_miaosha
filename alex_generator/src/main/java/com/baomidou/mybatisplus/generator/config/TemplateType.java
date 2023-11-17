@@ -19,6 +19,10 @@ public enum TemplateType {
     LISTVUE,
     LISTTS,
     TSTS,
+    MOBILETS,
+    MOBILEVUE,
+    MOBILEDETAILTS,
+    MOBILEDETAIL,
     ;
 
     private TemplateType() {

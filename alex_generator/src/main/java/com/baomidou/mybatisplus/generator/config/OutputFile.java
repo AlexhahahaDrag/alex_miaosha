@@ -13,6 +13,10 @@ public enum OutputFile {
     detail,
     list,
     ts,
+    mobileTs,
+    mobileVue,
+    mobileDetailTs,
+    mobileDetail,
     feign;
     OutputFile() {
     }

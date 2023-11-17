@@ -41,6 +41,14 @@ public class StrategyConfig {
     private final com.baomidou.mybatisplus.generator.config.builder.ListTs.Builder listTsBuilder;
     private final com.baomidou.mybatisplus.generator.config.builder.ListVue.Builder listVueBuilder;
     private final com.baomidou.mybatisplus.generator.config.builder.TsTs.Builder tsTsBuilder;
+
+    private final com.baomidou.mybatisplus.generator.config.builder.MobileTs.Builder mobileTsBuilder;
+
+    private final com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder mobileVueBuilder;
+    private final com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder mobileDetailTsBuilder;
+
+    private final com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetailBuilder;
+
     private Entity entity;
     private Controller controller;
     private Mapper mapper;
@@ -52,6 +60,14 @@ public class StrategyConfig {
     private ListVue listVue;
     private ListTs listTs;
     private TsTs tsTs;
+
+    private MobileTs mobileTs;
+
+    private MobileVue mobileVue;
+
+    private MobileDetailTs mobileDetailTs;
+
+    private MobileDetail mobileDetail;
 
     private StrategyConfig() {
         this.tablePrefix = new HashSet();
@@ -72,6 +88,10 @@ public class StrategyConfig {
         this.listTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.ListTs.Builder(this);
         this.listVueBuilder = new com.baomidou.mybatisplus.generator.config.builder.ListVue.Builder(this);
         this.tsTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.TsTs.Builder(this);
+        this.mobileTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileTs.Builder(this);
+        this.mobileVueBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder(this);
+        this.mobileDetailTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder(this);
+        this.mobileDetailBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder(this);
     }
 
     @NotNull
@@ -219,6 +239,38 @@ public class StrategyConfig {
             this.tsTs = this.tsTsBuilder.get();
         }
         return this.tsTs;
+    }
+
+    @NotNull
+    public MobileTs mobileTs() {
+        if (this.mobileTs == null) {
+            this.mobileTs = this.mobileTsBuilder.get();
+        }
+        return this.mobileTs;
+    }
+
+    @NotNull
+    public MobileVue mobileVue() {
+        if (this.mobileVue == null) {
+            this.mobileVue = this.mobileVueBuilder.get();
+        }
+        return this.mobileVue;
+    }
+
+    @NotNull
+    public MobileDetailTs mobileDetailTs() {
+        if (this.mobileDetailTs == null) {
+            this.mobileDetailTs = this.mobileDetailTsBuilder.get();
+        }
+        return this.mobileDetailTs;
+    }
+
+    @NotNull
+    public MobileDetail mobileDetail() {
+        if (this.mobileDetail == null) {
+            this.mobileDetail = this.mobileDetailBuilder.get();
+        }
+        return this.mobileDetail;
     }
 
     public boolean isCapitalModeNaming(@NotNull String word) {
