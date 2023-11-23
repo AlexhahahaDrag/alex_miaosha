@@ -13,6 +13,7 @@ public enum OutputFile {
     detail,
     list,
     ts,
+    mobileTsTs,
     mobileTs,
     mobileVue,
     mobileDetailTs,

@@ -1,163 +1,267 @@
 <template>
-  <navBar :info='info' @clickRight='add${entity}'></navBar>
-  <van-pull-refresh pulling-text='加载中。。。' :style='{ height: 'calc(100% - 44px)' }' v-model='isRefresh' @refresh='refresh'
-    ref='pullRefresh' immediate-check='false'>
-    <form action='/'>
-      <van-search v-model='searchInfo.typeCode' show-action placeholder='请输入搜索关键词' @search='onSearch'
-        @cancel='onCancel' />
-    </form>
-    <van-empty v-if='dataSource.length == 0' description='暂无数据' />
-    <van-list v-else v-model:loading='loading' :finished='finished' finished-text='没有更多了' @load='onRefresh'>
-      <van-cell-group>
-        <van-swipe-cell v-for='(item, index) in dataSource' :before-close='beforeClose'>
-          <van-cell :title='userMap[item.belongTo] + '的' + item.name' :key='index' is-link
-            :to='{ path: '/finance/financeManager/detail', query: { id: item.id } }'>
-            <template #label>
-              <div style='margin-top: 10px; display: flex'>
-                <div class='icon' style='background-color: #ffcc00'>
-                  {{ item.fromSource }}
-                </div>
-              </div>
-            </template>
-            <template #right-icon>
-              <div class='text-right'>
-                <div style='display: flex'>
-                  <div class='van-ellipsis' style='width: 130px;text-align:right'>
-                    {{ item?.infoDate ? String(item.infoDate).substring(0, 10) : '--' }}
-                  </div>
-                </div>
-                <div style='margin-top: 10px;text-align: right'>
-                  {{ item.amount ? (item.incomeAndExpenses === 'income' ? item.amount : -item.amount) : '--' }}
-                </div>
-              </div>
-            </template>
-          </van-cell>
-          <template #right>
-            <van-button class='right_info' @click='del${entity}(item.id)' square type='danger' text='删除' />
-          </template>
-        </van-swipe-cell>
-      </van-cell-group>
-    </van-list>
-  </van-pull-refresh>
-  <van-back-top />
+    <navBar :info="info"></navBar>
+    <van-form @submit="onSubmit" :rules="rulesRef">
+        <van-cell-group inset>
+            <van-field v-model="formInfo.name" name="name" :label="label.name + '：'" :placeholder="'请输入' + label.name"
+                :rules="rulesRef.name" />
+            <van-field v-model="formInfo.typeCode" name="typeCode" :label="label.typeCode + '：'"
+                :placeholder="'请输入' + label.typeCode" :rules="rulesRef.typeCode" />
+            <van-field v-model="formInfo.amount" type="number" name="amount" :label="label.amount + '：'"
+                :placeholder="'请输入' + label.amount" :rules="rulesRef.amount" />
+            <van-field v-model="fromSourceName" name="fromSource" :label="label.fromSource + '：'"
+                :placeholder="'请输入' + label.fromSource" :rules="rulesRef.fromSource" @click="choose('fromSource')"
+                readonly />
+            <van-field v-model="incomeAndExpensesName" name="incomeAndExpenses" :label="label.incomeAndExpenses + '：'"
+                :placeholder="'请输入' + label.incomeAndExpenses" :rules="rulesRef.incomeAndExpenses"
+                @click="choose('incomeAndExpenses')" readonly />
+            <van-field v-model="isValidName" name="isValid" :label="label.isValid + '：'"
+                :placeholder="'请输入' + label.isValid" :rules="rulesRef.isValid" @click="choose('isValid')" readonly />
+            <van-field v-model="infoDateName" name="infoDate" :label="label.infoDate + '：'"
+                :placeholder="'请输入' + label.infoDate" :rules="rulesRef.infoDate" @click="chooseDate" readonly />
+            <van-field v-model="belongToName" name="belongTo" :label="label.belongTo + '：'"
+                :placeholder="'请输入' + label.belongTo" :rules="rulesRef.belongTo" @click="choose('belongTo')" readonly />
+            <selectPop :info="popInfo" @selectInfo="selectInfo" @cancelInfo="cancelInfo"></selectPop>
+            <datePop :info="chooseDateInfo" @selectInfo="selectDateInfo" @cancelInfo="cancelDateInfo"></datePop>
+        </van-cell-group>
+        <div style="margin: 16px;">
+            <van-button round block type="primary" native-type="submit">
+                提交
+            </van-button>
+        </div>
+    </van-form>
 </template>
-<script lang='ts' setup>
-import { ref } from 'vue';
-import { get${entity}Page, delete${entity}Manager, } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
-import { getUserManagerList, } from '@/api/user/userManager';
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import { useRoute, useRouter } from "vue-router";
 import navBar from '@/views/common/navBar/index.vue';
+import dayjs, { Dayjs } from 'dayjs';
+import { getDictList } from "@/api/finance/dict/dictManager";
+import { getUserManagerList } from "@/api/user/userManager";
+import { useUserStore } from "@/store/modules/user/user";
+import selectPop from '@/views/common/pop/selectPop.vue';
+import { Info } from '@/views/common/pop/selectPop.vue';
+import datePop from '@/views/common/pop/datePop.vue';
+import { showFailToast ,showSuccessToast } from 'vant';
+import { addOrEditFinanceManger, getFinanceMangerDetail } from '@/api/finance/financeManager';
 
-import {
-  SearchInfo,
-  pagination,
-  pageInfo,
-  fromSourceTransferList,
-} from '/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
-import { showSuccessToast, showFailToast } from 'vant';
-import { useRouter, useRoute } from 'vue-route';
-
-let router = useRouter();
 let route = useRoute();
+let router = useRouter();
+let userInfo = useUserStore()?.getUserInfo;
 const info = ref<any>({
-  title: route?.name || '财务管理11',
-  rightButton: '新增',
-})
-let loading = ref<boolean>(false);
-let dataSource = ref<any[]>([]);
-let searchInfo = ref<SearchInfo>({});
+    title: route?.name || '财务明细',
+});
+// TODO 修改成类型
+let formInfo = ref<any>({});
 
-let finished = ref<boolean>(false); //加载是否已经没有更多数据
-let isRefresh = ref<boolean>(false); //是否下拉刷新
+const label = reactive({
+    <% for(field in table.fields){
+           if(field.keyFlag) {
+                continue;
+           }
+      %>
+      ${field.propertyName}: '${field.comment}不能为空！',
+    <% } %>
+});
 
-const onSearch = () => {
-  pagination.value.current = 1;
-  dataSource.value = []
-  onRefresh();
+const rulesRef = reactive({
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            continue;
+       }
+  %>
+  ${field.propertyName}: [
+    {
+      required: true,
+      message: '${field.comment}不能为空！',
+    },
+  ],
+<% } %>
+});
+
+let popInfo = ref<Info>({ showFlag: false });
+
+let fromSourceInfo = ref<Info>({
+    label: 'fromSource',
+    labelName: '支付方式',
+    rule: rulesRef.fromSource,
+    customFieldName: {
+        text: 'typeName',
+        value: 'typeCode',
+    },
+    selectValue: formInfo.value.fromSource
+});
+
+let incomeAndExpensesInfo = ref<Info>({
+    label: 'incomeAndExpenses',
+    labelName: '收支类型',
+    rule: rulesRef.incomeAndExpenses,
+    customFieldName: {
+        text: 'typeName',
+        value: 'typeCode',
+    },
+    selectValue: formInfo.value.incomeAndExpenses
+});
+
+let isValidInfo = ref<Info>({
+    label: 'isValid',
+    labelName: '状态',
+    rule: rulesRef.isValid,
+    customFieldName: {
+        text: 'typeName',
+        value: 'typeCode',
+    },
+    selectValue: formInfo.value.isValid
+});
+
+let belongToInfo = ref<Info>({
+    label: 'belongTo',
+    labelName: '属于',
+    rule: rulesRef.belongTo,
+    customFieldName: {
+        text: 'nickName',
+        value: 'id',
+    },
+    selectValue: formInfo.value.belongTo
+});
+
+const choose = (type: string) => {
+    switch (type) {
+        case 'fromSource':
+            popInfo.value = fromSourceInfo.value;
+            break;
+        case 'incomeAndExpenses':
+            popInfo.value = incomeAndExpensesInfo.value;
+            break;
+        case 'isValid':
+            popInfo.value = isValidInfo.value;
+            break;
+        case 'belongTo':
+            popInfo.value = belongToInfo.value;
+            break;
+    }
+    popInfo.value.showFlag = true;
 };
-const onCancel = () => {
-  searchInfo.value.typeCode = '';
+
+const selectInfo = (type: string, value: any, name: string) => {
+    popInfo.value.showFlag = false;
+    switch (type) {
+        case 'fromSource':
+            formInfo.value.fromSource = value;
+            fromSourceName.value = name;
+            break;
+        case 'incomeAndExpenses':
+            formInfo.value.incomeAndExpenses = value;
+            incomeAndExpensesName.value = name;
+            break;
+        case 'isValid':
+            formInfo.value.isValid = value;
+            isValidName.value = name;
+            break;
+        case 'belongTo':
+            formInfo.value.belongTo = value;
+            belongToName.value = name;
+            break;
+    }
 };
 
-function query(param: SearchInfo, cur: pageInfo) {
-  loading.value = true;
-  get${entity}Page(param, cur?.current ? cur.current : 1, cur?.pageSize || 10)
-    .then((res) => {
-      if (res.code == '200') {
-        dataSource.value = [...dataSource.value, ...res.data.records];
-        pagination.value.current = res.data.current + 1;
-        pagination.value.pageSize = res.data.size;
-        pagination.value.total = res.data.total;
-        console.log(`pageInfo`, pagination.value);
-        if (pagination.value.total || 0 < (pagination.value.current || 1) * (pagination.value.pageSize || 10)) {
-          finished.value = true;
+const cancelInfo = () => {
+    popInfo.value.showFlag = false;
+};
+
+let chooseDateInfo = ref<any>({
+    label: 'infoDate',
+    labelName: '业务日期',
+    rule: rulesRef.infoDate,
+    selectValue: dayjs(),
+    showFlag: false,
+    formatter: (type: string, option: any) => {
+        if (type === 'year') {
+            option.text += '年';
         }
-      } else {
-        showFailToast((res && res.message) || '查询列表失败！');
-      }
-    })
-    .finally(() => {
-      loading.value = false;
+        if (type === 'month') {
+            option.text += '月';
+        }
+        if (type === 'day') {
+            option.text += '日';
+        }
+        return option;
+    },
+});
+
+let infoDateName = ref<string>('');
+
+const chooseDate = () => {
+    chooseDateInfo.value.showFlag = true;
+};
+
+const selectDateInfo = (date: Dayjs, dateName: string) => {
+    formInfo.value.infoDate = date;
+    infoDateName.value = dateName;
+    chooseDateInfo.value.showFlag = false;
+};
+
+const cancelDateInfo = () => {
+    chooseDateInfo.value.showFlag = false;
+}
+
+let fromSourceName = ref<string>('');
+let incomeAndExpensesName = ref<string>('');
+let isValidName = ref<string>('');
+
+const onSubmit = () => {
+    let method = 'post';
+    if (formInfo.value.id) {
+        method = 'put'
+    }
+    addOrEditFinanceManger(method, formInfo.value).then((res: any) => {
+        if (res?.code == '200') {
+            showSuccessToast(res?.message || '保存成功!');
+            router.push({ path: '/finance/financeManager' });
+        } else {
+            showFailToast (res?.message || '保存失败，请联系管理员!');
+        }
     });
-}
+};
 
-const add${entity} = () => {
-  router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail' });
-}
-
-let userMap = {};
-function getUserInfoList() {
-  getUserManagerList({}).then((res) => {
-    if (res.code == '200') {
-      if (res?.data) {
-        res.data.forEach((user: { id: string | number; nickName: any; }) => {
-          userMap[user.id] = user.nickName;
-        });
-      }
-    } else {
-      showFailToast((res && res.message) || '查询列表失败！');
+const getListName = (list: any[], value: any, code: string, name: string) => {
+    if (!list?.length) {
+        return '';
     }
-  });
-}
-
-const refresh = () => {
-  pagination.value.current = 0;
-  dataSource.value = []
-  query(searchInfo.value, pagination.value);
-}
-
-const onRefresh = () => {
-  query(searchInfo.value, pagination.value);
+    let listName = '';
+    list.forEach(item => {
+        if (item[code] == value) {
+            listName = item[name];
+        }
+    });
+    return listName;
 };
 
-const beforeClose = (e) => {
-  console.log(e);
-};
-
-const del${entity} = (id: number) => {
-  delete${entity}(id + '').then((res: any) => {
-    if (res?.code == '200') {
-      refresh();
-      showSuccessToast((res && res.message) || '删除成功！');
-    } else {
-      showFailToast((res && res.message) || '删除失败，请联系管理员！');
+const initInfoDate = (infoDate: Dayjs) => {
+    if (infoDate) {
+        infoDateName.value = infoDate.format('YYYY-MM-DD');
+        chooseDateInfo.value.selectValue = infoDate;
     }
-  })
-};
+}
 
 function init() {
-  dataSource.value = [];
-  pagination.value.current = 0;
-  //获取财务管理页面数据
-  query(searchInfo.value, pagination.value);
-  //获取用户信息
-  getUserInfoList();
+    let id: any = route?.query?.id;
+    if (id) {
+        Promise.all([getFinanceMangerDetail(id || '-1')) => {
+            if (res[0].code == '200') {
+                formInfo.value = res[0].data;
+            } else {
+                showFailToast(res[0]?.message || '查询详情失败，请联系管理员!')
+            }
+        }).catch(() => {
+            showFailToast ('系统问题，请联系管理员！')
+        });
+    } else {
+        formInfo.value = {};
+    }
 }
 
 init();
 </script>
-
-<style lang='scss'>
-.right_info {
-  height: 100%;
-}
+<style lang='scss' scoped>
 </style>

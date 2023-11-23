@@ -74,6 +74,26 @@ public class BaseBuilder implements IConfigBuilder<StrategyConfig> {
     }
 
     @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileTs.Builder mobileTsBuilder() {
+        return this.strategyConfig.mobileTsBuilder();
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder mobileVueBuilder() {
+        return this.strategyConfig.mobileVueBuilder();
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetail() {
+        return this.strategyConfig.mobileDetailBuilder();
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder mobileDetailTs() {
+        return this.strategyConfig.mobileDetailTsBuilder();
+    }
+
+    @NotNull
     public StrategyConfig build() {
         this.strategyConfig.validate();
         return this.strategyConfig;

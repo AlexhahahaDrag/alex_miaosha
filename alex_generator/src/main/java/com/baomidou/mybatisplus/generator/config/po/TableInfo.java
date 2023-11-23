@@ -43,6 +43,13 @@ public class TableInfo {
     private String listVueName;
     private String listTsName;
     private String tsTsName;
+
+    private String mobileVueName;
+    private String mobileTsName;
+    private String mobileDetailName;
+    private String mobileDetailTsName;
+    private String mobileTsTsName;
+
     private final Entity entity;
     private final Vo vo;
     private final DetailTs detailTs;
@@ -50,7 +57,21 @@ public class TableInfo {
     private final ListTs listTs;
     private final ListVue listVue;
     private final TsTs tsTs;
+
+    private final MobileVue mobileVue;
+
+    private final MobileTs mobileTs;
+
+    private final MobileDetail mobileDetail;
+
+    private final MobileDetailTs mobileDetailTs;
+
+    private final MobileTsTs mobileTsTs;
+
     private Boolean vueGenerator;
+
+    private Boolean mobileGenerator;
+
     private Boolean feignGenerator;
 
     public TableInfo(@NotNull ConfigBuilder configBuilder, @NotNull String name) {
@@ -63,7 +84,13 @@ public class TableInfo {
         this.listVue = configBuilder.getStrategyConfig().listVue();
         this.listTs = configBuilder.getStrategyConfig().listTs();
         this.tsTs = configBuilder.getStrategyConfig().tsTs();
+        this.mobileVue = configBuilder.getStrategyConfig().mobileVue();
+        this.mobileTs = configBuilder.getStrategyConfig().mobileTs();
+        this.mobileDetail = configBuilder.getStrategyConfig().mobileDetail();
+        this.mobileDetailTs = configBuilder.getStrategyConfig().mobileDetailTs();
+        this.mobileTsTs = configBuilder.getStrategyConfig().mobileTsTs();
         this.vueGenerator = configBuilder.getGlobalConfig().isVueGenerator();
+        this.mobileGenerator = configBuilder.getGlobalConfig().isMobileGenerator();
         this.feignGenerator = configBuilder.getGlobalConfig().isFeignGenerator();
         this.name = name;
     }
@@ -108,7 +135,7 @@ public class TableInfo {
 
     public String getFieldNames() {
         if (StringUtils.isBlank(this.fieldNames)) {
-            this.fieldNames = (String)this.fields.stream().map(item -> name + "." + item.getColumnName()).collect(Collectors.joining(", "));
+            this.fieldNames = (String) this.fields.stream().map(item -> name + "." + item.getColumnName()).collect(Collectors.joining(", "));
         }
         return this.fieldNames;
     }
@@ -231,6 +258,11 @@ public class TableInfo {
         this.listVueName = this.strategyConfig.listVue().getConverterFileName().convert(entityName);
         this.listTsName = this.strategyConfig.listTs().getConverterFileName().convert(entityName);
         this.tsTsName = this.strategyConfig.tsTs().getConverterFileName().convert(entityName);
+        this.mobileVueName = this.strategyConfig.mobileVue().getConverterFileName().convert(entityName);
+        this.mobileTsName = this.strategyConfig.mobileTs().getConverterFileName().convert(entityName);
+        this.mobileDetailName = this.strategyConfig.mobileDetail().getConverterFileName().convert(entityName);
+        this.mobileDetailTsName = this.strategyConfig.mobileDetailTs().getConverterFileName().convert(entityName);
+        this.mobileTsTsName = this.strategyConfig.mobileTsTs().getConverterFileName().convert(entityName);
         this.importPackage();
         this.importVoPackage();
     }
@@ -366,11 +398,59 @@ public class TableInfo {
         this.vueGenerator = vueGenerator;
     }
 
+    public Boolean getMobileGenerator() {
+        return mobileGenerator;
+    }
+
+    public void setMobileGenerator(Boolean mobileGenerator) {
+        this.mobileGenerator = mobileGenerator;
+    }
+
     public Boolean getFeignGenerator() {
         return feignGenerator;
     }
 
     public void setFeignGenerator(Boolean feignGenerator) {
         this.feignGenerator = feignGenerator;
+    }
+
+    public String getMobileVueName() {
+        return mobileVueName;
+    }
+
+    public void setMobileVueName(String mobileVueName) {
+        this.mobileVueName = mobileVueName;
+    }
+
+    public String getMobileTsName() {
+        return mobileTsName;
+    }
+
+    public void setMobileTsName(String mobileTsName) {
+        this.mobileTsName = mobileTsName;
+    }
+
+    public String getMobileDetailName() {
+        return mobileDetailName;
+    }
+
+    public void setMobileDetailName(String mobileDetailName) {
+        this.mobileDetailName = mobileDetailName;
+    }
+
+    public String getMobileDetailTsName() {
+        return mobileDetailTsName;
+    }
+
+    public void setMobileDetailTsName(String mobileDetailTsName) {
+        this.mobileDetailTsName = mobileDetailTsName;
+    }
+
+    public String getMobileTsTsName() {
+        return mobileTsTsName;
+    }
+
+    public void setMobileTsTsName(String mobileTsTsName) {
+        this.mobileTsTsName = mobileTsTsName;
     }
 }

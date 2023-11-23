@@ -33,6 +33,8 @@ public class TemplateConfig {
 
     private String mobileDetailTs;
 
+    private String mobileTsTs;
+
     private String mobileDetail;
     
     private boolean disableEntity;
@@ -56,6 +58,7 @@ public class TemplateConfig {
         this.mobileVue = "/templates/mobile/mobile.vue";
         this.mobileDetail = "/templates/mobile/mobile.detail";
         this.mobileDetailTs = "/templates/mobile/mobile.detail.ts";
+        this.mobileTsTs = "/templates/mobile/mobile.ts.ts";
     }
 
     private void logger(String value, TemplateType templateType) {
@@ -126,6 +129,8 @@ public class TemplateConfig {
                         this.mobileDetailTs = null;
                     case MOBILEDETAIL:
                         this.mobileDetail = null;
+                    case MOBILETSTS:
+                        this.mobileTsTs = null;
                 }
             }
         }
@@ -198,6 +203,10 @@ public class TemplateConfig {
 
     public String getMobileDetail() {
         return mobileDetail;
+    }
+
+    public String getMobileTsTs() {
+        return mobileTsTs;
     }
 
     public static class Builder implements IConfigBuilder<TemplateConfig> {
@@ -305,6 +314,11 @@ public class TemplateConfig {
 
         public Builder mobileDetail(@NotNull String mobileDetailTemplate) {
             this.templateConfig.mobileDetail = mobileDetailTemplate;
+            return this;
+        }
+
+        public Builder mobileTsTs(@NotNull String mobileTsTsTemplate) {
+            this.templateConfig.mobileTsTs = mobileTsTsTemplate;
             return this;
         }
 

@@ -38,6 +38,8 @@ public class PackageConfig {
 
     private String mobileDetail;
 
+    private String mobileTsTs;
+
     private Map<OutputFile, String> pathInfo;
     private final Map<String, String> packageInfo;
 
@@ -62,6 +64,7 @@ public class PackageConfig {
         this.mobileVue = "mobileVue";
         this.mobileDetailTs = "mobileDetailTs";
         this.mobileDetail = "mobileDetail";
+        this.mobileTsTs = "mobileTsTs";
         this.packageInfo = new HashMap();
     }
 
@@ -95,9 +98,10 @@ public class PackageConfig {
             this.packageInfo.put("TsTs", this.joinPackage(this.getTsTs()));
             this.packageInfo.put("Other", this.joinPackage(this.getOther()));
             this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
-            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
-            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
-            this.packageInfo.put("MobileTs", this.joinPackage(this.getMobileTs()));
+            this.packageInfo.put("MobileVue", this.joinPackage(this.getMobileVue()));
+            this.packageInfo.put("MobileDetailTs", this.joinPackage(this.getMobileDetailTs()));
+            this.packageInfo.put("MobileDetail", this.joinPackage(this.getMobileDetail()));
+            this.packageInfo.put("MobileTsTs", this.joinPackage(this.getMobileTsTs()));
             this.packageInfo.put("Parent", this.getParent());
         }
 
@@ -182,6 +186,14 @@ public class PackageConfig {
 
     private String getMobileDetail() {
         return this.mobileDetail;
+    }
+
+    public String getMobileTsTs() {
+        return mobileTsTs;
+    }
+
+    public void setMobileTsTs(String mobileTsTs) {
+        this.mobileTsTs = mobileTsTs;
     }
 
     public Map<OutputFile, String> getPathInfo() {
@@ -293,6 +305,11 @@ public class PackageConfig {
 
         public Builder mobileDetail(@NotNull String mobileDetail) {
             this.packageConfig.mobileDetail = mobileDetail;
+            return this;
+        }
+
+        public Builder mobileTsTs(@NotNull String mobileTsTs) {
+            this.packageConfig.mobileTsTs = mobileTsTs;
             return this;
         }
 

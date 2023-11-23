@@ -1,16 +1,16 @@
 <template>
   <div>
-    <a-modal :visible="props.visible"
-      :width="props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'" :title="
+    <a-modal :visible='props.visible'
+      :width='props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'' :title='
         props.modelInfo && props.modelInfo.title ? props.modelInfo.title : 'Basic Modal'
-      " @ok="handleOk" okText="保存" :confirmLoading="modelConfig.confirmLoading"
-      :destroyOnClose="modelConfig.destroyOnClose" @cancel="handleCancel">
+      ' @ok='handleOk' okText='保存' :confirmLoading='modelConfig.confirmLoading'
+      :destroyOnClose='modelConfig.destroyOnClose' @cancel='handleCancel'>
       <template #footer>
-        <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button>
+        <a-button key='back' @click='handleCancel'>取消</a-button>
+        <a-button key='submit' type='primary' :loading='loading' @click='handleOk'>保存</a-button>
       </template>
-      <a-form ref="formRef" name="${entity}Form" class="ant-advanced-search-form" :model="formState" @finish="onFinish"
-        @finishFailed="onFinishFailed" :rules="rulesRef" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form ref='formRef' name='${entity}Form' class='ant-advanced-search-form' :model='formState' @finish='onFinish'
+        @finishFailed='onFinishFailed' :rules='rulesRef' :label-col='labelCol' :wrapper-col='wrapperCol'>
 <% var num = 0; %>
 <% var pre = 0; %>
 <% for(field in table.fields){
@@ -19,11 +19,11 @@
     }
   %>
   <% if(num % 2 == 0){ %>
-        <a-row :gutter="24">
+        <a-row :gutter='24'>
   <% } %>
-          <a-col :span="12">
-            <a-form-item name="${field.propertyName}" label="${field.comment}">
-              <a-input v-model:value="formState.${field.propertyName}" placeholder="请填写${field.comment}"></a-input>
+          <a-col :span='12'>
+            <a-form-item name='${field.propertyName}' label='${field.comment}'>
+              <a-input v-model:value='formState.${field.propertyName}' placeholder='请填写${field.comment}'></a-input>
             </a-form-item>
           </a-col>
     <% num++; %>
@@ -38,15 +38,15 @@
     </a-modal>
   </div>
 </template>
-<script lang="ts" setup>
-import { ref, watch, reactive } from "vue";
-import { ${entity}Detail } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs";
+<script lang='ts' setup>
+import { ref, watch, reactive } from 'vue';
+import { ${entity}Detail } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
 import {
   get${entity}Detail,
   addOrEdit${entity},
-} from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
-import { message, FormInstance } from "ant-design-vue";
-import { ModelInfo } from "../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
+} from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
+import { message, FormInstance } from 'ant-design-vue';
+import { ModelInfo } from '../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
 
 const labelCol = ref({ span: 5 });
 const wrapperCol = ref({ span: 19 });
@@ -83,7 +83,7 @@ const props = defineProps<Props>();
 
 let formState = ref<${entity}Detail>({});
 
-const emit = defineEmits(["handleOk", "handleCancel"]);
+const emit = defineEmits(['handleOk', 'handleCancel']);
 
 const handleOk = () => {
   loading.value = true;
@@ -96,37 +96,37 @@ const handleOk = () => {
 };
 
 const handleCancel = () => {
-  emit("handleCancel", false);
+  emit('handleCancel', false);
 };
 
 //保存${table.comment!}信息
 function save${entity}Manager() {
-  let method = "";
-  <% var id = "id";
+  let method = '';
+  <% var id = 'id';
    for(field in table.fields){
        if(field.keyFlag){
            id = field.propertyName;
        }
   } %>
   if (formState.value.${id}) {
-    method = "put";
+    method = 'put';
   } else {
-    method = "post";
+    method = 'post';
   }
   addOrEdit${entity}(method, formState.value)
     .then((res) => {
-      if (res.code == "200") {
-        message.success((res && res.message) || "保存成功！");
-        emit("handleOk", false);
+      if (res.code == '200') {
+        message.success((res && res.message) || '保存成功！');
+        emit('handleOk', false);
       } else {
-        message.error((res && res.message) || "保存失败！");
+        message.error((res && res.message) || '保存失败！');
       }
       formState.value = {};
     })
     .catch((error: any) => {
       let data = error?.response?.data;
       if (data) {
-        message.error((data?.message) || "保存失败！");
+        message.error((data?.message) || '保存失败！');
       }
     }).finally(() => {
       loading.value = false;
@@ -134,11 +134,11 @@ function save${entity}Manager() {
 }
 
 const onFinish = (values: any) => {
-  console.log("Success:", values);
+  console.log('Success:', values);
 };
 
 const onFinishFailed = (errorInfo: any) => {
-  console.log("Failed:", errorInfo);
+  console.log('Failed:', errorInfo);
 };
 
 function init() {
@@ -146,17 +146,17 @@ function init() {
     if (props.modelInfo.${id}) {
       get${entity}Detail(props.modelInfo.${id})
         .then((res) => {
-          if (res.code == "200") {
+          if (res.code == '200') {
             formState.value = res.data;
             modelConfig.confirmLoading = false;
           } else {
-            message.error((res && res.message) || "查询失败！");
+            message.error((res && res.message) || '查询失败！');
           }
         })
         .catch((error: any) => {
           let data = error?.response?.data;
           if (data) {
-            message.error((data?.message) || "查询失败！");
+            message.error((data?.message) || '查询失败！');
           }
         });
     } else {
@@ -182,6 +182,6 @@ watch(
 
 defineExpose({ handleOk, handleCancel });
 </script>
-<style lang="scss" scoped>
-@import "@/style/index.scss";
+<style lang='scss' scoped>
+@import '@/style/index.scss';
 </style>

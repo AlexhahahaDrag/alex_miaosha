@@ -45,9 +45,12 @@ public class StrategyConfig {
     private final com.baomidou.mybatisplus.generator.config.builder.MobileTs.Builder mobileTsBuilder;
 
     private final com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder mobileVueBuilder;
+
     private final com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder mobileDetailTsBuilder;
 
     private final com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetailBuilder;
+
+    private final com.baomidou.mybatisplus.generator.config.builder.MobileTsTs.Builder mobileTsTsBuilder;
 
     private Entity entity;
     private Controller controller;
@@ -66,6 +69,8 @@ public class StrategyConfig {
     private MobileVue mobileVue;
 
     private MobileDetailTs mobileDetailTs;
+
+    private MobileTsTs mobileTsTs;
 
     private MobileDetail mobileDetail;
 
@@ -92,6 +97,7 @@ public class StrategyConfig {
         this.mobileVueBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder(this);
         this.mobileDetailTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder(this);
         this.mobileDetailBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder(this);
+        this.mobileTsTsBuilder = new com.baomidou.mybatisplus.generator.config.builder.MobileTsTs.Builder(this);
     }
 
     @NotNull
@@ -242,11 +248,21 @@ public class StrategyConfig {
     }
 
     @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileTs.Builder mobileTsBuilder() {
+        return this.mobileTsBuilder;
+    }
+
+    @NotNull
     public MobileTs mobileTs() {
         if (this.mobileTs == null) {
             this.mobileTs = this.mobileTsBuilder.get();
         }
         return this.mobileTs;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileVue.Builder mobileVueBuilder() {
+        return this.mobileVueBuilder;
     }
 
     @NotNull
@@ -258,11 +274,29 @@ public class StrategyConfig {
     }
 
     @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileDetailTs.Builder mobileDetailTsBuilder() {
+        return this.mobileDetailTsBuilder;
+    }
+
+    @NotNull
     public MobileDetailTs mobileDetailTs() {
         if (this.mobileDetailTs == null) {
             this.mobileDetailTs = this.mobileDetailTsBuilder.get();
         }
         return this.mobileDetailTs;
+    }
+
+    @NotNull
+    public MobileTsTs mobileTsTs() {
+        if (this.mobileTsTs == null) {
+            this.mobileTsTs = this.mobileTsTsBuilder.get();
+        }
+        return this.mobileTsTs;
+    }
+
+    @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetailBuilder() {
+        return this.mobileDetailBuilder;
     }
 
     @NotNull

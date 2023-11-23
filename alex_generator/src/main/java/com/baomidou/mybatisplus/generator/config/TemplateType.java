@@ -23,6 +23,7 @@ public enum TemplateType {
     MOBILEVUE,
     MOBILEDETAILTS,
     MOBILEDETAIL,
+    MOBILETSTS,
     ;
 
     private TemplateType() {
