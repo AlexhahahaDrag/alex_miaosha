@@ -234,7 +234,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputMobileDetailTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String mobileDetailTsPath = this.getPathInfo(OutputFile.mobileDetailTs);
+        String mobileDetailTsPath = this.getPathInfo(OutputFile.mobileDetail);
         if (StringUtils.isNotBlank(tableInfo.getMobileDetailTsName()) && StringUtils.isNotBlank(mobileDetailTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileDetailTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
@@ -256,7 +256,7 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputMobileTs(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String mobileTsPath = this.getPathInfo(OutputFile.mobileTs);
+        String mobileTsPath = this.getPathInfo(OutputFile.mobileVue);
         if (StringUtils.isNotBlank(tableInfo.getMobileTsName()) && StringUtils.isNotBlank(mobileTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileTs).ifPresent((tsTs) -> {
                 String mobileTsName = tableInfo.getMobileTsName();

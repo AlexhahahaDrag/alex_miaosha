@@ -28,17 +28,19 @@ generator:
   logicDeletePropertyName: isDelete
   superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
   addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
-#  javaPath: F:\alex\alex_miaosha
+  javaPath: F:\alex\alex_miaosha
   voPath:
   feignPath:
-#  vuePath: F:\alex\project\alex_miaosha_product\src\views
-#  tsPath: F:\alex\project\alex_miaosha_product\src\api
-  mobileVuePath: C:\Users\majf\Desktop\views
-  mobileTsPath: C:\Users\majf\Desktop\api
+  vuePath: F:\alex\project\alex_miaosha_product\src\views
+  tsPath: F:\alex\project\alex_miaosha_product\src\api
+  mobileVuePath: C:\Users\Administrator\Desktop\views
+  mobileTsPath: C:\Users\Administrator\Desktop\api
   parentPackage: com.alex
 
-  javaPath: D:\project\alex_miaosha\alex_miaosha
+#  mobileVuePath: C:\Users\majf\Desktop\views
+#  mobileTsPath: C:\Users\majf\Desktop\api
+#  javaPath: D:\project\alex_miaosha\alex_miaosha
 #  voPath:
 #  feignPath:
-  vuePath: D:\project\alex_miaosha_front\src\views
-  tsPath: D:\project\alex_miaosha_front\src\api
+#  vuePath: D:\project\alex_miaosha_front\src\views
+#  tsPath: D:\project\alex_miaosha_front\src\api

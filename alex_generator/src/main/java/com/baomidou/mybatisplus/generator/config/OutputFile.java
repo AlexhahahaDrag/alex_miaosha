@@ -14,9 +14,7 @@ public enum OutputFile {
     list,
     ts,
     mobileTsTs,
-    mobileTs,
     mobileVue,
-    mobileDetailTs,
     mobileDetail,
     feign;
     OutputFile() {
