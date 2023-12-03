@@ -13,7 +13,7 @@ spring:
     password: mjzp.99147258369
 
 mybatis:
-  mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml
+  mapper-locations: classpath:com/alex/generator/mapper/**/*Mapper.xml
 
 logging:
   level:

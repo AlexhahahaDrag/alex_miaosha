@@ -12,7 +12,7 @@ export interface SearchInfo {
     if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
   ${field.propertyName}?: number;
   <% } else if (field.propertyType == 'LocalDateTime') { %>
-    ${field.propertyName}?: Dayjs | string;
+  ${field.propertyName}?: Dayjs | string;
 <% } else { %>
   ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
 <% } %>

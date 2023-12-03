@@ -1,6 +1,6 @@
 <template>
   <navBar :info='info' @clickRight='add${entity}'></navBar>
-  <van-pull-refresh pulling-text='加载中。。。' :style='{ height: 'calc(100% - 44px)' }' v-model='isRefresh' @refresh='refresh'
+  <van-pull-refresh pulling-text="加载中。。。" :style="{ height: 'calc(100% - 44px)' }" v-model='isRefresh' @refresh='refresh'
     ref='pullRefresh' immediate-check='false'>
     <form action='/'>
       <van-search v-model='searchInfo.typeCode' show-action placeholder='请输入搜索关键词' @search='onSearch'
@@ -10,8 +10,8 @@
     <van-list v-else v-model:loading='loading' :finished='finished' finished-text='没有更多了' @load='onRefresh'>
       <van-cell-group>
         <van-swipe-cell v-for='(item, index) in dataSource' :before-close='beforeClose'>
-          <van-cell :title='userMap[item.belongTo] + '的' + item.name' :key='index' is-link
-            :to='{ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail', query: { id: item.id } }'>
+          <van-cell :title="userMap[item.belongTo] + '的' + item.name" :key='index' is-link
+            :to='{ path: "/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail", query: { id: item.id } }'>
             <template #label>
               <div style='margin-top: 10px; display: flex'>
                 <div class='icon' style='background-color: #ffcc00'>
@@ -43,7 +43,7 @@
 </template>
 <script lang='ts' setup>
 import { ref } from 'vue';
-import { get${entity}Page, delete${entity}Manager, } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
+import { get${entity}Page, delete${entity}, } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { getUserManagerList, } from '@/api/user/userManager';
 import navBar from '@/views/common/navBar/index.vue';
 
@@ -52,7 +52,7 @@ import {
   pagination,
   pageInfo,
   fromSourceTransferList,
-} from '/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
+} from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
 import { showSuccessToast, showFailToast } from 'vant';
 import { useRouter, useRoute } from 'vue-route';
 

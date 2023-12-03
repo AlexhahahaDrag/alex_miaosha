@@ -196,7 +196,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .mobileVueBuilder()
                     .formatMobileVueFileName("%sVue")
                     .mobileDetailTsBuilder()
-                    .formatMobileDetailTsFileName("%sTs")
+                    .formatMobileDetailTsFileName("%sDetailTs")
                     .mobileTsTsBuilder()
                     .formatMobileTsTsFileName("%sTs")
                     .build()
