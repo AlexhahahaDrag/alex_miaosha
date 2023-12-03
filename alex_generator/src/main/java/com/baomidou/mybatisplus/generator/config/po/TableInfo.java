@@ -266,7 +266,7 @@ public class TableInfo {
         this.importPackage();
         this.importVoPackage();
     }
-
+ 
     public TableInfo setComment(String comment) {
         this.comment = this.globalConfig.isSwagger() && StringUtils.isNotBlank(comment) ? comment.replace("\"", "\\\"") : comment;
         return this;

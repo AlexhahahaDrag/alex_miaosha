@@ -190,6 +190,15 @@ public class GeneratorServiceImpl implements GeneratorService {
                     //配置ts
                     .tsTsBuilder()
                     .formatTsTsFileName("%sTs")
+                    // mobile
+                    .mobileTsBuilder()
+                    .formatMobileTsFileName("%sTs")
+                    .mobileVueBuilder()
+                    .formatMobileVueFileName("%sVue")
+                    .mobileDetailTsBuilder()
+                    .formatMobileDetailTsFileName("%sTs")
+                    .mobileTsTsBuilder()
+                    .formatMobileTsTsFileName("%sTs")
                     .build()
             ; // 设置过滤表前缀
         });

@@ -216,7 +216,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getMobileTsTsName()) && StringUtils.isNotBlank(mobileTsTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileTsTs).ifPresent((detailTs) -> {
                 String mobileTsTsName = tableInfo.getMobileTsTsName();
-                String mobileTsTsFile = String.format(mobileTsTsPath + File.separator + tableInfo.getDetailTsName() + TS, mobileTsTsName);
+                String mobileTsTsFile = String.format(mobileTsTsPath + File.separator + tableInfo.getMobileTsTsName() + TS, mobileTsTsName);
                 this.outputFile(new File(mobileTsTsFile), objectMap, detailTs);
             });
         }
@@ -238,7 +238,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getMobileDetailTsName()) && StringUtils.isNotBlank(mobileDetailTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileDetailTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
-                String mobileDetailTsFile = String.format(mobileDetailTsPath + File.separator + tableInfo.getListTsName() + TS, clientName);
+                String mobileDetailTsFile = String.format(mobileDetailTsPath + File.separator + tableInfo.getMobileDetailTsName() + TS, clientName);
                 this.outputFile(new File(mobileDetailTsFile), objectMap, listTs);
             });
         }
@@ -249,7 +249,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getMobileVueName()) && StringUtils.isNotBlank(mobileVuePath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileVue).ifPresent((listVue) -> {
                 String mobileVueName = tableInfo.getMobileVueName();
-                String mobileVueFile = String.format(mobileVuePath + File.separator + tableInfo.getListVueName() + VUE, mobileVueName);
+                String mobileVueFile = String.format(mobileVuePath + File.separator + tableInfo.getMobileVueName() + VUE, mobileVueName);
                 this.outputFile(new File(mobileVueFile), objectMap, listVue);
             });
         }
@@ -260,7 +260,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getMobileTsName()) && StringUtils.isNotBlank(mobileTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getMobileTs).ifPresent((tsTs) -> {
                 String mobileTsName = tableInfo.getMobileTsName();
-                String mobileTsFile = String.format(mobileTsPath + File.separator + tableInfo.getTsTsName() + TS, mobileTsName);
+                String mobileTsFile = String.format(mobileTsPath + File.separator + tableInfo.getMobileTsName() + TS, mobileTsName);
                 this.outputFile(new File(mobileTsFile), objectMap, tsTs);
             });
         }

@@ -45,7 +45,7 @@ public class MobileVue implements ITemplate {
             return this;
         }
 
-        public Builder formatMobileTsFileName(@NotNull String format) {
+        public Builder formatMobileVueFileName(@NotNull String format) {
             return this.convertFileName((entityName) -> String.format(format, Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1)));
         }
 

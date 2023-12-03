@@ -104,7 +104,6 @@ public class PackageConfig {
             this.packageInfo.put("MobileTsTs", this.joinPackage(this.getMobileTsTs()));
             this.packageInfo.put("Parent", this.getParent());
         }
-
         return Collections.unmodifiableMap(this.packageInfo);
     }
 

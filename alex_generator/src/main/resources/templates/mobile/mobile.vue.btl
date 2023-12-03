@@ -11,7 +11,7 @@
       <van-cell-group>
         <van-swipe-cell v-for='(item, index) in dataSource' :before-close='beforeClose'>
           <van-cell :title='userMap[item.belongTo] + '的' + item.name' :key='index' is-link
-            :to='{ path: '/finance/financeManager/detail', query: { id: item.id } }'>
+            :to='{ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail', query: { id: item.id } }'>
             <template #label>
               <div style='margin-top: 10px; display: flex'>
                 <div class='icon' style='background-color: #ffcc00'>

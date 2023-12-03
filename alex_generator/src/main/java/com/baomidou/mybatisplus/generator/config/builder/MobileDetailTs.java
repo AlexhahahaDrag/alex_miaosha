@@ -19,7 +19,7 @@ public class MobileDetailTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private MobileDetailTs() {
-        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "Ts";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "DetailTs";
     }
 
     @NotNull
@@ -45,7 +45,7 @@ public class MobileDetailTs implements ITemplate {
             return this;
         }
 
-        public Builder formatMobileTsFileName(@NotNull String format) {
+        public Builder formatMobileDetailTsFileName(@NotNull String format) {
             return this.convertFileName((entityName) -> String.format(format, Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1)));
         }
 

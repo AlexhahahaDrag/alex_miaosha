@@ -287,6 +287,11 @@ public class StrategyConfig {
     }
 
     @NotNull
+    public com.baomidou.mybatisplus.generator.config.builder.MobileTsTs.Builder mobileTsTsBuilder() {
+        return this.mobileTsTsBuilder;
+    }
+
+    @NotNull
     public MobileTsTs mobileTsTs() {
         if (this.mobileTsTs == null) {
             this.mobileTsTs = this.mobileTsTsBuilder.get();
