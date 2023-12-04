@@ -3,8 +3,8 @@
   <van-pull-refresh pulling-text="加载中。。。" :style="{ height: 'calc(100% - 44px)' }" v-model='isRefresh' @refresh='refresh'
     ref='pullRefresh' immediate-check='false'>
     <form action='/'>
-      <van-search v-model='searchInfo.typeCode' show-action placeholder='请输入搜索关键词' @search='onSearch'
-        @cancel='onCancel' />
+    <!--   <van-search v-model='searchInfo.typeCode' show-action placeholder='请输入搜索关键词' @search='onSearch'
+        @cancel='onCancel' /> -->
     </form>
     <van-empty v-if='dataSource.length == 0' description='暂无数据' />
     <van-list v-else v-model:loading='loading' :finished='finished' finished-text='没有更多了' @load='onRefresh'>
@@ -43,7 +43,10 @@
 </template>
 <script lang='ts' setup>
 import { ref } from 'vue';
-import { get${entity}Page, delete${entity}, } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
+import {
+    get${entity}Page,
+    delete${entity},
+} from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { getUserManagerList, } from '@/api/user/userManager';
 import navBar from '@/views/common/navBar/index.vue';
 
@@ -52,9 +55,9 @@ import {
   pagination,
   pageInfo,
   fromSourceTransferList,
-} from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
+} from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { showSuccessToast, showFailToast } from 'vant';
-import { useRouter, useRoute } from 'vue-route';
+import { useRouter, useRoute } from 'vue-router';
 
 let router = useRouter();
 let route = useRoute();
@@ -69,14 +72,14 @@ let searchInfo = ref<SearchInfo>({});
 let finished = ref<boolean>(false); //加载是否已经没有更多数据
 let isRefresh = ref<boolean>(false); //是否下拉刷新
 
-const onSearch = () => {
-  pagination.value.current = 1;
-  dataSource.value = []
-  onRefresh();
-};
-const onCancel = () => {
-  searchInfo.value.typeCode = '';
-};
+// const onSearch = () => {
+//  pagination.value.current = 1;
+//  dataSource.value = []
+//  onRefresh();
+// };
+// const onCancel = () => {
+//   searchInfo.value.typeCode = '';
+// };
 
 function query(param: SearchInfo, cur: pageInfo) {
   loading.value = true;
