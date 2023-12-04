@@ -62,7 +62,7 @@ const label = reactive({
                 continue;
            }
       %>
-    ${field.propertyName}: '${field.comment}不能为空！',
+    ${field.propertyName}: '${field.comment}',
     <% } %>
 });
 
@@ -198,7 +198,7 @@ const onSubmit = () => {
     addOrEdit${entity}(method, formInfo.value).then((res: any) => {
         if (res?.code == '200') {
             showSuccessToast(res?.message || '保存成功!');
-            router.push({ path: '/finance/financeManager' });
+            router.push({ path: '${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
         } else {
             showFailToast (res?.message || '保存失败，请联系管理员!');
         }
