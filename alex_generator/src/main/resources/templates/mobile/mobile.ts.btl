@@ -34,7 +34,7 @@ export interface pageInfo {
 
 export let pagination = ref<pageInfo>({
   // 数据总数
-  total: 10,
+  total: 0,
   // 当前页数
   current: 1,
   // 每页条数
