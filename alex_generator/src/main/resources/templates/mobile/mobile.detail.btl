@@ -51,7 +51,7 @@ import { addOrEdit${entity}, get${entity}Detail } from '@/api/${javaPath}/${stru
 let route = useRoute();
 let router = useRouter();
 const info = ref<any>({
-    title: route?.name || '${table.comment!}',
+    title: route?.meta?.title || '${table.comment!}',
 });
 // TODO 修改成类型
 let formInfo = ref<any>({});
@@ -180,7 +180,7 @@ const initInfoDate = (infoDate: Dayjs, type: string) => {
         <% for(field in table.fields){
             if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
             case '${field.propertyName}':
-                ${field.propertyName}Name.value = infoDate.format('YYYY-MM-DD');
+                ${field.propertyName}Name.value = dayjs(infoDate).format('YYYY-MM-DD');
                 ${field.propertyName}Info.value.selectValue = infoDate;
                 break;
             <% } %>
