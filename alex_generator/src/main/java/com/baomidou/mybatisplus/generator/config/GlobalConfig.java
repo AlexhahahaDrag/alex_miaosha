@@ -28,6 +28,9 @@ public class GlobalConfig {
     private DateType dateType;
     private Supplier<String> commentDate;
     private boolean vueGenerator;
+
+    private boolean mobileGenerator;
+
     private boolean feignGenerator;
 
     private GlobalConfig() {
@@ -36,6 +39,7 @@ public class GlobalConfig {
         this.author = "作者";
         this.dateType = DateType.TIME_PACK;
         this.vueGenerator = false;
+        this.mobileGenerator = false;
         this.feignGenerator = false;
         this.commentDate = () -> (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
     }
@@ -68,6 +72,10 @@ public class GlobalConfig {
 
     public boolean isVueGenerator() {
         return vueGenerator;
+    }
+
+    public boolean isMobileGenerator() {
+        return mobileGenerator;
     }
 
     @NotNull
@@ -142,6 +150,11 @@ public class GlobalConfig {
 
         public GlobalConfig.Builder enableVueGenerator() {
             this.globalConfig.vueGenerator = true;
+            return this;
+        }
+
+        public GlobalConfig.Builder enableMobileGenerator() {
+            this.globalConfig.mobileGenerator = true;
             return this;
         }
 

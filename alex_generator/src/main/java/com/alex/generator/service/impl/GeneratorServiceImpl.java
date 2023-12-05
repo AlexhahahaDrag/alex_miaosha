@@ -67,6 +67,12 @@ public class GeneratorServiceImpl implements GeneratorService {
                 generatorConfig.getVuePath()) ? generatorConfig.getVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
         String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
 
+        String mobileTsTsPath = StringUtils.isNotEmpty(generatorConfig.getMobileTsPath()) ?
+                generatorConfig.getMobileTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
+
+        String mobileVuePath = StringUtils.isNotEmpty(
+                generatorConfig.getMobileVuePath()) ? generatorConfig.getMobileVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
+
         List<IFill> list = new ArrayList<>();
         DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
                 .dbQuery(new MySqlQuery())
@@ -74,7 +80,6 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
         String fileName = StringUtils.camel(tableName);
-        String lowerFileName = Character.toLowerCase(fileName.charAt(0)) + fileName.substring(1);
         pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
@@ -86,6 +91,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + "detail");
         pathMap.put(OutputFile.list, vuePath + separator + fileName);
         pathMap.put(OutputFile.ts, tsPath + separator + fileName);
+        pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
+        pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + "detail");
+        pathMap.put(OutputFile.mobileVue, mobileVuePath + separator + fileName);
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
         FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfig);
@@ -103,6 +111,9 @@ public class GeneratorServiceImpl implements GeneratorService {
             if (generatorConfig.isVue()) {
                 builder.enableVueGenerator();
             }
+            if (generatorConfig.isMobile()) {
+                builder.enableMobileGenerator();
+            }
         });
         fastAutoGenerator.packageConfig(builder -> {
             builder.parent(generatorConfig.getParentPackage()) // 设置父包名
@@ -118,12 +129,16 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .listTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                     .listVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                     .tsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .mobileDetailTs(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .mobileDetail(boot + "vue.detail" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .mobileTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .mobileVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .mobileTsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
                     .pathInfo(pathMap); // 设置mapperXml生成路径
         });
         fastAutoGenerator.strategyConfig(builder -> {
             builder.addInclude(tableName)
                     .addTablePrefix(generatorConfig.getTablePrefix())
-                    //配置entity
                     .entityBuilder()
                     .superClass(BaseEntity.class)
                     .disableSerialVersionUID()
@@ -141,17 +156,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .addSuperEntityColumns(generatorConfig.getSuperEntityColumns())
 ////                            .addIgnoreColumns("age")
                     .addTableFills(list)
-                    //配置controller
                     .controllerBuilder()
                     .formatFileName("%sController")
                     .enableRestStyle()
-//                            //配置service
                     .serviceBuilder()
 //                            .superServiceClass(SuperService.class)
 //                            .superServiceImplClass(SuperServiceImpl.class)
                     .formatServiceFileName("%sService")
                     .formatServiceImplFileName("%sServiceImp")
-                    //配置mapper
                     .mapperBuilder()
 //                            .superClass(SuperMapper.class)
                     .enableMapperAnnotation()
@@ -178,6 +190,15 @@ public class GeneratorServiceImpl implements GeneratorService {
                     //配置ts
                     .tsTsBuilder()
                     .formatTsTsFileName("%sTs")
+                    // mobile
+                    .mobileTsBuilder()
+                    .formatMobileTsFileName("%sTs")
+                    .mobileVueBuilder()
+                    .formatMobileVueFileName("%s")
+                    .mobileDetailTsBuilder()
+                    .formatMobileDetailTsFileName("%sDetailTs")
+                    .mobileTsTsBuilder()
+                    .formatMobileTsTsFileName("%sTs")
                     .build()
             ; // 设置过滤表前缀
         });

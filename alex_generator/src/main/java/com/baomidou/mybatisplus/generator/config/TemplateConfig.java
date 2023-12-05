@@ -26,6 +26,17 @@ public class TemplateConfig {
     private String listTs;
     private String listVue;
     private String tsTs;
+
+    private String mobileTs;
+
+    private String mobileVue;
+
+    private String mobileDetailTs;
+
+    private String mobileTsTs;
+
+    private String mobileDetail;
+    
     private boolean disableEntity;
 
     private TemplateConfig() {
@@ -43,6 +54,11 @@ public class TemplateConfig {
         this.listTs = "/templates/list.ts";
         this.listVue = "/templates/list.vue";
         this.tsTs = "/templates/ts.ts";
+        this.mobileTs = "/templates/mobile/mobile.ts";
+        this.mobileVue = "/templates/mobile/mobile.vue";
+        this.mobileDetail = "/templates/mobile/mobile.detail";
+        this.mobileDetailTs = "/templates/mobile/mobile.detail.ts";
+        this.mobileTsTs = "/templates/mobile/mobile.ts.ts";
     }
 
     private void logger(String value, TemplateType templateType) {
@@ -105,6 +121,16 @@ public class TemplateConfig {
                         this.listTs = null;
                     case TSTS:
                         this.tsTs = null;
+                    case MOBILETS:
+                        this.mobileTs = null;
+                    case MOBILEVUE:
+                        this.mobileVue = null;
+                    case MOBILEDETAILTS:
+                        this.mobileDetailTs = null;
+                    case MOBILEDETAIL:
+                        this.mobileDetail = null;
+                    case MOBILETSTS:
+                        this.mobileTsTs = null;
                 }
             }
         }
@@ -161,6 +187,26 @@ public class TemplateConfig {
 
     public String getTsTs() {
         return tsTs;
+    }
+
+    public String getMobileTs() {
+        return mobileTs;
+    }
+
+    public String getMobileVue() {
+        return mobileVue;
+    }
+
+    public String getMobileDetailTs() {
+        return mobileDetailTs;
+    }
+
+    public String getMobileDetail() {
+        return mobileDetail;
+    }
+
+    public String getMobileTsTs() {
+        return mobileTsTs;
     }
 
     public static class Builder implements IConfigBuilder<TemplateConfig> {
@@ -248,6 +294,31 @@ public class TemplateConfig {
 
         public Builder tsTs(@NotNull String tsTsTemplate) {
             this.templateConfig.tsTs = tsTsTemplate;
+            return this;
+        }
+
+        public Builder mobileTs(@NotNull String mobileTsTemplate) {
+            this.templateConfig.mobileTs = mobileTsTemplate;
+            return this;
+        }
+
+        public Builder mobileVue(@NotNull String mobileVueTemplate) {
+            this.templateConfig.mobileVue = mobileVueTemplate;
+            return this;
+        }
+
+        public Builder mobileDetailTs(@NotNull String mobileDetailTsTemplate) {
+            this.templateConfig.mobileDetailTs = mobileDetailTsTemplate;
+            return this;
+        }
+
+        public Builder mobileDetail(@NotNull String mobileDetailTemplate) {
+            this.templateConfig.mobileDetail = mobileDetailTemplate;
+            return this;
+        }
+
+        public Builder mobileTsTs(@NotNull String mobileTsTsTemplate) {
+            this.templateConfig.mobileTsTs = mobileTsTsTemplate;
             return this;
         }
 

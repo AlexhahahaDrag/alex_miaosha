@@ -1,8 +1,11 @@
 package com.alex.generator.config;
 
 import lombok.Data;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import java.awt.*;
 
 /**
  * description:
@@ -20,6 +23,8 @@ public class GeneratorConfig {
     private boolean feign;
 
     private boolean vue;
+
+    private boolean mobile;
 
     private String superEntityColumns;
 
@@ -40,4 +45,8 @@ public class GeneratorConfig {
     private String vuePath;
 
     private String tsPath;
+
+    private String mobileVuePath;
+
+    private String mobileTsPath;
 }

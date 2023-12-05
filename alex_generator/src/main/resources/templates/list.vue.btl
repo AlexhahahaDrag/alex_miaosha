@@ -17,7 +17,7 @@
     <% num++; %>
             <a-col :span="6">
               <a-form-item name="${field.propertyName}" label="${field.comment}">
-                <a-input v-model:value="searchInfo.${field.propertyName}" placeholder="${field.comment}" @change="initPage" allow-clear />
+                <a-input v-model:value="searchInfo.${field.propertyName}" placeholder="${field.comment}" allow-clear />
               </a-form-item>
             </a-col>
   <% if(num % 4 == 0){ %>
@@ -196,11 +196,6 @@ const handleOk = (v: boolean) => {
 const handleCancel = (v: boolean) => {
   visible.value = v;
 };
-
-const initPage = () => {
-    pagination.value.current = 1;
-    pagination.value.pageSize = 10;
-}
 </script>
 <style lang="scss" scoped>
 @import "@/style/index.scss";
