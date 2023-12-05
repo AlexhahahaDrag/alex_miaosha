@@ -39,4 +39,8 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
     public List<AnalysisVo> getMonthExpense(Long belongTo, String searchDate) {
         return financeAnalysisMapper.getMonthExpense(belongTo, searchDate);
     }
+
+    public static void main(String[] args) {
+
+    }
 }

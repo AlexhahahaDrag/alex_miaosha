@@ -27,28 +27,28 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CustomizeException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(CustomizeException exception) {
         exception.printStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(RegisterException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(RegisterException exception) {
         exception.printStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(SeckillException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(SeckillException exception) {
         exception.printStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(UserException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(UserException userException) {
         userException.printStackTrace();
         return Result.error(userException.getCode(), userException.getMsg());
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ProductException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(ProductException e) {
         e.printStackTrace();
         return Result.error(e.getCode(), e.getMsg());

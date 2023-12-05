@@ -1,29 +1,36 @@
 package com.alex.gateway.filter;
 
+import cn.hutool.json.JSONUtil;
 import com.alex.api.user.api.UserApi;
 import com.alex.base.common.Result;
+import com.alex.common.utils.secret.AESUtils;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -62,8 +69,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         log.info("当前请求地址：{}", path);
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
-        Map<String, Object> attributes1 = exchange.getAttributes();
-        //得到请求头信息authorization信息
+        // 得到请求头信息authorization信息
         String token = Optional.ofNullable(request)
                 .map(re -> re.getHeaders())
                 .map(header -> header.getFirst(audience.getTokenHeader()))
@@ -86,10 +92,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 throw new RuntimeException(e);
             }
         }).get();
-        if (result) {
-            return chain.filter(exchange);
-        }
-        return out(response);
+        return result ? secretOut(exchange, chain) : out(response);
     }
 
     /**
@@ -99,7 +102,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
      */
     @Override
     public int getOrder() {
-        return 0;
+        return -2;
     }
 
     private Mono<Void> out(ServerHttpResponse response) {
@@ -113,5 +116,35 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         //指定编码，否则在浏览器中会中文乱码
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));
+    }
+
+    private Mono<Void> secretOut(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpResponse originalResponse = exchange.getResponse();
+        DataBufferFactory bufferFactory = originalResponse.bufferFactory();
+        ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
+            @Override
+            public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+                if (body instanceof Flux) {
+                    Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
+                    return super.writeWith(fluxBody.map(dataBuffer -> {
+                        byte[] content = new byte[dataBuffer.readableByteCount()];
+                        dataBuffer.read(content);
+                        DataBufferUtils.release(dataBuffer);
+                        String s = new String(content, Charset.forName("UTF-8"));
+                        System.out.println(s);
+                        //TODO，s就是response的值，想修改、查看就随意而为了
+                        byte[] uppedContent;
+                        try {
+                            uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        return bufferFactory.wrap(uppedContent);
+                    }));
+                }
+                return super.writeWith(body);
+            }
+        };
+        return chain.filter(exchange.mutate().response(decoratedResponse).build());
     }
 }
