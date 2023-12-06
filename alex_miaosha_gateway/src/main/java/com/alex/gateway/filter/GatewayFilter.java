@@ -17,6 +17,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -125,16 +126,18 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
                 if (body instanceof Flux) {
                     Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
-                    return super.writeWith(fluxBody.map(dataBuffer -> {
-                        byte[] content = new byte[dataBuffer.readableByteCount()];
-                        dataBuffer.read(content);
-                        DataBufferUtils.release(dataBuffer);
+                    return super.writeWith(fluxBody.buffer().map(dataBuffer -> {
+                        DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
+                        DataBuffer buffer = dataBufferFactory.join(dataBuffer);
+                        byte[] content = new byte[buffer.readableByteCount()];
+                        buffer.read(content);
+                        DataBufferUtils.release(buffer);
                         String s = new String(content, Charset.forName("UTF-8"));
-                        System.out.println(s);
-                        //TODO，s就是response的值，想修改、查看就随意而为了
+                        log.info("加密信息：{}", s);
                         byte[] uppedContent;
                         try {
                             uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
+                            log.info("加密信息后：{}", uppedContent);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
