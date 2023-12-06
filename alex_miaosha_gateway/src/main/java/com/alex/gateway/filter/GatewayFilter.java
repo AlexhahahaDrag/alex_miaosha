@@ -30,7 +30,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -105,12 +104,12 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return -2;
     }
 
-    private Mono<Void> out(ServerHttpResponse response) {
+    private Mono<Void> out(ServerHttpResponse response) throws Exception {
         JsonObject message = new JsonObject();
         message.addProperty("success", false);
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
-        byte[] bits = message.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] bits = new String(AESUtils.encrypt(JSONUtil.toJsonStr(message.toString()), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
         DataBuffer buffer = response.bufferFactory().wrap(bits);
         //response.setStatusCode(HttpStatus.UNAUTHORIZED);
         //指定编码，否则在浏览器中会中文乱码
