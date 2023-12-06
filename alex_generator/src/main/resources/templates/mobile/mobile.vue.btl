@@ -64,7 +64,6 @@ import {
 } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { getUserManagerList, } from '@/api/user/userManager';
 import navBar from '@/views/common/navBar/index.vue';
-
 import {
   SearchInfo,
   pagination,

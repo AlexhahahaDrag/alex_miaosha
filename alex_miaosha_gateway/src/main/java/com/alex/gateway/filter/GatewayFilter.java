@@ -133,11 +133,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         buffer.read(content);
                         DataBufferUtils.release(buffer);
                         String s = new String(content, Charset.forName("UTF-8"));
-                        log.info("加密信息：{}", s);
                         byte[] uppedContent;
                         try {
                             uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
-                            log.info("加密信息后：{}", uppedContent);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

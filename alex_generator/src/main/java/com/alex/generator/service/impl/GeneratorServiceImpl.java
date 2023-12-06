@@ -36,14 +36,14 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final GeneratorConfig generatorConfig;
 
     @Override
-    public Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) {
+    public Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) throws Exception {
         for (String tableName : tableNames) {
             executeGenerate(tableName, moduleName, author, javaPath);
         }
         return true;
     }
 
-    private void executeGenerate(String tableName, String moduleName, String author, String javaPath) {
+    private void executeGenerate(String tableName, String moduleName, String author, String javaPath) throws Exception {
         String separator = System.getProperty("file.separator");
         String bootDir = "/java/com/alex" + separator + javaPath;
         String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
@@ -79,7 +79,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
-        String fileName = StringUtils.camel(tableName);
+        String fileName = StringUtils.camel(tableName.startsWith("t_") ? tableName.substring(2) : tableName);
         pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");

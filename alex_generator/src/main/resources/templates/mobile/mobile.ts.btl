@@ -64,7 +64,11 @@ export const columns = [
     }
 %>
   {
+   <% if (strutil.contain(field.comment, '字典')) { %>
+    title: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}',
+   <% } else { %>
     title: '${field.comment}',
+   <% } %>
     dataIndex: '${field.propertyName}',
     key: '${field.propertyName}',
   },

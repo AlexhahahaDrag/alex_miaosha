@@ -8,7 +8,7 @@ package com.alex.generator.service;
  */
 public interface GeneratorService {
 
-    Boolean generator(String moduleName, String javaPath, String[] tableNames, String author);
+    Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) throws Exception;
 
     String test();
 }

@@ -40,7 +40,7 @@ public class GeneratorController {
     public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
                                     @RequestParam(value = "javaPath") String javaPath,
                                     @RequestParam(value = "tableNames") String[] tableNames,
-                                    @RequestParam(value = "author", required = false) String author) {
+                                    @RequestParam(value = "author", required = false) String author) throws Exception {
         return Result.success(generatorService.generator(moduleName, javaPath, tableNames, author));
     }
 

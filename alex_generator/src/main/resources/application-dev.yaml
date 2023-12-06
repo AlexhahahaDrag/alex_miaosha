@@ -8,7 +8,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
-    url: jdbc:mysql://81.70.158.140:3336/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://81.70.158.140:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
     password: mjzp.99147258369
 
@@ -28,19 +28,19 @@ generator:
   logicDeletePropertyName: isDelete
   superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
   addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
-#  javaPath: F:\alex\alex_miaosha
+  javaPath: F:\alex\alex_miaosha
   voPath:
   feignPath:
-#  vuePath: F:\alex\project\alex_miaosha_product\src\views
-#  tsPath: F:\alex\project\alex_miaosha_product\src\api
-#  mobileVuePath: C:\Users\Administrator\Desktop\views
-#  mobileTsPath: C:\Users\Administrator\Desktop\api
+  vuePath: F:\alex\project\alex_miaosha_front\src\views
+  tsPath: F:\alex\project\alex_miaosha_front\src\api
+  mobileVuePath: G:\project\alex_miaosha_mobile\src\views
+  mobileTsPath: G:\project\alex_miaosha_mobile\src\api
   parentPackage: com.alex
 
-  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
-  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
-  javaPath: D:\project\alex_miaosha\alex_miaosha
+#  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
+#  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
+#  javaPath: D:\project\alex_miaosha\alex_miaosha
 #  voPath:
 #  feignPath:
-  vuePath: D:\project\alex_miaosha_front\src\views
-  tsPath: D:\project\alex_miaosha_front\src\api
+#  vuePath: D:\project\alex_miaosha_front\src\views
+#  tsPath: D:\project\alex_miaosha_front\src\api
