@@ -104,6 +104,7 @@ import { message } from "ant-design-vue";
 import Detail from "./detail/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail.vue";
 <% if(hasDict){ %>
 import { getDictList } from "@/api/finance/dict/dictManager";
+import { dictInfo } from "@/views/finance/dict/dict";
 <% } %>
 
 const labelCol = ref({ span: 5 });
