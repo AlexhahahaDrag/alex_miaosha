@@ -5,7 +5,7 @@ import { Dayjs } from 'dayjs';
  } %>
 
 export interface ${entity}Detail {
-    id?: number,
+  id?: number,
 <% for(field in table.fields){ %>
     <% if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
   ${field.propertyName}?: number;

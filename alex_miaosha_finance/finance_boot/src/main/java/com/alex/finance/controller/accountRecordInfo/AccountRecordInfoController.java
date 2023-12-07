@@ -27,7 +27,7 @@ import java.util.List;
  * @createDate:   2023-04-08 16:27:39
  * @version:      1.0.0
  */
-@ApiSort(105)
+@ApiSort(50)
 @Api(value = "相关接口", tags = {"相关接口"})
 @RestController
 @RequiredArgsConstructor

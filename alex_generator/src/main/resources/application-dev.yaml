@@ -30,18 +30,18 @@ generator:
   addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
   parentPackage: com.alex
 
-#  javaPath: F:\alex\alex_miaosha
-#  voPath:
-#  feignPath:
-#  vuePath: F:\alex\project\alex_miaosha_front\src\views
-#  tsPath: F:\alex\project\alex_miaosha_front\src\api
-#  mobileVuePath: G:\project\alex_miaosha_mobile\src\views
-#  mobileTsPath: G:\project\alex_miaosha_mobile\src\api
-
-  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
-  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
-  javaPath: D:\project\alex_miaosha
+  javaPath: F:\alex\alex_miaosha
   voPath:
   feignPath:
-  vuePath: D:\project\alex_miaosha_front\src\views
-  tsPath: D:\project\alex_miaosha_front\src\api
+  vuePath: F:\alex\project\alex_miaosha_front\src\views
+  tsPath: F:\alex\project\alex_miaosha_front\src\api
+  mobileVuePath: G:\project\alex_miaosha_mobile\src\views
+  mobileTsPath: G:\project\alex_miaosha_mobile\src\api
+
+#  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
+#  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
+#  javaPath: D:\project\alex_miaosha
+#  voPath:
+#  feignPath:
+#  vuePath: D:\project\alex_miaosha_front\src\views
+#  tsPath: D:\project\alex_miaosha_front\src\api

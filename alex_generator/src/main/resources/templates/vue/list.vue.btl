@@ -1,3 +1,20 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+    dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+%>
 <template>
   <div class="page-info">
     <div class="search">
@@ -11,24 +28,30 @@
             id = field.propertyName;
             continue;
        }
-       if(num % 4 == 0){ %>
+       if(num % 3 == 0){ %>
           <a-row :gutter="24">
   <% } %>
     <% num++; %>
-            <a-col :span="6">
-              <a-form-item name="${field.propertyName}" label="${field.comment}">
-                <a-input v-model:value="searchInfo.${field.propertyName}" placeholder="${field.comment}" allow-clear />
+            <a-col :span="8">
+              <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
+    <% if (strutil.contain(field.comment, '字典')) { %>
+                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                  :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
+                </a-select>
+    <% } else { %>
+                <a-input v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label" allow-clear />
+    <% } %>
               </a-form-item>
             </a-col>
-  <% if(num % 4 == 0){ %>
+  <% if(num % 3 == 0){ %>
           </a-row>
   <% } %>
 <% } %>
-  <% if(num % 4 != 0){ %>
+  <% if(num % 3 != 0){ %>
           </a-row>
   <% } %>
              <a-row :gutter="24">
-                <a-col :span="6" style="text-align: right">
+                <a-col :span="20" style="text-align: right">
                   <a-space>
                     <a-button type="primary" @click="query"> 查找</a-button>
                     <a-button type="primary" @click="cancelQuery">清空</a-button>
@@ -79,6 +102,9 @@ import {
 import { get${entity}Page, delete${entity} } from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
 import { message } from "ant-design-vue";
 import Detail from "./detail/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail.vue";
+<% if(hasDict){ %>
+import { getDictList } from "@/api/finance/dict/dictManager";
+<% } %>
 
 const labelCol = ref({ span: 5 });
 const wrapperCol = ref({ span: 19 });
@@ -97,9 +123,56 @@ const rowSelection = ref({
   onSelectAll: (selected: boolean, selectedRows: DataItem[], changeRows: DataItem[]) => {
     console.log(selected, selectedRows, changeRows);
   },
-})
+});
+
+const labelMap = ref<any>(
+{
+<% for(field in table.fields){
+      if(field.keyFlag) {
+           continue;
+      }
+ %>
+    <% if (strutil.contain(field.comment, '字典')) { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
+    <% } else { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
+    <% } %>
+<% } %>
+});
 
 let searchInfo = ref<SearchInfo>({});
+
+<% if (hasDict) { %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+let ${field.propertyName}List = ref<dictInfo[]>([]);
+  <% } %>
+<% } %>
+
+const getDictInfoList = () => {
+  getDictList("${dictType}").then((res) => {
+    if (res.code == "200") {
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      ${field.propertyName}List.value = res.data.filter(
+        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
+      );
+  <% } %>
+<% } %>
+    } else {
+      message.error((res && res.message) || "查询列表失败！");
+    }
+  });
+}
+<% } %>
 
 function cancelQuery() {
   searchInfo.value = {};
@@ -165,6 +238,9 @@ function get${entity}ListPage(param: SearchInfo, cur: pageInfo) {
 }
 
 function init() {
+<% if(hasDict) { %>
+  getDictInfoList();
+<% } %>
   //获取${table.comment!}页面数据
   get${entity}ListPage(searchInfo.value, pagination.value);
 }

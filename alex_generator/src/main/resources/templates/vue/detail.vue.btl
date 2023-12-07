@@ -1,10 +1,27 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+    dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+%>
 <template>
   <div>
     <a-modal :visible='props.visible'
-      :width='props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'' :title='
-        props.modelInfo && props.modelInfo.title ? props.modelInfo.title : 'Basic Modal'
-      ' @ok='handleOk' okText='保存' :confirmLoading='modelConfig.confirmLoading'
-      :destroyOnClose='modelConfig.destroyOnClose' @cancel='handleCancel'>
+             :width="props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'"
+             :title="props.modelInfo && props.modelInfo.title ? props.modelInfo.title : 'Basic Modal'"
+             @ok='handleOk' okText='保存' :confirmLoading='modelConfig.confirmLoading'
+             :destroyOnClose='modelConfig.destroyOnClose' @cancel='handleCancel'>
       <template #footer>
         <a-button key='back' @click='handleCancel'>取消</a-button>
         <a-button key='submit' type='primary' :loading='loading' @click='handleOk'>保存</a-button>
@@ -22,8 +39,14 @@
         <a-row :gutter='24'>
   <% } %>
           <a-col :span='12'>
-            <a-form-item name='${field.propertyName}' label='${field.comment}'>
-              <a-input v-model:value='formState.${field.propertyName}' placeholder='请填写${field.comment}'></a-input>
+            <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
+              <% if (strutil.contain(field.comment, '字典')) { %>
+              <a-select ref="select" v-model:value="formState.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
+              </a-select>
+              <% } else { %>
+              <a-input v-model:value='formState.${field.propertyName}' :placeholder="'请填写' + labelMap['${field.propertyName}'].label"></a-input>
+              <% } %>
             </a-form-item>
           </a-col>
     <% num++; %>
@@ -46,6 +69,10 @@ import {
   addOrEdit${entity},
 } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { message, FormInstance } from 'ant-design-vue';
+<% if(hasDict) { %>
+import { dictInfo } from "@/views/finance/dict/dict";
+import { getDictList } from "@/api/finance/dict/dictManager";
+<% } %>
 import { ModelInfo } from '../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
 
 const labelCol = ref({ span: 5 });
@@ -54,6 +81,21 @@ const wrapperCol = ref({ span: 19 });
 let loading = ref<boolean>(false);
 
 const formRef = ref<FormInstance>();
+
+const labelMap = ref<any>(
+{
+<% for(field in table.fields){
+      if(field.keyFlag) {
+           continue;
+      }
+ %>
+    <% if (strutil.contain(field.comment, '字典')) { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
+    <% } else { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
+    <% } %>
+<% } %>
+});
 
 const rulesRef = reactive({
 <% for(field in table.fields){
@@ -64,7 +106,11 @@ const rulesRef = reactive({
   ${field.propertyName}: [
     {
       required: true,
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      message: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}不能为空！',
+  <% } else { %>
       message: '${field.comment}不能为空！',
+  <% } %>
     },
   ],
 <% } %>
@@ -82,6 +128,38 @@ interface Props {
 const props = defineProps<Props>();
 
 let formState = ref<${entity}Detail>({});
+
+<% if (hasDict) { %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+let ${field.propertyName}List = ref<dictInfo[]>([]);
+  <% } %>
+<% } %>
+
+const getDictInfoList = () => {
+  getDictList("${dictType}").then((res) => {
+    if (res.code == "200") {
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      ${field.propertyName}List.value = res.data.filter(
+        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
+      );
+  <% } %>
+<% } %>
+    } else {
+      message.error((res && res.message) || "查询列表失败！");
+    }
+  });
+}
+<% } %>
 
 const emit = defineEmits(['handleOk', 'handleCancel']);
 
@@ -142,6 +220,9 @@ const onFinishFailed = (errorInfo: any) => {
 };
 
 function init() {
+<% if(hasDict) { %>
+  getDictInfoList();
+<% } %>
   if (props.modelInfo) {
     if (props.modelInfo.${id}) {
       get${entity}Detail(props.modelInfo.${id})

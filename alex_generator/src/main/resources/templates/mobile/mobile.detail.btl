@@ -94,11 +94,7 @@ const rulesRef = reactive({
     ${field.propertyName}: [
         {
             required: true,
-        <% if (strutil.contain(field.comment, '字典')) { %>
-            message: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}不能为空！',
-          <% } else { %>
-            message: '${field.comment}不能为空！',
-        <% } %>
+            message: label.${field.propertyName} + '不能为空！',
         },
     ],
 <% } %>
@@ -116,7 +112,7 @@ let ${field.propertyName}Name = ref<string>("");
 
 let ${field.propertyName}Info = ref<Info>({
     label: "${field.propertyName}",
-    labelName: "${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}",
+    labelName: label.${field.propertyName},
     rule: rulesRef.${field.propertyName},
     customFieldName: {
         text: "typeName",
@@ -187,7 +183,7 @@ function getDictInfoList(res: any) {
            }
   if (strutil.contain(field.comment, '字典')) { %>
      ${field.propertyName}Info.value.list = res.data.filter(
-       (item: { belongTo: string }) => item.belongTo == "account_type"
+       (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
      );
      ${field.propertyName}Name.value = getListName(
          ${field.propertyName}Info.value.list || [],
