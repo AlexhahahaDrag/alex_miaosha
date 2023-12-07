@@ -12,7 +12,7 @@
             continue;
        }
        if(num % 4 == 0){ %>
-         <a-row :gutter="24">
+          <a-row :gutter="24">
   <% } %>
     <% num++; %>
             <a-col :span="6">
@@ -27,7 +27,7 @@
   <% if(num % 4 != 0){ %>
           </a-row>
   <% } %>
-            <a-row :gutter="24">
+             <a-row :gutter="24">
                 <a-col :span="6" style="text-align: right">
                   <a-space>
                     <a-button type="primary" @click="query"> 查找</a-button>

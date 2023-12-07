@@ -115,92 +115,91 @@ let popInfo = ref<Info>({ showFlag: false });
 let ${field.propertyName}Name = ref<string>("");
 
 let ${field.propertyName}Info = ref<Info>({
-  label: "${field.propertyName}",
-  labelName: "${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}",
-  rule: rulesRef.${field.propertyName},
-  customFieldName: {
-    text: "typeName",
-    value: "typeCode",
-  },
-  selectValue: formInfo.value.${field.propertyName},
+    label: "${field.propertyName}",
+    labelName: "${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}",
+    rule: rulesRef.${field.propertyName},
+    customFieldName: {
+        text: "typeName",
+        value: "typeCode",
+    },
+    selectValue: formInfo.value.${field.propertyName},
 });
    <% } %>
 <% } %>
 
 const choose = (type: string) => {
-   switch (type) {
+    switch (type) {
    <% for(field in table.fields){
           if(field.keyFlag) {
                continue;
           }
      %>
        <% if (strutil.contain(field.comment, '字典')) { %>
-       case '${field.propertyName}':
-           popInfo.value = ${field.propertyName}Info.value;
-           break;
+        case '${field.propertyName}':
+            popInfo.value = ${field.propertyName}Info.value;
+            break;
        <% } %>
    <% } %>
-   }
-   popInfo.value.showFlag = true;
+    }
+    popInfo.value.showFlag = true;
 };
 
 const selectInfo = (type: string, value: any, name: string) => {
-   popInfo.value.showFlag = false;
-   switch (type) {
+    popInfo.value.showFlag = false;
+    switch (type) {
 <% for(field in table.fields){
          if(field.keyFlag) {
               continue;
          }
     %>
       <% if (strutil.contain(field.comment, '字典')) { %>
-       case '${field.propertyName}':
-          formInfo.value.${field.propertyName} = value;
-          ${field.propertyName}Name.value = name;
-          break;
+        case '${field.propertyName}':
+           formInfo.value.${field.propertyName} = value;
+           ${field.propertyName}Name.value = name;
+           break;
       <% } %>
 <% } %>
-   }
+    }
 };
 
 const cancelInfo = () => {
-   popInfo.value.showFlag = false;
+    popInfo.value.showFlag = false;
 };
 
 const getListName = (list: any[], value: any, code: string, name: string) => {
-  if (!list?.length) {
+   if (!list?.length) {
     return "";
-  }
-  let listName = "";
-  list.forEach((item) => {
-    if (item[code] == value) {
-      listName = item[name];
-    }
-  });
-  return listName;
+   }
+   let listName = "";
+   list.forEach((item) => {
+     if (item[code] == value) {
+       listName = item[name];
+     }
+   });
+   return listName;
 };
 
 function getDictInfoList(res: any) {
-  if (res.code == "200") {
+   if (res.code == "200") {
 <% for(field in table.fields){
            if(field.keyFlag) {
                 continue;
            }
-      %>
- <% if (strutil.contain(field.comment, '字典')) { %>
-    ${field.propertyName}Info.value.list = res.data.filter(
-      (item: { belongTo: string }) => item.belongTo == "account_type"
-    );
-    ${field.propertyName}Name.value = getListName(
-      ${field.propertyName}Info.value.list || [],
-      formInfo.value.${field.propertyName},
-      "typeCode",
-      "typeName"
-    );
+  if (strutil.contain(field.comment, '字典')) { %>
+     ${field.propertyName}Info.value.list = res.data.filter(
+       (item: { belongTo: string }) => item.belongTo == "account_type"
+     );
+     ${field.propertyName}Name.value = getListName(
+         ${field.propertyName}Info.value.list || [],
+         formInfo.value.${field.propertyName},
+         "typeCode",
+         "typeName"
+     );
  <% } %>
 <% } %>
-  } else {
-    showFailToast(res?.message || "查询失败，请联系管理员!");
-  }
+   } else {
+     showFailToast(res?.message || "查询失败，请联系管理员!");
+   }
 }
 <% } %>
 
@@ -341,7 +340,7 @@ function init() {
     } else {
         <% if(hasDict) { %>
         getDictList("${strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1)}").then((res: any) => {
-          getDictInfoList(res);
+            getDictInfoList(res);
         });
         <% } %>
         formInfo.value = {

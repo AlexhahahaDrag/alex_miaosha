@@ -49,11 +49,13 @@ public class TemplateConfig {
         this.serviceImpl = "/templates/serviceImpl.java";
         this.vo = "/templates/vo.java";
         this.client = "/templates/feignClient.java";
-        this.detailTs = "/templates/detail.ts";
-        this.detailVue = "/templates/detail.vue";
-        this.listTs = "/templates/list.ts";
-        this.listVue = "/templates/list.vue";
-        this.tsTs = "/templates/ts.ts";
+
+        this.detailTs = "/templates/vue/detail.ts";
+        this.detailVue = "/templates/vue/detail.vue";
+        this.listTs = "/templates/vue/list.ts";
+        this.listVue = "/templates/vue/list.vue";
+        this.tsTs = "/templates/vue/ts.ts";
+
         this.mobileTs = "/templates/mobile/mobile.ts";
         this.mobileVue = "/templates/mobile/mobile.vue";
         this.mobileDetail = "/templates/mobile/mobile.detail";

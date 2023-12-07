@@ -1,5 +1,6 @@
 package com.alex.generator;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.FilterType;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableEncryptableProperties
 @ComponentScan(basePackages = {"com.alex.generator", "com.alex.common"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE)})
 public class GeneratorApplication {
