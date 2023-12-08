@@ -99,6 +99,9 @@ let isRefresh = ref<boolean>(false); //是否下拉刷新
 // };
 // const onCancel = () => {
 //   searchInfo.value.typeCode = '';
+//   pagination.value.current = 0;
+//   dataSource.value = [];
+//   getFinancePage(searchInfo.value, pagination.value);
 // };
 
 function query(param: SearchInfo, cur: pageInfo) {

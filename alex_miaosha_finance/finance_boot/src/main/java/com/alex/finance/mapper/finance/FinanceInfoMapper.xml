@@ -74,7 +74,7 @@
           <if test = "financeInfoVo.name != null">
             and finance_info.name like concat('%', #{financeInfoVo.name}, '%')
           </if>
-          <if test = "financeInfoVo.typeCode != null">
+          <if test = "financeInfoVo.typeCode != null and financeInfoVo.typeCode != ''">
             and finance_info.type_code = #{financeInfoVo.typeCode}
           </if>
           <if test = "financeInfoVo.amount != null and financeInfoVo.amount.size > 0">
