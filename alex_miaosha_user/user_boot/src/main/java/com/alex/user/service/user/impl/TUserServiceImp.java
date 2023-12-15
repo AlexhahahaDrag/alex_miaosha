@@ -148,7 +148,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         TUser tUser = new TUser();
         BeanUtil.copyProperties(tUserVo, tUser);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        tUser.setPassword(encoder.encode(tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword()));
+        String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
+        tUser.setPassword(encoder.encode(password + tUserVo.getUsername()));
         tUserMapper.insert(tUser);
         return tUser;
     }
@@ -204,7 +205,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
         //对密码进行加盐加密验证，采用SHA-256 + 随机盐【动态加盐】 + 密钥对密码进行加密
         PasswordEncoder encoder = new BCryptPasswordEncoder();
-        boolean isPassword = encoder.matches(password, admin.getPassword());
+        boolean isPassword = encoder.matches(password + admin.getUsername(), admin.getPassword());
         if (!isPassword) {
             //密码错误，返回提示信息
             return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
