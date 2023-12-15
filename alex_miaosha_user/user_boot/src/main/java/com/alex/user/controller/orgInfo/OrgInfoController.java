@@ -1,30 +1,26 @@
 package com.alex.user.controller.orgInfo;
 
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
-import com.alex.user.entity.orgInfo.OrgInfo;
+import com.alex.user.service.orgInfo.OrgInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.user.service.orgInfo.OrgInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @description:  机构表restApi
  * @author:       alex
- * @createDate:   2023-12-07 16:57:00
+ * @createDate:   2023-12-15 12:00:32
  * @version:      1.0.0
  */
 @ApiSort(105)

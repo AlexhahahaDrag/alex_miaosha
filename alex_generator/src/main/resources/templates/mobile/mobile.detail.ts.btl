@@ -1,0 +1,43 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+%>
+export const label = reactive({
+<% for(field in table.fields){
+           if(field.keyFlag) {
+                continue;
+           } %>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+    ${field.propertyName}: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') -1)}',
+  <% } else { %>
+    ${field.propertyName}: '${field.comment}',
+  <% } %>
+<% } %>
+});
+
+export const rulesRef = reactive({
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            continue;
+       }
+  %>
+    ${field.propertyName}: [
+        {
+            required: true,
+            message: label.${field.propertyName} + '不能为空！',
+        },
+    ],
+<% } %>
+});

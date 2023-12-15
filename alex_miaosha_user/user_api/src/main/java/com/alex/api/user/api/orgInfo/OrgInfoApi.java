@@ -1,21 +1,19 @@
 package com.alex.api.user.api.orgInfo;
 
+import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 import com.alex.base.common.Result;
-import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 
 /**
  * @description:  机构表controller
  * @author:       alex
- * @createDate:   2023-12-07 16:57:00
+ * @createDate:   2023-12-15 12:00:32
  * @version:      1.0.0
  */
 @Component

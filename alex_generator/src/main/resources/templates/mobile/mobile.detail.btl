@@ -16,7 +16,7 @@
 %>
 <template>
     <navBar :info="info"></navBar>
-    <van-form @submit="onSubmit" :rules="rulesRef">
+    <van-form @submit="onSubmit" :rules="rulesRef" required="auto">
         <van-cell-group>
         <% for(field in table.fields){
             if(field.keyFlag) {
@@ -30,7 +30,7 @@
                 :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" @click="choose('${field.propertyName}')" readonly />
             <% } else { %>
             <van-field v-model="formInfo.${field.propertyName}" name="${field.propertyName}" :label="label.${field.propertyName} + '：'"
-                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" />
+                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" :maxlength="${field.propertyName}" />
             <% } %>
         <% } %>
             <% if (hasDict) { %>
@@ -40,7 +40,7 @@
             <datePop :info="chooseDateInfo" @selectInfo="selectDateInfo" @cancelInfo="cancelDateInfo"></datePop>
             <% } %>
         </van-cell-group>
-        <div style="margin: 16px;">
+        <div class="subButton">
             <van-button round block type="primary" native-type="submit">
                 提交
             </van-button>
@@ -63,6 +63,7 @@ import { Info } from '@/views/common/pop/selectPop.vue';
 import { getDictList } from "@/api/finance/dict/dictManager";
 import selectPop from '@/views/common/pop/selectPop.vue';
 <% } %>
+import { label, rulesRef } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
 
 let route = useRoute();
 let router = useRouter();
@@ -71,34 +72,6 @@ const info = ref<any>({
 });
 
 let formInfo = ref<any>({});
-
-const label = reactive({
-<% for(field in table.fields){
-           if(field.keyFlag) {
-                continue;
-           } %>
-  <% if (strutil.contain(field.comment, '字典')) { %>
-    ${field.propertyName}: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') -1)}',
-  <% } else { %>
-    ${field.propertyName}: '${field.comment}',
-  <% } %>
-<% } %>
-});
-
-const rulesRef = reactive({
-<% for(field in table.fields){
-       if(field.keyFlag) {
-            continue;
-       }
-  %>
-    ${field.propertyName}: [
-        {
-            required: true,
-            message: label.${field.propertyName} + '不能为空！',
-        },
-    ],
-<% } %>
-});
 
 <% if(hasDict) { %>
 let popInfo = ref<Info>({ showFlag: false });
@@ -291,7 +264,7 @@ const onSubmit = () => {
     addOrEdit${entity}(method, formInfo.value).then((res: any) => {
         if (res?.code == '200') {
             showSuccessToast(res?.message || '保存成功!');
-            router.push({ path: '${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
+            router.push({ path: '${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
         } else {
             showFailToast (res?.message || '保存失败，请联系管理员!');
         }
@@ -357,4 +330,7 @@ function init() {
 init();
 </script>
 <style lang='scss' scoped>
+.subButton {
+   margin: 16px;
+}
 </style>

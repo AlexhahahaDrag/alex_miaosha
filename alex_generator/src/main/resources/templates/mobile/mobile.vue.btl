@@ -25,22 +25,43 @@
         <van-swipe-cell v-for='(item, index) in dataSource' :before-close='beforeClose' :key="index">
           <van-cell :title="item.id" :key='index' is-link
             :to='{ path: "/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail", query: { id: item.id } }'>
+            <%
+                var first = '';
+                var second = '';
+                var three = '';
+                var four = '';
+            for((field, index) in table.fields){ %>
+                switch (index) {
+                    case 1:
+                        first = field.propertyName;
+                        break;
+                    case 2:
+                        second = field.propertyName;
+                        break;
+                    case 3:
+                        three = field.propertyName;
+                        break;
+                    default:
+                        four += 'item.' + field.propertyName + '+';
+                }
+                four = strutil.subStringTo(four, 0, strutil.length(four) - 1));
+            <% } %>
             <template #label>
-              <div style='margin-top: 10px; display: flex'>
+              <div class="iconClass">
                 <div class='icon' style='background-color: #ffcc00'>
-                  {{<% for(field in table.fields){ %>item.${field.propertyName} + '' + <% } %>}}
+                  {{item.${first} }}
                 </div>
               </div>
             </template>
             <template #right-icon>
               <div class='text-right'>
                 <div style='display: flex'>
-                  <div class='van-ellipsis' style='width: 130px;text-align:right'>
-
+                  <div class='van-ellipsis'>
+                    {{item.${second} }}
                   </div>
                 </div>
                 <div :class="true ? 'rightDiv' : 'rightRedDiv'">
-
+                    ${four}
                 </div>
               </div>
             </template>
@@ -48,15 +69,7 @@
           <template #right>
             <van-button class='right_info' @click='del${entity}(item.id)' square type='danger' text='删除' />
           </template>
-          <van-divider
-            :style="{
-              color: '#1989fa',
-              borderColor: 'grey',
-              padding: '0 16px',
-              'margin-top': '0px',
-              'margin-bottom': '0px',
-          }"
-          ></van-divider>
+          <van-divider class="dividerClass"></van-divider>
         </van-swipe-cell>
       </van-cell-group>
     </van-list>
@@ -201,5 +214,22 @@ init();
   margin-top: 10px;
   text-align: right;
   color:red
+}
+
+.iconClass {
+   margin-top: 10px;
+   display: flex;
+}
+.van-ellipsis {
+    width: 130px;
+    text-align:right;
+}
+
+.dividerClass {
+    color: #1989fa;
+    border-color: grey;
+    padding: 0 16px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 </style>

@@ -1,7 +1,6 @@
 package com.alex.api.user.vo.orgInfo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  机构表Vo
  * @author:       alex
- * @createDate:   2023-12-07 16:57:00
+ * @createDate:   2023-12-15 12:00:32
  * @version:      1.0.0
  */
 @Getter
@@ -38,4 +37,6 @@ public class OrgInfoVo extends BaseVo<OrgInfoVo>{
     @ApiModelProperty(value = "状态,字典(is_valid) 1：有效,0:失效)")
     private String status;
 
+    @ApiModelProperty(value = "父级机构名称")
+    private String parentOrgName;
 }

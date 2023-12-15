@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * @description:  机构表 mapper
  * @author:       alex
- * @createDate:   2023-12-07 16:57:00
+ * @createDate:   2023-12-15 12:00:32
  * @version:      1.0.0
  */
 @Mapper

@@ -54,7 +54,7 @@
     <select id="query${entity}" resultType="${package.Vo}.${table.voName}">
         select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
         <where>
-            id = #{id}
+            ${table.name}.id = #{id}
         <% for(field in table.commonFields){
             if (field.columnName == 'is_delete') { %>
             and ${table.name}.is_delete = 0
