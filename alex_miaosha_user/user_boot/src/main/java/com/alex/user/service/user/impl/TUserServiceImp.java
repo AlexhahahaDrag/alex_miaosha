@@ -154,6 +154,13 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         return tUser;
     }
 
+    public static void main(String[] args) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String password = "1234@com";
+        String pass = encoder.encode(password + "mj");
+        System.out.println(pass);
+    }
+
     @Override
     public TUser updateTUser(TUserVo tUserVo) {
         Map<String, Object> map = new HashMap<>();
