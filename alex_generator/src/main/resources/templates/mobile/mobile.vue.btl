@@ -30,7 +30,9 @@
                 var second = '';
                 var three = '';
                 var four = '';
-            for((field, index) in table.fields){ %>
+                var index = 0;
+            for(field in table.fields){
+                index++;
                 switch (index) {
                     case 1:
                         first = field.propertyName;
@@ -44,8 +46,7 @@
                     default:
                         four += 'item.' + field.propertyName + '+';
                 }
-                four = strutil.subStringTo(four, 0, strutil.length(four) - 1));
-            <% } %>
+            } %>
             <template #label>
               <div class="iconClass">
                 <div class='icon' style='background-color: #ffcc00'>
@@ -61,7 +62,11 @@
                   </div>
                 </div>
                 <div :class="true ? 'rightDiv' : 'rightRedDiv'">
+                    <% if(strutil.length(four) > 1) { %>
+                    ${strutil.subStringTo(four, 0, strutil.length(four))};
+                    <% } else { %>
                     ${four}
+                    <% } %>
                 </div>
               </div>
             </template>

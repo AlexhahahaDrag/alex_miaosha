@@ -13,7 +13,9 @@
            dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
         }
     }
-    dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+    if (strutil.length(dictType) > 1) {
+        dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+    }
 %>
 <template>
   <div>

@@ -276,7 +276,9 @@ function init() {
     if (id) {
         Promise.all([
             get${entity}Detail(id || '-1'),
+            <% if(hasDict){ %>
             getDictList("${strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1)}"),
+            <% } %>
         ]).then((res: any) => {
             if (res[0].code == '200') {
                 formInfo.value = res[0].data;
