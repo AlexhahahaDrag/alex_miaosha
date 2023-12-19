@@ -22,6 +22,8 @@ public class SysConf {
 
     public static final String ADMIN = "admin";
 
+    public static final String MENU = "menuInfo";
+
     public static final String UNDERLINE = "_";
 
     public static final String POINT = ".";

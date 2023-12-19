@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.user.OnlineAdmin;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
@@ -21,6 +22,7 @@ import com.alex.user.config.WechatAccountConfig;
 import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
+import com.alex.user.service.menuInfo.MenuInfoService;
 import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
@@ -84,6 +86,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     private String defaultPassword;
 
     private final WechatAccountConfig wechatAccountConfig;
+
+    private final MenuInfoService menuInfoService;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
@@ -242,6 +246,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             tUserVo.setAvatarUrl(getFileUrl(admin.getAvatar()));
         }
         result.put(SysConf.ADMIN, tUserVo);
+        // 获取菜单
+        MenuInfoVo menuInfoVo = new MenuInfoVo();
+        menuInfoVo.setStatus("1");
+        List<MenuInfoVo> list = menuInfoService.getList(null);
+        result.put(SysConf.MENU, list);
         return Result.success(result);
     }
 
