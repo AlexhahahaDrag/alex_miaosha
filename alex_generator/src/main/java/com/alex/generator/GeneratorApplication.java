@@ -4,6 +4,7 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
@@ -16,8 +17,9 @@ import org.springframework.context.annotation.FilterType;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableEncryptableProperties
-@ComponentScan(basePackages = {"com.alex.generator", "com.alex.common"},
+@ComponentScan(basePackages = {"com.alex.generator", "com.alex.common", "com.alex.api.user"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE)})
+@EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class GeneratorApplication {
 
     public static void main(String[] args) {

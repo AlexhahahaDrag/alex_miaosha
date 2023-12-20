@@ -87,7 +87,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             boolean exists = false;
             for (MenuInfoVo item : menuInfo) {
-                pOrderBy = Math.max(pOrderBy, item.getOrderBy());
+                pOrderBy = Math.max(pOrderBy, item.getOrderBy() == null ? 0 : item.getOrderBy());
                 if (javaPath.equals(item.getName())) {
                     exists = true;
                     menuInfoVo = item;
@@ -108,7 +108,7 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     private MenuInfoVo addMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy, String title) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
-        menuInfoVo.setName(fileName);
+        menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName));
         menuInfoVo.setTitle(title);
         if (StringUtils.isEmpty(fileName)) {
@@ -117,7 +117,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfoVo.setComponent("@/" + moduleName + "/" + fileName + "/" + fileName + "List.vue");
         }
-        menuInfoVo.setIcon(fileName);
+        menuInfoVo.setIcon(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setParentId(parentId);
         menuInfoVo.setStatus("1");
         menuInfoVo.setOrderBy(orderBy);

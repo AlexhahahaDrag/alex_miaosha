@@ -39,6 +39,8 @@ public class WebSecurityConfig {
                 "/actuator/**",
                 "/favicon.ico",
                 "/api/v1/user/login",
+                "/api/v1/menu-info/list",
+                "/api/v1/menu-info",
                 "/druid/**",
                 "/api/v1/user/getUserInfo",
                 "/api/v1/user/authToken",
