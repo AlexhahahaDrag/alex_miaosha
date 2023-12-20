@@ -1,25 +1,23 @@
 package com.alex.user.controller.menuInfo;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
-import com.alex.user.entity.menuInfo.MenuInfo;
+import com.alex.user.service.menuInfo.MenuInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.user.service.menuInfo.MenuInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @description:  菜单管理表restApi
@@ -48,6 +46,16 @@ public class MenuInfoController {
                                                  @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                  @RequestBody(required = false) MenuInfoVo menuInfoVo) {
         return Result.success(menuInfoService.getPage(pageNum, pageSize, menuInfoVo));
+    }
+
+    @ApiOperationSupport(order = 15, author = "alex")
+    @ApiOperation(value = "获取菜单管理列表", notes = "获取菜单管理列表", response = Result.class)
+    @PostMapping(value = "/list")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "查询条件", name = "menuInfoVo")}
+    )
+    public Result<List<MenuInfoVo>> getList(@RequestBody(required = false) MenuInfoVo menuInfoVo) {
+        return Result.success(menuInfoService.getList(menuInfoVo));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

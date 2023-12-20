@@ -1,6 +1,7 @@
 package com.alex.api.user.api;
 
 import com.alex.api.user.api.fallback.UserFallbackFactory;
+import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -33,4 +34,10 @@ public interface UserApi {
 
     @GetMapping(value = "/api/v1/user/authToken")
     Result<Boolean> authToken(@RequestParam("token") String token);
+
+    @PostMapping(value = "/api/v1/menu-info/list")
+    Result<List<MenuInfoVo>> getMenuInfoList(@RequestBody(required = false) MenuInfoVo menuInfoVo);
+
+    @PostMapping("/api/v1/menu-info")
+    Result<Boolean> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 }

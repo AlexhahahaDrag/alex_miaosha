@@ -1,11 +1,14 @@
 package com.alex.generator.service.impl;
 
+import com.alex.api.user.api.UserApi;
+import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.base.common.Result;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
+import com.alex.common.utils.string.StringUtils;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.config.GeneratorConfig;
 import com.alex.generator.service.GeneratorService;
-import com.alex.common.utils.string.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -16,10 +19,14 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.BeetlTemplateEngine;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @description:
@@ -35,28 +42,92 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     private final GeneratorConfig generatorConfig;
 
+    private final UserApi userApi;
+
     @Override
-    public Boolean generator(String moduleName, String javaPath, String[] tableNames, String author) throws Exception {
-        for (String tableName : tableNames) {
-            executeGenerate(tableName, moduleName, author, javaPath);
+    public Boolean generator(String moduleName, String javaPathName, String javaPath, String[] tableNames, String[] tableNameInfo, String author) throws Exception {
+        for (int i = 0; i < tableNames.length; i++) {
+            executeGenerate(tableNames[i], moduleName, javaPathName, author, javaPath, tableNameInfo[i]);
         }
         return true;
     }
 
-    private void executeGenerate(String tableName, String moduleName, String author, String javaPath) throws Exception {
+    private void executeGenerate(String tableName, String moduleName, String javaPathName,
+                                 String author, String javaPath, String fileNameInfo) throws Exception {
         String separator = System.getProperty("file.separator");
-        String bootDir = "/java/com/alex" + separator + javaPath;
-        String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
-
-        String dbConfig = databaseConfig.getUrl();
-        String dbUser = databaseConfig.getUsername();
-        String dbPassword = databaseConfig.getPassword();
         String base = "/src/main/";
-
         String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
         String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
+        String fileName = StringUtils.camel(tableName.startsWith("t_") ? tableName.substring(2) : tableName);
         String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
+        String boot = javaPath + ".";
+        String api = "api." + javaPath + ".";
+        List<IFill> list = Lists.newArrayList();
+        DataSourceConfig.Builder dataSourceConfig = dataSourceConfig(databaseConfig);
+        Map<OutputFile, String> pathMap = pathMap(fileName, separator, javaPath, projectPath, clientPathProject);
+        FastAutoGenerator fastAutoGenerator = fastAutoGenerator(dataSourceConfig, projectPath, author, boot, fileName, api, pathMap, tableName, javaPath, list);
+        fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
+        // 插入数据权限到权限表中
+        addMenu(javaPath, javaPathName, fileName, fileNameInfo);
+    }
+
+    private void addMenu(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
+        // 查询主菜单是否存在
+        MenuInfoVo query = new MenuInfoVo();
+        query.setStatus("1");
+        Result<List<MenuInfoVo>> result = userApi.getMenuInfoList(query);
+        MenuInfoVo menuInfoVo = new MenuInfoVo();
+        Integer orderBy = 0;
+        Integer pOrderBy = 0;
+        List<MenuInfoVo> menuInfo = result.getData();
+        if (menuInfo == null || menuInfo.isEmpty()) {
+            menuInfoVo = addMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+                    pOrderBy + 10, javaPathName);
+        } else {
+            boolean exists = false;
+            for (MenuInfoVo item : menuInfo) {
+                pOrderBy = Math.max(pOrderBy, item.getOrderBy());
+                if (javaPath.equals(item.getName())) {
+                    exists = true;
+                    menuInfoVo = item;
+                    List<MenuInfoVo> children = item.getChildren();
+                    if (children != null && !children.isEmpty()) {
+                        orderBy = children.parallelStream().map(child -> child.getOrderBy()).max(Integer::compare).get();
+                    }
+                    break;
+                }
+            }
+            if (!exists) {
+                menuInfoVo = addMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+                        pOrderBy + 10, javaPathName);
+            }
+        }
+        addMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
+    }
+
+    private MenuInfoVo addMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy, String title) {
+        MenuInfoVo menuInfoVo = new MenuInfoVo();
+        menuInfoVo.setName(fileName);
+        menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName));
+        menuInfoVo.setTitle(title);
+        if (StringUtils.isEmpty(fileName)) {
+            menuInfoVo.setComponent("Layout");
+            menuInfoVo.setRedirect(redirect);
+        } else {
+            menuInfoVo.setComponent("@/" + moduleName + "/" + fileName + "/" + fileName + "List.vue");
+        }
+        menuInfoVo.setIcon(fileName);
+        menuInfoVo.setParentId(parentId);
+        menuInfoVo.setStatus("1");
+        menuInfoVo.setOrderBy(orderBy);
+        userApi.addMenuInfo(menuInfoVo);
+        return menuInfoVo;
+    }
+
+    private Map<OutputFile, String> pathMap(String fileName, String separator, String javaPath, String projectPath, String clientPathProject) {
+        String bootDir = "/java/com/alex" + separator + javaPath;
+        String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
         String controllerPath = projectPath + bootDir + separator + "controller";
         String entityPath = projectPath + bootDir + separator + "entity";
         String mapperPath = projectPath + bootDir + separator + "mapper";
@@ -66,20 +137,11 @@ public class GeneratorServiceImpl implements GeneratorService {
         String vuePath = StringUtils.isNotEmpty(
                 generatorConfig.getVuePath()) ? generatorConfig.getVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
         String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-
         String mobileTsTsPath = StringUtils.isNotEmpty(generatorConfig.getMobileTsPath()) ?
                 generatorConfig.getMobileTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-
         String mobileVuePath = StringUtils.isNotEmpty(
                 generatorConfig.getMobileVuePath()) ? generatorConfig.getMobileVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-
-        List<IFill> list = new ArrayList<>();
-        DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(dbConfig, dbUser, dbPassword)
-                .dbQuery(new MySqlQuery())
-                .typeConvert(new MySqlTypeConvert())
-                .keyWordsHandler(new MySqlKeyWordsHandler());
         Map<OutputFile, String> pathMap = new HashMap<>();
-        String fileName = StringUtils.camel(tableName.startsWith("t_") ? tableName.substring(2) : tableName);
         pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
         pathMap.put(OutputFile.service, servicePath + separator + fileName);
         pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
@@ -94,8 +156,21 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
         pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + "detail");
         pathMap.put(OutputFile.mobileVue, mobileVuePath + separator + fileName);
-        String boot = javaPath + ".";
-        String api = "api." + javaPath + ".";
+        return pathMap;
+    }
+
+    private DataSourceConfig.Builder dataSourceConfig(DatabaseConfig databaseConfig) {
+        DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(databaseConfig.getUrl(), databaseConfig.getUsername(), databaseConfig.getPassword())
+                .dbQuery(new MySqlQuery())
+                .typeConvert(new MySqlTypeConvert())
+                .keyWordsHandler(new MySqlKeyWordsHandler());
+        return dataSourceConfig;
+    }
+
+    private FastAutoGenerator fastAutoGenerator(DataSourceConfig.Builder dataSourceConfig, String projectPath,
+                                                String author, String boot, String fileName, String api,
+                                                Map<OutputFile, String> pathMap, String tableName,
+                                                String javaPath, List<IFill> list) {
         FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfig);
         fastAutoGenerator.globalConfig(builder -> {
             builder.outputDir(projectPath + "\\java")
@@ -209,7 +284,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             }).customMap(Collections.singletonMap("javaPath", javaPath)).build();
         });
         fastAutoGenerator.templateEngine(new BeetlTemplateEngine());
-        fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
+        return fastAutoGenerator;
     }
 
     private static String getPath(String add, String separator) {

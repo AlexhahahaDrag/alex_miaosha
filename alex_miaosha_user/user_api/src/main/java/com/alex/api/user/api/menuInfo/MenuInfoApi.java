@@ -1,16 +1,14 @@
 package com.alex.api.user.api.menuInfo;
 
+import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
-import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 
 /**
  * @description:  菜单管理表controller
@@ -38,11 +36,6 @@ public interface MenuInfoApi {
     @ApiOperation(value = "获取菜单管理表详情", notes = "获取菜单管理表详情", response = Result.class)
     @GetMapping(value = "/api/v1//menu-info")
     Result<MenuInfoVo> queryMenuInfo(@RequestParam(value = "id") String id);
-
-    @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "新增菜单管理表", notes = "新增菜单管理表", response = Result.class)
-    @PostMapping("/api/v1//menu-info")
-    Result<Boolean> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改菜单管理表", notes = "修改菜单管理表", response = Result.class)

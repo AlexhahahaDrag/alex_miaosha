@@ -70,7 +70,7 @@
      <sql id="queryInfo">
         <if test = "menuInfoVo != null">
           <if test = "menuInfoVo.name != null">
-            and name like concat('%', #{menuInfoVo.name}, '%')
+            and name = #{menuInfoVo.name}
           </if>
           <if test = "menuInfoVo.path != null">
             and path like concat('%', #{menuInfoVo.path}, '%')

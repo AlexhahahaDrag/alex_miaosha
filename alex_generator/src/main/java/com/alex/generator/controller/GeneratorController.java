@@ -35,13 +35,17 @@ public class GeneratorController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "服务名称", name = "moduleName", defaultValue = "alex_miaosha_finance"),
             @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
+            @ApiImplicitParam(value = "java路径名称", name = "javaPathName", defaultValue = "财务管理"),
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
+            @ApiImplicitParam(value = "表格列表名称", name = "tableNameInfo", defaultValue = "用户管理"),
             @ApiImplicitParam(value = "作者", name = "author", defaultValue = "alex")})
     public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
+                                    @RequestParam(value = "javaPathName") String javaPathName,
                                     @RequestParam(value = "javaPath") String javaPath,
                                     @RequestParam(value = "tableNames") String[] tableNames,
+                                    @RequestParam(value = "tableNameInfo") String[] tableNameInfo,
                                     @RequestParam(value = "author", required = false) String author) throws Exception {
-        return Result.success(generatorService.generator(moduleName, javaPath, tableNames, author));
+        return Result.success(generatorService.generator(moduleName, javaPathName, javaPath, tableNames, tableNameInfo, author));
     }
 
     @ApiOperationSupport(order = 2, author = "alex")

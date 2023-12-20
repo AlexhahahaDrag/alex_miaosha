@@ -36,6 +36,12 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         return menuInfoMapper.getPage(page, menuInfoVo);
     }
 
+    /**
+     * @param menuInfoVo
+     * @description: 查询菜单列表并拼接成父子组结构
+     * @author:      majf
+     * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
+    */
     @Override
     public List<MenuInfoVo> getList(MenuInfoVo menuInfoVo) {
         List<MenuInfoVo> list = menuInfoMapper.getList(menuInfoVo);
@@ -52,6 +58,13 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         return result;
     }
 
+    /**
+     * @param pId
+     * @param menuMap
+     * @description: 拼接菜单子列表
+     * @author:      majf
+     * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
+    */
     public List<MenuInfoVo> getChildren(Long pId, Map<Long, List<MenuInfoVo>> menuMap) {
         if (pId == null || menuMap == null || menuMap.get(pId) == null || menuMap.get(pId).isEmpty()) {
             return null;
