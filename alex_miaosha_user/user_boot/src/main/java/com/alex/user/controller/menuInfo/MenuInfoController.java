@@ -69,14 +69,14 @@ public class MenuInfoController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增菜单管理表", notes = "新增菜单管理表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody MenuInfoVo menuInfoVo) {
+    public Result<MenuInfoVo> add(@Validated({Insert.class}) @RequestBody MenuInfoVo menuInfoVo) {
         return Result.success(menuInfoService.addMenuInfo(menuInfoVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改菜单管理表", notes = "修改菜单管理表", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@Validated({Update.class}) @RequestBody MenuInfoVo menuInfoVo) {
+    public Result<MenuInfoVo> update(@Validated({Update.class}) @RequestBody MenuInfoVo menuInfoVo) {
         return Result.success(menuInfoService.updateMenuInfo(menuInfoVo));
     }
 

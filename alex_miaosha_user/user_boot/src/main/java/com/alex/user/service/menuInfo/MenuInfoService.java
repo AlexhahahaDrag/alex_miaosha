@@ -22,9 +22,9 @@ public interface MenuInfoService extends IService<MenuInfo> {
 
     MenuInfoVo queryMenuInfo(String id);
 
-    Boolean addMenuInfo(MenuInfoVo menuInfoVo);
+    MenuInfoVo addMenuInfo(MenuInfoVo menuInfoVo);
 
-    Boolean updateMenuInfo(MenuInfoVo menuInfoVo);
+    MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo);
 
     Boolean deleteMenuInfo(String ids);
 }

@@ -52,12 +52,20 @@ public class AvoidRepeatableCommitAspect {
         //目标类方法
         String className = method.getDeclaringClass().getName();
         String name = method.getName();
+        Object[] args = point.getArgs();
+        String ipKey = String.format("%s#%s", className, name);
+        //转换成hashCode
+        if (args != null && args.length > 0) {
+            log.info("======================{}", args.hashCode() + "=====================");
+            for(Object arg :args) {
+                ipKey += arg.hashCode();
+                log.info(arg.hashCode() + "");
+            }
+            log.info("======================{}" + args.hashCode() + "");
+        }
+        int hashCode = Math.abs(ipKey.hashCode());
 
         //得到类名的方法
-        String ipKey = String.format("%s#%s", className, name);
-
-        //转换成hashCode
-        int hashCode = Math.abs(ipKey.hashCode());
         String key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEAT_COMMIT, ip, hashCode);
 
         log.info("ipKey={}, hashCode={},key={}", ipKey, hashCode, key);

@@ -5,12 +5,11 @@ import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,5 +38,8 @@ public interface UserApi {
     Result<List<MenuInfoVo>> getMenuInfoList(@RequestBody(required = false) MenuInfoVo menuInfoVo);
 
     @PostMapping("/api/v1/menu-info")
-    Result<Boolean> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
+    Result<MenuInfoVo> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
+
+    @PutMapping("/api/v1/menu-info")
+    Result<MenuInfoVo> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 }

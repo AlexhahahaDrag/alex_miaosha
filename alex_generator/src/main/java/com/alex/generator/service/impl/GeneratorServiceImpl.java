@@ -5,6 +5,7 @@ import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.config.GeneratorConfig;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @description:
@@ -81,8 +83,10 @@ public class GeneratorServiceImpl implements GeneratorService {
         Integer orderBy = 0;
         Integer pOrderBy = 0;
         List<MenuInfoVo> menuInfo = result.getData();
+        boolean menuExists = false;
+        MenuInfoVo oldMenuInfo = null;
         if (menuInfo == null || menuInfo.isEmpty()) {
-            menuInfoVo = addMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+            menuInfoVo = getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
                     pOrderBy + 10, javaPathName);
         } else {
             boolean exists = false;
@@ -94,19 +98,34 @@ public class GeneratorServiceImpl implements GeneratorService {
                     List<MenuInfoVo> children = item.getChildren();
                     if (children != null && !children.isEmpty()) {
                         orderBy = children.parallelStream().map(child -> child.getOrderBy()).max(Integer::compare).get();
+                        List<MenuInfoVo> collect = children.parallelStream().filter(childItem -> fileName.equals(childItem.getName())).collect(Collectors.toList());
+                        if(collect != null && collect.size() > 0) {
+                            oldMenuInfo = collect.get(0);
+                            menuExists = true;
+                        }
                     }
                     break;
                 }
             }
             if (!exists) {
-                menuInfoVo = addMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+                menuInfoVo = getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
                         pOrderBy + 10, javaPathName);
+                menuInfoVo = addMenuInfo(menuInfoVo);
             }
         }
-        addMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
+        if (menuExists) {
+            MenuInfoVo updateMenuInfo = getMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
+            BeanUtils.copyProperties(oldMenuInfo, updateMenuInfo);
+            updateMenuInfo.setOrderBy(updateMenuInfo.getOrderBy() +1);
+            updateMenuInfo(updateMenuInfo);
+        } else {
+            MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
+            addMenuInfo(addMenuInfo);
+            addMenuInfo(addMenuInfo);
+        }
     }
 
-    private MenuInfoVo addMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy, String title) {
+    private MenuInfoVo getMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy, String title) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName));
@@ -121,8 +140,18 @@ public class GeneratorServiceImpl implements GeneratorService {
         menuInfoVo.setParentId(parentId);
         menuInfoVo.setStatus("1");
         menuInfoVo.setOrderBy(orderBy);
-        userApi.addMenuInfo(menuInfoVo);
+        menuInfoVo.setHideInMenu("0");
         return menuInfoVo;
+    }
+
+    private MenuInfoVo addMenuInfo(MenuInfoVo menuInfoVo) {
+        Result<MenuInfoVo> menuInfoVoResult = userApi.addMenuInfo(menuInfoVo);
+        return menuInfoVoResult.getData();
+    }
+
+    private MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo) {
+        Result<MenuInfoVo> menuInfoVoResult = userApi.updateMenuInfo(menuInfoVo);
+        return menuInfoVoResult.getData();
     }
 
     private Map<OutputFile, String> pathMap(String fileName, String separator, String javaPath, String projectPath, String clientPathProject) {

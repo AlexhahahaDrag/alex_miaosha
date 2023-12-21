@@ -80,19 +80,20 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     }
 
     @Override
-    public Boolean addMenuInfo(MenuInfoVo menuInfoVo) {
+    public MenuInfoVo addMenuInfo(MenuInfoVo menuInfoVo) {
         MenuInfo menuInfo = new MenuInfo();
         BeanUtil.copyProperties(menuInfoVo, menuInfo);
         menuInfoMapper.insert(menuInfo);
-        return true;
+        menuInfoVo.setId(menuInfo.getId());
+        return menuInfoVo;
     }
 
     @Override
-    public Boolean updateMenuInfo(MenuInfoVo menuInfoVo) {
+    public MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo) {
         MenuInfo menuInfo = new MenuInfo();
         BeanUtil.copyProperties(menuInfoVo, menuInfo);
         menuInfoMapper.updateById(menuInfo);
-        return true;
+        return menuInfoVo;
     }
 
     @Override
