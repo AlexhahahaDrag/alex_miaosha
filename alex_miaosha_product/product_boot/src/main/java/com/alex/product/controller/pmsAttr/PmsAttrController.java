@@ -7,9 +7,11 @@ import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
+import com.alex.product.entity.pmsAttr.PmsAttr;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,14 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @description:  商品属性restApi
  * @author:       alex
- * @createDate:   2023-03-02 19:15:30
+ * @createDate:   2023-12-22 15:38:47
  * @version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品属性相关接口", tags = {"商品属性相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//pms-attr")
+@RequestMapping("/api/v1/pms-attr")
 public class PmsAttrController {
 
     private final PmsAttrService pmsAttrService;

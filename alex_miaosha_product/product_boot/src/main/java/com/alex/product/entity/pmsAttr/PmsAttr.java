@@ -1,11 +1,8 @@
 package com.alex.product.entity.pmsAttr;
 
-import com.alex.common.config.Long2StringSerializer;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -15,7 +12,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  商品属性类
  * @author:       alex
- * @createDate: 2023-03-02 19:15:30
+ * @createDate: 2023-12-22 15:38:47
  * @version:      1.0.0
  */
 @Getter
@@ -23,11 +20,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("pms_attr")
 @ApiModel(value = "PmsAttr对象", description = "商品属性")
-public class PmsAttr {
-
-    @ApiModelProperty(value = "属性id")
-    @TableId(value = "attr_id", type = IdType.ASSIGN_ID)
-    private Long attrId;
+public class PmsAttr extends BaseEntity<PmsAttr>{
 
     @ApiModelProperty(value = "属性名")
     @TableField("attr_name")

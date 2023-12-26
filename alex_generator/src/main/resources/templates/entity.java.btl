@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 <% } %>
 <% } %>
+import com.alex.common.config.Long2StringSerializer;
 
 /**
  * @description:  ${table.comment!}类

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * @description:  商品属性 mapper
  * @author:       alex
- * @createDate:   2023-03-02 19:15:30
+ * @createDate:   2023-12-22 15:38:47
  * @version:      1.0.0
  */
 @Mapper

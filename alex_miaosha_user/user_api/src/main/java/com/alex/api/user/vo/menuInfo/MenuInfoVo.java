@@ -54,5 +54,45 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
     @ApiModelProperty(value = "排序")
     private Integer orderBy;
 
+    @ApiModelProperty(value = "子菜单")
     private List<MenuInfoVo> children;
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        if(name != null) {
+            result += name.hashCode();
+        }
+        if(path != null) {
+            result += path.hashCode();
+        }
+        if(title != null) {
+            result += title.hashCode();
+        }
+        if(component != null) {
+            result += component.hashCode();
+        }
+        if(redirect != null) {
+            result += redirect.hashCode();
+        }
+        if(icon != null) {
+            result += icon.hashCode();
+        }
+        if(hideInMenu != null) {
+            result += hideInMenu.hashCode();
+        }
+        if(parentId != null) {
+            result += parentId.hashCode();
+        }
+        if(summary != null) {
+            result += summary.hashCode();
+        }
+        if(status != null) {
+            result += status.hashCode();
+        }
+        if(orderBy != null) {
+            result += orderBy.hashCode();
+        }
+        return result;
+    }
 }

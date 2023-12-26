@@ -121,7 +121,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
             addMenuInfo(addMenuInfo);
-            addMenuInfo(addMenuInfo);
         }
     }
 

@@ -56,12 +56,10 @@ public class AvoidRepeatableCommitAspect {
         String ipKey = String.format("%s#%s", className, name);
         //转换成hashCode
         if (args != null && args.length > 0) {
-            log.info("======================{}", args.hashCode() + "=====================");
             for(Object arg :args) {
                 ipKey += arg.hashCode();
                 log.info(arg.hashCode() + "");
             }
-            log.info("======================{}" + args.hashCode() + "");
         }
         int hashCode = Math.abs(ipKey.hashCode());
 
