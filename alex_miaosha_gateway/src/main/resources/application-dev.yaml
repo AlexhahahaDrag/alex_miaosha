@@ -2,7 +2,7 @@ server:
   port: 30001
 spring:
   application:
-    name: alex-gateway-dev
+    name: alex-gateway-${spring.profiles.active}
   cloud:
     gateway:
       discovery:
@@ -53,8 +53,6 @@ spring:
             - Path=/am-product/**
           filters:
             - StripPrefix=1
-
-  #
 #        - id: alex-manage
 #          uri: lb://alex-manage
 #          predicates:

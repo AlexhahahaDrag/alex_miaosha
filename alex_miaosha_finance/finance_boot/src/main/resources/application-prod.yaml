@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-finance-prod
+    name: alex-finance-${spring.profiles.active}
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
@@ -16,8 +16,6 @@ mybatis-plus:
 
 xxl:
   job:
-    admin:
-      addresses: http://xxl-job-admin:8080/xxl-job-admin
     executor:
       appname: xxl-finance-prod
       logretentiondays: 30

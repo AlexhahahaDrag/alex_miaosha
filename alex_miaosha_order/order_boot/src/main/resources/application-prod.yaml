@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-order-prod
+    name: alex-order-${spring.profiles.active}
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型

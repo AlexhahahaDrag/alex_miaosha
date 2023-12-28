@@ -25,6 +25,15 @@ spring:
           - data-id: ${nacos.jasypt}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+          - data-id: ${nacos.audience}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
+          - data-id: ${nacos.wechat}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
+          - data-id: ${nacos.xxl}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
 
 nacos:
   url: 81.70.158.140:8848
@@ -38,3 +47,6 @@ nacos:
   nacos: nacos-service
   redis: redis
   jasypt: jasypt-user
+  audience: audience
+  wechat: wechat
+  xxl: xxl

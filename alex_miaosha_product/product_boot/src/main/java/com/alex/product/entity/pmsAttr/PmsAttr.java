@@ -14,7 +14,7 @@ import com.alex.common.config.Long2StringSerializer;
 /**
  * @description:  商品属性类
  * @author:       alex
- * @createDate: 2023-12-27 16:02:07
+ * @createDate: 2023-12-28 19:50:53
  * @version:      1.0.0
  */
 @Getter

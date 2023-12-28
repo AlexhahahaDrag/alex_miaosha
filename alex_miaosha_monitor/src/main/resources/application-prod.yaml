@@ -2,7 +2,7 @@ server:
   port: 30099
 spring:
   application:
-    name: alex-monitor-prod
+    name: alex-monitor-${spring.profiles.active}
   boot:
     admin:
       ui:

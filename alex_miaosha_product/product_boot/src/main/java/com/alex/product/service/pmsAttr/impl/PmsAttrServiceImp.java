@@ -17,7 +17,7 @@ import com.alex.common.utils.string.StringUtils;
  * <p>
  * @description:  商品属性服务实现类
  * @author:       alex
- * @createDate:   2023-12-27 16:02:07
+ * @createDate:   2023-12-28 19:50:53
  * @version:      1.0.0
  */
 @Service

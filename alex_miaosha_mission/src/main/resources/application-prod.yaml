@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-mission-prod
+    name: alex-mission-${spring.profiles.active}
 
   task:
     execution:

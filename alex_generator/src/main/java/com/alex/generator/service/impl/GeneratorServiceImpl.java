@@ -90,11 +90,11 @@ public class GeneratorServiceImpl implements GeneratorService {
         MenuSearchInfo menuInfo = findMenuInfo(moduleMenuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName);
         MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : menuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
         if (!moduleMenuInfo.getMenuExists()) {
-            MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+            MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
                     moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO));
             moduleMenuInfo.setMenuInfoVo(addModualMenuInfoVo);
         }
-        MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, moduleMenuInfo.getMenuInfoVo().getId(), null,
+        MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, fileName, moduleMenuInfo.getMenuInfoVo().getId(), null,
                 menuInfo.getOrderBy(), fileNameInfo, fileName, NO_INFO, YES_INFO);
         if (menuInfo.getMenuExists()) {
             BeanUtils.copyProperties(menuInfo.getMenuInfoVo(), addMenuInfo);
@@ -102,8 +102,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfo.setMenuInfoVo(addMenuInfo(addMenuInfo));
         }
-        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, menuInfo.getMenuInfoVo().getId(), null,
-                detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/detail", YES_INFO, NO_INFO);
+        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/detail", moduleMenuInfo.getMenuInfoVo().getId(),
+                null, detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/detail", YES_INFO, NO_INFO);
         if (detailMenuInfo.getMenuExists()) {
             BeanUtils.copyProperties(detailMenuInfo.getMenuInfoVo(), addChildMenuInfo);
             menuInfo.setMenuInfoVo(updateMenuInfo(addChildMenuInfo));
@@ -137,17 +137,17 @@ public class GeneratorServiceImpl implements GeneratorService {
         return menuSearchInfo;
     }
 
-    private MenuInfoVo getMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy,
-                                   String title, String path, String hideInMenu, String showInHome) {
+    private MenuInfoVo getMenuInfo(String moduleName, String fileName, String path, Long parentId, String redirect, Integer orderBy,
+                                   String title, String component, String hideInMenu, String showInHome) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
-        menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName));
+        menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(path) ? "" : "/" + path));
         menuInfoVo.setTitle(title);
         if (StringUtils.isEmpty(fileName)) {
             menuInfoVo.setComponent("Layout");
             menuInfoVo.setRedirect(redirect);
         } else {
-            menuInfoVo.setComponent("@/" + moduleName + "/" + path + "/index.vue");
+            menuInfoVo.setComponent("../views/" + moduleName + "/" + component + "/index.vue");
         }
         menuInfoVo.setIcon(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setParentId(parentId);

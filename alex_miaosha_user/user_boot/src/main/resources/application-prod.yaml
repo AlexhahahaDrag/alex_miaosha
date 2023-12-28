@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-user-prod
+    name: alex-user-${spring.profiles.active}
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型

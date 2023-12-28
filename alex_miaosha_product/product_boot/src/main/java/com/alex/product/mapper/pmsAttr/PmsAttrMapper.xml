@@ -38,28 +38,28 @@
      <sql id="queryInfo">
         <if test = "pmsAttrVo != null">
           <if test = "pmsAttrVo.attrName != null">
-            and attr_name like concat('%', #{pmsAttrVo.attrName}, '%')
+            and pms_attr.attr_name like concat('%', #{pmsAttrVo.attrName}, '%')
           </if>
           <if test = "pmsAttrVo.searchType != null">
-            and search_type = #{pmsAttrVo.searchType}
+            and pms_attr.search_type = #{pmsAttrVo.searchType}
           </if>
           <if test = "pmsAttrVo.icon != null">
-            and icon like concat('%', #{pmsAttrVo.icon}, '%')
+            and pms_attr.icon like concat('%', #{pmsAttrVo.icon}, '%')
           </if>
           <if test = "pmsAttrVo.valueSelect != null">
-            and value_select like concat('%', #{pmsAttrVo.valueSelect}, '%')
+            and pms_attr.value_select like concat('%', #{pmsAttrVo.valueSelect}, '%')
           </if>
           <if test = "pmsAttrVo.attrType != null">
-            and attr_type = #{pmsAttrVo.attrType}
+            and pms_attr.attr_type = #{pmsAttrVo.attrType}
           </if>
           <if test = "pmsAttrVo.enable != null">
-            and enable = #{pmsAttrVo.enable}
+            and pms_attr.enable = #{pmsAttrVo.enable}
           </if>
           <if test = "pmsAttrVo.catelogId != null">
-            and catelog_id = #{pmsAttrVo.catelogId}
+            and pms_attr.catelog_id = #{pmsAttrVo.catelogId}
           </if>
           <if test = "pmsAttrVo.showDesc != null">
-            and show_desc = #{pmsAttrVo.showDesc}
+            and pms_attr.show_desc = #{pmsAttrVo.showDesc}
           </if>
         </if>
      </sql>

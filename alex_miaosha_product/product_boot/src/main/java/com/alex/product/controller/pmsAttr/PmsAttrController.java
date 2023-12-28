@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @description:  商品属性restApi
  * @author:       alex
- * @createDate:   2023-12-27 16:02:07
+ * @createDate:   2023-12-28 19:50:53
  * @version:      1.0.0
  */
 @ApiSort(105)

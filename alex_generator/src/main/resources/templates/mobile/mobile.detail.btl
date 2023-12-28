@@ -30,7 +30,7 @@
                 :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" @click="choose('${field.propertyName}')" readonly />
             <% } else { %>
             <van-field v-model="formInfo.${field.propertyName}" name="${field.propertyName}" :label="label.${field.propertyName} + '：'"
-                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" :maxlength="${field.propertyName}" />
+                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" :maxlength="${field.metaInfo.length}" />
             <% } %>
         <% } %>
             <% if (hasDict) { %>
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import navBar from '@/views/common/navBar/index.vue';
 <% if(hasDate){ %>

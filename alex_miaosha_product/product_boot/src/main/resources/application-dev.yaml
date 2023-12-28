@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-product-dev
+    name: alex-product-${spring.profiles.active}
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
@@ -24,8 +24,6 @@ shop:
 
 xxl:
   job:
-    admin:
-      addresses: http://localhost:8123/xxl-job-admin
     executor:
       appname: xxl-product-dev
       logretentiondays: 30

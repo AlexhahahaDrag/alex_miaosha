@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: alex-finance-dev
+    name: alex-finance-${spring.profiles.active}
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
@@ -20,8 +20,6 @@ logging:
 
 xxl:
   job:
-    admin:
-      addresses: http://localhost:8123/xxl-job-admin
     executor:
       appname: xxl-finance-dev
       logretentiondays: 30
