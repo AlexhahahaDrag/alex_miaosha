@@ -1,9 +1,7 @@
 package com.alex.api.product.vo.pmsAttr;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -13,7 +11,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  商品属性Vo
  * @author:       alex
- * @createDate:   2023-12-22 15:38:47
+ * @createDate:   2023-12-27 16:02:07
  * @version:      1.0.0
  */
 @Getter
@@ -21,9 +19,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ApiModel(value = "PmsAttrVo", description = "商品属性Vo")
 public class PmsAttrVo extends BaseVo<PmsAttrVo>{
-
-    @ApiModelProperty(value = "属性id")
-    private Long attrId;
 
     @ApiModelProperty(value = "属性名")
     private String attrName;

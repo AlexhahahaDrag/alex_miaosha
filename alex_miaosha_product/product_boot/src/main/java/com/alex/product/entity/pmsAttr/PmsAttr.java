@@ -5,14 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import com.alex.common.config.Long2StringSerializer;
 
 /**
  * @description:  商品属性类
  * @author:       alex
- * @createDate: 2023-12-22 15:38:47
+ * @createDate: 2023-12-27 16:02:07
  * @version:      1.0.0
  */
 @Getter

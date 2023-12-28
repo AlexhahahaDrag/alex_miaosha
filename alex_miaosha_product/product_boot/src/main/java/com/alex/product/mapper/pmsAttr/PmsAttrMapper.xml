@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsAttr.PmsAttr">
-        <id column="attr_id" property="attrId" />
+        <result column="id" property="id" />
         <result column="attr_name" property="attrName" />
         <result column="search_type" property="searchType" />
         <result column="icon" property="icon" />
@@ -17,7 +17,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pms_attr.attr_id, pms_attr.attr_name, pms_attr.search_type, pms_attr.icon, pms_attr.value_select, pms_attr.attr_type, pms_attr.`enable`, pms_attr.catelog_id, pms_attr.show_desc
+        pms_attr.id,
+        pms_attr.attr_name, pms_attr.search_type, pms_attr.icon, pms_attr.value_select, pms_attr.attr_type, pms_attr.`enable`, pms_attr.catelog_id, pms_attr.show_desc
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
@@ -36,9 +37,6 @@
 
      <sql id="queryInfo">
         <if test = "pmsAttrVo != null">
-          <if test = "pmsAttrVo.attrId != null">
-            and attr_id = #{pmsAttrVo.attrId}
-          </if>
           <if test = "pmsAttrVo.attrName != null">
             and attr_name like concat('%', #{pmsAttrVo.attrName}, '%')
           </if>

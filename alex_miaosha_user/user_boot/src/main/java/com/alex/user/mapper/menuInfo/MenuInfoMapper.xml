@@ -21,6 +21,7 @@
         <result column="redirect" property="redirect" />
         <result column="icon" property="icon" />
         <result column="hide_in_menu" property="hideInMenu" />
+        <result column="show_in_home" property="showInHome" />
         <result column="parent_id" property="parentId" />
         <result column="summary" property="summary" />
         <result column="status" property="status" />
@@ -39,7 +40,8 @@
         t_menu_info.is_delete,
         t_menu_info.operator,
         t_menu_info.operate_time,
-        t_menu_info.`name`, t_menu_info.`path`, t_menu_info.title, t_menu_info.`component`, t_menu_info.redirect, t_menu_info.icon, t_menu_info.hide_in_menu, t_menu_info.parent_id, t_menu_info.summary, t_menu_info.`status`, t_menu_info.order_by
+        t_menu_info.`name`, t_menu_info.`path`, t_menu_info.title, t_menu_info.`component`, t_menu_info.redirect, t_menu_info.icon, t_menu_info.hide_in_menu, t_menu_info.parent_id, t_menu_info.summary, t_menu_info.`status`, t_menu_info.order_by,
+        t_menu_info.show_in_home
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
@@ -89,6 +91,9 @@
           </if>
           <if test = "menuInfoVo.hideInMenu != null">
             and hide_in_menu like concat('%', #{menuInfoVo.hideInMenu}, '%')
+          </if>
+           <if test = "menuInfoVo.showInHome != null">
+            and show_in_home like concat('%', #{menuInfoVo.showInHome}, '%')
           </if>
           <if test = "menuInfoVo.parentId != null">
             and parent_id = #{menuInfoVo.parentId}

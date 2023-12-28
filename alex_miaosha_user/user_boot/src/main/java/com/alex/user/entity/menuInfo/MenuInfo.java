@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -50,6 +49,10 @@ public class MenuInfo extends BaseEntity<MenuInfo>{
     @ApiModelProperty(value = "是否隐藏菜单,字典(true_or_false) 1：有效,0:失效)")
     @TableField("hide_in_menu")
     private String hideInMenu;
+
+    @ApiModelProperty(value = "是否在home中展示,字典(true_or_false) 1：展示,0:不展示)")
+    @TableField("show_in_home")
+    private String showInHome;
 
     @ApiModelProperty(value = "父级机构id")
     @TableField("parent_id")

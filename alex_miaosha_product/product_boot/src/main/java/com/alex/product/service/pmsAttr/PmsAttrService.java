@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 /**
  * 商品属性 服务类
  * @author: alex
- * @createDate: 2023-12-22 15:38:47
+ * @createDate: 2023-12-27 16:02:07
  * @description: 我是由代码生成器生成
  * version: 1.0.0
  */

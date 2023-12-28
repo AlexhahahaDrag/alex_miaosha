@@ -10,6 +10,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.config.GeneratorConfig;
 import com.alex.generator.service.GeneratorService;
+import com.alex.generator.vo.MenuSearchInfo;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -28,7 +29,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @description:
@@ -45,6 +45,12 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final GeneratorConfig generatorConfig;
 
     private final UserApi userApi;
+
+    private final static String DETAIL = "Detail";
+
+    private final static String NO_INFO = "0";
+
+    private final static String YES_INFO = "1";
 
     @Override
     public Boolean generator(String moduleName, String javaPathName, String javaPath, String[] tableNames, String[] tableNameInfo, String author) throws Exception {
@@ -77,54 +83,62 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void addMenu(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
         // 查询主菜单是否存在
         MenuInfoVo query = new MenuInfoVo();
-        query.setStatus("1");
+        query.setStatus(YES_INFO);
         Result<List<MenuInfoVo>> result = userApi.getMenuInfoList(query);
-        MenuInfoVo menuInfoVo = new MenuInfoVo();
-        Integer orderBy = 0;
-        Integer pOrderBy = 0;
-        List<MenuInfoVo> menuInfo = result.getData();
-        boolean menuExists = false;
-        MenuInfoVo oldMenuInfo = null;
-        if (menuInfo == null || menuInfo.isEmpty()) {
-            menuInfoVo = getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
-                    pOrderBy + 10, javaPathName);
-        } else {
-            boolean exists = false;
-            for (MenuInfoVo item : menuInfo) {
-                pOrderBy = Math.max(pOrderBy, item.getOrderBy() == null ? 0 : item.getOrderBy());
-                if (javaPath.equals(item.getName())) {
-                    exists = true;
-                    menuInfoVo = item;
-                    List<MenuInfoVo> children = item.getChildren();
-                    if (children != null && !children.isEmpty()) {
-                        orderBy = children.parallelStream().map(child -> child.getOrderBy()).max(Integer::compare).get();
-                        List<MenuInfoVo> collect = children.parallelStream().filter(childItem -> fileName.equals(childItem.getName())).collect(Collectors.toList());
-                        if(collect != null && collect.size() > 0) {
-                            oldMenuInfo = collect.get(0);
-                            menuExists = true;
-                        }
-                    }
-                    break;
-                }
-            }
-            if (!exists) {
-                menuInfoVo = getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
-                        pOrderBy + 10, javaPathName);
-                menuInfoVo = addMenuInfo(menuInfoVo);
-            }
+        List<MenuInfoVo> menuInfoList = result.getData();
+        MenuSearchInfo moduleMenuInfo = findMenuInfo(menuInfoList, javaPath);
+        MenuSearchInfo menuInfo = findMenuInfo(moduleMenuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName);
+        MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : menuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
+        if (!moduleMenuInfo.getMenuExists()) {
+            MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+                    moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO));
+            moduleMenuInfo.setMenuInfoVo(addModualMenuInfoVo);
         }
-        if (menuExists) {
-            MenuInfoVo updateMenuInfo = getMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
-            BeanUtils.copyProperties(oldMenuInfo, updateMenuInfo);
-            updateMenuInfo.setOrderBy(updateMenuInfo.getOrderBy() +1);
-            updateMenuInfo(updateMenuInfo);
+        MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, moduleMenuInfo.getMenuInfoVo().getId(), null,
+                menuInfo.getOrderBy(), fileNameInfo, fileName, NO_INFO, YES_INFO);
+        if (menuInfo.getMenuExists()) {
+            BeanUtils.copyProperties(menuInfo.getMenuInfoVo(), addMenuInfo);
+            menuInfo.setMenuInfoVo(updateMenuInfo(addMenuInfo));
         } else {
-            MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, menuInfoVo.getId(), null, orderBy + 10, fileNameInfo);
-            addMenuInfo(addMenuInfo);
+            menuInfo.setMenuInfoVo(addMenuInfo(addMenuInfo));
+        }
+        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, menuInfo.getMenuInfoVo().getId(), null,
+                detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/detail", YES_INFO, NO_INFO);
+        if (detailMenuInfo.getMenuExists()) {
+            BeanUtils.copyProperties(detailMenuInfo.getMenuInfoVo(), addChildMenuInfo);
+            menuInfo.setMenuInfoVo(updateMenuInfo(addChildMenuInfo));
+        } else {
+            menuInfo.setMenuInfoVo(addMenuInfo(addChildMenuInfo));
         }
     }
 
-    private MenuInfoVo getMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy, String title) {
+    /**
+     * @param menuInfoList
+     * @param menuName
+     * @description: 根据菜单名称查询菜单信息
+     * @author:      majf
+     * @return:      com.alex.generator.vo.MenuSearchInfo
+    */
+    private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {
+        MenuSearchInfo menuSearchInfo = new MenuSearchInfo();
+        if (menuInfoList == null || menuInfoList.isEmpty() || StringUtils.isEmpty(menuName)) {
+            menuSearchInfo.setOrderBy(10);
+            return menuSearchInfo;
+        }
+        int orderBy = 0;
+        for(MenuInfoVo menuInfoVo : menuInfoList) {
+            if (menuName.equals(menuInfoVo.getName())) {
+                menuSearchInfo.setMenuInfoVo(menuInfoVo);
+                menuSearchInfo.setMenuExists(true);
+            }
+            orderBy = Math.max(orderBy, menuInfoVo.getOrderBy() == null ? 0 : menuInfoVo.getOrderBy());
+        }
+        menuSearchInfo.setOrderBy(orderBy + 10);
+        return menuSearchInfo;
+    }
+
+    private MenuInfoVo getMenuInfo(String moduleName, String fileName, Long parentId, String redirect, Integer orderBy,
+                                   String title, String path, String hideInMenu, String showInHome) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName));
@@ -133,13 +147,14 @@ public class GeneratorServiceImpl implements GeneratorService {
             menuInfoVo.setComponent("Layout");
             menuInfoVo.setRedirect(redirect);
         } else {
-            menuInfoVo.setComponent("@/" + moduleName + "/" + fileName + "/" + fileName + "List.vue");
+            menuInfoVo.setComponent("@/" + moduleName + "/" + path + "/index.vue");
         }
         menuInfoVo.setIcon(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setParentId(parentId);
-        menuInfoVo.setStatus("1");
+        menuInfoVo.setStatus(YES_INFO);
         menuInfoVo.setOrderBy(orderBy);
-        menuInfoVo.setHideInMenu("0");
+        menuInfoVo.setShowInHome(showInHome);
+        menuInfoVo.setHideInMenu(hideInMenu);
         return menuInfoVo;
     }
 
@@ -293,13 +308,19 @@ public class GeneratorServiceImpl implements GeneratorService {
                     //配置ts
                     .tsTsBuilder()
                     .formatTsTsFileName("%sTs")
+                    .listVueBuilder()
+                    .formatListVueFileName("index")
+                    .detailVueBuilder()
+                    .formatDetailVueFileName("index")
                     // mobile
                     .mobileTsBuilder()
                     .formatMobileTsFileName("%sTs")
                     .mobileVueBuilder()
-                    .formatMobileVueFileName("%s")
+                    .formatMobileVueFileName("index")
                     .mobileDetailTsBuilder()
                     .formatMobileDetailTsFileName("%sDetailTs")
+                    .mobileDetailBuilder()
+                    .formatMobileDetailFileName("index")
                     .mobileTsTsBuilder()
                     .formatMobileTsTsFileName("%sTs")
                     .build()

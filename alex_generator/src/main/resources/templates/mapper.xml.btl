@@ -68,12 +68,12 @@
           <% for(field in table.fields){ %>
         <% if(field.columnType == 'STRING'){ %>
           <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
-            and ${field.name} like concat('%', #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}, '%')
+            and ${table.name}.${field.name} like concat('%', #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}, '%')
           </if>
           <% } %>
           <% else { %>
           <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
-            and ${field.name} = #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}
+            and ${table.name}.${field.name} = #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}
           </if>
           <% } %>
           <% } %>

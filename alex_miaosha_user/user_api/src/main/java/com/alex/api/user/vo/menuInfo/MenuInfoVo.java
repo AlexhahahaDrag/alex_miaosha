@@ -42,6 +42,9 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
     @ApiModelProperty(value = "是否隐藏菜单,字典(true_or_false) 1：有效,0:失效)")
     private String hideInMenu;
 
+    @ApiModelProperty(value = "是否在home中展示,字典(true_or_false) 1：展示,0:不展示)")
+    private String showInHome;
+
     @ApiModelProperty(value = "父级机构id")
     private Long parentId;
 
@@ -92,6 +95,9 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
         }
         if(orderBy != null) {
             result += orderBy.hashCode();
+        }
+        if(showInHome != null) {
+            result += showInHome.hashCode();
         }
         return result;
     }

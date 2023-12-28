@@ -84,7 +84,7 @@ public class BaseBuilder implements IConfigBuilder<StrategyConfig> {
     }
 
     @NotNull
-    public com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetail() {
+    public com.baomidou.mybatisplus.generator.config.builder.MobileDetail.Builder mobileDetailBuilder() {
         return this.strategyConfig.mobileDetailBuilder();
     }
 
