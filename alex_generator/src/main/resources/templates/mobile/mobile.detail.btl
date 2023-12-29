@@ -69,6 +69,7 @@ let route = useRoute();
 let router = useRouter();
 const info = ref<any>({
     title: route?.meta?.title || '${table.comment!}',
+    leftPath: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}',
 });
 
 let formInfo = ref<any>({});
@@ -264,7 +265,7 @@ const onSubmit = () => {
     addOrEdit${entity}(method, formInfo.value).then((res: any) => {
         if (res?.code == '200') {
             showSuccessToast(res?.message || '保存成功!');
-            router.push({ path: '${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
+            router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
         } else {
             showFailToast (res?.message || '保存失败，请联系管理员!');
         }
