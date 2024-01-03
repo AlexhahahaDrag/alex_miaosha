@@ -150,7 +150,7 @@ const getListName = (list: any[], value: any, code: string, name: string) => {
 };
 
 function getDictInfoList(res: any) {
-   if (res.code == "200") {
+   if (res?.code == "200") {
 <% for(field in table.fields){
            if(field.keyFlag) {
                 continue;

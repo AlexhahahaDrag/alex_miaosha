@@ -127,21 +127,17 @@ function query(param: SearchInfo, cur: pageInfo) {
   loading.value = true;
   get${entity}Page(param, cur?.current ? cur.current : 1, cur?.pageSize || 10)
     .then((res: any) => {
-      if (res.code == '200') {
+      if (res?.code == '200') {
         dataSource.value = [...dataSource.value, ...res.data.records];
         pagination.value.current = res.data.current + 1;
         pagination.value.pageSize = res.data.size;
         pagination.value.total = res.data.total;
-        if (!pagination.value?.total ||
-          (pagination.value.total &&
-            pagination.value.total <
-              (pagination.value.current || 1) *
-                (pagination.value.pageSize || 10))
-        ) {
+        if ((pagination.value.total|| 0) <
+              (pagination.value.current || 1) * (pagination.value.pageSize || 10)) {
           finished.value = true;
         }
       } else {
-        showFailToast((res && res.message) || '查询列表失败！');
+        showFailToast((res?.message) || '查询列表失败！');
       }
     })
     .finally(() => {
@@ -156,15 +152,15 @@ const add${entity} = () => {
 
 let userMap = {};
 function getUserInfoList() {
-  getUserManagerList({}).then((res) => {
-    if (res.code == '200') {
+  getUserManagerList({}).then((res: any) => {
+    if (res?.code == '200') {
       if (res?.data) {
         res.data.forEach((user: { id: string | number; nickName: any; }) => {
           userMap[user.id] = user.nickName;
         });
       }
     } else {
-      showFailToast((res && res.message) || '查询列表失败！');
+      showFailToast((res?.message) || '查询列表失败！');
     }
   });
 }
@@ -187,9 +183,9 @@ const del${entity} = (id: number) => {
   delete${entity}(id + '').then((res: any) => {
     if (res?.code == '200') {
       refresh();
-      showSuccessToast((res && res.message) || '删除成功！');
+      showSuccessToast((res?.message) || '删除成功！');
     } else {
-      showFailToast((res && res.message) || '删除失败，请联系管理员！');
+      showFailToast((res?.message) || '删除失败，请联系管理员！');
     }
   })
 };
@@ -205,7 +201,7 @@ function init() {
 init();
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .right_info {
   height: 100%;
 }
