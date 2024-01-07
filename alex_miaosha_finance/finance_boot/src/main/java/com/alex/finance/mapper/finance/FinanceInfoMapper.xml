@@ -77,6 +77,11 @@
           <if test = "financeInfoVo.typeCode != null and financeInfoVo.typeCode != ''">
             and finance_info.type_code like concat('%', #{financeInfoVo.typeCode}, '%')
           </if>
+          <if test = "financeInfoVo.typeCode != null and financeInfoVo.typeCode != ''">
+            and (finance_info.type_code like concat('%', #{financeInfoVo.bigTypeCode}, '%')
+            or finance_info.name like concat('%', #{financeInfoVo.bigTypeCode}, '%')
+            )
+          </if>
           <if test = "financeInfoVo.amount != null and financeInfoVo.amount.size > 0">
             <foreach collection="financeInfoVo.amount" index="index" item="item" >
             <if test="index == 0">

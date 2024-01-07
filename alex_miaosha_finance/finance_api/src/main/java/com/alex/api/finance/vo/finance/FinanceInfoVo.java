@@ -40,6 +40,9 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     @ApiModelProperty(value = "类别")
     private String typeName;
 
+    @ApiModelProperty(value = "类别或者名称")
+    private String bigTypeCode;
+
     @ApiModelProperty(name = "amount", value = "金额")
     private BigDecimal amount;
 
