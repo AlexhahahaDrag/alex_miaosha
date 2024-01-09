@@ -1,5 +1,6 @@
 package com.alex.api.user.vo.user;
 
+import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
 import com.alex.common.validator.group.Insert;
@@ -92,4 +93,7 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "履历")
     private String personResume;
+
+    @ApiModelProperty(value = "机构信息")
+    private OrgInfoVo orgInfoVo;
 }

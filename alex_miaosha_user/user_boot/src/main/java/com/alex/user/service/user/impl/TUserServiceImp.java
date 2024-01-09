@@ -18,7 +18,6 @@ import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.user.config.WechatAccountConfig;
 import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
@@ -27,6 +26,7 @@ import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
+import com.alex.user.utils.user.UserUtils;
 import com.alex.utils.IpUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -46,6 +46,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,12 +86,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     @Value(value = "${defaultPassword}")
     private String defaultPassword;
 
-    private final WechatAccountConfig wechatAccountConfig;
-
     private final MenuInfoService menuInfoService;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
+        TUserVo curUser = UserUtils.getCurUser();
+        log.info("当前用户:{}", curUser.getNickName());
         Page<TUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         Page<TUserVo> userPage = tUserMapper.getPage(page, tUserVo);
         List<TUserVo> records = userPage.getRecords();
@@ -98,12 +99,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             return userPage;
         }
         List<Long> fileIdList = records.parallelStream()
-                .filter(item -> item.getAvatar() != null)
                 .map(TUserVo::getAvatar)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         try {
             Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
-            if ("200".equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+            if (SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
                 Map<Long, List<FileInfoVo>> fileMap = result.getData()
                         .parallelStream()
                         .collect(Collectors.groupingBy(FileInfoVo::getId));
@@ -248,7 +249,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         result.put(SysConf.ADMIN, tUserVo);
         // 获取菜单
         MenuInfoVo menuInfoVo = new MenuInfoVo();
-        menuInfoVo.setStatus("1");
+        menuInfoVo.setStatus(SysConf.VALID_STATUS);
         List<MenuInfoVo> list = menuInfoService.getList(null);
         result.put(SysConf.MENU, list);
         return Result.success(result);
@@ -267,57 +268,54 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             log.info("ip:{}", ip);
             log.info("地址：{}", location);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取ip地址和设备信息失败：{}", e.getMessage());
         }
         String token = audience.getTokenHead() + jwtToken;
+        assert map != null;
         String os = map.get(SysConf.OS);
         String browser = map.get(SysConf.BROWSER);
-        TUserLogin userLogin = null;
-        try {
-            userLogin = TUserLogin.builder()
-                    .userId(admin.getId())
-                    .username(admin.getUsername())
-                    .nickName(admin.getNickName())
-                    .lastLoginTime(LocalDateTime.now())
-                    .tokenId(uuid)
-                    .token(token)
-                    .os(os)
-                    .broswer(browser)
-                    .loginIp(ip)
-                    .loginLocation(location)
-                    .build();
-            userLogin.insert();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TUserLogin userLogin = TUserLogin.builder()
+                .userId(admin.getId())
+                .username(admin.getUsername())
+                .nickName(admin.getNickName())
+                .lastLoginTime(LocalDateTime.now())
+                .tokenId(uuid)
+                .token(token)
+                .os(os)
+                .broswer(browser)
+                .loginIp(ip)
+                .loginLocation(location)
+                .build();
+        new Thread(userLogin::insert);
         //添加在线用户到redis中，设置过期时间
         try {
             this.addOnLineAdmin(userLogin, expiration);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("添加在线用户失败：{}", e.getMessage());
         }
-//        new Thread(() -> {
-//
-//        });
+        // 设置认证信息到SecurityContextHolder
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
     /**
-     * @param request
-     * @param username 登录名称
-     * @description: 设置登录限制，返回剩余次数
-     * @author: alex
-     * @return: java.lang.Integer
+     * param request
+     * param username 登录名称
+     * description: 设置登录限制，返回剩余次数
+     * author: alex
+     * return: java.lang.Integer
      */
     private Integer setLoginCommit(HttpServletRequest request, String username) {
         String ip = IpUtils.getIpAddr(request);
         String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
         String count = redisUtils.get(loginCountKey);
         int surplusCount = RedisConstants.NUM_FIVE;
-        Integer exTime = 30;
+        int exTime = 30;
         if (StringUtils.isNotEmpty(count)) {
-            Integer curCount = Integer.parseInt(count) + 1;
+            int curCount = Integer.parseInt(count) + 1;
             surplusCount -= curCount;
-            redisUtils.setEx(loginCountKey, curCount.toString(), exTime, TimeUnit.MINUTES);
+            redisUtils.setEx(loginCountKey, Integer.toString(curCount), exTime, TimeUnit.MINUTES);
         } else {
             surplusCount -= 1;
             redisUtils.setEx(loginCountKey, RedisConstants.NUM_ONE + "", exTime, TimeUnit.MINUTES);
@@ -343,8 +341,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     public TUserVo getUserByUsername(String username) {
         TUserVo tUserVo = new TUserVo();
         tUserVo.setUsername(username);
-        TUserVo userInfo = getUserInfo(tUserVo);
-        return userInfo;
+        return getUserInfo(tUserVo);
     }
 
     @Override
@@ -363,6 +360,13 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
     }
 
+    /**
+     * param userLogin
+     * param expiration
+     * description: 添加在线用户
+     * author:      alex
+     * return:      void
+    */
     @Override
     public void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception {
         OnlineAdmin onlineAdmin = OnlineAdmin.builder()
@@ -375,7 +379,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .loginLocation(userLogin.getLoginLocation())
                 .loginTime(DateUtils.getTimeStr(userLogin.getLastLoginTime()))
                 .roleName(null)
-                .username("username")
+                .username(userLogin.getUsername())
                 .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.MICROS)))
                 .build();
         //从Redis中获取IP来源
@@ -395,9 +399,9 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
     }
 
-    private boolean judgeField(Map<String, Object> map, Long id) {
+    private void judgeField(Map<String, Object> map, Long id) {
         if (map.isEmpty()) {
-            return true;
+            return;
         }
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             String type = entry.getKey();
@@ -411,19 +415,18 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                     case "email":
                         throw new UserException(ResultEnum.USER_EMAIL_EXISTS);
                 }
-                return false;
+                return;
             }
         }
-        return true;
     }
 
     /**
-     * @param type
-     * @param value
-     * @param id
-     * @description: 判断字段对应的值在数据库中的数量
-     * @author: alex
-     * @return: boolean
+     * param type
+     * param value
+     * param id
+     * description: 判断字段对应的值在数据库中的数量
+     * author: alex
+     * return: boolean
      */
     private long judgeValueCount(String type, Object value, Long id) {
         if (StringUtils.isEmpty(type)) {

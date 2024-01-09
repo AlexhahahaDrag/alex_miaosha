@@ -16,8 +16,6 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 @Configuration
 public class GlobalCorsConfig {
 
-    private final Long MAX_AGE = 18000l;
-
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -30,7 +28,7 @@ public class GlobalCorsConfig {
         //这里一定要设置，因为这里要携带请求头进行凭证验证，允许cookies跨域
         corsConfiguration.setAllowCredentials(true);
         //预检请求的缓存时间（秒），即在这段时间里，对于相同的跨域请求不在预检
-        corsConfiguration.setMaxAge(MAX_AGE);
+        corsConfiguration.setMaxAge(18000L);
         //配置前端js允许访问的自定义响应头，不能用*
         corsConfiguration.addExposedHeader(HttpHeaders.ACCEPT);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

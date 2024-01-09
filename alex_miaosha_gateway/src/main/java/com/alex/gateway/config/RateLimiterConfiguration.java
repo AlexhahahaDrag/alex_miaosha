@@ -13,10 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class RateLimiterConfiguration {
 // TODO: 2022/9/29 测试限流情况
 
-    /**
-     * IP限流 (通过exchange对象可以获取到请求信息，这边用了HostName)
-     */
-//    @Bean
+    //    @Bean
 //    @Primary
 //    public KeyResolver ipKeyResolver() {
 //        log.info("ip限流!!");

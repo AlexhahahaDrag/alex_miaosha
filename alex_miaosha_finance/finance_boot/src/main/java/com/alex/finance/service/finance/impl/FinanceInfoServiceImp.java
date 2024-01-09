@@ -53,14 +53,15 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                 .orElse(new HashMap<>());
         IPage<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
         List<FinanceInfoVo> financeInfoVos = Optional.ofNullable(result)
-                .map(item -> item.getRecords().stream().map(
+                .map(item -> item.getRecords().stream().peek(
                         finance -> {
                             TUserVo tUserVo = userMap.get(finance.getBelongTo());
                             finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
-                            return finance;
                         }).collect(Collectors.toList()))
                 .orElse(null);
-        result.setRecords(financeInfoVos);
+        if (result != null) {
+            result.setRecords(financeInfoVos);
+        }
         return result;
     }
 

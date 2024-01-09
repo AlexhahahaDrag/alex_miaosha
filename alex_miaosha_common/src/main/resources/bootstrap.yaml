@@ -1,3 +1,7 @@
 spring:
   profiles:
     active: dev
+
+info:
+  ip: 81.70.158.140
+  developer: alex

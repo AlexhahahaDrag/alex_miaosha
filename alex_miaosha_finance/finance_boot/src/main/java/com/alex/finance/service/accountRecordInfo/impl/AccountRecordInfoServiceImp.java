@@ -39,8 +39,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     @Override
     public Page<AccountRecordInfoVo> getPage(Long pageNum, Long pageSize, AccountRecordInfoVo accountRecordInfoVo) {
         Page<AccountRecordInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
-        Page<AccountRecordInfoVo> page1 = accountRecordInfoMapper.getPage(page, accountRecordInfoVo);
-        return page1;
+        return accountRecordInfoMapper.getPage(page, accountRecordInfoVo);
     }
 
     @Override

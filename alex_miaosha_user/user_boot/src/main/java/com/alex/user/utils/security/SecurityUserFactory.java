@@ -31,7 +31,7 @@ public final class SecurityUserFactory {
                 tUserVo.getId(),
                 tUserVo.getUsername(),
                 tUserVo.getPassword(),
-                EStatus.ENABLE.getCode().equals(tUserVo.getStatus()),
+                EStatus.ENABLE.getCode().toString().equals(tUserVo.getStatus()),
                 mapToGrantedAuthorities(null)
         )).orElse(null);
         return result;

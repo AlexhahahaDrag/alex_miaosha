@@ -64,7 +64,6 @@
   </div>
 </template>
 <script lang='ts' setup>
-import { ref, watch, reactive } from 'vue';
 import { ${entity}Detail } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
 import {
   get${entity}Detail,

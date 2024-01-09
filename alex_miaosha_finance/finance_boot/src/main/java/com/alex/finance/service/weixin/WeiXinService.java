@@ -6,5 +6,5 @@ public interface WeiXinService {
 
     String getToken() throws WxErrorException;
 
-    String sentMessage(String account, Long num) throws WxErrorException;
+    void sentMessage(String account, Long num) throws WxErrorException;
 }

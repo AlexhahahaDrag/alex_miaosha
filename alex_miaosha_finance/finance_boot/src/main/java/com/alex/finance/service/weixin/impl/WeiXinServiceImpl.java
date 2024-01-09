@@ -4,11 +4,8 @@ import com.alex.finance.config.WechatAccountConfig;
 import com.alex.finance.service.weixin.WeiXinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.menu.WxMpGetSelfMenuInfoResult;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
@@ -30,7 +27,7 @@ public class WeiXinServiceImpl implements WeiXinService {
         return wxMpService.getAccessToken();
     }
 
-    public String sentMessage(String account, Long num) throws WxErrorException {
+    public void sentMessage(String account, Long num) throws WxErrorException {
         String token = getToken();
         List<WxMpTemplateData> dataList = Lists.newArrayList();
         dataList.add(new WxMpTemplateData("account", account, "#A9A9A9"));
@@ -51,6 +48,5 @@ public class WeiXinServiceImpl implements WeiXinService {
             }
         }
         wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
-        return "success";
     }
 }

@@ -1,19 +1,23 @@
 package com.alex.user.utils.user;
 
+import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
+import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alex.user.utils.security.SecurityUser;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  *@description:  用户工具类
@@ -23,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserUtils {
 
     private final RedisUtils redisUtils;
@@ -51,25 +56,28 @@ public class UserUtils {
     }
 
     // TODO: 2023/1/10 设置获取当前登录人 
-    public static SecurityUser getLoginUser() {
-
-        /**
-         SecurityContextHolder.getContext()获取安全上下文对象，就是那个保存在 ThreadLocal 里面的安全上下文对象
-         总是不为null(如果不存在，则创建一个authentication属性为null的empty安全上下文对象)
-         获取当前认证了的 principal(当事人),或者 request token (令牌)
-         如果没有认证，会是 null,该例子是认证之后的情况
-         */
+    public TUserVo getLoginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //有登陆用户就返回登录用户，没有就返回null
-        if (authentication != null) {
-            //目前账户设置通过所有请求
-            if (authentication instanceof AnonymousAuthenticationToken) {
-                return null;
-            }
-            if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                return (SecurityUser) authentication.getPrincipal();
-            }
+        HttpServletRequest request =((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String uuidToken = request.getHeader("Authorization");
+        if (StringUtils.isEmpty(uuidToken)) {
+            return null;
         }
-        return null;
+        String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
+        if (barToken == null) {
+            return  null;
+        }
+        String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
+        if (StringUtils.isEmpty(onlineAdminStr)) {
+            return null;
+        }
+        return JSONObject.parseObject(onlineAdminStr, TUserVo.class);
+    }
+
+    public static TUserVo getCurUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        TUserVo tUserVo = JSONObject.parseObject(authentication.getCredentials().toString(), TUserVo.class);
+        log.info("当前登录人：{}", JSONObject.toJSONString(tUserVo));
+        return tUserVo;
     }
 }

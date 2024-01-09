@@ -1,11 +1,15 @@
 package com.alex.common.enums;
 
+import lombok.Getter;
+
 /**
  * description:
  * author:       majf
  * createDate:   2022/12/26 17:48
  * version:      1.0.0
  */
+@Getter
+@SuppressWarnings("all")
 public enum EStatus {
 
     DISABLED(0, "删除的"),
@@ -22,16 +26,8 @@ public enum EStatus {
 
     private String value;
 
-    public Integer getCode() {
-        return code;
-    }
-
     public void setCode(Integer code) {
         this.code = code;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public void setValue(String value) {

@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -18,6 +19,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpMessage;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -31,6 +33,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -70,8 +73,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         // 得到请求头信息authorization信息
-        String token = Optional.ofNullable(request)
-                .map(re -> re.getHeaders())
+        String token = Optional.of(request)
+                .map(HttpMessage::getHeaders)
                 .map(header -> header.getFirst(audience.getTokenHeader()))
                 .orElse(null);
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
@@ -79,16 +82,13 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> {
                     // 复制主线程的 线程共享数据
                     RequestContextHolder.setRequestAttributes(attributes);
-                    Result<Boolean> res = userApi.authToken(token);
-                    return res;
+                    return userApi.authToken(token);
                 }
         );
-        Boolean result = Optional.ofNullable(completableFuture).map(item -> {
+        Boolean result = Optional.of(completableFuture).map(item -> {
             try {
                 return item.get().getData();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }).get();
@@ -122,24 +122,25 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ServerHttpResponse originalResponse = exchange.getResponse();
         DataBufferFactory bufferFactory = originalResponse.bufferFactory();
         ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
+            @NotNull
             @Override
-            public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-                if (body instanceof Flux) {
-                    Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
-                    return super.writeWith(fluxBody.buffer().map(dataBuffer -> {
+            public Mono<Void> writeWith(@NotNull Publisher<? extends DataBuffer> body) {
+                if (body instanceof Flux<? extends DataBuffer> fluxBody) {
+                    return super.writeWith(fluxBody.buffer().handle((dataBuffer, sink) -> {
                         DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
                         DataBuffer buffer = dataBufferFactory.join(dataBuffer);
                         byte[] content = new byte[buffer.readableByteCount()];
                         buffer.read(content);
                         DataBufferUtils.release(buffer);
-                        String s = new String(content, Charset.forName("UTF-8"));
+                        String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
                             uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
                         } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            sink.error(new RuntimeException(e));
+                            return;
                         }
-                        return bufferFactory.wrap(uppedContent);
+                        sink.next(bufferFactory.wrap(uppedContent));
                     }));
                 }
                 return super.writeWith(body);

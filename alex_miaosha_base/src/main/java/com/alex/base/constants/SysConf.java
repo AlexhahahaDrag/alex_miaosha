@@ -33,4 +33,10 @@ public class SysConf {
     public static final String BROWSER = "BROWSER";
 
     public static final String IP = "ip";
+
+    public static final String VALID_STATUS = "1";
+
+    public static final String INVALID_STATUS = "0";
+
+    public static final String RESULT_SUCCESS = "200";
 }

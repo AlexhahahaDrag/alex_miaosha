@@ -20,7 +20,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class GatewayWebSecurityConfig {
 
     //白名单
-    private static String[] whiteList;
+    private static final String[] whiteList;
 
     static {
         whiteList = new String[]{

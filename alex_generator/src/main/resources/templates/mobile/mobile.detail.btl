@@ -49,19 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRoute, useRouter } from "vue-router";
-import navBar from '@/views/common/navBar/index.vue';
 <% if(hasDate){ %>
 import dayjs, { Dayjs } from 'dayjs';
-import datePop from '@/views/common/pop/datePop.vue';
 <% } %>
 import { showFailToast, showSuccessToast } from 'vant';
 import { addOrEdit${entity}, get${entity}Detail } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 <% if(hasDict) { %>
 import { Info } from '@/views/common/pop/selectPop.vue';
 import { getDictList } from "@/api/finance/dict/dictManager";
-import selectPop from '@/views/common/pop/selectPop.vue';
 <% } %>
 import { label, rulesRef } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
 
