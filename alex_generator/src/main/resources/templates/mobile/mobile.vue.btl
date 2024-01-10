@@ -24,7 +24,7 @@
       <van-cell-group>
         <van-swipe-cell v-for='(item, index) in dataSource' :before-close='beforeClose' :key="index">
           <van-cell :title="item.id" :key='index' is-link
-            :to='{ path: "/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail", query: { id: item.id } }'>
+            :to='{ path: "/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail", query: { id: item.id } }'>
             <%
                 var first = '';
                 var second = '';
@@ -144,7 +144,7 @@ function query(param: SearchInfo, cur: pageInfo) {
 }
 
 const add${entity} = () => {
-  router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/detail' });
+  router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail' });
 }
 
 let userMap = {};

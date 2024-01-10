@@ -75,12 +75,12 @@ public class StrategyConfig {
     private MobileDetail mobileDetail;
 
     private StrategyConfig() {
-        this.tablePrefix = new HashSet();
-        this.tableSuffix = new HashSet();
-        this.fieldPrefix = new HashSet();
-        this.fieldSuffix = new HashSet();
-        this.include = new HashSet();
-        this.exclude = new HashSet();
+        this.tablePrefix = new HashSet<>();
+        this.tableSuffix = new HashSet<>();
+        this.fieldPrefix = new HashSet<>();
+        this.fieldSuffix = new HashSet<>();
+        this.include = new HashSet<>();
+        this.exclude = new HashSet<>();
         this.enableSqlFilter = true;
         this.entityBuilder = new com.baomidou.mybatisplus.generator.config.builder.Entity.Builder(this);
         this.controllerBuilder = new com.baomidou.mybatisplus.generator.config.builder.Controller.Builder(this);

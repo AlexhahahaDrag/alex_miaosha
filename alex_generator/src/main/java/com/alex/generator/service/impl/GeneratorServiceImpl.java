@@ -102,8 +102,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfo.setMenuInfoVo(addMenuInfo(addMenuInfo));
         }
-        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/detail", moduleMenuInfo.getMenuInfoVo().getId(),
-                null, detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/detail", YES_INFO, NO_INFO);
+        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/" + fileName + "Detail", moduleMenuInfo.getMenuInfoVo().getId(),
+                null, detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/" + fileName + "Detail", YES_INFO, NO_INFO);
         if (detailMenuInfo.getMenuExists()) {
             BeanUtils.copyProperties(detailMenuInfo.getMenuInfoVo(), addChildMenuInfo);
             menuInfo.setMenuInfoVo(updateMenuInfo(addChildMenuInfo));
@@ -193,11 +193,11 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + "detail");
+        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName +  "Detail");
         pathMap.put(OutputFile.list, vuePath + separator + fileName);
         pathMap.put(OutputFile.ts, tsPath + separator + fileName);
         pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
-        pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + "detail");
+        pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + fileName + "Detail");
         pathMap.put(OutputFile.mobileVue, mobileVuePath + separator + fileName);
         return pathMap;
     }

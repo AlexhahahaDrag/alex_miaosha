@@ -118,9 +118,7 @@ public abstract class AbstractTemplateEngine {
         String voName = tableInfo.getVoName();
         String voPath = this.getPathInfo(OutputFile.vo);
         if (StringUtils.isNotBlank(voName) && StringUtils.isNotBlank(voPath)) {
-            this.getTemplateFilePath((template) -> {
-                return template.getVo();
-            }).ifPresent((entity) -> {
+            this.getTemplateFilePath(TemplateConfig::getVo).ifPresent((entity) -> {
                 String voFile = String.format(voPath + File.separator + "%s" + this.suffixJavaOrKt(), voName);
                 this.outputFile(new File(voFile), objectMap, entity);
             });

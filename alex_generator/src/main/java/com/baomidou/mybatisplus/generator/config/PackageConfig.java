@@ -6,28 +6,45 @@
 package com.baomidou.mybatisplus.generator.config;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public class PackageConfig {
     private String parent;
+
     private String moduleName;
+
     private String entity;
+
     private String service;
+
     private String serviceImpl;
+
     private String mapper;
+
     private String xml;
+
     private String controller;
+
     private String other;
+
     private String vo;
+
     private String client;
+
     private String detailVue;
+
     private String detailTs;
+
     private String listTs;
+
     private String listVue;
+
     private String tsTs;
 
     private String mobileTs;
@@ -41,6 +58,7 @@ public class PackageConfig {
     private String mobileTsTs;
 
     private Map<OutputFile, String> pathInfo;
+
     private final Map<String, String> packageInfo;
 
     private PackageConfig() {
@@ -65,7 +83,7 @@ public class PackageConfig {
         this.mobileDetailTs = "mobileDetailTs";
         this.mobileDetail = "mobileDetail";
         this.mobileTsTs = "mobileTsTs";
-        this.packageInfo = new HashMap();
+        this.packageInfo = new HashMap<>();
     }
 
     @NotNull
@@ -108,67 +126,7 @@ public class PackageConfig {
     }
 
     public String getPackageInfo(String module) {
-        return (String)this.getPackageInfo().get(module);
-    }
-
-    public String getModuleName() {
-        return this.moduleName;
-    }
-
-    public String getEntity() {
-        return this.entity;
-    }
-
-    public String getService() {
-        return this.service;
-    }
-
-    public String getServiceImpl() {
-        return this.serviceImpl;
-    }
-
-    public String getMapper() {
-        return this.mapper;
-    }
-
-    public String getXml() {
-        return this.xml;
-    }
-
-    public String getController() {
-        return this.controller;
-    }
-
-    public String getOther() {
-        return this.other;
-    }
-
-    public String getVo() {
-        return this.vo;
-    }
-
-    public String getClient() {
-        return this.client;
-    }
-
-    public String getDetailVue() {
-        return this.detailVue;
-    }
-
-    public String getDetailTs() {
-        return this.detailTs;
-    }
-
-    public String getListTs() {
-        return this.listTs;
-    }
-
-    public String getListVue() {
-        return this.listVue;
-    }
-
-    public String getTsTs() {
-        return this.tsTs;
+        return this.getPackageInfo().get(module);
     }
 
     private String getMobileTs() {
@@ -185,18 +143,6 @@ public class PackageConfig {
 
     private String getMobileDetail() {
         return this.mobileDetail;
-    }
-
-    public String getMobileTsTs() {
-        return mobileTsTs;
-    }
-
-    public void setMobileTsTs(String mobileTsTs) {
-        this.mobileTsTs = mobileTsTs;
-    }
-
-    public Map<OutputFile, String> getPathInfo() {
-        return this.pathInfo;
     }
 
     public static class Builder implements IConfigBuilder<PackageConfig> {
