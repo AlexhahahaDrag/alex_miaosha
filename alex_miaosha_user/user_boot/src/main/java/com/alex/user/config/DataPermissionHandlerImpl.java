@@ -18,10 +18,12 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
+@Component
 public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     @Autowired
@@ -33,8 +35,8 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             Class<?> clazz = Class.forName(mappedStatementId.substring(0, mappedStatementId.lastIndexOf(".")));
             String methodName = mappedStatementId.substring(mappedStatementId.lastIndexOf(".") + 1);
             Method[] methods = clazz.getDeclaredMethods();
-//            TUserVo loginUser = userUtils.getLoginUser();
-//            System.out.println(loginUser);
+            TUserVo loginUser = userUtils.getLoginUser();
+            System.out.println(loginUser);
             for (Method method : methods) {
                 DataPermission annotation = method.getAnnotation(DataPermission.class);
                 if (ObjectUtils.isNotEmpty(annotation) && (method.getName().equals(methodName) || (method.getName() + "_COUNT").equals(methodName))) {

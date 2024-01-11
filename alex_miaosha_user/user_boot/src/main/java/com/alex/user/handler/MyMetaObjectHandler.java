@@ -1,5 +1,7 @@
-package com.alex.utils.handler;
+package com.alex.user.handler;
 
+import com.alex.api.user.vo.user.TUserVo;
+import com.alex.user.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  *description:  设置新增和修改的默认时间
@@ -19,7 +22,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
-//    private final UserUtils userUtils;
+    private final UserUtils userUtils;
 
     @Override
     public void insertFill(MetaObject metaObject) {
@@ -37,15 +40,17 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             metaObject.setValue("operateTime", null);
             this.strictInsertFill(metaObject, "operateTime", LocalDateTime.class, now);
         }
-//        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
-//        if (id != null) {
-//            if (metaObject.hasSetter("creator")) {
-//                this.strictInsertFill(metaObject, "creator", Long.class, id);
-//            }
-//            if (metaObject.hasSetter("operator")) {
-//                this.strictInsertFill(metaObject, "operator", Long.class, id);
-//            }
-//        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        log.info("insertFill loginUser:{}", loginUser);
+        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(user -> user.getId()).orElse(null);
+        if (id != null) {
+            if (metaObject.hasSetter("creator")) {
+                this.strictInsertFill(metaObject, "creator", Long.class, id);
+            }
+            if (metaObject.hasSetter("operator")) {
+                this.strictInsertFill(metaObject, "operator", Long.class, id);
+            }
+        }
     }
 
     @Override

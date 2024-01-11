@@ -88,9 +88,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     private final MenuInfoService menuInfoService;
 
+    private final UserUtils userUtils;
+
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
-        TUserVo curUser = UserUtils.getCurUser();
+        TUserVo curUser = userUtils.getCurUser();
         log.info("当前用户:{}", curUser.getNickName());
         Page<TUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         Page<TUserVo> userPage = tUserMapper.getPage(page, tUserVo);

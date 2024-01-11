@@ -57,7 +57,6 @@ public class UserUtils {
 
     // TODO: 2023/1/10 设置获取当前登录人 
     public TUserVo getLoginUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         HttpServletRequest request =((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String uuidToken = request.getHeader("Authorization");
         if (StringUtils.isEmpty(uuidToken)) {
