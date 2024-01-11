@@ -1,5 +1,6 @@
 package com.alex.user.mapper.user;
 
+import com.alex.api.user.annotation.DataPermission;
 import com.alex.user.entity.user.TUser;
 import com.alex.api.user.vo.user.TUserVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -18,6 +19,7 @@ import java.util.List;
 @Mapper
 public interface TUserMapper extends BaseMapper<TUser> {
 
+    @DataPermission()
     Page<TUserVo> getPage(Page<TUserVo> page, @Param("tUserVo") TUserVo tUserVo);
 
     TUserVo queryTUser(@Param("id") String id);

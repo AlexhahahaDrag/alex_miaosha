@@ -52,7 +52,7 @@ public class TUserController {
     )
     public Result<Page<TUserVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                          @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                         @RequestBody(required = false) TUserVo tUserVo) {
+                                         @RequestBody(required = false) TUserVo tUserVo) throws Exception {
         return Result.success(tUserService.getPage(pageNum, pageSize, tUserVo));
     }
 

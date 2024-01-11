@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface TUserService extends IService<TUser> {
 
-    Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo);
+    Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception;
 
     TUserVo queryTUser(String id);
 

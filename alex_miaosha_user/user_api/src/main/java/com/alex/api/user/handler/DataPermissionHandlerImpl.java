@@ -1,10 +1,12 @@
-package com.alex.user.config;
+package com.alex.api.user.handler;
 
+import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.vo.user.TUserVo;
-import com.alex.user.utils.user.UserUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
+import lombok.RequiredArgsConstructor;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.Parenthesis;
@@ -17,36 +19,37 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SubSelect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
-    @Autowired
-    private UserUtils userUtils;
+    private final UserUtils userUtils;
 
     @Override
     public Expression getSqlSegment(Expression where, String mappedStatementId) {
         try {
             Class<?> clazz = Class.forName(mappedStatementId.substring(0, mappedStatementId.lastIndexOf(".")));
-            String methodName = mappedStatementId.substring(mappedStatementId.lastIndexOf(".") + 1);
             Method[] methods = clazz.getDeclaredMethods();
+            String methodName = mappedStatementId.substring(mappedStatementId.lastIndexOf(".") + 1);
             TUserVo loginUser = userUtils.getLoginUser();
-            System.out.println(loginUser);
+            if (loginUser == null) {
+                return where;
+            }
             for (Method method : methods) {
-                DataPermission annotation = method.getAnnotation(DataPermission.class);
-                if (ObjectUtils.isNotEmpty(annotation) && (method.getName().equals(methodName) || (method.getName() + "_COUNT").equals(methodName))) {
-                    // 获取当前的用户
-//                    SecurityUser loginUser = UserUtils.getLoginUser();
-//                    System.out.println(loginUser);
-//                    LoginUser loginUser = SpringUtils.getBean(TokenService.class).getLoginUser(ServletUtils.getRequest());
-//                    if (ObjectUtils.isNotEmpty(loginUser) && ObjectUtils.isNotEmpty(loginUser.getUser()) && !loginUser.getUser().isAdmin()) {
-//                        return dataScopeFilter(loginUser.getUser(), annotation.value(), where);
-//                    }
+                if (Objects.equals(method.getName(), methodName)) {
+                    DataPermission annotation = method.getAnnotation(DataPermission.class);
+                    if (ObjectUtils.isNotEmpty(annotation)) {
+                        EqualsTo useEqualsTo = new EqualsTo();
+                        useEqualsTo.setLeftExpression(new Column(annotation.field()));
+                        useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
+                        return new AndExpression(where, useEqualsTo);
+                    }
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -59,25 +62,25 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     /**
      * 构建过滤条件
      *
-     * @param user 当前登录用户
+     * @param user  当前登录用户
      * @param where 当前查询条件
      * @return 构建后查询条件
      */
     public static Expression dataScopeFilter(TUserVo user, String tableAlias, Expression where) {
         Expression expression = null;
-                InExpression inExpression = new InExpression();
-                inExpression.setLeftExpression(buildColumn(tableAlias, "dept_id"));
-                SubSelect subSelect = new SubSelect();
-                PlainSelect select = new PlainSelect();
-                select.setSelectItems(Collections.singletonList(new SelectExpressionItem(new Column("dept_id"))));
-                select.setFromItem(new Table("t_sys_org"));
-                EqualsTo equalsTo = new EqualsTo();
-                equalsTo.setLeftExpression(new Column("id"));
-                equalsTo.setRightExpression(new LongValue(user.getOrgInfoVo().getId()));
-                select.setWhere(equalsTo);
-                subSelect.setSelectBody(select);
-                inExpression.setRightExpression(subSelect);
-                expression = ObjectUtils.isNotEmpty(expression) ? new OrExpression(expression, inExpression) : inExpression;
+        InExpression inExpression = new InExpression();
+        inExpression.setLeftExpression(buildColumn(tableAlias, "dept_id"));
+        SubSelect subSelect = new SubSelect();
+        PlainSelect select = new PlainSelect();
+        select.setSelectItems(Collections.singletonList(new SelectExpressionItem(new Column("dept_id"))));
+        select.setFromItem(new Table("t_sys_org"));
+        EqualsTo equalsTo = new EqualsTo();
+        equalsTo.setLeftExpression(new Column("id"));
+        equalsTo.setRightExpression(new LongValue(user.getOrgInfoVo().getId()));
+        select.setWhere(equalsTo);
+        subSelect.setSelectBody(select);
+        inExpression.setRightExpression(subSelect);
+        expression = ObjectUtils.isNotEmpty(expression) ? new OrExpression(expression, inExpression) : inExpression;
 //        for (SysRole role : user.getRoles()) {
 //            String dataScope = role.getDataScope();
 //            if (DataScopeAspect.DATA_SCOPE_ALL.equals(dataScope)) {

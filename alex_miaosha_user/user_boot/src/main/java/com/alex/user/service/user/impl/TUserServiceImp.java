@@ -26,7 +26,7 @@ import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
-import com.alex.user.utils.user.UserUtils;
+import com.alex.api.user.user.UserUtils;
 import com.alex.utils.IpUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -91,8 +91,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     private final UserUtils userUtils;
 
     @Override
-    public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
-        TUserVo curUser = userUtils.getCurUser();
+    public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
+        TUserVo curUser = userUtils.getLoginUser();
         log.info("当前用户:{}", curUser.getNickName());
         Page<TUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         Page<TUserVo> userPage = tUserMapper.getPage(page, tUserVo);
@@ -236,11 +236,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //            sb.append(role.getRoleName()).append(Constants.SYMBOL_COMMA);
 //        }
 //        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
-        HashMap<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
+        Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
         //保存登录信息
-        saveLoginLog(request, admin, uuid, ip, isRemember);
+        TUserLogin userLogin = saveLoginLog(request, admin, uuid, ip, isRemember);
 //        admin.setRole(roles.get(0));
         //不返回密码到前端
         TUserVo tUserVo = new TUserVo();
@@ -254,10 +254,12 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         menuInfoVo.setStatus(SysConf.VALID_STATUS);
         List<MenuInfoVo> list = menuInfoService.getList(null);
         result.put(SysConf.MENU, list);
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONUtil.toJsonStr(tUserVo), expiration, TimeUnit.SECONDS);
         return Result.success(result);
     }
 
-    private void saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {
+    private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {
         String roleName = "";
         long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
@@ -299,6 +301,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        return userLogin;
     }
 
     /**

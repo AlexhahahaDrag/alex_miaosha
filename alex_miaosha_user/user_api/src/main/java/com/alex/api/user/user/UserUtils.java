@@ -1,17 +1,15 @@
-package com.alex.user.utils.user;
+package com.alex.api.user.user;
 
+import cn.hutool.json.JSONUtil;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -33,7 +31,6 @@ public class UserUtils {
     private final RedisUtils redisUtils;
 
     /**
-     * @param request
      * @description: 根据request中的token获取当前用户的id
      * @author:      alex
      * @return:      java.lang.Long
@@ -55,7 +52,11 @@ public class UserUtils {
         return Long.parseLong(result.toString());
     }
 
-    // TODO: 2023/1/10 设置获取当前登录人 
+    /**
+     * description: 获取当前登录人信息
+     * author:      alex
+     * return:      com.alex.api.user.vo.user.TUserVo
+    */
     public TUserVo getLoginUser() {
         HttpServletRequest request =((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String uuidToken = request.getHeader("Authorization");
@@ -66,17 +67,10 @@ public class UserUtils {
         if (barToken == null) {
             return  null;
         }
-        String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
+        String onlineAdminStr = redisUtils.get(LoginKey.loginAdmin, barToken);
         if (StringUtils.isEmpty(onlineAdminStr)) {
             return null;
         }
-        return JSONObject.parseObject(onlineAdminStr, TUserVo.class);
-    }
-
-    public static TUserVo getCurUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        TUserVo tUserVo = JSONObject.parseObject(authentication.getCredentials().toString(), TUserVo.class);
-        log.info("当前登录人：{}", JSONObject.toJSONString(tUserVo));
-        return tUserVo;
+        return JSONUtil.toBean(onlineAdminStr, TUserVo.class);
     }
 }
