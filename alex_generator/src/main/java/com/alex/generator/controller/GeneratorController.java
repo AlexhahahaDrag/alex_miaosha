@@ -34,8 +34,8 @@ public class GeneratorController {
     @ApiOperation(value = "自动生成", notes = "自动生成代码")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "服务名称", name = "moduleName", defaultValue = "alex_miaosha_finance"),
-            @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
             @ApiImplicitParam(value = "java路径名称", name = "javaPathName", defaultValue = "财务管理"),
+            @ApiImplicitParam(value = "java路径", name = "javaPath", defaultValue = "finance"),
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
             @ApiImplicitParam(value = "表格列表名称", name = "tableNameInfo", defaultValue = "用户管理"),
             @ApiImplicitParam(value = "作者", name = "author", defaultValue = "alex")})

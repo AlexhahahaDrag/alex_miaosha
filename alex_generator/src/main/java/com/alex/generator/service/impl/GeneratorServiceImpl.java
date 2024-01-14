@@ -88,7 +88,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         List<MenuInfoVo> menuInfoList = result.getData();
         MenuSearchInfo moduleMenuInfo = findMenuInfo(menuInfoList, javaPath);
         MenuSearchInfo menuInfo = findMenuInfo(moduleMenuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName);
-        MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : menuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
+        MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
         if (!moduleMenuInfo.getMenuExists()) {
             MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
                     moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO));
@@ -147,7 +147,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             menuInfoVo.setComponent("Layout");
             menuInfoVo.setRedirect(redirect);
         } else {
-            menuInfoVo.setComponent("../views/" + moduleName + "/" + component + "/index.vue");
+            menuInfoVo.setComponent("/src/views/" + moduleName + "/" + component + "/index.vue");
         }
         menuInfoVo.setIcon(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setParentId(parentId);
