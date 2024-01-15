@@ -1,6 +1,8 @@
 package com.alex.api.user.vo.user;
 
+import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
+import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
 import com.alex.common.validator.group.Insert;
@@ -17,6 +19,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @description:  管理员表Vo
@@ -96,4 +99,10 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "机构信息")
     private OrgInfoVo orgInfoVo;
+
+    @ApiModelProperty(value = "角色信息")
+    private RoleInfoVo roleInfoVo;
+
+    @ApiModelProperty(value = "菜单信息")
+    List<MenuInfoVo> menuInfoVoList;
 }

@@ -2,6 +2,7 @@ package com.alex.api.user.handler;
 
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.api.user.vo.user.TUserVo;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -45,10 +46,54 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                 if (Objects.equals(method.getName(), methodName)) {
                     DataPermission annotation = method.getAnnotation(DataPermission.class);
                     if (ObjectUtils.isNotEmpty(annotation)) {
-                        EqualsTo useEqualsTo = new EqualsTo();
-                        useEqualsTo.setLeftExpression(new Column(annotation.field()));
-                        useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-                        return new AndExpression(where, useEqualsTo);
+                        // TODO: 2024/1/15 添加用户机构表信息 
+                        // // TODO: 2024/1/15 添加用户角色表信息 
+                        // 判断当前用户角色决定权限
+                        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
+                        if (roleInfoVo == null || roleInfoVo.getRoleCode().equals("user")) {
+                            EqualsTo useEqualsTo = new EqualsTo();
+                            useEqualsTo.setLeftExpression(new Column(annotation.field()));
+                            useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
+                            return new AndExpression(where, useEqualsTo);
+                        } else if (roleInfoVo.getRoleCode().contains("admin")) {
+                            EqualsTo useEqualsTo = new EqualsTo();
+                            useEqualsTo.setLeftExpression(new Column(annotation.field()));
+
+                            // 构建子查询
+                            SubSelect subSelect = new SubSelect();
+                            PlainSelect plainSelect = new PlainSelect();
+
+                            // 构建子查询中的 SELECT 部分
+                            SelectExpressionItem selectItem = new SelectExpressionItem();
+                            selectItem.setExpression(new Column("user_id")); // 假设你想选择 user_id 字段
+                            plainSelect.addSelectItems(selectItem);
+
+                            // 构建子查询中的 FROM 部分
+                            Table table = new Table("t_org_user_info"); // 假设子查询的表名为 organization_users
+                            plainSelect.setFromItem(table);
+
+                            // 构建 WHERE 子句
+                            EqualsTo whereCondition = new EqualsTo();
+                            whereCondition.setLeftExpression(new Column("org_id"));
+                            whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId())); // 设置你想查询的机构ID
+                            plainSelect.setWhere(whereCondition);
+
+                            // 将 PlainSelect 对象设置为 SubSelect 的 SelectBody
+                            subSelect.setSelectBody(plainSelect);
+
+                            // 设置右表达式为子查询
+                            useEqualsTo.setRightExpression(subSelect);
+
+                            useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
+                            return new AndExpression(where, useEqualsTo);
+                        } else if (roleInfoVo.getRoleCode().contains("super")) {
+                            return where;
+                        } else {
+                            EqualsTo useEqualsTo = new EqualsTo();
+                            useEqualsTo.setLeftExpression(new Column(annotation.field()));
+                            useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
+                            return new AndExpression(where, useEqualsTo);
+                        }
                     }
                 }
             }
