@@ -34,8 +34,8 @@ public class SeckillLimitAspect {
 
     /**
      * @param point
-     * @description:  过滤AvoidRepeatableCommit，避免表单重复提交
-     * @author:       alex
+     * description:  过滤AvoidRepeatableCommit，避免表单重复提交
+     * author:       alex
      * @return:       java.lang.Object
     */
     @Around("@annotation(com.alex.common.annotations.SeckillLimit)")

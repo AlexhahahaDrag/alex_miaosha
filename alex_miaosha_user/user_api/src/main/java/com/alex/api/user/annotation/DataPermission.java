@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataPermission {
 
-    String table() default "t_sys_user";
+    String table() default "t_user";
 
-    String[] where() default {"is_deleted=0", "status=1"};
+    String[] where() default {};
 
     String field() default "creator";
 }

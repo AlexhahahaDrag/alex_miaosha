@@ -14,10 +14,10 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
- * @description:  用户表类
- * @author:       majf
- * @createDate: 2022-08-09 14:12:41
- * @version:      1.0.0
+ * description:  用户表类
+ * author:       majf
+ * createDate: 2022-08-09 14:12:41
+ * version:      1.0.0
  */
 @Getter
 @Setter

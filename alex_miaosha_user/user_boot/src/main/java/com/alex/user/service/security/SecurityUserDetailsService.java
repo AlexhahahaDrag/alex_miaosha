@@ -10,10 +10,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2023/1/28 22:49
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2023/1/28 22:49
+ * version: 1.0.0
  */
 @RequiredArgsConstructor
 @Service

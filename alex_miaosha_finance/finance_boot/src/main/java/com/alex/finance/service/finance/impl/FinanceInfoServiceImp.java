@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 /**
  * <p>
  *
- * @description: 财务信息表服务实现类
- * @author: majf
- * @createDate: 2022-10-10 18:02:03
- * @version: 1.0.0
+ * description: 财务信息表服务实现类
+ * author: majf
+ * createDate: 2022-10-10 18:02:03
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -120,8 +120,8 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     /**
      * @param file
-     * @description: 获取导入文件数据
-     * @author: majf
+     * description: 获取导入文件数据
+     * author: majf
      * @return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
      */
     private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) throws Exception {

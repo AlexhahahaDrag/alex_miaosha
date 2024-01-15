@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  用户登录表 mapper
- * @author:       alex
- * @createDate:   2023-02-16 14:11:55
- * @version:      1.0.0
+ * description:  用户登录表 mapper
+ * author:       alex
+ * createDate:   2023-02-16 14:11:55
+ * version:      1.0.0
  */
 @Mapper
 public interface TUserLoginMapper extends BaseMapper<TUserLogin> {

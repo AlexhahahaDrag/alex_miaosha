@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 /**
  * <p>
  *
- * @description: 菜单管理表服务实现类
- * @author: alex
- * @createDate: 2023-12-19 17:34:23
- * @version: 1.0.0
+ * description: 菜单管理表服务实现类
+ * author: alex
+ * createDate: 2023-12-19 17:34:23
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -38,8 +38,8 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
 
     /**
      * @param menuInfoVo
-     * @description: 查询菜单列表并拼接成父子组结构
-     * @author:      majf
+     * description: 查询菜单列表并拼接成父子组结构
+     * author:      majf
      * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
     */
     @Override
@@ -61,8 +61,8 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     /**
      * @param pId
      * @param menuMap
-     * @description: 拼接菜单子列表
-     * @author:      majf
+     * description: 拼接菜单子列表
+     * author:      majf
      * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
     */
     public List<MenuInfoVo> getChildren(Long pId, Map<Long, List<MenuInfoVo>> menuMap) {

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description:  商品属性controller
- * @author:       alex
- * @createDate:   2023-12-28 19:50:53
- * @version:      1.0.0
+ * description:  商品属性controller
+ * author:       alex
+ * createDate:   2023-12-28 19:50:53
+ * version:      1.0.0
  */
 @Component
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)

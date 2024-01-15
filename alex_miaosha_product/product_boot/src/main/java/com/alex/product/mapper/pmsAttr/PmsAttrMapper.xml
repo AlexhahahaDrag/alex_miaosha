@@ -22,14 +22,14 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
-        select <include refid="Base_Column_List"></include> from pms_attr
+        select <include refid="Base_Column_List"/> from pms_attr
         <where>
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryPmsAttr" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
-        select <include refid="Base_Column_List"></include> from pms_attr
+        select <include refid="Base_Column_List"/> from pms_attr
         <where>
             pms_attr.id = #{id}
         </where>

@@ -10,10 +10,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  菜单管理表类
- * @author:       alex
- * @createDate: 2023-12-19 17:34:23
- * @version:      1.0.0
+ * description:  菜单管理表类
+ * author:       alex
+ * createDate: 2023-12-19 17:34:23
+ * version:      1.0.0
  */
 @Getter
 @Setter

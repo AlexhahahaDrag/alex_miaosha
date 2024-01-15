@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * 管理员表 服务类
  *
- * @author: alex
- * @createDate: 2022-12-26 17:20:38
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2022-12-26 17:20:38
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface TUserService extends IService<TUser> {
@@ -43,8 +43,8 @@ public interface TUserService extends IService<TUser> {
 
     /**
      * @param token
-     * @description: 校验token
-     * @author:      alex
+     * description: 校验token
+     * author:      alex
      * @return:      java.lang.Boolean
     */
     Boolean authToken(String token);

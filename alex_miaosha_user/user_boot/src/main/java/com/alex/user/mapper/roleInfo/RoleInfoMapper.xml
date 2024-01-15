@@ -36,15 +36,15 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
-        select <include refid="Base_Column_List"></include> from t_role_info
+        select <include refid="Base_Column_List"/> from t_role_info
         <where>
             t_role_info.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryRoleInfo" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
-        select <include refid="Base_Column_List"></include> from t_role_info
+        select <include refid="Base_Column_List"/> from t_role_info
         <where>
             t_role_info.id = #{id}
             and t_role_info.is_delete = 0

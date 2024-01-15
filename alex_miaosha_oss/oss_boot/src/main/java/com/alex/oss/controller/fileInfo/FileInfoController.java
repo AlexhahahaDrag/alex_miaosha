@@ -18,10 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * @description: 文件信息表restApi
- * @author: alex
- * @createDate: 2023-01-30 14:08:29
- * @version: 1.0.0
+ * description: 文件信息表restApi
+ * author: alex
+ * createDate: 2023-01-30 14:08:29
+ * version: 1.0.0
  */
 @ApiSort(20)
 @Api(value = "文件信息表相关接口", tags = {"文件信息表相关接口"})

@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 
 /**
- * @description:  字典表Vo
- * @author:       alex
- * @createDate:   2022-10-13 17:47:15
- * @version:      1.0.0
+ * description:  字典表Vo
+ * author:       alex
+ * createDate:   2022-10-13 17:47:15
+ * version:      1.0.0
  */
 @Getter
 @Setter

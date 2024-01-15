@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  熔断回调
- * @author:       majf
- * @createDate:   2022/7/29 15:38
- * @version:      1.0.0
+ * description:  熔断回调
+ * author:       majf
+ * createDate:   2022/7/29 15:38
+ * version:      1.0.0
  */
 @RestController
 public class FallbackController {

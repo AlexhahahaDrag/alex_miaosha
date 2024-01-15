@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description:
- * @author: majf
- * @createDate: 2022/8/11 15:36
- * @version: 1.0.0
+ * description:
+ * author: majf
+ * createDate: 2022/8/11 15:36
+ * version: 1.0.0
  */
 @Api(value = "权限模块", tags = {"权限模块"})
 @ApiSort(85)

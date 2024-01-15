@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:
- * @author:       majf
- * @createDate:   2022/8/11 16:25
- * @version:      1.0.0
+ * description:
+ * author:       majf
+ * createDate:   2022/8/11 16:25
+ * version:      1.0.0
  */
 @Api(value = "欢迎模块", tags = {"OrderController"})
 @ApiSort(150)

@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 商品属性 服务类
- * @author: alex
- * @createDate: 2023-12-28 19:50:53
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-12-28 19:50:53
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface PmsAttrService extends IService<PmsAttr> {

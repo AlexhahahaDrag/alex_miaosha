@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import ${package.Vo}.${table.voName};
 
 /**
- * @description:  ${table.comment!}controller
- * @author:       ${author}
- * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!}controller
+ * author:       ${author}
+ * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 @Component
 // @FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", configuration = FeignConfig.class)

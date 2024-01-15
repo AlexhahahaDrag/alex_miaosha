@@ -5,10 +5,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2023/1/28 14:45
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2023/1/28 14:45
+ * version: 1.0.0
  */
 public class AutowiredBean {
 

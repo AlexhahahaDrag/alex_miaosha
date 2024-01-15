@@ -42,28 +42,28 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.finance.FinanceInfoVo">
-        select <include refid="Base_Column_List"></include>, dict_info.type_name as from_source_name
+        select <include refid="Base_Column_List"/>, dict_info.type_name as from_source_name
         from finance_info
         left join dict_info
         on finance_info.from_source = dict_info.type_code and dict_info.is_delete = 0
        and dict_info.belong_to = 'pay_way'
         <where>
             finance_info.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
         order by finance_info.info_date desc, finance_info.operate_time desc
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.vo.finance.FinanceInfoVo">
-        select <include refid="Base_Column_List"></include> from finance_info
+        select <include refid="Base_Column_List" /> from finance_info
         <where>
-            is_delete = 0 <include refid="queryInfo"></include>
+            is_delete = 0 <include refid="queryInfo"/>
         </where>
             order by finance_info.info_date desc, finance_info.operate_time desc
     </select>
 
     <select id="queryFinanceInfo" resultType="com.alex.api.finance.vo.finance.FinanceInfoVo">
-        select <include refid="Base_Column_List"></include> from finance_info
+        select <include refid="Base_Column_List"/> from finance_info
         <where>
             id = #{id} and is_delete = 0
         </where>
@@ -82,12 +82,12 @@
             or finance_info.name like concat('%', #{financeInfoVo.bigTypeCode}, '%')
             )
           </if>
-          <if test = "financeInfoVo.amount != null and financeInfoVo.amount.size > 0">
+          <if test = "financeInfoVo.amountSearch != null and financeInfoVo.amountSearch.size > 0">
             <foreach collection="financeInfoVo.amount" index="index" item="item" >
-            <if test="index == 0">
+            <if test="index == 0 and item != null">
                 and finance_info.amount >= #{item}
             </if>
-            <if test="index == 1">
+            <if test="index == 1 and item != null">
                 and finance_info.amount &lt;= #{item}
             </if>
           </foreach>

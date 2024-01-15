@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description: controller
- * @author: majf
- * @createDate: 2022/8/9 11:54
- * @version: 1.0.0
+ * description: controller
+ * author: majf
+ * createDate: 2022/8/9 11:54
+ * version: 1.0.0
  */
 @Api(value = "角色模块", tags = {"角色模块"})
 @ApiSort(25)

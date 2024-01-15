@@ -13,10 +13,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * @description: security配置类
- * @author: alex
- * @createDate: 2022/9/22 22:51
- * @version: 1.0.0
+ * description: security配置类
+ * author: alex
+ * createDate: 2022/9/22 22:51
+ * version: 1.0.0
  */
 @Configuration
 @EnableWebSecurity

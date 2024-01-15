@@ -55,9 +55,9 @@ public class SeckillServiceImpl implements SeckillService {
     private final LuaUtils redisLua;
 
     /**
-     * @description: 初始化库存数量
-     * @author:      majf
-     * @createDate:  2022/7/14 10:08
+     * description: 初始化库存数量
+     * author:      majf
+     * createDate:  2022/7/14 10:08
      * @return:      void
      */
     @PostConstruct
@@ -76,9 +76,9 @@ public class SeckillServiceImpl implements SeckillService {
      * @param goodsId
      * @param path
      * @param request
-     * @description:  执行秒杀
-     * @author:      majf
-     * @createDate:  2022/7/14 10:07
+     * description:  执行秒杀
+     * author:      majf
+     * createDate:  2022/7/14 10:07
      * @return:      com.alex.common.common.Result<java.lang.Integer>
      */
     @Override
@@ -108,9 +108,9 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * @param goodsId
      * @param request
-     * @description: 前端服务轮询查询是否下单成功
-     * @author:      majf
-     * @createDate:  2022/7/14 10:07
+     * description: 前端服务轮询查询是否下单成功
+     * author:      majf
+     * createDate:  2022/7/14 10:07
      * @return:      com.alex.common.common.Result<java.lang.Long>
      */
     @Override
@@ -136,9 +136,9 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * @param goodsId
      * @param request
-     * @description: 返回唯一的path
-     * @author:      majf
-     * @createDate:  2022/7/14 17:10
+     * description: 返回唯一的path
+     * author:      majf
+     * createDate:  2022/7/14 17:10
      * @return:      com.alex.common.common.Result<java.lang.String>
     */
     @Override
@@ -151,9 +151,9 @@ public class SeckillServiceImpl implements SeckillService {
      * @param goodsId
      * @param path
      * @param userId
-     * @description: 校验路径
-     * @author:      majf
-     * @createDate:  2022/7/14 10:08
+     * description: 校验路径
+     * author:      majf
+     * createDate:  2022/7/14 10:08
      * @return:      void
      */
     private void checkPath(Long goodsId, String path, Long userId) {
@@ -164,9 +164,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     /**
      * @param goodsId
-     * @description: 判断是否超卖
-     * @author:      majf
-     * @createDate:  2022/7/14 10:08
+     * description: 判断是否超卖
+     * author:      majf
+     * createDate:  2022/7/14 10:08
      * @return:      void
      */
     private void isCountOver(Long goodsId) {
@@ -177,9 +177,9 @@ public class SeckillServiceImpl implements SeckillService {
     }
     /**
      * @param goodsId
-     * @description: lua脚本判断库存是否超卖，并减小库存
-     * @author:      majf
-     * @createDate:  2022/7/14 10:09
+     * description: lua脚本判断库存是否超卖，并减小库存
+     * author:      majf
+     * createDate:  2022/7/14 10:09
      * @return:      void
      */
     private Long luaCheckAndReduceStock(Long goodsId) {
@@ -194,9 +194,9 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * @param goodsId
      * @param userId
-     * @description: 使用mq发送消息
-     * @author:      majf
-     * @createDate:  2022/7/14 10:09
+     * description: 使用mq发送消息
+     * author:      majf
+     * createDate:  2022/7/14 10:09
      * @return:      void
      */
     private void doMQ(Long goodsId, Long userId) {
@@ -209,9 +209,9 @@ public class SeckillServiceImpl implements SeckillService {
      * @param userId
      * @param goodsId
      * @param path
-     * @description: 在redis中验证path
-     * @author:      majf
-     * @createDate:  2022/7/14 10:10
+     * description: 在redis中验证path
+     * author:      majf
+     * createDate:  2022/7/14 10:10
      * @return:      boolean
      */
     private boolean checkPath(Long userId, Long goodsId, String path) {
@@ -224,9 +224,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     /**
      * @param goodsId
-     * @description: 判断秒杀是否结束
-     * @author:      majf
-     * @createDate:  2022/7/14 17:08
+     * description: 判断秒杀是否结束
+     * author:      majf
+     * createDate:  2022/7/14 17:08
      * @return:      boolean
     */
     private boolean getGoodsOver(Long goodsId) {
@@ -236,9 +236,9 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * @param userId
      * @param goodsId
-     * @description: 动态生成url
-     * @author:      majf
-     * @createDate:  2022/7/14 17:12
+     * description: 动态生成url
+     * author:      majf
+     * createDate:  2022/7/14 17:12
      * @return:      java.lang.String
     */
     private String createSeckillPath(Long userId, Long goodsId) {

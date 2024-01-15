@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  品牌 mapper
- * @author:       alex
- * @createDate:   2023-03-05 21:39:54
- * @version:      1.0.0
+ * description:  品牌 mapper
+ * author:       alex
+ * createDate:   2023-03-05 21:39:54
+ * version:      1.0.0
  */
 @Mapper
 public interface PmsBrandMapper extends BaseMapper<PmsBrand> {

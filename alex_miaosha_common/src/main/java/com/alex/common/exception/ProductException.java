@@ -6,10 +6,10 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @description:  商品异常
- * @author:       majf
- * @createDate:   2023/5/15 8:41
- * @version:      1.0.0
+ * description:  商品异常
+ * author:       majf
+ * createDate:   2023/5/15 8:41
+ * version:      1.0.0
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

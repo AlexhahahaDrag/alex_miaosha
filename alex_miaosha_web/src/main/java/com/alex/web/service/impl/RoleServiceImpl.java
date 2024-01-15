@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @description:
- * @author:       majf
- * @createDate:   2022/8/11 16:07
- * @version:      1.0.0
+ * description:
+ * author:       majf
+ * createDate:   2022/8/11 16:07
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  商品三级分类 mapper
- * @author:       alex
- * @createDate:   2023-03-17 10:06:58
- * @version:      1.0.0
+ * description:  商品三级分类 mapper
+ * author:       alex
+ * createDate:   2023-03-17 10:06:58
+ * version:      1.0.0
  */
 @Mapper
 public interface PmsCategoryMapper extends BaseMapper<PmsCategory> {

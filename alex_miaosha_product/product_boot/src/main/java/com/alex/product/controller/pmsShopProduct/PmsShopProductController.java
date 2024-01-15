@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description: 商品网上商品信息restApi
- * @author: alex
- * @createDate: 2023-05-15 14:11:10
- * @version: 1.0.0
+ * description: 商品网上商品信息restApi
+ * author: alex
+ * createDate: 2023-05-15 14:11:10
+ * version: 1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品网上商品信息相关接口", tags = {"商品网上商品信息相关接口"})

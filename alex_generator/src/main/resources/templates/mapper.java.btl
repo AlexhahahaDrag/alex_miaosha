@@ -8,12 +8,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 <% if(mapperAnnotation){ %>
 import org.apache.ibatis.annotations.Mapper;
 <% } %>
+import com.alex.api.user.annotation.DataPermission;
 
 /**
- * @description:  ${table.comment!} mapper
- * @author:       ${author}
- * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!} mapper
+ * author:       ${author}
+ * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 <% if(mapperAnnotation){ %>
 @Mapper
@@ -23,8 +24,9 @@ interface ${table.mapperName} : ${superMapperClass}<${entity}>
 <% }else{ %>
 public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
 
+    @DataPermission(table = "${table.name}")
     Page<${table.voName}> getPage(Page<${table.voName}> page, @Param("${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}") ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
-    ${table.voName} query${entity}(@Param("id") String id);
+    ${table.voName} query${entity}(@Param("id") Long id);
 }
 <% } %>

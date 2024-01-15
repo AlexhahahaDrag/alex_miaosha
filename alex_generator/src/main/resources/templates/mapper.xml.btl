@@ -40,19 +40,19 @@
 <% } %>
 
     <select id="getPage" resultType="${package.Vo}.${table.voName}">
-        select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
+        select <include refid="Base_Column_List"/>from ${schemaName}${table.name}
         <where>
             <% for(field in table.commonFields){ %>
                 <% if(field.columnName == "is_delete"){ %>
             ${table.name}.is_delete = 0
                 <% } %>
             <% } %>
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="query${entity}" resultType="${package.Vo}.${table.voName}">
-        select <include refid="Base_Column_List"></include> from ${schemaName}${table.name}
+        select <include refid="Base_Column_List"/> from ${schemaName}${table.name}
         <where>
             ${table.name}.id = #{id}
         <% for(field in table.commonFields){

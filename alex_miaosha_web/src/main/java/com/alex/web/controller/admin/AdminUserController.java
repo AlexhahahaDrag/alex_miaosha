@@ -16,10 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description: 管理员相关 controller
- * @author: majf
- * @createDate: 2022/8/9 11:54
- * @version: 1.0.0
+ * description: 管理员相关 controller
+ * author: majf
+ * createDate: 2022/8/9 11:54
+ * version: 1.0.0
  */
 @Api(value = "管理员模块", tags = {"管理员模块"})
 @ApiSort(1)

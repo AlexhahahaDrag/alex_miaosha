@@ -22,10 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * @description: 财务信息表restApi
- * @author: majf
- * @createDate: 2022-10-10 18:02:03
- * @version: 1.0.0
+ * description: 财务信息表restApi
+ * author: majf
+ * createDate: 2022-10-10 18:02:03
+ * version: 1.0.0
  */
 @ApiSort(10)
 @Api(value = "财务信息表相关接口", tags = {"财务信息表相关接口"})

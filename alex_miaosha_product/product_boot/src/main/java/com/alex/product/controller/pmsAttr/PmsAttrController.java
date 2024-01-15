@@ -22,10 +22,10 @@ import com.alex.product.service.pmsAttr.PmsAttrService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  商品属性restApi
- * @author:       alex
- * @createDate:   2023-12-28 19:50:53
- * @version:      1.0.0
+ * description:  商品属性restApi
+ * author:       alex
+ * createDate:   2023-12-28 19:50:53
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品属性相关接口", tags = {"商品属性相关接口"})

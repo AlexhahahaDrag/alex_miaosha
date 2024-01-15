@@ -38,23 +38,23 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
-        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        select <include refid="Base_Column_List"/> from pms_shop_want_product
         <where>
             pms_shop_want_product.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="getList" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
-        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        select <include refid="Base_Column_List"/> from pms_shop_want_product
         <where>
             pms_shop_want_product.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryPmsShopWantProduct" resultType="com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo">
-        select <include refid="Base_Column_List"></include> from pms_shop_want_product
+        select <include refid="Base_Column_List"/> from pms_shop_want_product
         <where>
             id = #{id}
             and pms_shop_want_product.is_delete = 0

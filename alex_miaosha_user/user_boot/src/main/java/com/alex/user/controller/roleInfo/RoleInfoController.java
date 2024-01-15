@@ -22,10 +22,10 @@ import com.alex.user.service.roleInfo.RoleInfoService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  角色信息表restApi
- * @author:       majf
- * @createDate:   2024-01-14 21:56:18
- * @version:      1.0.0
+ * description:  角色信息表restApi
+ * author:       majf
+ * createDate:   2024-01-14 21:56:18
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "角色信息表相关接口", tags = {"角色信息表相关接口"})

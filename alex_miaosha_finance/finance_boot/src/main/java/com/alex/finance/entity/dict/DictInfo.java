@@ -10,10 +10,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  字典表类
- * @author:       alex
- * @createDate: 2022-10-13 17:47:15
- * @version:      1.0.0
+ * description:  字典表类
+ * author:       alex
+ * createDate: 2022-10-13 17:47:15
+ * version:      1.0.0
  */
 @Getter
 @Setter

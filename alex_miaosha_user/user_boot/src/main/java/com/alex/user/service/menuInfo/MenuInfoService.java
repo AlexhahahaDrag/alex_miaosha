@@ -9,9 +9,9 @@ import java.util.List;
 
 /**
  * 菜单管理表 服务类
- * @author: alex
- * @createDate: 2023-12-19 17:34:23
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-12-19 17:34:23
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface MenuInfoService extends IService<MenuInfo> {

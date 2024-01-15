@@ -11,10 +11,10 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2022/10/22 15:03
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2022/10/22 15:03
+ * version: 1.0.0
  */
 @Getter
 @Setter

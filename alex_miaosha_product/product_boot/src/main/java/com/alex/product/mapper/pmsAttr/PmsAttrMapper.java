@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  商品属性 mapper
- * @author:       alex
- * @createDate:   2023-12-28 19:50:53
- * @version:      1.0.0
+ * description:  商品属性 mapper
+ * author:       alex
+ * createDate:   2023-12-28 19:50:53
+ * version:      1.0.0
  */
 @Mapper
 public interface PmsAttrMapper extends BaseMapper<PmsAttr> {

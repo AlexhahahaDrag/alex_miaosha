@@ -23,14 +23,14 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo">
-        select <include refid="Base_Column_List"></include> from pms_sku_info
+        select <include refid="Base_Column_List"/> from pms_sku_info
         <where>
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryPmsSkuInfo" resultType="com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo">
-        select <include refid="Base_Column_List"></include> from pms_sku_info
+        select <include refid="Base_Column_List"/> from pms_sku_info
         <where>
             sku_id = #{id}
         </where>

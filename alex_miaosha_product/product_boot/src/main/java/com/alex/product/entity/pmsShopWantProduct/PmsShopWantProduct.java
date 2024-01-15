@@ -10,10 +10,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  商品想买网上商品信息类
- * @author:       alex
- * @createDate: 2023-05-25 16:18:10
- * @version:      1.0.0
+ * description:  商品想买网上商品信息类
+ * author:       alex
+ * createDate: 2023-05-25 16:18:10
+ * version:      1.0.0
  */
 @Getter
 @Setter

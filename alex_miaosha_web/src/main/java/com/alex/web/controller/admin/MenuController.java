@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:
- * @author: majf
- * @createDate: 2022/8/11 15:36
- * @version: 1.0.0
+ * description:
+ * author: majf
+ * createDate: 2022/8/11 15:36
+ * version: 1.0.0
  */
 @Api(value = "菜单模块", tags = {"菜单模块"})
 @ApiSort(95)

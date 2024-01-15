@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 机构表 服务类
- * @author: alex
- * @createDate: 2023-12-15 12:00:32
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-12-15 12:00:32
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface OrgInfoService extends IService<OrgInfo> {

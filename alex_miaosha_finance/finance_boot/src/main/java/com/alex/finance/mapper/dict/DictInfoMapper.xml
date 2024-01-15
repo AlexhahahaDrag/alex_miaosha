@@ -35,22 +35,22 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
-        select <include refid="Base_Column_List"></include> from dict_info
+        select <include refid="Base_Column_List"/> from dict_info
         <where>
-            dict_info.is_delete = 0 <include refid="queryInfo"></include>
+            dict_info.is_delete = 0 <include refid="queryInfo"/>
         </where>
         order by dict_info.operate_time desc
     </select>
 
     <select id="queryDictInfo" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
-        select <include refid="Base_Column_List"></include> from dict_info
+        select <include refid="Base_Column_List"/> from dict_info
         <where>
             dict_info.is_delete = 0 and id = #{id}
         </where>
     </select>
 
     <select id="listByBelong" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
-        select <include refid="Base_Column_List"></include> from dict_info
+        select <include refid="Base_Column_List"/> from dict_info
         <where>
             dict_info.is_delete = 0 and is_valid = '1'
             <if test="belongTo != null">

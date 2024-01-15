@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
- * @description: springboot admin监管系统
- * @author: majf
- * @createDate: 2022/8/3 11:54
- * @version: 1.0.0
+ * description: springboot admin监管系统
+ * author: majf
+ * createDate: 2022/8/3 11:54
+ * version: 1.0.0
  */
 @EnableAdminServer
 @SpringBootApplication

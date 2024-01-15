@@ -18,10 +18,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description:  机构表restApi
- * @author:       alex
- * @createDate:   2023-12-15 12:00:32
- * @version:      1.0.0
+ * description:  机构表restApi
+ * author:       alex
+ * createDate:   2023-12-15 12:00:32
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "机构表相关接口", tags = {"机构表相关接口"})

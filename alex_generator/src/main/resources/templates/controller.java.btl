@@ -31,10 +31,10 @@ import ${superControllerClassPackage};
 <% } %>
 
 /**
- * @description:  ${table.comment!}restApi
- * @author:       ${author}
- * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!}restApi
+ * author:       ${author}
+ * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "${table.comment!}相关接口", tags = {"${table.comment!}相关接口"})
@@ -75,7 +75,7 @@ public class ${table.controllerName} {
     @ApiOperationSupport(order = 20, author = "${author}")
     @ApiOperation(value = "获取${table.comment!}详情", notes = "获取${table.comment!}详情", response = Result.class)
     @GetMapping
-    public Result<${table.voName}> query(@RequestParam(value = "id") String id) {
+    public Result<${table.voName}> query(@RequestParam(value = "id") Long id) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.query${entity}(id));
     }
 

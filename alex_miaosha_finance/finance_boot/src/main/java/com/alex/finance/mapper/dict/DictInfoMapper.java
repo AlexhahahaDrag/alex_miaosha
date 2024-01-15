@@ -10,10 +10,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @description:  字典表 mapper
- * @author:       alex
- * @createDate:   2022-10-13 17:47:15
- * @version:      1.0.0
+ * description:  字典表 mapper
+ * author:       alex
+ * createDate:   2022-10-13 17:47:15
+ * version:      1.0.0
  */
 @Mapper
 public interface DictInfoMapper extends BaseMapper<DictInfo> {

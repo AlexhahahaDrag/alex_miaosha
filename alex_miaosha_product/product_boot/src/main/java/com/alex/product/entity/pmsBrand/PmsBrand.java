@@ -11,10 +11,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  品牌类
- * @author:       alex
- * @createDate: 2023-03-05 21:39:54
- * @version:      1.0.0
+ * description:  品牌类
+ * author:       alex
+ * createDate: 2023-03-05 21:39:54
+ * version:      1.0.0
  */
 @Getter
 @Setter

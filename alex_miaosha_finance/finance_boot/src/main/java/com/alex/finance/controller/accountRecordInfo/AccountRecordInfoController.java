@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description:  restApi
- * @author:       alex
- * @createDate:   2023-04-08 16:27:39
- * @version:      1.0.0
+ * description:  restApi
+ * author:       alex
+ * createDate:   2023-04-08 16:27:39
+ * version:      1.0.0
  */
 @ApiSort(50)
 @Api(value = "相关接口", tags = {"相关接口"})

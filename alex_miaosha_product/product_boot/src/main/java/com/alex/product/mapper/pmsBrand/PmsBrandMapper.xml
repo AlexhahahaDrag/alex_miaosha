@@ -19,14 +19,14 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsBrand.PmsBrandVo">
-        select <include refid="Base_Column_List"></include> from pms_brand
+        select <include refid="Base_Column_List"/> from pms_brand
         <where>
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryPmsBrand" resultType="com.alex.api.product.vo.pmsBrand.PmsBrandVo">
-        select <include refid="Base_Column_List"></include> from pms_brand
+        select <include refid="Base_Column_List"/> from pms_brand
         <where>
             brand_id = #{id}
         </where>

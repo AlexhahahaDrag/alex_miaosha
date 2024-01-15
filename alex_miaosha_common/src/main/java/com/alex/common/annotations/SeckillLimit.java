@@ -16,17 +16,17 @@ import java.lang.annotation.Target;
 public @interface SeckillLimit {
 
     /**
-     * @description: 限制的有效期
-     * @author:      majf
-     * @createDate:  2022/7/15 9:52
+     * description: 限制的有效期
+     * author:      majf
+     * createDate:  2022/7/15 9:52
      * @return:      int
     */
     int seconds();
 
     /**
-     * @description: 限制的最大次数
-     * @author:      majf
-     * @createDate:  2022/7/15 9:52
+     * description: 限制的最大次数
+     * author:      majf
+     * createDate:  2022/7/15 9:52
      * @return:      int
      */
     int maxCount();

@@ -1,10 +1,10 @@
 package com.alex.common.redis.key;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2022/12/9 21:55
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2022/12/9 21:55
+ * version: 1.0.0
  */
 public class CommonKey extends BasePrefix {
 

@@ -22,10 +22,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * @description:  管理员表Vo
- * @author:       alex
- * @createDate:   2022-12-26 17:20:38
- * @version:      1.0.0
+ * description:  管理员表Vo
+ * author:       alex
+ * createDate:   2022-12-26 17:20:38
+ * version:      1.0.0
  */
 @Getter
 @Setter

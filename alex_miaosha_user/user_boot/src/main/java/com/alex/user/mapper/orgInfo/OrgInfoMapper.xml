@@ -38,18 +38,18 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.orgInfo.OrgInfoVo">
-        select <include refid="Base_Column_List"></include>, par_info.org_name as parent_org_name
+        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
             from t_org_info
             left join t_org_info par_info
             on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
         <where>
             t_org_info.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryOrgInfo" resultType="com.alex.api.user.vo.orgInfo.OrgInfoVo">
-        select <include refid="Base_Column_List"></include>, par_info.org_name as parent_org_name
+        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
             from t_org_info
             left join t_org_info par_info
             on par_info.id = t_org_info.parent_id and par_info.is_delete = 0

@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 角色信息表 服务类
- * @author: majf
- * @createDate: 2024-01-14 21:56:18
- * @description: 我是由代码生成器生成
+ * author: majf
+ * createDate: 2024-01-14 21:56:18
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface RoleInfoService extends IService<RoleInfo> {

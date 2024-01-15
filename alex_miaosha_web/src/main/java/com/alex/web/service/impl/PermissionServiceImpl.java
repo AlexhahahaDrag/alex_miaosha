@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @description:  权限服务实现类
- * @author:       majf
- * @createDate:   2022/8/11 15:58
- * @version:      1.0.0
+ * description:  权限服务实现类
+ * author:       majf
+ * createDate:   2022/8/11 15:58
+ * version:      1.0.0
  */
 @Service
 public class PermissionServiceImpl implements PermissionService {

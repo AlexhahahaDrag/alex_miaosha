@@ -9,9 +9,9 @@ import java.util.List;
 
 /**
  * 商品想买网上商品信息 服务类
- * @author: alex
- * @createDate: 2023-05-25 16:18:10
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-05-25 16:18:10
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface PmsShopWantProductService extends IService<PmsShopWantProduct> {

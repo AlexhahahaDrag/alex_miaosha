@@ -21,14 +21,14 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsCategory.PmsCategoryVo">
-        select <include refid="Base_Column_List"></include> from pms_category
+        select <include refid="Base_Column_List"/> from pms_category
         <where>
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="queryPmsCategory" resultType="com.alex.api.product.vo.pmsCategory.PmsCategoryVo">
-        select <include refid="Base_Column_List"></include> from pms_category
+        select <include refid="Base_Column_List"/> from pms_category
         <where>
             cat_id = #{id}
         </where>

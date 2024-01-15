@@ -10,10 +10,10 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  用户登录表类
- * @author:       alex
- * @createDate: 2023-02-16 14:11:55
- * @version:      1.0.0
+ * description:  用户登录表类
+ * author:       alex
+ * createDate: 2023-02-16 14:11:55
+ * version:      1.0.0
  */
 @Getter
 @Setter

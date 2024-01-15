@@ -18,10 +18,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description:  商品想买网上商品信息restApi
- * @author:       alex
- * @createDate:   2023-05-25 16:18:10
- * @version:      1.0.0
+ * description:  商品想买网上商品信息restApi
+ * author:       alex
+ * createDate:   2023-05-25 16:18:10
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品想买网上商品信息相关接口", tags = {"商品想买网上商品信息相关接口"})

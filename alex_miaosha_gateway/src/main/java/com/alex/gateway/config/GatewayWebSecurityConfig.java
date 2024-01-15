@@ -13,7 +13,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * createDate:   2022/10/8 17:52
  * version:      1.0.0
  */
-
 @Configuration
 @EnableWebFluxSecurity
 @AllArgsConstructor

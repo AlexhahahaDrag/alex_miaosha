@@ -5,10 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @description:  权限dto
- * @author:       majf
- * @createDate:   2022/8/9 14:29
- * @version:      1.0.0
+ * description:  权限dto
+ * author:       majf
+ * createDate:   2022/8/9 14:29
+ * version:      1.0.0
  */
 @Data
 @ApiModel(value = "Permission对象DTO", description = "权限表DTO")

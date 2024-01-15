@@ -19,8 +19,8 @@ public class CheckUtils {
 
     /**
      * @param email
-     * @description:  校验邮箱
-     * @author:       alex
+     * description:  校验邮箱
+     * author:       alex
      * @return:       boolean
     */
     public static boolean checkEmail(String email) {
@@ -29,8 +29,8 @@ public class CheckUtils {
 
     /**
      * @param phone
-     * @description:  校验电话号
-     * @author:       alex
+     * description:  校验电话号
+     * author:       alex
      * @return:       boolean
     */
     public static boolean checkPhone(String phone) {
@@ -40,8 +40,8 @@ public class CheckUtils {
     /**
      * @param info
      * @param regex
-     * @description:  根据正则表达式校验信息
-     * @author:       alex
+     * description:  根据正则表达式校验信息
+     * author:       alex
      * @return:       boolean
     */
     public static boolean check(String info, String regex) {

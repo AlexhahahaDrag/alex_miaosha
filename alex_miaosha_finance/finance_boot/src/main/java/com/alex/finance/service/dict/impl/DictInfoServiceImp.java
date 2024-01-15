@@ -19,10 +19,10 @@ import java.util.List;
 /**
  * <p>
  *
- * @description: 字典表服务实现类
- * @author: alex
- * @createDate: 2022-10-13 17:47:15
- * @version: 1.0.0
+ * description: 字典表服务实现类
+ * author: alex
+ * createDate: 2022-10-13 17:47:15
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor

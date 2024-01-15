@@ -8,10 +8,10 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 /**
- *@description:
- *@author:       alex
- *@createDate:   2023/1/28 11:44
- *@version:      1.0.0
+ *description:
+ *author:       alex
+ *createDate:   2023/1/28 11:44
+ *version:      1.0.0
  */
 @Component
 @Slf4j

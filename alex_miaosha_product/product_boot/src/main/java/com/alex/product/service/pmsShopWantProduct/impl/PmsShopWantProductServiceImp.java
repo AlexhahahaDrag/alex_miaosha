@@ -16,10 +16,10 @@ import java.util.List;
 
 /**
  * <p>
- * @description:  商品想买网上商品信息服务实现类
- * @author:       alex
- * @createDate:   2023-05-25 16:18:10
- * @version:      1.0.0
+ * description:  商品想买网上商品信息服务实现类
+ * author:       alex
+ * createDate:   2023-05-25 16:18:10
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2022/10/11 21:22
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2022/10/11 21:22
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -115,8 +115,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     /**
      * @param menuInfoList
      * @param menuName
-     * @description: 根据菜单名称查询菜单信息
-     * @author:      majf
+     * description: 根据菜单名称查询菜单信息
+     * author:      majf
      * @return:      com.alex.generator.vo.MenuSearchInfo
     */
     private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {

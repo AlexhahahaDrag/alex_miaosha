@@ -12,10 +12,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * @description:  Vo
- * @author:       alex
- * @createDate:   2023-04-08 16:27:39
- * @version:      1.0.0
+ * description:  Vo
+ * author:       alex
+ * createDate:   2023-04-08 16:27:39
+ * version:      1.0.0
  */
 @Getter
 @Setter

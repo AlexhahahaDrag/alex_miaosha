@@ -8,10 +8,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  机构表Vo
- * @author:       alex
- * @createDate:   2023-12-15 12:00:32
- * @version:      1.0.0
+ * description:  机构表Vo
+ * author:       alex
+ * createDate:   2023-12-15 12:00:32
+ * version:      1.0.0
  */
 @Getter
 @Setter

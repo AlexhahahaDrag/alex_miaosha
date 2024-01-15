@@ -20,10 +20,10 @@ import com.alex.user.service.tUserLogin.TUserLoginService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  用户登录表restApi
- * @author:       alex
- * @createDate:   2023-02-16 14:11:55
- * @version:      1.0.0
+ * description:  用户登录表restApi
+ * author:       alex
+ * createDate:   2023-02-16 14:11:55
+ * version:      1.0.0
  */
 @ApiSort(20)
 @Api(value = "用户登录表相关接口", tags = {"用户登录表相关接口"})

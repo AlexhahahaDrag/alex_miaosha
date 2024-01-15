@@ -47,20 +47,20 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
-        select <include refid="Base_Column_List"></include> from pms_shop_product
+        select <include refid="Base_Column_List"/> from pms_shop_product
         <where>
             pms_shop_product.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
 
     <select id="getNewestProductPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
         select
           compare_info.price as compare_price,
-          <include refid="Base_Column_List"></include>
+          <include refid="Base_Column_List"/>
         from(
             select
-             <include refid="Base_Column_List"></include>,
+             <include refid="Base_Column_List"/>,
               row_number() over (
                 partition by sku_id
                 order by
@@ -70,11 +70,11 @@
               alex_product.pms_shop_product pms_shop_product
             where
               pms_shop_product.is_delete = 0
-              <include refid="queryInfo"></include>
+              <include refid="queryInfo"/>
           ) pms_shop_product
           left join (
             select
-              <include refid="Base_Column_List"></include>
+              <include refid="Base_Column_List"/>
             from
               alex_product.pms_shop_product
             where
@@ -87,12 +87,12 @@
     </select>
 
     <select id="queryPmsShopProduct" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
-        select <include refid="Base_Column_List"></include>,
+        select <include refid="Base_Column_List"/>,
             compare_info.price as compare_price
         from pms_shop_product
         left join (
         select
-          <include refid="Base_Column_List"></include>
+          <include refid="Base_Column_List"/>
         from
           alex_product.pms_shop_product
         where
@@ -133,7 +133,7 @@
 
     <select id="getProductHisInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
         select
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"/>
         from
             alex_product.pms_shop_product
         where
@@ -145,7 +145,7 @@
 
     <select id="getCompareInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
         select
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"/>
         from
             alex_product.pms_shop_product
         where

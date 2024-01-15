@@ -10,9 +10,9 @@ import java.util.List;
 
 /**
  * 财务信息表 服务类
- * @author: majf
- * @createDate: 2022-10-10 18:02:03
- * @description: 我是由代码生成器生成
+ * author: majf
+ * createDate: 2022-10-10 18:02:03
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface FinanceInfoService extends IService<FinanceInfo> {

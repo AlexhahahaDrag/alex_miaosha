@@ -3,10 +3,10 @@ package com.alex.api.product.vo.product.jd;
 import lombok.*;
 
 /**
- * @description:
- * @author:      alex
+ * description:
+ * author:      alex
  * @createTime:  2021/2/26 15:01
- * @version:     1.0
+ * version:     1.0
  */
 @Data
 @NoArgsConstructor

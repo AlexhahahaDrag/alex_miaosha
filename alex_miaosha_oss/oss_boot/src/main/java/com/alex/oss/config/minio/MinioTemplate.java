@@ -67,8 +67,8 @@ public class MinioTemplate implements InitializingBean {
 
     /**
      * @param name
-     * @description: 判断bucket是否存在，不存在则创建
-     * @author: majf
+     * description: 判断bucket是否存在，不存在则创建
+     * author: majf
      * @return: void
      */
     public void existBucket(String name) {
@@ -84,8 +84,8 @@ public class MinioTemplate implements InitializingBean {
 
     /**
      * @param bucketName
-     * @description: 创建存储bucket
-     * @author: majf
+     * description: 创建存储bucket
+     * author: majf
      * @return: java.lang.Boolean
      */
     public Boolean makeBucket(String bucketName) {
@@ -120,8 +120,8 @@ public class MinioTemplate implements InitializingBean {
      * @param bucketName
      * @param filename
      * @param inputStream
-     * @description: 上传文件到minio
-     * @author: majf
+     * description: 上传文件到minio
+     * author: majf
      * @return: java.util.Map<java.lang.String, java.lang.String>
      */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
@@ -202,8 +202,8 @@ public class MinioTemplate implements InitializingBean {
      * @param bucketName
      * @param fileName
      * @param delete
-     * @description: 下载文件流
-     * @author: alex
+     * description: 下载文件流
+     * author: alex
      * @return: java.io.InputStream
      */
     public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {

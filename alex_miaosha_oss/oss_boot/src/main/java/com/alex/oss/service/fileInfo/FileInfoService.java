@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  * 文件信息表 服务类
- * @author: alex
- * @createDate: 2023-01-30 14:08:29
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-01-30 14:08:29
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface FileInfoService extends IService<FileInfo> {
@@ -32,8 +32,8 @@ public interface FileInfoService extends IService<FileInfo> {
 
     /*
      * @param fileIdList
-     * @description: 根据文件id列表获取文件信息
-     * @author:      alex
+     * description: 根据文件id列表获取文件信息
+     * author:      alex
      * @return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
     */
     List<FileInfoVo> getFileInfo(List<Long> fileIdList);

@@ -16,10 +16,10 @@ import lombok.experimental.Accessors;
 <% } %>
 
 /**
- * @description:  ${table.comment!}Vo
- * @author:       ${author}
- * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!}Vo
+ * author:       ${author}
+ * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 <% if(voLombokModel){ %>
 @Getter

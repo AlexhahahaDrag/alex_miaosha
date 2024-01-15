@@ -10,10 +10,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * @description: gateway启动类
- * @author: majf
- * @createDate: 2022/7/29 14:18
- * @version: 1.0.0
+ * description: gateway启动类
+ * author: majf
+ * createDate: 2022/7/29 14:18
+ * version: 1.0.0
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient

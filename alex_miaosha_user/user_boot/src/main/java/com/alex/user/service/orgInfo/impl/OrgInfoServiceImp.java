@@ -16,10 +16,10 @@ import java.util.List;
 
 /**
  * <p>
- * @description:  机构表服务实现类
- * @author:       alex
- * @createDate:   2023-12-15 12:00:32
- * @version:      1.0.0
+ * description:  机构表服务实现类
+ * author:       alex
+ * createDate:   2023-12-15 12:00:32
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

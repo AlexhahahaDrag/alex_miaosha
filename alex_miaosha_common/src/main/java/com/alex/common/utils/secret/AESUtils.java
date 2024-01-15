@@ -13,10 +13,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 /**
- * @description:  Java使用AES加密算法进行加密解密
- * @author:       majf
- * @createDate:   2023/9/12 11:51
- * @version:      1.0.0
+ * description:  Java使用AES加密算法进行加密解密
+ * author:       majf
+ * createDate:   2023/9/12 11:51
+ * version:      1.0.0
  */
 public class AESUtils {
 

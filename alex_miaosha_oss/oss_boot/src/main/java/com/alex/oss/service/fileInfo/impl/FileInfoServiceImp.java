@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 /**
  * <p>
  *
- * @description: 文件信息表服务实现类
- * @author: alex
- * @createDate: 2023-01-30 14:08:29
- * @version: 1.0.0
+ * description: 文件信息表服务实现类
+ * author: alex
+ * createDate: 2023-01-30 14:08:29
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor

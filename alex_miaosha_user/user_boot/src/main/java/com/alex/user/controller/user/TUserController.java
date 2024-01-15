@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @description: 管理员表restApi
- * @author: alex
- * @createDate: 2022-12-26 17:20:38
- * @version: 1.0.0
+ * description: 管理员表restApi
+ * author: alex
+ * createDate: 2022-12-26 17:20:38
+ * version: 1.0.0
  */
 @ApiSort(10)
 @Api(value = "管理员表相关接口", tags = {"管理员表相关接口"})

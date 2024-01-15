@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
 import com.alex.common.config.Long2StringSerializer;
 
 /**
- * @description:  角色信息表类
- * @author:       majf
- * @createDate: 2024-01-14 21:56:18
- * @version:      1.0.0
+ * description:  角色信息表类
+ * author:       majf
+ * createDate: 2024-01-14 21:56:18
+ * version:      1.0.0
  */
 @Getter
 @Setter

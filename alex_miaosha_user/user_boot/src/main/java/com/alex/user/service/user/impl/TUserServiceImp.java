@@ -5,6 +5,8 @@ import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.vo.orgInfo.OrgInfoVo;
+import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.api.user.vo.user.OnlineAdmin;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
@@ -22,6 +24,8 @@ import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.menuInfo.MenuInfoService;
+import com.alex.user.service.orgUserInfo.OrgUserInfoService;
+import com.alex.user.service.roleUserInfo.RoleUserInfoService;
 import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
@@ -60,10 +64,10 @@ import java.util.stream.Collectors;
 /**
  * <p>
  *
- * @description: 管理员表服务实现类
- * @author: alex
- * @createDate: 2022-12-26 17:20:38
- * @version: 1.0.0
+ * description: 管理员表服务实现类
+ * author: alex
+ * createDate: 2022-12-26 17:20:38
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -89,6 +93,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     private final MenuInfoService menuInfoService;
 
     private final UserUtils userUtils;
+
+    private final OrgUserInfoService orgUserInfoService;
+
+    private final RoleUserInfoService roleUserInfoService;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
@@ -248,14 +256,21 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         if (admin.getAvatar() != null) {
             tUserVo.setAvatarUrl(getFileUrl(admin.getAvatar()));
         }
-        result.put(SysConf.ADMIN, tUserVo);
+        // 获取机构信息
+        List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
+        tUserVo.setOrgInfoVo(orgInfoList == null ? null : orgInfoList.get(0));
+        // 获取角色信息
+        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId());
+        tUserVo.setRoleInfoVo(roleInfoList == null ? null : roleInfoList.get(0));
         // 获取菜单
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setStatus(SysConf.VALID_STATUS);
-        List<MenuInfoVo> list = menuInfoService.getList(null);
-        result.put(SysConf.MENU, list);
+        List<MenuInfoVo> menuList = menuInfoService.getList(null);
+        tUserVo.setMenuInfoVoList(menuList);
+        result.put(SysConf.MENU, menuList);
         long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
         redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONUtil.toJsonStr(tUserVo), expiration, TimeUnit.SECONDS);
+        result.put(SysConf.ADMIN, tUserVo);
         return Result.success(result);
     }
 

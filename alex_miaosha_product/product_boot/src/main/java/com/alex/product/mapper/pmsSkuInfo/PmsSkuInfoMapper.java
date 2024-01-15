@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  sku信息 mapper
- * @author:       alex
- * @createDate:   2023-03-17 10:30:26
- * @version:      1.0.0
+ * description:  sku信息 mapper
+ * author:       alex
+ * createDate:   2023-03-17 10:30:26
+ * version:      1.0.0
  */
 @Mapper
 public interface PmsSkuInfoMapper extends BaseMapper<PmsSkuInfo> {

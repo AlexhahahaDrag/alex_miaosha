@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  *  服务类
- * @author: alex
- * @createDate: 2023-04-08 16:27:39
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-04-08 16:27:39
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface AccountRecordInfoService extends IService<AccountRecordInfo> {

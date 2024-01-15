@@ -28,10 +28,10 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2023/1/28 22:10
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2023/1/28 22:10
+ * version: 1.0.0
  */
 @Slf4j
 @RequiredArgsConstructor

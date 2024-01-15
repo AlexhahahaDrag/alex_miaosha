@@ -9,10 +9,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * @description:  角色信息表Vo
- * @author:       majf
- * @createDate:   2024-01-14 21:56:18
- * @version:      1.0.0
+ * description:  角色信息表Vo
+ * author:       majf
+ * createDate:   2024-01-14 21:56:18
+ * version:      1.0.0
  */
 @Getter
 @Setter

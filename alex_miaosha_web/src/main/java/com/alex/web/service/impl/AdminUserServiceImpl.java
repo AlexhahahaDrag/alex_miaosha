@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @description:  管理员服务实现类
- * @author:       majf
- * @createDate:   2022/8/11 15:57
- * @version:      1.0.0
+ * description:  管理员服务实现类
+ * author:       majf
+ * createDate:   2022/8/11 15:57
+ * version:      1.0.0
  */
 @Service
 public class AdminUserServiceImpl implements AdminUserService {

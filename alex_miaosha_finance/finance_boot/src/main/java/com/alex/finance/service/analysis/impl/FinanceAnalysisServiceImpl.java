@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2022/10/22 14:49
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2022/10/22 14:49
+ * version: 1.0.0
  */
 @RequiredArgsConstructor
 @Service

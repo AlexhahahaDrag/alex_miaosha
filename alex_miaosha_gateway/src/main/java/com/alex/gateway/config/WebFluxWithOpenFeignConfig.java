@@ -1,10 +1,10 @@
 package com.alex.gateway.config;
 
 /**
- * @description:
- * @author: alex
- * @createDate: 2023/1/28 15:15
- * @version: 1.0.0
+ * description:
+ * author: alex
+ * createDate: 2023/1/28 15:15
+ * version: 1.0.0
  */
 
 import org.springframework.beans.factory.ObjectProvider;

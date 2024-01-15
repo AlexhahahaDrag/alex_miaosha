@@ -15,10 +15,10 @@ import com.alex.common.utils.string.StringUtils;
 
 /**
  * <p>
- * @description:  用户登录表服务实现类
- * @author:       alex
- * @createDate:   2023-02-16 14:11:55
- * @version:      1.0.0
+ * description:  用户登录表服务实现类
+ * author:       alex
+ * createDate:   2023-02-16 14:11:55
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

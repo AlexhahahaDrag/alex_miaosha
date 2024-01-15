@@ -15,10 +15,10 @@ import com.alex.common.utils.string.StringUtils;
 
 /**
  * <p>
- * @description:  ${table.comment!}服务实现类
- * @author:       ${author}
- * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!}服务实现类
+ * author:       ${author}
+ * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
-    public ${table.voName} query${entity}(String id) {
+    public ${table.voName} query${entity}(Long id) {
         return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.query${entity}(id);
     }
 

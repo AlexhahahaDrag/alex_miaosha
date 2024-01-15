@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 /**
- *@description:
- *@author:       alex
- *@createDate:   2023/1/28 11:39
- *@version:      1.0.0
+ *description:
+ *author:       alex
+ *createDate:   2023/1/28 11:39
+ *version:      1.0.0
  */
 @Component
 @FeignClient(name = "alex-user-${spring.profiles.active:dev}", fallback = FinanceFallbackFactory.class, configuration = FeignConfig.class)

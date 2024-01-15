@@ -10,10 +10,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @description:  商品想买网上商品信息 mapper
- * @author:       alex
- * @createDate:   2023-05-25 16:18:10
- * @version:      1.0.0
+ * description:  商品想买网上商品信息 mapper
+ * author:       alex
+ * createDate:   2023-05-25 16:18:10
+ * version:      1.0.0
  */
 @Mapper
 public interface PmsShopWantProductMapper extends BaseMapper<PmsShopWantProduct> {

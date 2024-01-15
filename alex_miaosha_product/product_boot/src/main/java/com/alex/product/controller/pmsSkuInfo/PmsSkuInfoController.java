@@ -20,10 +20,10 @@ import com.alex.product.service.pmsSkuInfo.PmsSkuInfoService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  sku信息restApi
- * @author:       alex
- * @createDate:   2023-03-17 10:30:27
- * @version:      1.0.0
+ * description:  sku信息restApi
+ * author:       alex
+ * createDate:   2023-03-17 10:30:27
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "sku信息相关接口", tags = {"sku信息相关接口"})

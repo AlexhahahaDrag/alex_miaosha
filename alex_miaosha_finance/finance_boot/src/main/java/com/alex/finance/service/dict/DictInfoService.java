@@ -9,9 +9,9 @@ import java.util.List;
 
 /**
  * 字典表 服务类
- * @author: alex
- * @createDate: 2022-10-13 17:47:15
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2022-10-13 17:47:15
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface DictInfoService extends IService<DictInfo> {

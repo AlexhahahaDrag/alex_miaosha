@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
- * @description:  lua工具类
- * @author:       majf
- * @createDate:   2022/9/7 10:41
- * @version:      1.0.0
+ * description:  lua工具类
+ * author:       majf
+ * createDate:   2022/9/7 10:41
+ * version:      1.0.0
  */
 /**
  *description:  redis lua 脚本
@@ -30,9 +30,9 @@ public class LuaUtils {
 
     /**
      * @param goodsId
-     * @description: 判断库存和预减库存
-     * @author:      majf
-     * @createDate:  2022/7/14 11:30
+     * description: 判断库存和预减库存
+     * author:      majf
+     * createDate:  2022/7/14 11:30
      * @return:      java.lang.Long
      */
     public Long judgeStockAndDecrStock(Long goodsId) {
@@ -49,9 +49,9 @@ public class LuaUtils {
 
     /**
      * @param lockKey
-     * @description: 获取访问次数
-     * @author:      majf
-     * @createDate:  2022/7/14 11:48
+     * description: 获取访问次数
+     * author:      majf
+     * createDate:  2022/7/14 11:48
      * @return:      java.lang.Long
      */
     public Long getVisitorCount(String lockKey) {
@@ -69,9 +69,9 @@ public class LuaUtils {
 
     /**
      * @param lockKey
-     * @description: 添加访问次数
-     * @author:      majf
-     * @createDate:  2022/7/14 11:48
+     * description: 添加访问次数
+     * author:      majf
+     * createDate:  2022/7/14 11:48
      * @return:      java.lang.Long
      */
     public Long addVisitorCount(String lockKey) {

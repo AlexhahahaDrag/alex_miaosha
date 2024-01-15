@@ -52,24 +52,23 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
                         if (roleInfoVo == null || roleInfoVo.getRoleCode().equals("user")) {
                             EqualsTo useEqualsTo = new EqualsTo();
-                            useEqualsTo.setLeftExpression(new Column(annotation.field()));
+                            useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
                             useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-                            return new AndExpression(where, useEqualsTo);
+                            return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
                         } else if (roleInfoVo.getRoleCode().contains("admin")) {
-                            EqualsTo useEqualsTo = new EqualsTo();
-                            useEqualsTo.setLeftExpression(new Column(annotation.field()));
-
+                            InExpression useEqualsTo = new InExpression();
+                            useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
                             // 构建子查询
                             SubSelect subSelect = new SubSelect();
                             PlainSelect plainSelect = new PlainSelect();
 
                             // 构建子查询中的 SELECT 部分
                             SelectExpressionItem selectItem = new SelectExpressionItem();
-                            selectItem.setExpression(new Column("user_id")); // 假设你想选择 user_id 字段
+                            selectItem.setExpression(new Column("user_id"));
                             plainSelect.addSelectItems(selectItem);
 
                             // 构建子查询中的 FROM 部分
-                            Table table = new Table("t_org_user_info"); // 假设子查询的表名为 organization_users
+                            Table table = new Table("alex_user.t_org_user_info");
                             plainSelect.setFromItem(table);
 
                             // 构建 WHERE 子句
@@ -84,15 +83,14 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                             // 设置右表达式为子查询
                             useEqualsTo.setRightExpression(subSelect);
 
-                            useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-                            return new AndExpression(where, useEqualsTo);
+                            return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
                         } else if (roleInfoVo.getRoleCode().contains("super")) {
                             return where;
                         } else {
                             EqualsTo useEqualsTo = new EqualsTo();
                             useEqualsTo.setLeftExpression(new Column(annotation.field()));
                             useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-                            return new AndExpression(where, useEqualsTo);
+                            return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
                         }
                     }
                 }

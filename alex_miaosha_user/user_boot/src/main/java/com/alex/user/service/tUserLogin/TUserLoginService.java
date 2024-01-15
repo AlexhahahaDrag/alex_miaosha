@@ -8,9 +8,9 @@ import java.util.List;
 
 /**
  * 用户登录表 服务类
- * @author: alex
- * @createDate: 2023-02-16 14:11:55
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-02-16 14:11:55
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface TUserLoginService extends IService<TUserLogin> {

@@ -20,10 +20,10 @@ import com.alex.product.service.pmsCategory.PmsCategoryService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @description:  商品三级分类restApi
- * @author:       alex
- * @createDate:   2023-03-17 10:06:58
- * @version:      1.0.0
+ * description:  商品三级分类restApi
+ * author:       alex
+ * createDate:   2023-03-17 10:06:58
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "商品三级分类相关接口", tags = {"商品三级分类相关接口"})

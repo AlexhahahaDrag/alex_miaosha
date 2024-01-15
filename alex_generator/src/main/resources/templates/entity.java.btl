@@ -18,10 +18,10 @@ import lombok.experimental.Accessors;
 import com.alex.common.config.Long2StringSerializer;
 
 /**
- * @description:  ${table.comment!}类
- * @author:       ${author}
- * @createDate: ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * @version:      1.0.0
+ * description:  ${table.comment!}类
+ * author:       ${author}
+ * createDate: ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * version:      1.0.0
  */
 <% if(entityLombokModel){ %>
 @Getter

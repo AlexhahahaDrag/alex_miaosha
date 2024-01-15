@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
- * @description:  用户登录表Vo
- * @author:       alex
- * @createDate:   2023-02-16 14:11:55
- * @version:      1.0.0
+ * description:  用户登录表Vo
+ * author:       alex
+ * createDate:   2023-02-16 14:11:55
+ * version:      1.0.0
  */
 @Getter
 @Setter

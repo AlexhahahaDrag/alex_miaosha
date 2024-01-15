@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 
 /**
- * @description:  角色信息表controller
- * @author:       majf
- * @createDate:   2024-01-14 21:56:18
- * @version:      1.0.0
+ * description:  角色信息表controller
+ * author:       majf
+ * createDate:   2024-01-14 21:56:18
+ * version:      1.0.0
  */
 @Component
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)

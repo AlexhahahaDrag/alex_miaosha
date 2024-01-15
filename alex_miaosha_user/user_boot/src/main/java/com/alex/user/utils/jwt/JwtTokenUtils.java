@@ -30,8 +30,8 @@ public class JwtTokenUtils {
     /**
      * @param token
      * @param base64Security
-     * @description: 解析jwt
-     * @author: alex
+     * description: 解析jwt
+     * author: alex
      * @return: io.jsonwebtoken.Claims
      */
     public Claims parseJwt(String token, String base64Security) {
@@ -51,8 +51,8 @@ public class JwtTokenUtils {
      * @param issuer         发行人
      * @param TTLMillis      过期时间
      * @param base64Security
-     * @description:  生成jwt
-     * @author:       alex
+     * description:  生成jwt
+     * author:       alex
      * @return:       java.lang.String
      */
     public String createJwt(String username, Long adminId, String roleName,
@@ -84,8 +84,8 @@ public class JwtTokenUtils {
     /**
      * @param token
      * @param base64Security
-     * @description: 判断token是否过期
-     * @author: alex
+     * description: 判断token是否过期
+     * author: alex
      * @return: boolean
      */
     public boolean isExpiration(String token, String base64Security) {
@@ -101,8 +101,8 @@ public class JwtTokenUtils {
      * @param token
      * @param userDetails
      * @param base64Security
-     * @description: 校验token是否有效
-     * @author: alex
+     * description: 校验token是否有效
+     * author: alex
      * @return: java.lang.Boolean
      */
     public Boolean validateToken(String token, UserDetails userDetails, String base64Security) {
@@ -114,8 +114,8 @@ public class JwtTokenUtils {
     /**
      * @param token
      * @param base64Security
-     * @description: 获取用户名
-     * @author: alex
+     * description: 获取用户名
+     * author: alex
      * @return: java.lang.String
      */
     public String getUsername(String token, String base64Security) {
@@ -136,8 +136,8 @@ public class JwtTokenUtils {
     /**
      * @param token
      * @param base64Security
-     * @description: 获取用户id
-     * @author: alex
+     * description: 获取用户id
+     * author: alex
      * @return: java.lang.String
      */
     public Long getUserId(String token, String base64Security) {
@@ -148,8 +148,8 @@ public class JwtTokenUtils {
      * @param token
      * @param base64Security
      * @param TTLMillis
-     * @description: 刷新token
-     * @author: alex
+     * description: 刷新token
+     * author: alex
      * @return: java.lang.String
      */
     public String refreshToken(String token, String base64Security, long TTLMillis) {

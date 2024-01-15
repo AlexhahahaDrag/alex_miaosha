@@ -76,8 +76,8 @@ public class JdProductServiceImpl implements JdProductService {
 
     /**
      * @param keyword
-     * @description: 获取淘宝信息
-     * @author:      alex
+     * description: 获取淘宝信息
+     * author:      alex
      * @return:      java.util.List<com.alex.api.product.vo.product.jd.Content>
     */
     // TODO: 2023/5/25 获取淘宝信息

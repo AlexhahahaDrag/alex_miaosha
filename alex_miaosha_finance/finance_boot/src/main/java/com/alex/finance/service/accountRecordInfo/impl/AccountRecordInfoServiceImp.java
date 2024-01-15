@@ -20,10 +20,10 @@ import java.util.List;
 
 /**
  * <p>
- * @description:  服务实现类
- * @author:       alex
- * @createDate:   2023-04-08 16:27:39
- * @version:      1.0.0
+ * description:  服务实现类
+ * author:       alex
+ * createDate:   2023-04-08 16:27:39
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

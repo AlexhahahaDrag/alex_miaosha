@@ -42,15 +42,15 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
-        select <include refid="Base_Column_List"></include> from t_user_login
+        select <include refid="Base_Column_List"/> from t_user_login
         <where>
-            t_user_login.is_delete = 0 <include refid="queryInfo"></include>
+            t_user_login.is_delete = 0 <include refid="queryInfo"/>
         </where>
         order by create_time desc
     </select>
 
     <select id="queryTUserLogin" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
-        select <include refid="Base_Column_List"></include> from t_user_login
+        select <include refid="Base_Column_List"/> from t_user_login
         <where>
             t_user_login.is_delete = 0 and id = #{id}
         </where>

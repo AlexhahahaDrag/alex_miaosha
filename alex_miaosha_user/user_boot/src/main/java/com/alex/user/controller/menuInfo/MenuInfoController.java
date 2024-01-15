@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @description:  菜单管理表restApi
- * @author:       alex
- * @createDate:   2023-12-19 17:34:23
- * @version:      1.0.0
+ * description:  菜单管理表restApi
+ * author:       alex
+ * createDate:   2023-12-19 17:34:23
+ * version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "菜单管理表相关接口", tags = {"菜单管理表相关接口"})

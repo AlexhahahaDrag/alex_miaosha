@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @description:  角色信息表 mapper
- * @author:       majf
- * @createDate:   2024-01-14 21:56:18
- * @version:      1.0.0
+ * description:  角色信息表 mapper
+ * author:       majf
+ * createDate:   2024-01-14 21:56:18
+ * version:      1.0.0
  */
 @Mapper
 public interface RoleInfoMapper extends BaseMapper<RoleInfo> {

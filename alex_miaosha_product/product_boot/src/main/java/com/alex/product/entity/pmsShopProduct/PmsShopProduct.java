@@ -11,10 +11,10 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 
 /**
- * @description:  商品网上商品信息类
- * @author:       alex
- * @createDate: 2023-05-15 14:11:10
- * @version:      1.0.0
+ * description:  商品网上商品信息类
+ * author:       alex
+ * createDate: 2023-05-15 14:11:10
+ * version:      1.0.0
  */
 @Getter
 @Setter

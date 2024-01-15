@@ -19,10 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
- * @description: 访问次数限制aop
- * @author:       majf
- * @createDate:   2022/8/8 17:49
- * @version:      1.0.0
+ * description: 访问次数限制aop
+ * author:       majf
+ * createDate:   2022/8/8 17:49
+ * version:      1.0.0
  */
 @Aspect
 @Component
@@ -34,8 +34,8 @@ public class AccessLimitAspect {
 
     /**
      * @param point
-     * @description:  过滤AccessLimit，访问次数限制
-     * @author:       alex
+     * description:  过滤AccessLimit，访问次数限制
+     * author:       alex
      * @return:       java.lang.Object
     */
     @Around("@annotation(com.alex.common.annotations.user.AccessLimit)")

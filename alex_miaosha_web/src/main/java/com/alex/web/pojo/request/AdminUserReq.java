@@ -12,10 +12,10 @@ import org.apache.ibatis.annotations.Update;
 import javax.validation.constraints.NotBlank;
 
 /**
- * @description:  用户表类
- * @author:       majf
- * @createDate: 2022-08-09 14:12:41
- * @version:      1.0.0
+ * description:  用户表类
+ * author:       majf
+ * createDate: 2022-08-09 14:12:41
+ * version:      1.0.0
  */
 @Data
 @Accessors(chain = true)

@@ -45,24 +45,24 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
-        select <include refid="Base_Column_List"></include> from t_menu_info
+        select <include refid="Base_Column_List"/> from t_menu_info
         <where>
             t_menu_info.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
         </where>
     </select>
     
     <select id="getList" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
-        select <include refid="Base_Column_List"></include> from t_menu_info
+        select <include refid="Base_Column_List"/> from t_menu_info
         <where>
             t_menu_info.is_delete = 0
-            <include refid="queryInfo"></include>
+            <include refid="queryInfo"/>
             order by t_menu_info.order_by
         </where>
     </select>
 
     <select id="queryMenuInfo" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
-        select <include refid="Base_Column_List"></include> from t_menu_info
+        select <include refid="Base_Column_List"/> from t_menu_info
         <where>
             t_menu_info.id = #{id}
             and t_menu_info.is_delete = 0

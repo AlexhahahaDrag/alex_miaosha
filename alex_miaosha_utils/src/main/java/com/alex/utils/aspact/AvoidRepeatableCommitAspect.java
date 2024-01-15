@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description: 处理避免重复提交按钮
- * @author: alex
- * @createDate: 2022/12/9 21:35
- * @version: 1.0.0
+ * description: 处理避免重复提交按钮
+ * author: alex
+ * createDate: 2022/12/9 21:35
+ * version: 1.0.0
  */
 @Aspect
 @Component
@@ -37,8 +37,8 @@ public class AvoidRepeatableCommitAspect {
 
     /**
      * @param point
-     * @description:  过滤AvoidRepeatableCommit，避免表单重复提交
-     * @author:       alex
+     * description:  过滤AvoidRepeatableCommit，避免表单重复提交
+     * author:       alex
      * @return:       java.lang.Object
      */
     @Around("@annotation(com.alex.common.annotations.AvoidRepeatableCommit)")

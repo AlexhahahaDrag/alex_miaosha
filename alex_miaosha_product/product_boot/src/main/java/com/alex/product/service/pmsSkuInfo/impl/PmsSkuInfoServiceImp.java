@@ -15,10 +15,10 @@ import com.alex.common.utils.string.StringUtils;
 
 /**
  * <p>
- * @description:  sku信息服务实现类
- * @author:       alex
- * @createDate:   2023-03-17 10:30:27
- * @version:      1.0.0
+ * description:  sku信息服务实现类
+ * author:       alex
+ * createDate:   2023-03-17 10:30:27
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

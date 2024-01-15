@@ -41,8 +41,8 @@ public class IpUtils {
 
     /**
      * @param request
-     * @description: 根据请求获取ip地址
-     * @author: alex
+     * description: 根据请求获取ip地址
+     * author: alex
      * @return: java.lang.String
      */
     public static String getIpAddr(HttpServletRequest request) {
@@ -80,8 +80,8 @@ public class IpUtils {
 
     /**
      * @param request
-     * @description: 获取真实ip
-     * @author: alex
+     * description: 获取真实ip
+     * author: alex
      * @return: java.lang.String
      */
     public static String getRealIp(HttpServletRequest request) {
@@ -93,8 +93,8 @@ public class IpUtils {
 
     /**
      * @param ip
-     * @description: 校验ip
-     * @author: alex
+     * description: 校验ip
+     * author: alex
      * @return: boolean
      */
     private static boolean checkNotIp(String ip) {
@@ -104,8 +104,8 @@ public class IpUtils {
 
     /**
      * @param request
-     * @description: 根据请求获取系统和浏览器信息
-     * @author: alex
+     * description: 根据请求获取系统和浏览器信息
+     * author: alex
      * @return: java.util.Map<java.lang.String, java.lang.String>
      */
     public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
@@ -191,8 +191,8 @@ public class IpUtils {
     /**
      * @param content
      * @param encodingString
-     * @description: 根据ip地址获取城市信息
-     * @author: alex
+     * description: 根据ip地址获取城市信息
+     * author: alex
      * @return: java.lang.String
      */
     public static String getAddresses(String content, String encodingString) throws Exception {
@@ -205,8 +205,8 @@ public class IpUtils {
 
     /**
      * @param ip
-     * @description: 根据ip获取城市信息
-     * @author: alex
+     * description: 根据ip获取城市信息
+     * author: alex
      * @return: java.lang.String
      */
     public static String getCityInfo(String ip) throws Exception {
@@ -222,8 +222,8 @@ public class IpUtils {
     }
 
     /**
-     * @description: 获取主机ip
-     * @author: alex
+     * description: 获取主机ip
+     * author: alex
      * @return: java.lang.String
      */
     public static String getHostIp() {
@@ -236,8 +236,8 @@ public class IpUtils {
     }
 
     /**
-     * @description: 获取主机名称
-     * @author: alex
+     * description: 获取主机名称
+     * author: alex
      * @return: java.lang.String
      */
     public static String getHostName() {

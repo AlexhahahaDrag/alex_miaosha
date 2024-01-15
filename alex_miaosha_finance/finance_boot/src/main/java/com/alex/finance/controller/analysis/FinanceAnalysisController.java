@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * @description: 财务分析控制类
- * @author: alex
- * @createDate: 2022/10/22 14:42
- * @version: 1.0.0
+ * description: 财务分析控制类
+ * author: alex
+ * createDate: 2022/10/22 14:42
+ * version: 1.0.0
  */
 @ApiSort(30)
 @Api(value = "财务分析相关接口", tags = {"财务分析相关接口"})

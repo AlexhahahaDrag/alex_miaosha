@@ -32,8 +32,8 @@ public class StringUtils {
     private static final int MAX_COUNT = 4;
     /**
      * @param str
-     * @description:  下划线转驼峰
-     * @author:       alex
+     * description:  下划线转驼峰
+     * author:       alex
      * @return:       java.lang.StringBuffer
     */
     public static String camel(String str) {
@@ -48,8 +48,8 @@ public class StringUtils {
 
     /**
      * @param str
-     * @description:  驼峰转下划线
-     * @author:       alex
+     * description:  驼峰转下划线
+     * author:       alex
      * @return:       java.lang.StringBuffer
     */
     public static String underline(String str) {
@@ -172,8 +172,8 @@ public class StringUtils {
     
     /**
      * @param str
-     * @description:  判断非空字符串  
-     * @author:       alex
+     * description:  判断非空字符串  
+     * author:       alex
      * @return:       boolean
     */
     public static boolean isNotEmpty(String str) {
@@ -182,8 +182,8 @@ public class StringUtils {
     
     /**
      * @param str
-     * @description:  判断字符串是否为空（空格也算作空值）  
-     * @author:       alex
+     * description:  判断字符串是否为空（空格也算作空值）  
+     * author:       alex
      * @return:       boolean
     */
     public static boolean isBlank(String str) {
@@ -201,8 +201,8 @@ public class StringUtils {
     
     /**
      * @param str
-     * @description:  判断字符串不为空    
-     * @author:       alex
+     * description:  判断字符串不为空    
+     * author:       alex
      * @return:       boolean
     */
     public static boolean isNotBlank(String str) {
@@ -211,8 +211,8 @@ public class StringUtils {
     
     /**
      * @param str
-     * @description:  判断是否为数字    
-     * @author:       alex
+     * description:  判断是否为数字    
+     * author:       alex
      * @return:       boolean
     */
     public static boolean isNumeric(String str) {
@@ -264,8 +264,8 @@ public class StringUtils {
 
     /**
      * @param content
-     * @description: 判断评论是否有效   
-     * @author:       alex
+     * description: 判断评论是否有效   
+     * author:       alex
      * @return:       boolean
     */
     // TODO: 2021/7/5  添加评论内容校验 
@@ -274,8 +274,8 @@ public class StringUtils {
     }
 
     /**
-     * @description:  获取32位的uuid
-     * @author:       alex
+     * description:  获取32位的uuid
+     * author:       alex
      * @return:       java.lang.String
     */
     public static String getUUID() {
@@ -287,8 +287,8 @@ public class StringUtils {
     /**
      * @param str
      * @param code
-     * @description:  根据给定字符串切割字符串
-     * @author:       alex
+     * description:  根据给定字符串切割字符串
+     * author:       alex
      * @return:       java.util.List<java.lang.String>
     */
     public static List<String> splitStringByCode(String str, String code) {
@@ -301,8 +301,8 @@ public class StringUtils {
     /**
      * @param str
      * @param code
-     * @description:  根据给定字符串切割字符串
-     * @author:       alex
+     * description:  根据给定字符串切割字符串
+     * author:       alex
      * @return:       java.util.List<java.lang.String>
      */
     public static List<Long> splitLongByCode(String str, String code) {
@@ -315,8 +315,8 @@ public class StringUtils {
 
     /**
      * @param collection
-     * @description:  校验ids列表不为空
-     * @author:       alex
+     * description:  校验ids列表不为空
+     * author:       alex
      * @return:       boolean
     */
     public static boolean checkIdList(Collection<String> collection) {

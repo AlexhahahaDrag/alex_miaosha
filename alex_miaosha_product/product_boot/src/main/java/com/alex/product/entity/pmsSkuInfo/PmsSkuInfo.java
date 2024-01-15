@@ -13,10 +13,10 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 
 /**
- * @description:  sku信息类
- * @author:       alex
- * @createDate: 2023-03-17 10:30:26
- * @version:      1.0.0
+ * description:  sku信息类
+ * author:       alex
+ * createDate: 2023-03-17 10:30:26
+ * version:      1.0.0
  */
 @Getter
 @Setter

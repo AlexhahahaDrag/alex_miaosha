@@ -21,10 +21,10 @@ import java.util.List;
 
 /**
  * <p>
- * @description:  商品网上商品信息服务实现类
- * @author:       alex
- * @createDate:   2023-05-15 14:11:10
- * @version:      1.0.0
+ * description:  商品网上商品信息服务实现类
+ * author:       alex
+ * createDate:   2023-05-15 14:11:10
+ * version:      1.0.0
  */
 @Service
 @RequiredArgsConstructor

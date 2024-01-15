@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * sku信息 服务类
- * @author: alex
- * @createDate: 2023-03-17 10:30:27
- * @description: 我是由代码生成器生成
+ * author: alex
+ * createDate: 2023-03-17 10:30:27
+ * description: 我是由代码生成器生成
  * version: 1.0.0
  */
 public interface PmsSkuInfoService extends IService<PmsSkuInfo> {

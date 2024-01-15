@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
- *@description:  用户工具类
- *@author:       alex
- *@createDate:   2022/8/18 21:46
- *@version:      1.0.0
+ *description:  用户工具类
+ *author:       alex
+ *createDate:   2022/8/18 21:46
+ *version:      1.0.0
  */
 @Component
 @RequiredArgsConstructor
@@ -31,8 +31,8 @@ public class UserUtils {
     private final RedisUtils redisUtils;
 
     /**
-     * @description: 根据request中的token获取当前用户的id
-     * @author:      alex
+     * description: 根据request中的token获取当前用户的id
+     * author:      alex
      * @return:      java.lang.Long
     */
     public Long getUserId(HttpServletRequest request) throws LoginException {
