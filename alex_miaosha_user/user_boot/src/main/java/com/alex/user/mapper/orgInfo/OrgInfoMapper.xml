@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.orgInfo.OrgInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.orgInfo.OrgInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="org_code" property="orgCode" />
+        <result column="org_name" property="orgName" />
+        <result column="org_short_name" property="orgShortName" />
+        <result column="parent_id" property="parentId" />
+        <result column="summary" property="summary" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_org_info.id,
+        t_org_info.creator,
+        t_org_info.create_time,
+        t_org_info.updater,
+        t_org_info.update_time,
+        t_org_info.deleter,
+        t_org_info.delete_time,
+        t_org_info.is_delete,
+        t_org_info.operator,
+        t_org_info.operate_time,
+        t_org_info.org_code, t_org_info.org_name, t_org_info.org_short_name, t_org_info.parent_id, t_org_info.summary, t_org_info.`status`
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.orgInfo.OrgInfoVo">
+        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
+            from t_org_info
+            left join t_org_info par_info
+            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        <where>
+            t_org_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryOrgInfo" resultType="com.alex.api.user.vo.orgInfo.OrgInfoVo">
+        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
+            from t_org_info
+            left join t_org_info par_info
+            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        <where>
+            t_org_info.id = #{id}
+            and t_org_info.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "orgInfoVo != null">
+          <if test = "orgInfoVo.orgCode != null">
+            and org_code like concat('%', #{orgInfoVo.orgCode}, '%')
+          </if>
+          <if test = "orgInfoVo.orgName != null">
+            and org_name like concat('%', #{orgInfoVo.orgName}, '%')
+          </if>
+          <if test = "orgInfoVo.orgShortName != null">
+            and org_short_name like concat('%', #{orgInfoVo.orgShortName}, '%')
+          </if>
+          <if test = "orgInfoVo.parentId != null">
+            and parent_id = #{orgInfoVo.parentId}
+          </if>
+          <if test = "orgInfoVo.summary != null">
+            and summary like concat('%', #{orgInfoVo.summary}, '%')
+          </if>
+          <if test = "orgInfoVo.status != null">
+            and status like concat('%', #{orgInfoVo.status}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>

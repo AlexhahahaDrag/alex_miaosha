@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.permissionInfo.PermissionInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.permissionInfo.PermissionInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="permission_code" property="permissionCode" />
+        <result column="permission_name" property="permissionName" />
+        <result column="summary" property="summary" />
+        <result column="status" property="status" />
+        <result column="options" property="options" />
+        <result column="parent_id" property="parentId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_permission_info.id,
+        t_permission_info.creator,
+        t_permission_info.create_time,
+        t_permission_info.updater,
+        t_permission_info.update_time,
+        t_permission_info.deleter,
+        t_permission_info.delete_time,
+        t_permission_info.is_delete,
+        t_permission_info.operator,
+        t_permission_info.operate_time,
+        t_permission_info.permission_code, t_permission_info.permission_name, t_permission_info.summary, t_permission_info.`status`, t_permission_info.`options`,
+        t_permission_info.parent_id
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+        select <include refid="Base_Column_List"/>from t_permission_info
+        <where>
+            t_permission_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryPermissionInfo" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+        select <include refid="Base_Column_List"/> from t_permission_info
+        <where>
+            t_permission_info.id = #{id}
+            and t_permission_info.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "permissionInfoVo != null">
+          <if test = "permissionInfoVo.permissionCode != null">
+            and t_permission_info.permission_code like concat('%', #{permissionInfoVo.permissionCode}, '%')
+          </if>
+          <if test = "permissionInfoVo.permissionName != null">
+            and t_permission_info.permission_name like concat('%', #{permissionInfoVo.permissionName}, '%')
+          </if>
+          <if test = "permissionInfoVo.summary != null">
+            and t_permission_info.summary like concat('%', #{permissionInfoVo.summary}, '%')
+          </if>
+          <if test = "permissionInfoVo.status != null">
+            and t_permission_info.status like concat('%', #{permissionInfoVo.status}, '%')
+          </if>
+          <if test = "permissionInfoVo.options != null">
+            and t_permission_info.options like concat('%', #{permissionInfoVo.options}, '%')
+          </if>
+        </if>
+     </sql>
+
+    <select id="getList" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+        select <include refid="Base_Column_List"/> from t_permission_info
+        <where>
+            t_permission_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+</mapper>

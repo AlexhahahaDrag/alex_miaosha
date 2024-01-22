@@ -1,0 +1,17 @@
+server:
+  port: 30099
+spring:
+  application:
+    name: alex-monitor-${spring.profiles.active}
+  boot:
+    admin:
+      ui:
+        title: ${spring.application.name}
+#  security:
+#    user:
+#      name: admin
+#      password: 123456
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS

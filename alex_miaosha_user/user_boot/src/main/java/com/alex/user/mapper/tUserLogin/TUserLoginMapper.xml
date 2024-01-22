@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.tUserLogin.TUserLoginMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.tUserLogin.TUserLogin">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="user_id" property="userId" />
+        <result column="last_login_time" property="lastLoginTime" />
+        <result column="token_id" property="tokenId" />
+        <result column="os" property="os" />
+        <result column="broswer" property="broswer" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_user_login.id,
+        t_user_login.creator,
+        t_user_login.create_time,
+        t_user_login.updater,
+        t_user_login.update_time,
+        t_user_login.deleter,
+        t_user_login.delete_time,
+        t_user_login.is_delete,
+        t_user_login.operator,
+        t_user_login.operate_time,
+        t_user_login.user_id,
+        t_user_login.last_login_time,
+        t_user_login.token_id,
+        t_user_login.os,
+        t_user_login.broswer,
+        t_user_login.login_location
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
+        select <include refid="Base_Column_List"/> from t_user_login
+        <where>
+            t_user_login.is_delete = 0 <include refid="queryInfo"/>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="queryTUserLogin" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
+        select <include refid="Base_Column_List"/> from t_user_login
+        <where>
+            t_user_login.is_delete = 0 and id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "tUserLoginVo != null">
+          <if test = "tUserLoginVo.userId != null">
+            and user_id = #{tUserLoginVo.userId}
+          </if>
+          <if test = "tUserLoginVo.lastLoginTime != null">
+            and last_login_time = #{tUserLoginVo.lastLoginTime}
+          </if>
+          <if test = "tUserLoginVo.tokenId != null">
+            and token_id like concat('%', #{tUserLoginVo.tokenId}, '%')
+          </if>
+          <if test = "tUserLoginVo.os != null">
+            and os like concat('%', #{tUserLoginVo.os}, '%')
+          </if>
+          <if test = "tUserLoginVo.broswer != null">
+            and broswer like concat('%', #{tUserLoginVo.broswer}, '%')
+          </if>
+          <if test = "tUserLoginVo.lastLoginIp != null">
+            and last_login_ip like concat('%', #{tUserLoginVo.lastLoginIp}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>

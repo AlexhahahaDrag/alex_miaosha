@@ -1,0 +1,47 @@
+server:
+  port: 30022
+
+spring:
+  application:
+    name: alex-generator-${spring.profiles.active}
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
+    url: jdbc:mysql://${info.ip}:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+    password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+
+mybatis:
+  mapper-locations: classpath:com/alex/generator/mapper/**/*Mapper.xml
+
+logging:
+  level:
+    com.alex.generator.mapper: debug
+
+generator:
+  vue: true
+  feign: true
+  mobile: true
+  tablePrefix: t_
+  logicDeleteColumnName: is_delete
+  logicDeletePropertyName: isDelete
+  superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  parentPackage: com.alex
+
+  javaPath: E:\project\alex\backend\alex_miaosha
+  voPath:
+  feignPath:
+  vuePath: E:\project\alex\front\alex_miaosha_front\src\views
+  tsPath: E:\project\alex\front\alex_miaosha_front\src\api
+  mobileVuePath: E:\project\alex\front\alex_miaosha_mobile\src\views
+  mobileTsPath: E:\project\alex\front\alex_miaosha_mobile\src\api
+
+#  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
+#  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
+#  javaPath: D:\project\alex_miaosha
+#  voPath:
+#  feignPath:
+#  vuePath: D:\project\alex_miaosha_front\src\views
+#  tsPath: D:\project\alex_miaosha_front\src\api

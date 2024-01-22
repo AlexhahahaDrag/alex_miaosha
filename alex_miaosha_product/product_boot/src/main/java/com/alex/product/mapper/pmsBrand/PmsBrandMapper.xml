@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsBrand.PmsBrandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsBrand.PmsBrand">
+        <id column="brand_id" property="brandId" />
+        <result column="name" property="name" />
+        <result column="logo" property="logo" />
+        <result column="descript" property="descript" />
+        <result column="show_status" property="showStatus" />
+        <result column="first_letter" property="firstLetter" />
+        <result column="sort" property="sort" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_brand.brand_id, pms_brand.`name`, pms_brand.logo, pms_brand.descript, pms_brand.show_status, pms_brand.first_letter, pms_brand.sort
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsBrand.PmsBrandVo">
+        select <include refid="Base_Column_List"/> from pms_brand
+        <where>
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryPmsBrand" resultType="com.alex.api.product.vo.pmsBrand.PmsBrandVo">
+        select <include refid="Base_Column_List"/> from pms_brand
+        <where>
+            brand_id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsBrandVo != null">
+          <if test = "pmsBrandVo.brandId != null">
+            and brand_id = #{pmsBrandVo.brandId}
+          </if>
+          <if test = "pmsBrandVo.name != null">
+            and name like concat('%', #{pmsBrandVo.name}, '%')
+          </if>
+          <if test = "pmsBrandVo.logo != null">
+            and logo like concat('%', #{pmsBrandVo.logo}, '%')
+          </if>
+          <if test = "pmsBrandVo.descript != null">
+            and descript like concat('%', #{pmsBrandVo.descript}, '%')
+          </if>
+          <if test = "pmsBrandVo.showStatus != null">
+            and show_status = #{pmsBrandVo.showStatus}
+          </if>
+          <if test = "pmsBrandVo.firstLetter != null">
+            and first_letter like concat('%', #{pmsBrandVo.firstLetter}, '%')
+          </if>
+          <if test = "pmsBrandVo.sort != null">
+            and sort = #{pmsBrandVo.sort}
+          </if>
+        </if>
+     </sql>
+</mapper>

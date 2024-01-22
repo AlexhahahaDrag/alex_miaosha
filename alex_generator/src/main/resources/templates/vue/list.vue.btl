@@ -1,0 +1,278 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+    if (strutil.length(dictType) > 1) {
+        dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+    }
+%>
+<template>
+  <div class="page-info">
+    <div class="search">
+      <div class="search-box">
+        <a-form :model="searchInfo" :label-col="labelCol" :wrapper-col="wrapperCol">
+<% var pre = 0; %>
+<% var num = 0; %>
+ <% var id = "id"; %>
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            id = field.propertyName;
+            continue;
+       }
+       if(num % 3 == 0){ %>
+          <a-row :gutter="24">
+  <% } %>
+    <% num++; %>
+            <a-col :span="8">
+              <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
+    <% if (strutil.contain(field.comment, '字典')) { %>
+                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                  :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
+                </a-select>
+    <% } else { %>
+                <a-input v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label" allow-clear />
+    <% } %>
+              </a-form-item>
+            </a-col>
+  <% if(num % 3 == 0){ %>
+          </a-row>
+  <% } %>
+<% } %>
+  <% if(num % 3 != 0){ %>
+          </a-row>
+  <% } %>
+             <a-row :gutter="24">
+                <a-col :span="20" style="text-align: right">
+                  <a-space>
+                    <a-button type="primary" @click="query"> 查找</a-button>
+                    <a-button type="primary" @click="cancelQuery">清空</a-button>
+                  </a-space>
+                </a-col>
+            </a-row>
+        </a-form>
+      </div>
+    </div>
+    <div class="button">
+      <a-space>
+        <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
+        <a-button type="primary" @click="query">导入</a-button>
+        <a-button type="primary" danger @click="batchDel${entity}">删除</a-button>
+      </a-space>
+    </div>
+    <div class="content">
+      <a-table :dataSource="dataSource" :columns="columns" :loading="loading" :row-key="(record) => record.${id}"
+        :pagination="pagination" @change="handleTableChange" :scroll="{ x: 1100 }" :row-selection="rowSelection">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'operation'">
+            <a-space>
+              <a-button type="primary" size="small" @click="edit${entity}('update', record.${id})">编辑</a-button>
+              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.${id})"
+                @cancel="cancel">
+                <a-button type="primary" size="small" danger>删除</a-button>
+              </a-popconfirm>
+            </a-space>
+            <span></span>
+          </template>
+        </template>
+      </a-table>
+      <${entity}Detail ref="editInfo" :visible="visible" :modelInfo="modelInfo" @handleOk="handleOk"
+        @handleCancel="handleCancel"></${entity}Detail>
+    </div>
+  </div>
+</template>
+<script setup lang="ts">
+import {
+  SearchInfo,
+  pagination,
+  columns,
+  DataItem,
+  ModelInfo,
+  pageInfo,
+} from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
+import { get${entity}Page, delete${entity} } from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
+import { message } from "ant-design-vue";
+<% if(hasDict){ %>
+import { getDictList } from "@/api/finance/dict/dictManager";
+import { dictInfo } from "@/views/finance/dict/dict";
+<% } %>
+
+const labelCol = ref({ span: 5 });
+const wrapperCol = ref({ span: 19 });
+
+let rowIds = [] as any;
+
+const rowSelection = ref({
+  checkStrictly: false,
+  onChange: (selectedRowKeys: (string | number)[], selectedRows: DataItem[]) => {
+    rowIds = selectedRowKeys;
+  },
+  onSelect: (record: DataItem, selected: boolean, selectedRows: DataItem[]) => {
+    console.log(record, selected, selectedRows);
+  },
+  onSelectAll: (selected: boolean, selectedRows: DataItem[], changeRows: DataItem[]) => {
+    console.log(selected, selectedRows, changeRows);
+  },
+});
+
+const labelMap = ref<any>(
+{
+<% for(field in table.fields){
+      if(field.keyFlag) {
+           continue;
+      }
+ %>
+    <% if (strutil.contain(field.comment, '字典')) { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
+    <% } else { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
+    <% } %>
+<% } %>
+});
+
+let searchInfo = ref<SearchInfo>({});
+
+<% if (hasDict) { %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+let ${field.propertyName}List = ref<dictInfo[]>([]);
+  <% } %>
+<% } %>
+
+const getDictInfoList = () => {
+  getDictList("${dictType}").then((res) => {
+    if (res.code == "200") {
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      ${field.propertyName}List.value = res.data.filter(
+        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
+      );
+  <% } %>
+<% } %>
+    } else {
+      message.error((res && res.message) || "查询列表失败！");
+    }
+  });
+}
+<% } %>
+
+function cancelQuery() {
+  searchInfo.value = {};
+}
+
+function query() {
+  get${entity}ListPage(searchInfo.value, pagination.value);
+}
+
+function handleTableChange(pagination) {
+  get${entity}ListPage(searchInfo.value, pagination);
+}
+
+function del${entity}(ids: string) {
+  delete${entity}(ids).then((res) => {
+    if (res.code == "200") {
+      message.success((res && "删除" + res.message) || "删除成功！", 3);
+      get${entity}ListPage(searchInfo.value, pagination.value);
+    } else {
+      message.error((res && res.message) || "删除失败！", 3);
+    }
+  });
+}
+
+function batchDel${entity}() {
+  let ids = "";
+  if (rowIds && rowIds.length > 0) {
+    rowIds.forEach((item: string) => {
+      ids += item + ",";
+    });
+    ids = ids.substring(0, ids.length - 1);
+  } else {
+    message.warning("请先选择数据！", 3);
+    return;
+  }
+  del${entity}(ids);
+}
+
+let loading = ref<boolean>(false);
+
+let dataSource = ref();
+
+const cancel = (e: MouseEvent) => {
+  console.log(e);
+}
+
+function get${entity}ListPage(param: SearchInfo, cur: pageInfo) {
+  loading.value = true;
+  get${entity}Page(param, cur.current, cur.pageSize)
+    .then((res) => {
+      if (res.code == "200") {
+        dataSource.value = res.data.records;
+        pagination.value.current = res.data.current;
+        pagination.value.pageSize = res.data.size;
+        pagination.value.total = res.data.total;
+      } else {
+        message.error((res && res.message) || "查询列表失败！");
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
+
+function init() {
+<% if(hasDict) { %>
+  getDictInfoList();
+<% } %>
+  //获取${table.comment!}页面数据
+  get${entity}ListPage(searchInfo.value, pagination.value);
+}
+
+init();
+
+let visible = ref<boolean>(false);
+
+let modelInfo = ref<ModelInfo>({});
+
+//新增和修改弹窗
+function edit${entity}(type: string, id?: number) {
+  if (type == "add") {
+    modelInfo.value.title = "新增明细";
+    modelInfo.value.id = undefined;
+  } else if (type == "update") {
+    modelInfo.value.title = "修改明细";
+    modelInfo.value.id = id;
+  }
+  modelInfo.value.confirmLoading = true;
+  visible.value = true;
+}
+
+const handleOk = (v: boolean) => {
+  visible.value = v;
+  get${entity}ListPage(searchInfo.value, pagination.value);
+};
+
+const handleCancel = (v: boolean) => {
+  visible.value = v;
+};
+</script>
+<style lang="scss" scoped>
+@import "@/style/index.scss";
+</style>

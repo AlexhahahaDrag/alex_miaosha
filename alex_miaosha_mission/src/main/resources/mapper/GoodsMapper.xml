@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.mission.mapper.GoodsMapper">
+
+    <resultMap id="goodsResultMap" type="com.alex.common.pojo.dto.GoodsDTO">
+        <result column="id" property="id"/>
+        <result column="goodsName" property="goods_name"/>
+        <result column="goodsImg" property="goods_img"/>
+        <result column="isUsing" property="is_using"/>
+        <result column="goodsTitle" property="goods_title"/>
+        <result column="goodsPrice" property="goods_price"/>
+        <result column="goodsStock" property="goods_stock"/>
+        <result column="startTime" property="start_time"/>
+        <result column="endTime" property="end_time"/>
+    </resultMap>
+
+    <sql id="baseInfo">
+        id, goods_name, goods_img, is_using, goods_title, goods_price, goods_stock, start_time, end_time
+    </sql>
+    <!--查询全部-->
+    <select id="findGoodsPage" resultMap="goodsResultMap">
+        select <include refid="baseInfo" />
+        from goods where is_delete = '0'
+        <if test="goodsName != null and goodsName != ''">
+            and goods_name liks concat('%', #{goodsName},'%')
+        </if>
+    </select>
+
+</mapper>

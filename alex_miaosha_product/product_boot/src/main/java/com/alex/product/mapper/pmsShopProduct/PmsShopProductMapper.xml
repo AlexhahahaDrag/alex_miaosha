@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsShopProduct.PmsShopProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsShopProduct.PmsShopProduct">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="image" property="image" />
+        <result column="price" property="price" />
+        <result column="name" property="name" />
+        <result column="shop" property="shop" />
+        <result column="icons" property="icons" />
+        <result column="productUrl" property="productUrl" />
+        <result column="source" property="source" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_shop_product.id,
+        pms_shop_product.creator,
+        pms_shop_product.create_time,
+        pms_shop_product.updater,
+        pms_shop_product.update_time,
+        pms_shop_product.deleter,
+        pms_shop_product.delete_time,
+        pms_shop_product.is_delete,
+        pms_shop_product.operator,
+        pms_shop_product.operate_time,
+        pms_shop_product.image,
+        pms_shop_product.price,
+        pms_shop_product.`name`,
+        pms_shop_product.shop,
+        pms_shop_product.icons,
+        pms_shop_product.product_url,
+        pms_shop_product.`source`,
+        pms_shop_product.search_key,
+        pms_shop_product.sku_id
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select <include refid="Base_Column_List"/> from pms_shop_product
+        <where>
+            pms_shop_product.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="getNewestProductPage" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+          compare_info.price as compare_price,
+          <include refid="Base_Column_List"/>
+        from(
+            select
+             <include refid="Base_Column_List"/>,
+              row_number() over (
+                partition by sku_id
+                order by
+                  create_time desc
+              ) as rm
+            from
+              alex_product.pms_shop_product pms_shop_product
+            where
+              pms_shop_product.is_delete = 0
+              <include refid="queryInfo"/>
+          ) pms_shop_product
+          left join (
+            select
+              <include refid="Base_Column_List"/>
+            from
+              alex_product.pms_shop_product
+            where
+              is_delete = 0
+              and is_compare = 1
+          ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
+        where
+          rm = 1
+        order by pms_shop_product.create_time desc, sku_id desc
+    </select>
+
+    <select id="queryPmsShopProduct" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select <include refid="Base_Column_List"/>,
+            compare_info.price as compare_price
+        from pms_shop_product
+        left join (
+        select
+          <include refid="Base_Column_List"/>
+        from
+          alex_product.pms_shop_product
+        where
+          is_delete = 0
+          and is_compare = 1
+      ) compare_info on pms_shop_product.sku_id = compare_info.sku_id
+        <where>
+            pms_shop_product.id = #{id}
+            and pms_shop_product.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsShopProductVo != null">
+          <if test = "pmsShopProductVo.image != null">
+            and image like concat('%', #{pmsShopProductVo.image}, '%')
+          </if>
+          <if test = "pmsShopProductVo.price != null">
+            and price = #{pmsShopProductVo.price}
+          </if>
+          <if test = "pmsShopProductVo.name != null">
+            and name like concat('%', #{pmsShopProductVo.name}, '%')
+          </if>
+          <if test = "pmsShopProductVo.shop != null">
+            and shop like concat('%', #{pmsShopProductVo.shop}, '%')
+          </if>
+          <if test = "pmsShopProductVo.icons != null">
+            and icons like concat('%', #{pmsShopProductVo.icons}, '%')
+          </if>
+          <if test = "pmsShopProductVo.productUrl != null">
+            and productUrl like concat('%', #{pmsShopProductVo.productUrl}, '%')
+          </if>
+          <if test = "pmsShopProductVo.source != null">
+            and source like concat('%', #{pmsShopProductVo.source}, '%')
+          </if>
+        </if>
+     </sql>
+
+    <select id="getProductHisInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            alex_product.pms_shop_product
+        where
+            is_delete = 0
+          and sku_id = ${skuId}
+          and create_time >= cast(#{startTime} as datetime)
+        order by create_time
+    </select>
+
+    <select id="getCompareInfo" resultType="com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            alex_product.pms_shop_product
+        where
+            is_delete = 0
+          and key = ${key}
+          and create_time = cast(${searchTime} as datetime)
+        order by sku_id
+    </select>
+</mapper>

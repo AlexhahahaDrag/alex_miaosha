@@ -1,0 +1,219 @@
+kind: pipeline # 定义对象类型，还有secret和signature两种类型
+type: docker # 定义流水线类型，还有kubernetes、exec、ssh等类型
+name: drone-miaosha # 定义流水线名称
+
+steps: # 定义流水线执行步骤，这些步骤将顺序执行
+  - name: build-package # 流水线名称
+    image: maven:3.8-openjdk-17 # 定义创建容器的Docker镜像
+    volumes: # 将容器内目录挂载到宿主机，仓库需要开启Trusted设置
+      - name: maven-build
+        path: /usr/local/soft/alex_miaosha/drone/alex_miaosha # 将应用打包好的Jar和执行脚本挂载出来
+    commands:
+      - mvn clean package -DskipTests=true -s settings.xml -B -U
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/user
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/web
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss
+      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
+      # 将打包后的jar包，拷贝到挂载目录
+      - cp /drone/src/alex_miaosha_monitor/target/alex_miaosha_monitor-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor/
+      - cp /drone/src/alex_miaosha_finance/finance_boot/target/finance_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance/
+      - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
+#      - cp /drone/src/alex_miaosha_mission/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission/
+      - cp /drone/src/alex_miaosha_user/user_boot/target/user_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
+      - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/web/
+      - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
+      - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_product/product_boot/target/product_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
+      # 将Dockerfile拷贝到挂载目录
+      - cp /drone/src/alex_miaosha_monitor/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor/
+      - cp /drone/src/alex_miaosha_finance/finance_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance/
+      - cp /drone/src/alex_miaosha_gateway/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
+#      - cp /drone/src/alex_miaosha_mission/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission/
+      - cp /drone/src/alex_miaosha_user/user_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
+      - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/web/
+      - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
+      - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
+      - cp /drone/src/alex_miaosha_product/product_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
+
+  - name: ssh-monitor
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor
+        - docker build  -t alex_miaosha_monitor:latest .
+        - docker rm -f monitor
+        - docker run -p 30099:30099 --network=alex_miaosha_net --memory=512m --cpus=0.5 --name=monitor -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor/logs:/logs/alex-monitor -d alex_miaosha_monitor:latest
+
+  - name: ssh-gateway
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
+        - docker build  -t alex_miaosha_gateway:latest .
+        - docker rm -f gateway
+        - docker run -p 30001:30001 --network=alex_miaosha_net --memory=512m --cpus=0.5 --name=gateway -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/logs:/logs/alex-gateway -d alex_miaosha_gateway:latest
+
+  - name: ssh-finance
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance
+        - docker build  -t alex_miaosha_finance:latest .
+        - docker rm -f finance
+        - docker run -p 30008:30008 --network=alex_miaosha_net --memory=1024m --cpus=0.5 --name=finance -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance/logs:/logs/alex-finance -d alex_miaosha_finance:latest
+
+  - name: ssh-user
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/user
+        - docker build  -t alex_miaosha_user:latest .
+        - docker rm -f user
+        - docker run -p 30006:30006 --network=alex_miaosha_net --memory=512m --cpus=0.5 --name=user -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/logs:/logs/alex-user -d alex_miaosha_user:latest
+
+  - name: ssh-oss
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss
+        - docker build  -t alex_miaosha_oss:latest .
+        - docker rm -f oss
+        - docker run -p 30009:30009 --network=alex_miaosha_net --memory=512m --cpus=0.5 --name=oss -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/logs:/logs/alex-oss -d alex_miaosha_oss:latest
+
+  - name: ssh-product
+    pull: if-not-exists
+    image: appleboy/drone-ssh
+    settings:
+      # 你服务器ip地址
+      host:
+        from_secret: ssh_ip
+      # 服务器端口号
+      port: 22
+      # 服务器账号
+      username:
+        from_secret: ssh_root
+      # 密码登入写法
+      password:
+        from_secret: ssh_password
+      script:
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
+        - docker build  -t alex_miaosha_product:latest .
+        - docker rm -f product
+        - docker run -p 30007:30007 --network=alex_miaosha_net --memory=512m --cpus=0.5 --name=product -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/logs:/logs/alex-product -d alex_miaosha_product:latest
+
+#  - name: ssh-mission
+#    pull: if-not-exists
+#    image: appleboy/drone-ssh
+#    settings:
+#      # 你服务器ip地址
+#      host:
+#        from_secret: ssh_ip
+#      # 服务器端口号
+#      port: 22
+#      # 服务器账号
+#      username:
+#        from_secret: ssh_root
+#      # 密码登入写法
+#      password:
+#        from_secret: ssh_password
+#      script:
+#        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission
+#        - ls
+#        - docker build  -t alex_miaosha_mission:latest .
+#        - docker rm -f mission
+#        - docker run -p 30005:30005 --network=alex_miaosha_net --memory=512m --name=mission -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission/logs:/logs/alex-mission -d alex_miaosha_mission:latest
+
+  - name: notify      # 步骤4 部署完成，邮件通知
+    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+    image: drillster/drone-email
+    settings:
+      recipients_only: true # 只发送给指定邮件收件人，不默认发送给流水线创建人
+      host: smtp.qq.com      #SMTP服务器 例如 smtp.qq.com
+      port: 465   #SMTP服务端口  例如QQ邮箱端口465
+      subject: "Drone Build Complete!"
+      username:
+        from_secret: ssh_email_username
+      password:
+        from_secret: ssh_email_password
+      from:
+        from_secret: ssh_email_username
+      recipients: 734663446@qq.com           #收件人邮箱
+    when: #执行条件
+      status:
+        - success
+        - changed
+        - failure
+volumes: # 定义流水线挂载目录，用于共享数据
+  - name: maven-build
+    host:
+      path: /usr/local/soft/alex_miaosha/drone/alex_miaosha/   #jar包目录可以修改从宿主机中挂载的目录
+
+# 可限制哪些分支可以推送自动CICD
+trigger:
+  branch:
+    - master

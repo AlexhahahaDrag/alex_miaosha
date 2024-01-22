@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.product.mapper.pmsAttr.PmsAttrMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.product.entity.pmsAttr.PmsAttr">
+        <result column="id" property="id" />
+        <result column="attr_name" property="attrName" />
+        <result column="search_type" property="searchType" />
+        <result column="icon" property="icon" />
+        <result column="value_select" property="valueSelect" />
+        <result column="attr_type" property="attrType" />
+        <result column="enable" property="enable" />
+        <result column="catelog_id" property="catelogId" />
+        <result column="show_desc" property="showDesc" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pms_attr.id,
+        pms_attr.attr_name, pms_attr.search_type, pms_attr.icon, pms_attr.value_select, pms_attr.attr_type, pms_attr.`enable`, pms_attr.catelog_id, pms_attr.show_desc
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
+        select <include refid="Base_Column_List"/> from pms_attr
+        <where>
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryPmsAttr" resultType="com.alex.api.product.vo.pmsAttr.PmsAttrVo">
+        select <include refid="Base_Column_List"/> from pms_attr
+        <where>
+            pms_attr.id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "pmsAttrVo != null">
+          <if test = "pmsAttrVo.attrName != null">
+            and pms_attr.attr_name like concat('%', #{pmsAttrVo.attrName}, '%')
+          </if>
+          <if test = "pmsAttrVo.searchType != null">
+            and pms_attr.search_type = #{pmsAttrVo.searchType}
+          </if>
+          <if test = "pmsAttrVo.icon != null">
+            and pms_attr.icon like concat('%', #{pmsAttrVo.icon}, '%')
+          </if>
+          <if test = "pmsAttrVo.valueSelect != null">
+            and pms_attr.value_select like concat('%', #{pmsAttrVo.valueSelect}, '%')
+          </if>
+          <if test = "pmsAttrVo.attrType != null">
+            and pms_attr.attr_type = #{pmsAttrVo.attrType}
+          </if>
+          <if test = "pmsAttrVo.enable != null">
+            and pms_attr.enable = #{pmsAttrVo.enable}
+          </if>
+          <if test = "pmsAttrVo.catelogId != null">
+            and pms_attr.catelog_id = #{pmsAttrVo.catelogId}
+          </if>
+          <if test = "pmsAttrVo.showDesc != null">
+            and pms_attr.show_desc = #{pmsAttrVo.showDesc}
+          </if>
+        </if>
+     </sql>
+</mapper>

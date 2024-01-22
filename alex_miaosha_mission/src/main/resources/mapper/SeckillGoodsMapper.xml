@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.mission.mapper.SeckillGoodsMapper">
+
+    <resultMap id="goodsResultMap" type="com.alex.common.pojo.dto.SeckillGoodsDTO">
+        <result column="id" property="id"/>
+        <result column="goodsId" property="goods_id"/>
+        <result column="goodsStock" property="goods_stock"/>
+    </resultMap>
+
+    <sql id="baseInfo">
+        id, goods_id, goods_stock
+    </sql>
+
+    <!--查询全部-->
+    <select id="findPage" resultMap="goodsResultMap">
+        select <include refid="baseInfo" />
+        from seckill_goods where is_delete = '0'
+        <if test="goodsId != null">
+            and goods_id = #{goodsId}
+        </if>
+    </select>
+</mapper>

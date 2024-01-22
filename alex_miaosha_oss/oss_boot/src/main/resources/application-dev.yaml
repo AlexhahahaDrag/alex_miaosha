@@ -1,0 +1,27 @@
+server:
+  port: 30009
+
+spring:
+  application:
+    name: alex-oss-${spring.profiles.active}
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
+    url: jdbc:mysql://${info.ip}:3336/alex_oss?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+    password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+
+  servlet:
+    multipart:
+      max-file-size: 10MB     #单个文件最大限制
+      max-request-size: 50MB  #多个文件最大限制
+
+mybatis-plus:
+  mapper-locations: classpath*:com/alex/oss/mapper/**/*Mapper.xml
+
+logging:
+  level:
+    com.alex.oss.mapper: debug
+
+

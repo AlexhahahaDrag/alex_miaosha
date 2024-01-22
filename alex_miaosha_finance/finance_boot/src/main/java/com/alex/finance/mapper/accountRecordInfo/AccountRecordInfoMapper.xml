@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.mapper.accountRecordInfo.AccountRecordInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.entity.accountRecordInfo.AccountRecordInfo">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="avli_date" property="avliDate" />
+        <result column="amount" property="amount" />
+        <result column="account" property="account" />
+        <result column="is_send" property="isSend" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        account_record_info.id,
+        account_record_info.`name`, account_record_info.avli_date, account_record_info.amount, account_record_info.`account`, account_record_info.is_send
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo">
+        select <include refid="Base_Column_List"/>,
+            IF(account_record_info.avli_date &lt; now(), 0,
+            IF( account_record_info.avli_date &lt; DATE_ADD( now(), INTERVAL 2 DAY ), 1, 2 )) as status,
+            dict_info.type_name as account_name
+        from account_record_info
+        left join dict_info
+        on account_record_info.account = dict_info.type_code and dict_info.belong_to = 'account_type'
+        <where>
+            <include refid="queryInfo"/>
+        </where>
+        order by account_record_info.avli_date
+    </select>
+
+    <select id="queryAccountRecordInfo" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo">
+        select <include refid="Base_Column_List"/> from account_record_info
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="queryRemindRecordInfo" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo">
+        select
+            account_record_info.account,
+            dict_info.type_name as account_name,
+            count(account_record_info.account) as num
+        from account_record_info
+        left join dict_info
+        on account_record_info.account = dict_info.type_code and dict_info.belong_to = 'account_type'
+        where avli_date >= now()
+          AND avli_date &lt; DATE_ADD( now(), INTERVAL #{dif} DAY )
+        group by account_record_info.account, dict_info.type_name
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "accountRecordInfoVo != null">
+          <if test = "accountRecordInfoVo.name != null">
+            and name like concat('%', #{accountRecordInfoVo.name}, '%')
+          </if>
+          <if test = "accountRecordInfoVo.avliDate != null">
+            and avli_date = #{accountRecordInfoVo.avliDate}
+          </if>
+          <if test = "accountRecordInfoVo.amount != null">
+            and amount = #{accountRecordInfoVo.amount}
+          </if>
+          <if test = "accountRecordInfoVo.account != null">
+            and account like concat('%', #{accountRecordInfoVo.account}, '%')
+          </if>
+          <if test = "accountRecordInfoVo.isSend != null">
+            and is_send = #{accountRecordInfoVo.isSend}
+          </if>
+        </if>
+     </sql>
+</mapper>

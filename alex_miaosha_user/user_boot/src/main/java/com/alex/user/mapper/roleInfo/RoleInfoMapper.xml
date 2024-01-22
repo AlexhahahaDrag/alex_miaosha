@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.roleInfo.RoleInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.roleInfo.RoleInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="role_code" property="roleCode" />
+        <result column="role_name" property="roleName" />
+        <result column="summary" property="summary" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_role_info.id,
+        t_role_info.creator,
+        t_role_info.create_time,
+        t_role_info.updater,
+        t_role_info.update_time,
+        t_role_info.deleter,
+        t_role_info.delete_time,
+        t_role_info.is_delete,
+        t_role_info.operator,
+        t_role_info.operate_time,
+        t_role_info.role_code, t_role_info.role_name, t_role_info.summary, t_role_info.`status`
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+        select <include refid="Base_Column_List"/> from t_role_info
+        <where>
+            t_role_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryRoleInfo" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+        select <include refid="Base_Column_List"/> from t_role_info
+        <where>
+            t_role_info.id = #{id}
+            and t_role_info.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "roleInfoVo != null">
+          <if test = "roleInfoVo.roleCode != null">
+            and t_role_info.role_code like concat('%', #{roleInfoVo.roleCode}, '%')
+          </if>
+          <if test = "roleInfoVo.roleName != null">
+            and t_role_info.role_name like concat('%', #{roleInfoVo.roleName}, '%')
+          </if>
+          <if test = "roleInfoVo.summary != null">
+            and t_role_info.summary like concat('%', #{roleInfoVo.summary}, '%')
+          </if>
+          <if test = "roleInfoVo.status != null">
+            and t_role_info.status like concat('%', #{roleInfoVo.status}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>

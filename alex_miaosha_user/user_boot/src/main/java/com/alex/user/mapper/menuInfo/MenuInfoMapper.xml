@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.menuInfo.MenuInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.menuInfo.MenuInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="name" property="name" />
+        <result column="path" property="path" />
+        <result column="title" property="title" />
+        <result column="component" property="component" />
+        <result column="redirect" property="redirect" />
+        <result column="icon" property="icon" />
+        <result column="hide_in_menu" property="hideInMenu" />
+        <result column="show_in_home" property="showInHome" />
+        <result column="parent_id" property="parentId" />
+        <result column="summary" property="summary" />
+        <result column="status" property="status" />
+        <result column="order_by" property="orderBy" />
+        <result column="permission_code" property="permissionCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_menu_info.id,
+        t_menu_info.creator,
+        t_menu_info.create_time,
+        t_menu_info.updater,
+        t_menu_info.update_time,
+        t_menu_info.deleter,
+        t_menu_info.delete_time,
+        t_menu_info.is_delete,
+        t_menu_info.operator,
+        t_menu_info.operate_time,
+        t_menu_info.`name`, t_menu_info.`path`, t_menu_info.title, t_menu_info.`component`, t_menu_info.redirect, t_menu_info.icon, t_menu_info.hide_in_menu, t_menu_info.parent_id, t_menu_info.summary, t_menu_info.`status`, t_menu_info.order_by,
+        t_menu_info.show_in_home,
+        t_menu_info.permission_code
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
+        select <include refid="Base_Column_List"/> from t_menu_info
+        <where>
+            t_menu_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+    
+    <select id="getList" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
+        select <include refid="Base_Column_List"/> from t_menu_info
+        <where>
+            t_menu_info.is_delete = 0
+            <include refid="queryInfo"/>
+            order by t_menu_info.order_by
+        </where>
+    </select>
+
+    <select id="queryMenuInfo" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">
+        select <include refid="Base_Column_List"/> from t_menu_info
+        <where>
+            t_menu_info.id = #{id}
+            and t_menu_info.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "menuInfoVo != null">
+          <if test = "menuInfoVo.name != null">
+            and name = #{menuInfoVo.name}
+          </if>
+          <if test = "menuInfoVo.path != null">
+            and path like concat('%', #{menuInfoVo.path}, '%')
+          </if>
+          <if test = "menuInfoVo.title != null">
+            and title like concat('%', #{menuInfoVo.title}, '%')
+          </if>
+          <if test = "menuInfoVo.component != null">
+            and component like concat('%', #{menuInfoVo.component}, '%')
+          </if>
+          <if test = "menuInfoVo.redirect != null">
+            and redirect like concat('%', #{menuInfoVo.redirect}, '%')
+          </if>
+          <if test = "menuInfoVo.icon != null">
+            and icon like concat('%', #{menuInfoVo.icon}, '%')
+          </if>
+          <if test = "menuInfoVo.hideInMenu != null">
+            and hide_in_menu like concat('%', #{menuInfoVo.hideInMenu}, '%')
+          </if>
+           <if test = "menuInfoVo.showInHome != null">
+            and show_in_home like concat('%', #{menuInfoVo.showInHome}, '%')
+          </if>
+          <if test = "menuInfoVo.parentId != null">
+            and parent_id = #{menuInfoVo.parentId}
+          </if>
+          <if test = "menuInfoVo.summary != null">
+            and summary like concat('%', #{menuInfoVo.summary}, '%')
+          </if>
+          <if test = "menuInfoVo.status != null">
+            and status like concat('%', #{menuInfoVo.status}, '%')
+          </if>
+          <if test = "menuInfoVo.orderBy != null">
+            and order_by = #{menuInfoVo.orderBy}
+          </if>
+        </if>
+     </sql>
+</mapper>

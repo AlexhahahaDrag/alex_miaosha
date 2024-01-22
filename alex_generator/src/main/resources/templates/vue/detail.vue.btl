@@ -1,0 +1,269 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+    if (strutil.length(dictType) > 1) {
+        dictType = strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1);
+    }
+%>
+<template>
+  <div>
+    <a-modal :visible='props.visible'
+            :width="props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'"
+            :title="props.modelInfo && props.modelInfo.title ? props.modelInfo.title : 'Basic Modal'"
+            @ok='handleOk' okText='保存' :confirmLoading='modelConfig.confirmLoading'
+            :destroyOnClose='modelConfig.destroyOnClose' @cancel='handleCancel'>
+      <template #footer>
+        <a-button key='back' @click='handleCancel'>取消</a-button>
+        <a-button key='submit' type='primary' :loading='loading' @click='handleOk'>保存</a-button>
+      </template>
+      <a-form ref='formRef' name='${entity}Form' class='ant-advanced-search-form' :model='formState' @finish='onFinish'
+        @finishFailed='onFinishFailed' :rules='rulesRef' :label-col='labelCol' :wrapper-col='wrapperCol'>
+<% var num = 0; %>
+<% var pre = 0; %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+        continue;
+    }
+  %>
+  <% if(num % 2 == 0){ %>
+        <a-row :gutter='24'>
+  <% } %>
+          <a-col :span='12'>
+            <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
+              <% if (strutil.contain(field.comment, '字典')) { %>
+              <a-select ref="select" v-model:value="formState.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
+              </a-select>
+              <% } else { %>
+              <a-input v-model:value='formState.${field.propertyName}' :placeholder="'请填写' + labelMap['${field.propertyName}'].label"></a-input>
+              <% } %>
+            </a-form-item>
+          </a-col>
+    <% num++; %>
+  <% if(num % 2 == 0){ %>
+        </a-row>
+  <% } %>
+<% } %>
+<% if(num % 2 != 0){ %>
+        </a-row>
+<% } %>
+      </a-form>
+    </a-modal>
+  </div>
+</template>
+<script lang='ts' setup>
+import { ${entity}Detail } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
+import {
+  get${entity}Detail,
+  addOrEdit${entity},
+} from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
+import { message, FormInstance } from 'ant-design-vue';
+<% if(hasDict) { %>
+import { dictInfo } from "@/views/finance/dict/dict";
+import { getDictList } from "@/api/finance/dict/dictManager";
+<% } %>
+import { ModelInfo } from '../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
+
+const labelCol = ref({ span: 5 });
+const wrapperCol = ref({ span: 19 });
+
+let loading = ref<boolean>(false);
+
+const formRef = ref<FormInstance>();
+
+const labelMap = ref<any>(
+{
+<% for(field in table.fields){
+      if(field.keyFlag) {
+           continue;
+      }
+ %>
+    <% if (strutil.contain(field.comment, '字典')) { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
+    <% } else { %>
+    ${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
+    <% } %>
+<% } %>
+});
+
+const rulesRef = reactive({
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            continue;
+       }
+  %>
+  ${field.propertyName}: [
+    {
+      required: true,
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      message: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}不能为空！',
+  <% } else { %>
+      message: '${field.comment}不能为空！',
+  <% } %>
+    },
+  ],
+<% } %>
+});
+
+const modelConfig = {
+  confirmLoading: true,
+  destroyOnClose: true,
+};
+
+interface Props {
+  visible?: boolean;
+  modelInfo?: ModelInfo;
+}
+const props = defineProps<Props>();
+
+let formState = ref<${entity}Detail>({});
+
+<% if (hasDict) { %>
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+let ${field.propertyName}List = ref<dictInfo[]>([]);
+  <% } %>
+<% } %>
+
+const getDictInfoList = () => {
+  getDictList("${dictType}").then((res) => {
+    if (res.code == "200") {
+<% for(field in table.fields){
+    if(field.keyFlag) {
+         continue;
+    }
+%>
+  <% if (strutil.contain(field.comment, '字典')) { %>
+      ${field.propertyName}List.value = res.data.filter(
+        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
+      );
+  <% } %>
+<% } %>
+    } else {
+      message.error((res && res.message) || "查询列表失败！");
+    }
+  });
+}
+<% } %>
+
+const emit = defineEmits(['handleOk', 'handleCancel']);
+
+const handleOk = () => {
+  loading.value = true;
+  if (formRef.value) {
+    formRef.value.validateFields().then(
+      () => save${entity}Manager()).catch(() => {
+        loading.value = false;
+      });
+  }
+};
+
+const handleCancel = () => {
+  emit('handleCancel', false);
+};
+
+//保存${table.comment!}信息
+function save${entity}Manager() {
+  let method = '';
+  <% var id = 'id';
+   for(field in table.fields){
+       if(field.keyFlag){
+           id = field.propertyName;
+       }
+  } %>
+  if (formState.value.${id}) {
+    method = 'put';
+  } else {
+    method = 'post';
+  }
+  addOrEdit${entity}(method, formState.value)
+    .then((res) => {
+      if (res.code == '200') {
+        message.success((res && res.message) || '保存成功！');
+        emit('handleOk', false);
+      } else {
+        message.error((res && res.message) || '保存失败！');
+      }
+      formState.value = {};
+    })
+    .catch((error: any) => {
+      let data = error?.response?.data;
+      if (data) {
+        message.error((data?.message) || '保存失败！');
+      }
+    }).finally(() => {
+      loading.value = false;
+    });
+}
+
+const onFinish = (values: any) => {
+  console.log('Success:', values);
+};
+
+const onFinishFailed = (errorInfo: any) => {
+  console.log('Failed:', errorInfo);
+};
+
+function init() {
+<% if(hasDict) { %>
+  getDictInfoList();
+<% } %>
+  if (props.modelInfo) {
+    if (props.modelInfo.${id}) {
+      get${entity}Detail(props.modelInfo.${id})
+        .then((res) => {
+          if (res.code == '200') {
+            formState.value = res.data;
+            modelConfig.confirmLoading = false;
+          } else {
+            message.error((res && res.message) || '查询失败！');
+          }
+        })
+        .catch((error: any) => {
+          let data = error?.response?.data;
+          if (data) {
+            message.error((data?.message) || '查询失败！');
+          }
+        });
+    } else {
+      modelConfig.confirmLoading = false;
+      formState.value = {
+      };
+    }
+  }
+}
+
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      init();
+    }
+  },
+  {
+    immediate: true,
+    deep: true,
+  }
+);
+
+defineExpose({ handleOk, handleCancel });
+</script>
+<style lang='scss' scoped>
+@import '@/style/index.scss';
+</style>

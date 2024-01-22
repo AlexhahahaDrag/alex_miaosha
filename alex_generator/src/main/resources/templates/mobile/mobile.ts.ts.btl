@@ -1,0 +1,38 @@
+import {
+  getDataOne,
+  postData,
+  putData,
+  deleteData,
+  baseService,
+} from '@/api/common/index';
+
+const base${entity} = '/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>';
+
+const ${entity}Url = {
+  page: '/page',
+  url: '',
+};
+
+export function get${entity}Page(params: any, pageNo: number | null | undefined, pageSize : number | null| undefined): Promise<any> {
+  let url = baseService.${javaPath} + base${entity} + ${entity}Url.page + '?pageNum=' + (pageNo ? pageNo : 1) + '&pageSize=' + (pageSize ? pageSize : 10);
+  return postData(url, params);
+}
+
+export function get${entity}Detail(id: number): Promise<any> {
+  return getDataOne(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?id=' + id);
+}
+
+export function delete${entity}(ids: string) : Promise<any>{
+  return deleteData(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?ids=' + ids);
+}
+
+export function addOrEdit${entity}(
+  method: string,
+  params: any
+): Promise<any> {
+  if ('put' == method) {
+    return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
+  } else {
+    return postData(baseService.${javaPath} + base${entity} +  ${entity}Url.url, params);
+  }
+}

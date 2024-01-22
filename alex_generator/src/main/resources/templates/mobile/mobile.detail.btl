@@ -1,0 +1,334 @@
+<%
+    var hasDate = false;
+    for(field in table.fields){
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){
+           hasDate = true;
+        }
+    }
+    var hasDict = false;
+    var dictType = '';
+    for(field in table.fields){
+        if(strutil.contain(field.comment, '字典')){
+           hasDict = true;
+           dictType += strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')')) + ",";
+        }
+    }
+%>
+<template>
+    <navBar :info="info"></navBar>
+    <van-form @submit="onSubmit" :rules="rulesRef" required="auto">
+        <van-cell-group>
+        <% for(field in table.fields){
+            if(field.keyFlag) {
+                continue;
+            }
+            if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+            <van-field v-model="${field.propertyName}Name" name="${field.propertyName}" :label="label.${field.propertyName} + '：'"
+                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" @click="chooseDate('${field.propertyName}')" readonly />
+            <% } else if (strutil.contain(field.comment, '字典')) { %>
+            <van-field v-model="${field.propertyName}Name" name="${field.propertyName}" :label="label.${field.propertyName} + '：'"
+                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" @click="choose('${field.propertyName}')" readonly />
+            <% } else { %>
+            <van-field v-model="formInfo.${field.propertyName}" name="${field.propertyName}" :label="label.${field.propertyName} + '：'"
+                :placeholder="'请输入' + label.${field.propertyName}" :rules="rulesRef.${field.propertyName}" :maxlength="${field.metaInfo.length}" />
+            <% } %>
+        <% } %>
+            <% if (hasDict) { %>
+            <selectPop :info="popInfo" @selectInfo="selectInfo" @cancelInfo="cancelInfo"></selectPop>
+            <% } %>
+            <% if(hasDate) { %>
+            <datePop :info="chooseDateInfo" @selectInfo="selectDateInfo" @cancelInfo="cancelDateInfo"></datePop>
+            <% } %>
+        </van-cell-group>
+        <div class="subButton">
+            <van-button round block type="primary" native-type="submit">
+                提交
+            </van-button>
+        </div>
+    </van-form>
+</template>
+
+<script setup lang="ts">
+<% if(hasDate){ %>
+import dayjs, { Dayjs } from 'dayjs';
+<% } %>
+import { showFailToast, showSuccessToast } from 'vant';
+import { addOrEdit${entity}, get${entity}Detail } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
+<% if(hasDict) { %>
+import { Info } from '@/views/common/pop/selectPop.vue';
+import { getDictList } from "@/api/finance/dict/dictManager";
+<% } %>
+import { label, rulesRef } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
+
+let route = useRoute();
+let router = useRouter();
+const info = ref<any>({
+    title: route?.meta?.title || '${table.comment!}',
+    leftPath: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}',
+});
+
+let formInfo = ref<any>({});
+
+<% if(hasDict) { %>
+let popInfo = ref<Info>({ showFlag: false });
+
+<% for(field in table.fields){
+          if(field.keyFlag) {
+               continue;
+          } %>
+    <% if (strutil.contain(field.comment, '字典')) { %>
+let ${field.propertyName}Name = ref<string>("");
+
+let ${field.propertyName}Info = ref<Info>({
+    label: "${field.propertyName}",
+    labelName: label.${field.propertyName},
+    rule: rulesRef.${field.propertyName},
+    customFieldName: {
+        text: "typeName",
+        value: "typeCode",
+    },
+    selectValue: formInfo.value.${field.propertyName},
+});
+   <% } %>
+<% } %>
+
+const choose = (type: string) => {
+    switch (type) {
+   <% for(field in table.fields){
+          if(field.keyFlag) {
+               continue;
+          }
+     %>
+       <% if (strutil.contain(field.comment, '字典')) { %>
+        case '${field.propertyName}':
+            popInfo.value = ${field.propertyName}Info.value;
+            break;
+       <% } %>
+   <% } %>
+    }
+    popInfo.value.showFlag = true;
+};
+
+const selectInfo = (type: string, value: any, name: string) => {
+    popInfo.value.showFlag = false;
+    switch (type) {
+<% for(field in table.fields){
+         if(field.keyFlag) {
+              continue;
+         }
+    %>
+      <% if (strutil.contain(field.comment, '字典')) { %>
+        case '${field.propertyName}':
+           formInfo.value.${field.propertyName} = value;
+           ${field.propertyName}Name.value = name;
+           break;
+      <% } %>
+<% } %>
+    }
+};
+
+const cancelInfo = () => {
+    popInfo.value.showFlag = false;
+};
+
+const getListName = (list: any[], value: any, code: string, name: string) => {
+   if (!list?.length) {
+    return "";
+   }
+   let listName = "";
+   list.forEach((item) => {
+     if (item[code] == value) {
+       listName = item[name];
+     }
+   });
+   return listName;
+};
+
+function getDictInfoList(res: any) {
+   if (res?.code == "200") {
+<% for(field in table.fields){
+           if(field.keyFlag) {
+                continue;
+           }
+  if (strutil.contain(field.comment, '字典')) { %>
+     ${field.propertyName}Info.value.list = res.data.filter(
+       (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
+     );
+     ${field.propertyName}Name.value = getListName(
+         ${field.propertyName}Info.value.list || [],
+         formInfo.value.${field.propertyName},
+         "typeCode",
+         "typeName"
+     );
+ <% } %>
+<% } %>
+   } else {
+     showFailToast(res?.message || "查询失败，请联系管理员!");
+   }
+}
+<% } %>
+
+<% if(hasDate) { %>
+    <% for(field in table.fields){
+        if(field.keyFlag) {
+            continue;
+        }
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+let ${field.propertyName}Name = ref<string>('');
+let ${field.propertyName}Info = ref<any>({
+    label: '${field.propertyName}',
+    labelName: '${field.comment}',
+    rule: rulesRef.${field.propertyName},
+    selectValue: dayjs(),
+    showFlag: false,
+    formatter: (type: string, option: any) => {
+        if (type === 'year') {
+            option.text += '年';
+        }
+        if (type === 'month') {
+            option.text += '月';
+        }
+        if (type === 'day') {
+            option.text += '日';
+        }
+        return option;
+    },
+});
+        <% } %>
+    <% } %>
+
+let chooseDateInfo = ref<Info>({ showFlag: false });
+
+const chooseDate = (type: string) => {
+    chooseDateInfo.value.showFlag = true;
+    switch (type) {
+    <% for(field in table.fields){
+        if(field.keyFlag) {
+            continue;
+        }
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+        case '${field.propertyName}':
+            chooseDateInfo.value = ${field.propertyName}Info.value
+            break;
+        <% } %>
+    <% } %>
+    }
+};
+
+const selectDateInfo = (date: Dayjs, dateName: string, type: string) => {
+    switch(type) {
+    <% for(field in table.fields){
+        if(field.keyFlag) {
+            continue;
+        }
+        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+        case '${field.propertyName}':
+            formInfo.value.${field.propertyName} = date;
+            ${field.propertyName}Name.value = dateName;
+            break;
+        <% } %>
+    <% } %>
+    }
+    chooseDateInfo.value.showFlag = false;
+};
+
+const cancelDateInfo = () => {
+    chooseDateInfo.value.showFlag = false;
+}
+
+const initInfoDate = (infoDate: Dayjs, type: string) => {
+    if (infoDate) {
+        switch(type) {
+        <% for(field in table.fields){
+            if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+            case '${field.propertyName}':
+                ${field.propertyName}Name.value = dayjs(infoDate).format('YYYY-MM-DD');
+                ${field.propertyName}Info.value.selectValue = infoDate;
+                break;
+            <% } %>
+        <% } %>
+        }
+    }
+}
+<% } %>
+
+const onSubmit = () => {
+    let method = 'post';
+    if (formInfo.value.id) {
+        method = 'put'
+    }
+    addOrEdit${entity}(method, formInfo.value).then((res: any) => {
+        if (res?.code == '200') {
+            showSuccessToast(res?.message || '保存成功!');
+            router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}' });
+        } else {
+            showFailToast (res?.message || '保存失败，请联系管理员!');
+        }
+    });
+};
+
+function init() {
+    let id: any = route?.query?.id;
+    if (id) {
+        Promise.all([
+            get${entity}Detail(id || '-1'),
+            <% if(hasDict){ %>
+            getDictList("${strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1)}"),
+            <% } %>
+        ]).then((res: any) => {
+            if (res[0].code == '200') {
+                formInfo.value = res[0].data;
+                <% for(field in table.fields){
+                    if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+                initInfoDate(formInfo.value.${field.propertyName}, '${field.propertyName}');
+                    <% } %>
+                <% } %>
+                <% if(hasDict) { %>
+                    <% for(field in table.fields){
+                        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+                ${field.propertyName}Name.value = getListName(
+                   ${field.propertyName}Info.value.list || [],
+                   formInfo.value.${field.propertyName},
+                   "typeCode",
+                   "typeName"
+                );
+                        <% } %>
+                    <% } %>
+                <% } %>
+            } else {
+                showFailToast(res?.message || '查询详情失败，请联系管理员!')
+            }
+            <% if(hasDict) { %>
+            getDictInfoList(res[1]);
+            <% } %>
+        }).catch(() => {
+            showFailToast('系统问题，请联系管理员！')
+        });
+    } else {
+        <% if(hasDict) { %>
+        getDictList("${strutil.subStringTo(dictType, 0, strutil.length(dictType) - 1)}").then((res: any) => {
+            getDictInfoList(res);
+        });
+        <% } %>
+        formInfo.value = {
+        <% for(field in table.fields){
+            if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+            ${field.propertyName}: dayjs(),
+            <% } %>
+        <% } %>
+        };
+        <% for(field in table.fields){
+            if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+        initInfoDate(formInfo.value.${field.propertyName}, '${field.propertyName}');
+            <% } %>
+        <% } %>
+    }
+}
+
+init();
+</script>
+<style lang='scss' scoped>
+.subButton {
+   margin: 16px;
+}
+</style>

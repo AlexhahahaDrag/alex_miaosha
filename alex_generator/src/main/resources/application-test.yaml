@@ -1,0 +1,20 @@
+server:
+  port: 30022
+
+spring:
+  application:
+    name: alex-generator
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
+    url: jdbc:mysql://localhost:3306/alex_finance
+    username: root
+    password: mysql
+
+mybatis:
+  mapper-locations: classpath:com/alex/finance/mapper/**/*Mapper.xml
+
+logging:
+  level:
+    com.alex.finance.mapper: debug

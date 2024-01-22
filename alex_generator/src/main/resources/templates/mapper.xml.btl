@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+<% if(enableCache){ %>
+    <!-- 开启二级缓存 -->
+    <cache type="${cacheClassName}"/>
+
+<% } %>
+<% if(baseResultMap){ %>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+<% for(field in table.fields){ %>
+   <% /** 生成主键排在第一位 **/ %>
+   <% if(field.keyFlag){ %>
+        <id column="${field.name}" property="${field.propertyName}" />
+   <% } %>
+<% } %>
+<% for(field in table.commonFields){ %>
+    <% /** 生成公共字段 **/ %>
+        <result column="${field.name}" property="${field.propertyName}" />
+<% } %>
+<% for(field in table.fields){ %>
+   <% /** 生成普通字段 **/ %>
+   <% if(!field.keyFlag){ %>
+        <result column="${field.name}" property="${field.propertyName}" />
+   <% } %>
+<% } %>
+    </resultMap>
+<% } %>
+
+<% if(baseColumnList){ %>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+<% for(field in table.commonFields){ %>
+        ${table.name}.${field.columnName},
+<% } %>
+        ${table.fieldNames}
+    </sql>
+<% } %>
+
+    <select id="getPage" resultType="${package.Vo}.${table.voName}">
+        select <include refid="Base_Column_List"/>from ${schemaName}${table.name}
+        <where>
+            <% for(field in table.commonFields){ %>
+                <% if(field.columnName == "is_delete"){ %>
+            ${table.name}.is_delete = 0
+                <% } %>
+            <% } %>
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="query${entity}" resultType="${package.Vo}.${table.voName}">
+        select <include refid="Base_Column_List"/> from ${schemaName}${table.name}
+        <where>
+            ${table.name}.id = #{id}
+        <% for(field in table.commonFields){
+            if (field.columnName == 'is_delete') { %>
+            and ${table.name}.is_delete = 0
+            <% }
+           } %>
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)} != null">
+          <% for(field in table.fields){ %>
+        <% if(field.columnType == 'STRING'){ %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
+            and ${table.name}.${field.name} like concat('%', #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}, '%')
+          </if>
+          <% } %>
+          <% else { %>
+          <if test = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName} != null">
+            and ${table.name}.${field.name} = #{${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}.${field.propertyName}}
+          </if>
+          <% } %>
+          <% } %>
+        </if>
+     </sql>
+</mapper>
