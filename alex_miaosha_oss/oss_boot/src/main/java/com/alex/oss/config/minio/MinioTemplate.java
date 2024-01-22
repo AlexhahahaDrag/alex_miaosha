@@ -69,7 +69,7 @@ public class MinioTemplate implements InitializingBean {
      * @param name
      * description: 判断bucket是否存在，不存在则创建
      * author: majf
-     * @return: void
+     * return: void
      */
     public void existBucket(String name) {
         try {
@@ -86,7 +86,7 @@ public class MinioTemplate implements InitializingBean {
      * @param bucketName
      * description: 创建存储bucket
      * author: majf
-     * @return: java.lang.Boolean
+     * return: java.lang.Boolean
      */
     public Boolean makeBucket(String bucketName) {
         try {
@@ -102,7 +102,7 @@ public class MinioTemplate implements InitializingBean {
      * 删除存储bucket
      *
      * @param bucketName 存储bucket名称
-     * @return Boolean
+     * return Boolean
      */
     public Boolean removeBucket(String bucketName) {
         try {
@@ -122,7 +122,7 @@ public class MinioTemplate implements InitializingBean {
      * @param inputStream
      * description: 上传文件到minio
      * author: majf
-     * @return: java.util.Map<java.lang.String, java.lang.String>
+     * return: java.util.Map<java.lang.String, java.lang.String>
      */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
         existBucket(bucketName);
@@ -204,7 +204,7 @@ public class MinioTemplate implements InitializingBean {
      * @param delete
      * description: 下载文件流
      * author: alex
-     * @return: java.io.InputStream
+     * return: java.io.InputStream
      */
     public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
         InputStream inputStream = null;
@@ -248,7 +248,7 @@ public class MinioTemplate implements InitializingBean {
      * 查看文件对象
      *
      * @param bucketName 存储bucket名称
-     * @return 存储bucket内文件对象信息
+     * return 存储bucket内文件对象信息
      */
     public List<ObjectItem> listObjects(String bucketName) {
         Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).build());
@@ -290,7 +290,6 @@ public class MinioTemplate implements InitializingBean {
         return resultMap;
     }
 
-    // TODO: 2023/3/10 看看修改minio端口，如何生效 
     public String preview(String bucketName, String objectKey) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         return minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()

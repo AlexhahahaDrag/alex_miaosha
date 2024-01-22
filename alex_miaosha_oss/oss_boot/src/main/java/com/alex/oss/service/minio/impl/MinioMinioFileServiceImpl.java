@@ -78,7 +78,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
      * @param type
      * description: 拼接bucket
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     private String getBucket(String type) {
         switch (StringUtils.isEmpty(type) ? "" : type) {

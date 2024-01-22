@@ -57,6 +57,9 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
     @ApiModelProperty(value = "排序")
     private Integer orderBy;
 
+    @ApiModelProperty(value = "权限编码")
+    private String permissionCode;
+
     @ApiModelProperty(value = "子菜单")
     private List<MenuInfoVo> children;
 
@@ -92,9 +95,6 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
         }
         if(status != null) {
             result += status.hashCode();
-        }
-        if(orderBy != null) {
-            result += orderBy.hashCode();
         }
         if(showInHome != null) {
             result += showInHome.hashCode();

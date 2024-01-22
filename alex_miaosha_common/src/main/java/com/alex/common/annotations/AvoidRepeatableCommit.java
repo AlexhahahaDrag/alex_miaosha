@@ -18,7 +18,7 @@ public @interface AvoidRepeatableCommit {
     /**
      * description: 指定时间内不能重复提交
      * author:      alex
-     * @return:      long
+     * return:      long
     */
     long timeout() default 1000;
 

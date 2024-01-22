@@ -46,8 +46,6 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                 if (Objects.equals(method.getName(), methodName)) {
                     DataPermission annotation = method.getAnnotation(DataPermission.class);
                     if (ObjectUtils.isNotEmpty(annotation)) {
-                        // TODO: 2024/1/15 添加用户机构表信息 
-                        // // TODO: 2024/1/15 添加用户角色表信息 
                         // 判断当前用户角色决定权限
                         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
                         if (roleInfoVo == null || roleInfoVo.getRoleCode().equals("user")) {
@@ -107,7 +105,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
      *
      * @param user  当前登录用户
      * @param where 当前查询条件
-     * @return 构建后查询条件
+     * return 构建后查询条件
      */
     public static Expression dataScopeFilter(TUserVo user, String tableAlias, Expression where) {
         Expression expression = null;
@@ -183,7 +181,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
      *
      * @param tableAlias 表别名
      * @param columnName 字段名称
-     * @return 带表别名字段
+     * return 带表别名字段
      */
     public static Column buildColumn(String tableAlias, String columnName) {
         if (StringUtils.isNotEmpty(tableAlias)) {

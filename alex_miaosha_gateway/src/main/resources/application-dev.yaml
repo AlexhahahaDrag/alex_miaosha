@@ -53,12 +53,6 @@ spring:
             - Path=/am-product/**
           filters:
             - StripPrefix=1
-#        - id: alex-manage
-#          uri: lb://alex-manage
-#          predicates:
-#            - Path=/am-manage/**
-#          filters:
-#            - StripPrefix=1
 #
 #        - id: alex-monitor
 #          uri: lb://alex-monitor

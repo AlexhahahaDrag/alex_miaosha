@@ -41,6 +41,8 @@ public class WebSecurityConfig {
                 "/api/v1/user/login",
                 "/api/v1/menu-info/list",
                 "/api/v1/menu-info",
+                "/api/v1/permission-info/list",
+                "/api/v1/permission-info",
                 "/druid/**",
                 "/api/v1/user/getUserInfo",
                 "/api/v1/user/authToken",

@@ -23,5 +23,6 @@ public interface RoleUserInfoMapper extends BaseMapper<RoleUserInfo> {
 
     RoleUserInfoVo queryRoleUserInfo(@Param("id") String id);
 
-    List<RoleInfoVo> getRoleInfoList(@Param("userId") Long userId);
+    List<RoleInfoVo> getRoleInfoList(@Param("userId") Long userId,
+                                     @Param("hasPermission")boolean hasPermission);
 }

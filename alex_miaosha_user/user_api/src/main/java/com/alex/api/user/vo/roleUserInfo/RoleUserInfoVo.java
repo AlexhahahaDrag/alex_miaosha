@@ -1,7 +1,6 @@
 package com.alex.api.user.vo.roleUserInfo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -31,5 +30,4 @@ public class RoleUserInfoVo extends BaseVo<RoleUserInfoVo>{
 
     @ApiModelProperty(value = "状态,字典(is_valid) 1：有效,0:失效)")
     private String status;
-
 }

@@ -32,7 +32,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description: 解析jwt
      * author: alex
-     * @return: io.jsonwebtoken.Claims
+     * return: io.jsonwebtoken.Claims
      */
     public Claims parseJwt(String token, String base64Security) {
         try {
@@ -53,7 +53,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description:  生成jwt
      * author:       alex
-     * @return:       java.lang.String
+     * return:       java.lang.String
      */
     public String createJwt(String username, Long adminId, String roleName,
                             String audience, String issuer, long TTLMillis, String base64Security) {
@@ -86,7 +86,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description: 判断token是否过期
      * author: alex
-     * @return: boolean
+     * return: boolean
      */
     public boolean isExpiration(String token, String base64Security) {
         Claims claims = parseJwt(token, base64Security);
@@ -103,7 +103,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description: 校验token是否有效
      * author: alex
-     * @return: java.lang.Boolean
+     * return: java.lang.Boolean
      */
     public Boolean validateToken(String token, UserDetails userDetails, String base64Security) {
         SecurityUser securityUser = (SecurityUser) userDetails;
@@ -116,7 +116,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description: 获取用户名
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public String getUsername(String token, String base64Security) {
         return parseJwt(token, base64Security).getSubject();
@@ -127,7 +127,7 @@ public class JwtTokenUtils {
      *
      * @param token
      * @param base64Security
-     * @return
+     * return
      */
     public Date getExpiration(String token, String base64Security) {
         return parseJwt(token, base64Security).getExpiration();
@@ -138,7 +138,7 @@ public class JwtTokenUtils {
      * @param base64Security
      * description: 获取用户id
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public Long getUserId(String token, String base64Security) {
         return parseJwt(token, base64Security).get(SysConf.ADMIN_ID, Long.class);
@@ -150,7 +150,7 @@ public class JwtTokenUtils {
      * @param TTLMillis
      * description: 刷新token
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public String refreshToken(String token, String base64Security, long TTLMillis) {
         String refreshedToken = null;

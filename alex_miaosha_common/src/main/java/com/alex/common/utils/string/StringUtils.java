@@ -34,7 +34,7 @@ public class StringUtils {
      * @param str
      * description:  下划线转驼峰
      * author:       alex
-     * @return:       java.lang.StringBuffer
+     * return:       java.lang.StringBuffer
     */
     public static String camel(String str) {
         Matcher matcher = CAMLE_PATTERN.matcher(str);
@@ -50,7 +50,7 @@ public class StringUtils {
      * @param str
      * description:  驼峰转下划线
      * author:       alex
-     * @return:       java.lang.StringBuffer
+     * return:       java.lang.StringBuffer
     */
     public static String underline(String str) {
         Matcher matcher = UNDER_LINE_PATTERN.matcher(str);
@@ -81,7 +81,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * @return
+     * return
      */
     public static Boolean getBoolean(String str, Boolean defaultData) {
         Boolean lnum = defaultData;
@@ -102,7 +102,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * @return
+     * return
      */
     public static int getInt(String str, Integer defaultData) {
         int inum = defaultData;
@@ -122,7 +122,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * @return
+     * return
      */
     public static double getDouble(String str, Double defaultData) {
         double dnum = defaultData;
@@ -142,7 +142,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * @return
+     * return
      */
     public static float getFloat(String str, Float defaultData) {
         float dnum = defaultData;
@@ -161,7 +161,7 @@ public class StringUtils {
      * 判断字符串是否为空
      *
      * @param s
-     * @return
+     * return
      */
     public static Boolean isEmpty(String s) {
         if (s == null || s.length() <= 0) {
@@ -174,7 +174,7 @@ public class StringUtils {
      * @param str
      * description:  判断非空字符串  
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
@@ -184,7 +184,7 @@ public class StringUtils {
      * @param str
      * description:  判断字符串是否为空（空格也算作空值）  
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     public static boolean isBlank(String str) {
         int strLen;
@@ -203,7 +203,7 @@ public class StringUtils {
      * @param str
      * description:  判断字符串不为空    
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     public static boolean isNotBlank(String str) {
         return !isBlank(str);
@@ -213,7 +213,7 @@ public class StringUtils {
      * @param str
      * description:  判断是否为数字    
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     public static boolean isNumeric(String str) {
         try {
@@ -229,7 +229,7 @@ public class StringUtils {
      *
      * @param str
      * @param searchChar
-     * @return
+     * return
      */
     public static boolean contains(String str, String searchChar) {
         if (isEmpty(str)) {
@@ -243,7 +243,7 @@ public class StringUtils {
      *
      * @param str
      * @param start
-     * @return
+     * return
      */
     public static String substring(String str, int start) {
         if (str == null) {
@@ -266,7 +266,7 @@ public class StringUtils {
      * @param content
      * description: 判断评论是否有效   
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     // TODO: 2021/7/5  添加评论内容校验 
     public static boolean isCommentSpam(String content) {
@@ -276,7 +276,7 @@ public class StringUtils {
     /**
      * description:  获取32位的uuid
      * author:       alex
-     * @return:       java.lang.String
+     * return:       java.lang.String
     */
     public static String getUUID() {
         String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -289,7 +289,7 @@ public class StringUtils {
      * @param code
      * description:  根据给定字符串切割字符串
      * author:       alex
-     * @return:       java.util.List<java.lang.String>
+     * return:       java.util.List<java.lang.String>
     */
     public static List<String> splitStringByCode(String str, String code) {
         if (str == null) {
@@ -303,7 +303,7 @@ public class StringUtils {
      * @param code
      * description:  根据给定字符串切割字符串
      * author:       alex
-     * @return:       java.util.List<java.lang.String>
+     * return:       java.util.List<java.lang.String>
      */
     public static List<Long> splitLongByCode(String str, String code) {
         if (str == null) {
@@ -317,7 +317,7 @@ public class StringUtils {
      * @param collection
      * description:  校验ids列表不为空
      * author:       alex
-     * @return:       boolean
+     * return:       boolean
     */
     public static boolean checkIdList(Collection<String> collection) {
         return collection != null && collection.size() > 0;

@@ -60,7 +60,7 @@ public class RedisUtils {
      * description: 根据key获取类信息
      * author: majf
      * createDate: 2022/7/12 9:50
-     * @return: T
+     * return: T
      */
     public <T> T get(KeyPrefix prefix, String key, Class<T> clazz) {
         try {
@@ -84,7 +84,7 @@ public class RedisUtils {
      * description: 设置key-value
      * author: majf
      * createDate: 2022/7/12 9:51
-     * @return: boolean
+     * return: boolean
      */
     public <T> boolean set(KeyPrefix prefix, String key, T value, int exTime) {
         try {
@@ -109,7 +109,7 @@ public class RedisUtils {
      * @param timeUnit
      * description: 
      * author:      majf
-     * @return:      boolean
+     * return:      boolean
     */
     public boolean setEx(String key, String value, int exTime, TimeUnit timeUnit) {
         try {
@@ -134,7 +134,7 @@ public class RedisUtils {
      * @param timeUnit
      * description: 
      * author:      majf
-     * @return:      boolean
+     * return:      boolean
     */
     public boolean setEx(KeyPrefix keyPrefix, String key, String value, long exTime, TimeUnit timeUnit) {
         try {
@@ -162,7 +162,7 @@ public class RedisUtils {
      * description: 删除key
      * author: majf
      * createDate: 2022/7/12 9:57
-     * @return: void
+     * return: void
      */
     public void delete(KeyPrefix prefix, String key) {
         try {
@@ -178,7 +178,7 @@ public class RedisUtils {
      * description: 判断key是否存在
      * author: majf
      * createDate: 2022/7/12 9:57
-     * @return: boolean
+     * return: boolean
      */
     public boolean exists(KeyPrefix prefix, String key) {
         try {
@@ -195,7 +195,7 @@ public class RedisUtils {
      * description: key值增加1
      * author: majf
      * createDate: 2022/7/12 9:57
-     * @return: java.lang.Long
+     * return: java.lang.Long
      */
     public Long increase(KeyPrefix prefix, String key) {
         try {
@@ -213,7 +213,7 @@ public class RedisUtils {
      * description: key值增加num
      * author: majf
      * createDate: 2022/7/12 9:58
-     * @return: java.lang.Long
+     * return: java.lang.Long
      */
     public Long increase(KeyPrefix prefix, String key, Long num) {
         try {
@@ -230,7 +230,7 @@ public class RedisUtils {
      * description: key值减少1
      * author: majf
      * createDate: 2022/7/12 9:58
-     * @return: java.lang.Long
+     * return: java.lang.Long
      */
     public Long decrease(KeyPrefix prefix, String key) {
         try {
@@ -248,7 +248,7 @@ public class RedisUtils {
      * description: key值减少num
      * author: majf
      * createDate: 2022/7/12 9:58
-     * @return: java.lang.Long
+     * return: java.lang.Long
      */
     public Long decrease(KeyPrefix prefix, String key, Long num) {
         try {
@@ -265,7 +265,7 @@ public class RedisUtils {
      * description: 根据前缀模糊查询数据
      * author: majf
      * createDate: 2022/7/12 11:30
-     * @return: java.util.List<T>
+     * return: java.util.List<T>
      */
     public <T> List<T> keys(KeyPrefix prefix, Class<T> clazz) {
         try {

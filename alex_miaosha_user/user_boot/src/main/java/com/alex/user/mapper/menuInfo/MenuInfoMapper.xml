@@ -26,6 +26,7 @@
         <result column="summary" property="summary" />
         <result column="status" property="status" />
         <result column="order_by" property="orderBy" />
+        <result column="permission_code" property="permissionCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -41,7 +42,8 @@
         t_menu_info.operator,
         t_menu_info.operate_time,
         t_menu_info.`name`, t_menu_info.`path`, t_menu_info.title, t_menu_info.`component`, t_menu_info.redirect, t_menu_info.icon, t_menu_info.hide_in_menu, t_menu_info.parent_id, t_menu_info.summary, t_menu_info.`status`, t_menu_info.order_by,
-        t_menu_info.show_in_home
+        t_menu_info.show_in_home,
+        t_menu_info.permission_code
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.vo.menuInfo.MenuInfoVo">

@@ -45,7 +45,7 @@ public interface TUserService extends IService<TUser> {
      * @param token
      * description: 校验token
      * author:      alex
-     * @return:      java.lang.Boolean
+     * return:      java.lang.Boolean
     */
     Boolean authToken(String token);
 

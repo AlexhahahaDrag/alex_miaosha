@@ -33,7 +33,7 @@ public class LuaUtils {
      * description: 判断库存和预减库存
      * author:      majf
      * createDate:  2022/7/14 11:30
-     * @return:      java.lang.Long
+     * return:      java.lang.Long
      */
     public Long judgeStockAndDecrStock(Long goodsId) {
         String stockScript = "local stock = tonumber(redis.call('get', KEYS[1])); " +
@@ -52,7 +52,7 @@ public class LuaUtils {
      * description: 获取访问次数
      * author:      majf
      * createDate:  2022/7/14 11:48
-     * @return:      java.lang.Long
+     * return:      java.lang.Long
      */
     public Long getVisitorCount(String lockKey) {
         try {
@@ -72,7 +72,7 @@ public class LuaUtils {
      * description: 添加访问次数
      * author:      majf
      * createDate:  2022/7/14 11:48
-     * @return:      java.lang.Long
+     * return:      java.lang.Long
      */
     public Long addVisitorCount(String lockKey) {
         String addNumScript = "local num = redis.call('incr', KEYS[1]) return num;";

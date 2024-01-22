@@ -232,24 +232,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             //密码错误，返回提示信息
             return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
-//        //设置角色信息
-//        List<String> roleIds = new ArrayList<>();
-//        roleIds.add(admin.getRoleId());
-//        List<Role> roles = roleService.listByIds(roleIds);
-//        if (roles == null || roles.size() <= 0) {
-//            return ResultUtil.result(SysConf.ERROR, MessageConf.NO_ROLE);
-//        }
-//        StringBuilder sb = new StringBuilder();
-//        for (Role role : roles) {
-//            sb.append(role.getRoleName()).append(Constants.SYMBOL_COMMA);
-//        }
-//        String roleName = sb.replace(sb.length() - 1, sb.length(), "").toString();
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
         //保存登录信息
         TUserLogin userLogin = saveLoginLog(request, admin, uuid, ip, isRemember);
-//        admin.setRole(roles.get(0));
         //不返回密码到前端
         TUserVo tUserVo = new TUserVo();
         BeanUtil.copyProperties(admin, tUserVo, "password");
@@ -260,7 +247,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
         tUserVo.setOrgInfoVo(orgInfoList == null ? null : orgInfoList.get(0));
         // 获取角色信息
-        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId());
+        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
         tUserVo.setRoleInfoVo(roleInfoList == null ? null : roleInfoList.get(0));
         // 获取菜单
         MenuInfoVo menuInfoVo = new MenuInfoVo();

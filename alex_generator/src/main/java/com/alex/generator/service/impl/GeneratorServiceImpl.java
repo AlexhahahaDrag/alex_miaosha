@@ -2,15 +2,16 @@ package com.alex.generator.service.impl;
 
 import com.alex.api.user.api.UserApi;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.generator.config.DatabaseConfig;
 import com.alex.generator.config.GeneratorConfig;
 import com.alex.generator.service.GeneratorService;
 import com.alex.generator.vo.MenuSearchInfo;
+import com.alex.generator.vo.PermissionSearchInfo;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -76,8 +77,10 @@ public class GeneratorServiceImpl implements GeneratorService {
         Map<OutputFile, String> pathMap = pathMap(fileName, separator, javaPath, projectPath, clientPathProject);
         FastAutoGenerator fastAutoGenerator = fastAutoGenerator(dataSourceConfig, projectPath, author, boot, fileName, api, pathMap, tableName, javaPath, list);
         fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
-        // 插入数据权限到权限表中
+        // 插入菜单数据到菜单表中
         addMenu(javaPath, javaPathName, fileName, fileNameInfo);
+        // 插入数据权限到权限表中
+        addPermission(javaPath, javaPathName, fileName, fileNameInfo);
     }
 
     private void addMenu(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
@@ -91,21 +94,21 @@ public class GeneratorServiceImpl implements GeneratorService {
         MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
         if (!moduleMenuInfo.getMenuExists()) {
             MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
-                    moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO));
+                    moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO, javaPath));
             moduleMenuInfo.setMenuInfoVo(addModualMenuInfoVo);
         }
         MenuInfoVo addMenuInfo = getMenuInfo(javaPath, fileName, fileName, moduleMenuInfo.getMenuInfoVo().getId(), null,
-                menuInfo.getOrderBy(), fileNameInfo, fileName, NO_INFO, YES_INFO);
+                menuInfo.getOrderBy(), fileNameInfo, fileName, NO_INFO, YES_INFO, javaPath + ":" + fileName);
         if (menuInfo.getMenuExists()) {
-            BeanUtils.copyProperties(menuInfo.getMenuInfoVo(), addMenuInfo);
+            addMenuInfo.setId(menuInfo.getMenuInfoVo().getId());
             menuInfo.setMenuInfoVo(updateMenuInfo(addMenuInfo));
         } else {
             menuInfo.setMenuInfoVo(addMenuInfo(addMenuInfo));
         }
         MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/" + fileName + "Detail", moduleMenuInfo.getMenuInfoVo().getId(),
-                null, detailMenuInfo.getOrderBy(), fileNameInfo, fileName + "/" + fileName + "Detail", YES_INFO, NO_INFO);
+                null, detailMenuInfo.getOrderBy(), fileNameInfo + "详情", fileName + "/" + fileName + "Detail", YES_INFO, NO_INFO, javaPath + ":" + fileName + ":" + "detail");
         if (detailMenuInfo.getMenuExists()) {
-            BeanUtils.copyProperties(detailMenuInfo.getMenuInfoVo(), addChildMenuInfo);
+            addChildMenuInfo.setId(detailMenuInfo.getMenuInfoVo().getId());
             menuInfo.setMenuInfoVo(updateMenuInfo(addChildMenuInfo));
         } else {
             menuInfo.setMenuInfoVo(addMenuInfo(addChildMenuInfo));
@@ -117,7 +120,7 @@ public class GeneratorServiceImpl implements GeneratorService {
      * @param menuName
      * description: 根据菜单名称查询菜单信息
      * author:      majf
-     * @return:      com.alex.generator.vo.MenuSearchInfo
+     * return:      com.alex.generator.vo.MenuSearchInfo
     */
     private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {
         MenuSearchInfo menuSearchInfo = new MenuSearchInfo();
@@ -138,7 +141,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private MenuInfoVo getMenuInfo(String moduleName, String fileName, String path, Long parentId, String redirect, Integer orderBy,
-                                   String title, String component, String hideInMenu, String showInHome) {
+                                   String title, String component, String hideInMenu, String showInHome, String permissionCode) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(path) ? "" : "/" + path));
@@ -155,6 +158,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         menuInfoVo.setOrderBy(orderBy);
         menuInfoVo.setShowInHome(showInHome);
         menuInfoVo.setHideInMenu(hideInMenu);
+        menuInfoVo.setPermissionCode(permissionCode);
         return menuInfoVo;
     }
 
@@ -165,6 +169,78 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     private MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo) {
         Result<MenuInfoVo> menuInfoVoResult = userApi.updateMenuInfo(menuInfoVo);
+        return menuInfoVoResult.getData();
+    }
+
+    // TODO (majf) 2024/1/16 20:17 测试添加权限功能是否好使
+    private void addPermission(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
+        // 查询主菜单是否存在
+        PermissionInfoVo query = new PermissionInfoVo();
+        query.setStatus(YES_INFO);
+        Result<List<PermissionInfoVo>> result = userApi.getPermissionInfoList(query);
+        List<PermissionInfoVo> menuInfoList = result.getData();
+        PermissionSearchInfo moduleMenuInfo = findPermissionInfo(menuInfoList, javaPath);
+        PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), fileName);
+        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), fileName + DETAIL);
+        if (!moduleMenuInfo.getPermissionExists()) {
+            PermissionInfoVo addPermissionInfoVo = addPermissionInfo(getPermissionInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName)));
+            moduleMenuInfo.setPermissionInfoVo(addPermissionInfoVo);
+        }
+        PermissionInfoVo addPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName, fileName, moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo);
+        if (menuInfo.getPermissionExists()) {
+            addPermissionInfo.setId(menuInfo.getPermissionInfoVo().getId());
+            menuInfo.setPermissionInfoVo(updatePermissionInfo(addPermissionInfo));
+        } else {
+            menuInfo.setPermissionInfoVo(addPermissionInfo(addPermissionInfo));
+        }
+        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail" , fileName + "/" + fileName + "Detail",
+                moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo + "详情");
+        if (detailMenuInfo.getPermissionExists()) {
+            addChildPermissionInfo.setId(detailMenuInfo.getPermissionInfoVo().getId());
+            menuInfo.setPermissionInfoVo(updatePermissionInfo(addChildPermissionInfo));
+        } else {
+            menuInfo.setPermissionInfoVo(addPermissionInfo(addChildPermissionInfo));
+        }
+    }
+
+    /**
+     * @param permissionInfoList
+     * @param permissionCode
+     * description: 根据菜单名称查询菜单信息
+     * author:      majf
+     * return:      com.alex.generator.vo.MenuSearchInfo
+     */
+    private PermissionSearchInfo findPermissionInfo(List<PermissionInfoVo> permissionInfoList, String permissionCode) {
+        PermissionSearchInfo permissionSearchInfo = new PermissionSearchInfo();
+        if (permissionInfoList == null || permissionInfoList.isEmpty() || StringUtils.isEmpty(permissionCode)) {
+            return permissionSearchInfo;
+        }
+        for(PermissionInfoVo permissionInfoVo : permissionInfoList) {
+            if (permissionCode.equals(permissionInfoVo.getPermissionCode())) {
+                permissionSearchInfo.setPermissionInfoVo(permissionInfoVo);
+                permissionSearchInfo.setPermissionExists(true);
+            }
+        }
+        return permissionSearchInfo;
+    }
+
+    private PermissionInfoVo getPermissionInfo(String moduleName, String fileName, String path, Long parentId, String title) {
+        PermissionInfoVo permissionInfoVo = new PermissionInfoVo();
+        permissionInfoVo.setPermissionCode(StringUtils.isEmpty(fileName) ? moduleName : fileName);
+        permissionInfoVo.setOptions("/" + moduleName + (StringUtils.isEmpty(path) ? "" : "/" + path));
+        permissionInfoVo.setPermissionName(title);
+        permissionInfoVo.setStatus(YES_INFO);
+        permissionInfoVo.setParentId(parentId);
+        return permissionInfoVo;
+    }
+
+    private PermissionInfoVo addPermissionInfo(PermissionInfoVo permissionInfoVo) {
+        Result<PermissionInfoVo> menuInfoVoResult = userApi.addPermissionInfo(permissionInfoVo);
+        return menuInfoVoResult.getData();
+    }
+
+    private PermissionInfoVo updatePermissionInfo(PermissionInfoVo permissionInfoVo) {
+        Result<PermissionInfoVo> menuInfoVoResult = userApi.updatePermissionInfo(permissionInfoVo);
         return menuInfoVoResult.getData();
     }
 

@@ -36,8 +36,11 @@ public class AccessLimitAspect {
      * @param point
      * description:  过滤AccessLimit，访问次数限制
      * author:       alex
-     * @return:       java.lang.Object
+     * return:       java.lang.Object
     */
+    // TODO (majf) 2024/1/16 19:57 测试功能是否生效
+    // todo 这里需要优化，使用redis的布隆过滤器，减少redis的访问
+    // 这里如何添加布隆过滤器
     @Around("@annotation(com.alex.common.annotations.user.AccessLimit)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         HttpServletRequest request = RequestHolder.getRequest();

@@ -34,7 +34,7 @@ public interface FileInfoService extends IService<FileInfo> {
      * @param fileIdList
      * description: 根据文件id列表获取文件信息
      * author:      alex
-     * @return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
+     * return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
     */
     List<FileInfoVo> getFileInfo(List<Long> fileIdList);
 }

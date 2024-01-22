@@ -70,4 +70,7 @@ public class MenuInfo extends BaseEntity<MenuInfo>{
     @TableField("order_by")
     private Integer orderBy;
 
+    @ApiModelProperty(value = "权限编码")
+    @TableField("permission_code")
+    private String permissionCode;
 }

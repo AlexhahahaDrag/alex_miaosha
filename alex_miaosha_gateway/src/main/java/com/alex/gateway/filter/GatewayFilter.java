@@ -98,7 +98,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     /**
      * description: 拦截器的优先级，数字越小优先级越高
      * author: majf
-     * @return: int
+     * return: int
      */
     @Override
     public int getOrder() {

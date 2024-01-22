@@ -49,7 +49,7 @@ public class TestAesUtils {
      *
      * @param content 待加密内容
      * @param aesKey  密码
-     * @return
+     * return
      */
     public static String encrypt(String content, String aesKey) {
         if (StringUtils.isBlank(content)) {
@@ -87,7 +87,7 @@ public class TestAesUtils {
      *
      * @param content 待解密内容
      * @param aesKey  密码
-     * @return
+     * return
      */
     public static String decrypt(String content, String aesKey) {
         if (StringUtils.isBlank(content)) {
@@ -129,7 +129,7 @@ public class TestAesUtils {
      *
      * @param content 待加密内容
      * @param aesKey  密码
-     * @return
+     * return
      */
     public static String encryptCBC(String content, String aesKey) {
         if (StringUtils.isBlank(content)) {
@@ -169,7 +169,7 @@ public class TestAesUtils {
      *
      * @param content 待解密内容
      * @param aesKey  密码
-     * @return
+     * return
      */
     public static String decryptCBC(String content, String aesKey) {
         if (StringUtils.isBlank(content)) {

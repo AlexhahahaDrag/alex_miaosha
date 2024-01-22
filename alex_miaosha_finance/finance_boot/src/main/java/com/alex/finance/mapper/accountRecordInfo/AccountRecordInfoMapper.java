@@ -20,7 +20,6 @@ import java.util.List;
 @Mapper
 public interface AccountRecordInfoMapper extends BaseMapper<AccountRecordInfo> {
 
-    @DataPermission(table = "account_record_info", field = "creator")
     Page<AccountRecordInfoVo> getPage(Page<AccountRecordInfoVo> page, @Param("accountRecordInfoVo") AccountRecordInfoVo accountRecordInfoVo);
 
     AccountRecordInfoVo queryAccountRecordInfo(@Param("id") String id);

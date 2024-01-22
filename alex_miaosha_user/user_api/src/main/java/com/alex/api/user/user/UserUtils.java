@@ -33,7 +33,7 @@ public class UserUtils {
     /**
      * description: 根据request中的token获取当前用户的id
      * author:      alex
-     * @return:      java.lang.Long
+     * return:      java.lang.Long
     */
     public Long getUserId(HttpServletRequest request) throws LoginException {
         String authInfo = request.getHeader("Authorization");

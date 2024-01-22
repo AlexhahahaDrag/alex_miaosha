@@ -2,11 +2,10 @@ package com.alex.api.user.api;
 
 import com.alex.api.user.api.fallback.UserFallbackFactory;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +41,13 @@ public interface UserApi {
 
     @PutMapping("/api/v1/menu-info")
     Result<MenuInfoVo> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
+
+    @PostMapping("/api/v1/permission-info")
+    Result<PermissionInfoVo> addPermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
+
+    @PutMapping("/api/v1/permission-info")
+    Result<PermissionInfoVo> updatePermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
+
+    @PostMapping(value = "/api/v1/permission-info/list")
+    Result<List<PermissionInfoVo>> getPermissionInfoList(@RequestBody(required = false) PermissionInfoVo permissionInfoVo);
 }

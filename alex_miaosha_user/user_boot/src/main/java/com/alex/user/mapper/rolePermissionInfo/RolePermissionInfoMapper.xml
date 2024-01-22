@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.mapper.rolePermissionInfo.RolePermissionInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.user.entity.rolePermissionInfo.RolePermissionInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="delete" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="role_id" property="roleId" />
+        <result column="permission_id" property="permissionId" />
+        <result column="summary" property="summary" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_role_permission_info.id,
+        t_role_permission_info.creator,
+        t_role_permission_info.create_time,
+        t_role_permission_info.updater,
+        t_role_permission_info.update_time,
+        t_role_permission_info.deleter,
+        t_role_permission_info.delete_time,
+        t_role_permission_info.is_delete,
+        t_role_permission_info.operator,
+        t_role_permission_info.operate_time,
+        t_role_permission_info.role_id, t_role_permission_info.permission_id, t_role_permission_info.summary, t_role_permission_info.`status`
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+        select <include refid="Base_Column_List"/>from t_role_permission_info
+        <where>
+            t_role_permission_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryRolePermissionInfo" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+        select <include refid="Base_Column_List"/> from t_role_permission_info
+        <where>
+            t_role_permission_info.id = #{id}
+            and t_role_permission_info.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "rolePermissionInfoVo != null">
+          <if test = "rolePermissionInfoVo.roleId != null">
+            and t_role_permission_info.role_id like concat('%', #{rolePermissionInfoVo.roleId}, '%')
+          </if>
+          <if test = "rolePermissionInfoVo.permissionId != null">
+            and t_role_permission_info.permission_id like concat('%', #{rolePermissionInfoVo.permissionId}, '%')
+          </if>
+          <if test = "rolePermissionInfoVo.summary != null">
+            and t_role_permission_info.summary like concat('%', #{rolePermissionInfoVo.summary}, '%')
+          </if>
+          <if test = "rolePermissionInfoVo.status != null">
+            and t_role_permission_info.status like concat('%', #{rolePermissionInfoVo.status}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>

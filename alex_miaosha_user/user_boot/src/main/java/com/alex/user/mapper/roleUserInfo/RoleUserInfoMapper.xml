@@ -3,7 +3,7 @@
 <mapper namespace="com.alex.user.mapper.roleUserInfo.RoleUserInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.alex.user.entity.roleUserInfo.RoleUserInfo">
+    <resultMap id="BaseResultMap" type="com.alex.api.user.vo.roleInfo.RoleInfoVo">
         <result column="id" property="id" />
         <result column="creator" property="creator" />
         <result column="create_time" property="createTime" />
@@ -11,13 +11,30 @@
         <result column="update_time" property="updateTime" />
         <result column="deleter" property="deleter" />
         <result column="delete_time" property="deleteTime" />
-        <result column="is_delete" property="delete" />
+        <result column="is_delete" property="isDelete" />
         <result column="operator" property="operator" />
         <result column="operate_time" property="operateTime" />
-        <result column="role_id" property="roleId" />
-        <result column="user_id" property="userId" />
+        <result column="role_code" property="roleCode" />
+        <result column="role_name" property="roleName" />
         <result column="summary" property="summary" />
         <result column="status" property="status" />
+        <collection property="permissionList" ofType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+            <result column="permission_id" property="id" />
+            <result column="permission_creator" property="creator" />
+            <result column="permission_create_time" property="createTime" />
+            <result column="permission_updater" property="updater" />
+            <result column="permission_update_time" property="updateTime" />
+            <result column="permission_deleter" property="deleter" />
+            <result column="permission_delete_time" property="deleteTime" />
+            <result column="permission_is_delete" property="isDelete" />
+            <result column="permission_operator" property="operator" />
+            <result column="permission_operate_time" property="operateTime" />
+            <result column="permission_permission_code" property="permissionCode" />
+            <result column="permission_permission_name" property="permissionName" />
+            <result column="permission_summary" property="summary" />
+            <result column="permission_status" property="status" />
+            <result column="permission_options" property="options" />
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -68,7 +85,7 @@
         </if>
      </sql>
 
-    <select id="getRoleInfoList" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+    <select id="getRoleInfoList" resultMap="BaseResultMap">
         select
             t_role_info.id,
             t_role_info.creator,
@@ -84,11 +101,38 @@
             t_role_info.role_name,
             t_role_info.summary,
             t_role_info.`status`
+            <if test="hasPermission">
+                ,t_permission_info.id as permission_id,
+                t_permission_info.creator as permission_creator,
+                t_permission_info.create_time as permission_create_time,
+                t_permission_info.updater as permission_updater,
+                t_permission_info.update_time as permission_update_time,
+                t_permission_info.deleter as permission_deleter,
+                t_permission_info.delete_time as permission_delete_time,
+                t_permission_info.is_delete as permission_is_delete,
+                t_permission_info.operator as permission_operator,
+                t_permission_info.operate_time as permission_operate_time,
+                t_permission_info.permission_code as permission_permission_code,
+                t_permission_info.permission_name as permission_permission_name,
+                t_permission_info.summary as permission_summary,
+                t_permission_info.status as permission_status,
+                t_permission_info.options as permission_options
+            </if>
         from
             t_role_info
         left join
             t_role_user_info
         on t_role_info.id = t_role_user_info.role_id
+        <if test="hasPermission">
+            left join t_role_permission_info
+            on t_role_info.id = t_role_permission_info.role_id
+            and t_role_permission_info.is_delete = 0
+            and t_role_permission_info.status = 1
+            left join t_permission_info
+            on t_role_permission_info.permission_id = t_permission_info.id
+            and t_permission_info.is_delete = 0
+            and t_permission_info.status = 1
+        </if>
         <where>
             t_role_user_info.user_id = ${userId}
             and t_role_info.status = 1

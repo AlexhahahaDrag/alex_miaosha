@@ -40,7 +40,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
      * @param menuInfoVo
      * description: 查询菜单列表并拼接成父子组结构
      * author:      majf
-     * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
+     * return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
     */
     @Override
     public List<MenuInfoVo> getList(MenuInfoVo menuInfoVo) {
@@ -51,11 +51,9 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         Map<Long, List<MenuInfoVo>> menuMap = list.stream()
                 .filter(item -> item.getParentId() != null)
                 .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
-        List<MenuInfoVo> result = list.stream().filter(item -> item.getParentId() == null).map(item -> {
-            item.setChildren(getChildren(item.getId(), menuMap));
-            return item;
-        }).collect(Collectors.toList());
-        return result;
+        return list.stream().filter(item -> item.getParentId() == null)
+                .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -63,7 +61,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
      * @param menuMap
      * description: 拼接菜单子列表
      * author:      majf
-     * @return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
+     * return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
     */
     public List<MenuInfoVo> getChildren(Long pId, Map<Long, List<MenuInfoVo>> menuMap) {
         if (pId == null || menuMap == null || menuMap.get(pId) == null || menuMap.get(pId).isEmpty()) {

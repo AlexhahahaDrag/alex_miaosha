@@ -26,7 +26,7 @@ public class RequestHolder {
     /**
      * description: 获取request
      * author: alex
-     * @return: javax.servlet.http.HttpServletRequest
+     * return: javax.servlet.http.HttpServletRequest
      */
     public static HttpServletRequest getRequest() {
         log.debug("getRequest: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -37,7 +37,7 @@ public class RequestHolder {
     /**
      * description: 获取response
      * author: alex
-     * @return: javax.servlet.http.HttpServletResponse
+     * return: javax.servlet.http.HttpServletResponse
      */
     public static HttpServletResponse getResponse() {
         log.debug("getResponse: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -48,7 +48,7 @@ public class RequestHolder {
     /**
      * description: 获取session
      * author: alex
-     * @return: javax.servlet.http.HttpSession
+     * return: javax.servlet.http.HttpSession
      */
     public static HttpSession getSession() {
         log.debug("getSession: Thread id: {}, name: {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -63,7 +63,7 @@ public class RequestHolder {
 //     * @param name
 //     * description:  根据名字获取session的attribute
 //     * author:       alex
-//     * @return:       java.lang.Object
+//     * return:       java.lang.Object
 //    */
 //    public static Object getSession(String name) {
 //        log.debug("getSession -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -93,7 +93,7 @@ public class RequestHolder {
 //     * 清除指定session
 //     *
 //     * @param name
-//     * @return void
+//     * return void
 //     */
 //    public static void removeSession(String name) {
 //        log.debug("removeSession -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -107,7 +107,7 @@ public class RequestHolder {
 //    /**
 //     * 获取所有session key
 //     *
-//     * @return String[]
+//     * return String[]
 //     */
 //    public static String[] getSessionKeys() {
 //        log.debug("getSessionKeys -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
@@ -122,7 +122,7 @@ public class RequestHolder {
     /**
      * description: 获取adminId
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static Long getAdminId() {
         HttpServletRequest request = getRequest();
@@ -132,7 +132,7 @@ public class RequestHolder {
     /*
      * description:  获取token
      * author:       alex
-     * @return:       java.lang.String
+     * return:       java.lang.String
      */
     public static String getAdminToken() {
         HttpServletRequest request = getRequest();
@@ -142,7 +142,7 @@ public class RequestHolder {
     /**
      * description:  检查用户是否登录
      * author:       alex
-     * @return:       java.lang.String
+     * return:       java.lang.String
     */
     public static Long checkLogin() {
         Long adminId = getAdminId();

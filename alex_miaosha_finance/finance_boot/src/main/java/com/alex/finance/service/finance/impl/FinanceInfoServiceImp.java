@@ -122,7 +122,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
      * @param file
      * description: 获取导入文件数据
      * author: majf
-     * @return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
+     * return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
      */
     private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) throws Exception {
         ExcelImportResult<ImportFinanceInfoVo> result;

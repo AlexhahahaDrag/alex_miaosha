@@ -43,7 +43,7 @@ public class IpUtils {
      * @param request
      * description: 根据请求获取ip地址
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getIpAddr(HttpServletRequest request) {
         if (request == null) {
@@ -82,7 +82,7 @@ public class IpUtils {
      * @param request
      * description: 获取真实ip
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getRealIp(HttpServletRequest request) {
         String ip;
@@ -95,7 +95,7 @@ public class IpUtils {
      * @param ip
      * description: 校验ip
      * author: alex
-     * @return: boolean
+     * return: boolean
      */
     private static boolean checkNotIp(String ip) {
         return ip == null || StringUtils.isEmpty(ip) ||
@@ -106,7 +106,7 @@ public class IpUtils {
      * @param request
      * description: 根据请求获取系统和浏览器信息
      * author: alex
-     * @return: java.util.Map<java.lang.String, java.lang.String>
+     * return: java.util.Map<java.lang.String, java.lang.String>
      */
     public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("User-Agent");
@@ -179,7 +179,7 @@ public class IpUtils {
      * 判断是否是内网IP
      *
      * @param ip
-     * @return
+     * return
      */
     public static boolean isInner(String ip) {
         String reg = "(10|172|192)\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})";
@@ -193,7 +193,7 @@ public class IpUtils {
      * @param encodingString
      * description: 根据ip地址获取城市信息
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getAddresses(String content, String encodingString) throws Exception {
         String ip = content.substring(3);
@@ -207,7 +207,7 @@ public class IpUtils {
      * @param ip
      * description: 根据ip获取城市信息
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getCityInfo(String ip) throws Exception {
         if (StringUtils.isEmpty(dbPath)) {
@@ -224,7 +224,7 @@ public class IpUtils {
     /**
      * description: 获取主机ip
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getHostIp() {
         try {
@@ -238,7 +238,7 @@ public class IpUtils {
     /**
      * description: 获取主机名称
      * author: alex
-     * @return: java.lang.String
+     * return: java.lang.String
      */
     public static String getHostName() {
         try {

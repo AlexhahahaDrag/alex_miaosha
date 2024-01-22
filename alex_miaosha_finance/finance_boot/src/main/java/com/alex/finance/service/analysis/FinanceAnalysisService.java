@@ -20,7 +20,7 @@ public interface FinanceAnalysisService {
      * @param searchDate
      * description:
      * author: alex
-     * @return: java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+     * return: java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
      */
     List<AnalysisVo> getBalance(Long belongTo, String searchDate);
 
@@ -30,7 +30,7 @@ public interface FinanceAnalysisService {
      * @param type
      * description:
      * author: alex
-     * @return: java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+     * return: java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
      */
     List<AnalysisVo> getIncomeAndExpense(Long belongTo, String searchDate, String type);
 
@@ -39,7 +39,7 @@ public interface FinanceAnalysisService {
      * @param searchDate
      * description: 获取天明细
      * author:      alex
-     * @return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+     * return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
     */
     List<AnalysisVo> getDayExpense(Long belongTo, String searchDate);
 
@@ -48,7 +48,7 @@ public interface FinanceAnalysisService {
      * @param searchDate
      * description: 获取月明细数据
      * author:      alex
-     * @return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+     * return:      java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
     */
     List<AnalysisVo> getMonthExpense(Long belongTo, String searchDate);
 }
