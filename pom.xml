@@ -12,7 +12,6 @@
     <modules>
         <module>alex_miaosha_common</module>
         <module>alex_miaosha_gateway</module>
-        <module>alex_miaosha_web</module>
         <module>alex_miaosha_mission</module>
         <module>alex_miaosha_base</module>
         <module>alex_miaosha_api_doc</module>
