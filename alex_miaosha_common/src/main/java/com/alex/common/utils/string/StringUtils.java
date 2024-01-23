@@ -268,7 +268,6 @@ public class StringUtils {
      * author:       alex
      * return:       boolean
     */
-    // TODO: 2021/7/5  添加评论内容校验 
     public static boolean isCommentSpam(String content) {
         return content == null;
     }

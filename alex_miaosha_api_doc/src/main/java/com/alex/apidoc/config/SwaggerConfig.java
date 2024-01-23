@@ -28,7 +28,6 @@ import java.util.List;
 @Configuration
 @EnableOpenApi
 @Profile({"test", "dev"})
-// TODO: 2022/7/15 添加参数下拉
 public class SwaggerConfig {
 
     @Bean(value = "apiDoc")

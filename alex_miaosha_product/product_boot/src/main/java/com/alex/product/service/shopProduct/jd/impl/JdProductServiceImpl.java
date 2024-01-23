@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +47,9 @@ public class JdProductServiceImpl implements JdProductService {
 
     private List<Content> parseJd(String keyword) throws IOException {
         String url = jdUrl + "/Search?keyword=" + keyword;
-        Document document = Jsoup.parse(new URL(new String(url.getBytes(), "utf-8")), 3000);
+        Document document = Jsoup.parse(new URL(new String(url.getBytes(), StandardCharsets.UTF_8)), 3000);
         Element j_goodsList = document.getElementById("J_goodsList");
+        assert j_goodsList != null;
         Elements lis = j_goodsList.getElementsByTag("li");
         List<Content> list = new ArrayList<>();
         for (Element element : lis) {
@@ -57,7 +59,7 @@ public class JdProductServiceImpl implements JdProductService {
             String name = element.getElementsByClass("p-name").eq(0).text();
             String shop = element.getElementsByClass("p-shop").eq(0).text();
             String icons = element.getElementsByClass("p-icons").eq(0).text();
-            String skuId = Optional.ofNullable(productUrl).map(i -> i.substring(i.indexOf("com/") + 4, i.length() - 12)).orElse(null);
+            String skuId = Optional.of(productUrl).map(i -> i.substring(i.indexOf("com/") + 4, i.length() - 12)).orElse(null);
             Content content = Content.builder()
                     .image(img)
                     .name(name)

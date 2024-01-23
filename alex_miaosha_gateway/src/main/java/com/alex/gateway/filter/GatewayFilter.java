@@ -65,7 +65,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         if (audience.getWhiteList() != null && !audience.getWhiteList().isEmpty()) {
             for (String white : audience.getWhiteList()) {
                 if (antPathMatcher.match(white, path)) {
-                    return chain.filter(exchange);
+                    return secretOut(exchange, chain);
                 }
             }
         }

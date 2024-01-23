@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @MapperScan("com.alex.mission.mapper")
 @RequiredArgsConstructor
-// TODO: 2022/7/15 配置druid
 public class MybatisPlusConfig {
 
 //    private final UserUtils userUtils;
