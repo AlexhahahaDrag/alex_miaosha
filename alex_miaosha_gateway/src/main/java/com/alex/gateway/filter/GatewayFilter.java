@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * description: 过滤器打印请求地址
+ *
  * @SneakyThrows 它是lombok包下的注解 并且继承了Throwable
  * <p>
  * 作用 是为了用try{}catch{}捕捉异常
@@ -61,6 +62,14 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
+        // doc直接返回
+        if (audience.getDocWhiteList() != null && !audience.getDocWhiteList().isEmpty()) {
+            for (String white : audience.getDocWhiteList()) {
+                if (antPathMatcher.match(white, path)) {
+                    return chain.filter(exchange);
+                }
+            }
+        }
         //白名单校验路径
         if (audience.getWhiteList() != null && !audience.getWhiteList().isEmpty()) {
             for (String white : audience.getWhiteList()) {

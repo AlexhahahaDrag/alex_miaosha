@@ -77,4 +77,5 @@ logging:
 gateway:
   audience:
     tokenHeader: Authorization
-    whiteList: /am-user/api/v1/user/login,/swagger-resources/**,/doc.html,/**/v3/api-docs/**
+    whiteList: /am-user/api/v1/user/login,
+    docWhiteList: /swagger-resources/**,/doc.html,/**/v3/api-docs/**

@@ -20,4 +20,6 @@ public class GatewayAudience {
     private String tokenHeader;
 
     private List<String> whiteList;
+
+    private List<String> docWhiteList;
 }
