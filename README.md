@@ -26,6 +26,7 @@
 &nbsp;&nbsp;目前项目托管在[github](https://github.com/AlexhahahaDrag/alex_miaosha.git)平台上，欢迎大家Star和Fork支持。
 
 - 后端github地址： https://github.com/AlexhahahaDrag/alex_miaosha.git
+- 后端gitee地址： https://gitee.com/AlexhahahaDrug/alex_miaosha_backend.git
 - 后端github地址：https://github.com/AlexhahahaDrag/alex_miaosha_front
 
 ## **项目模块**
