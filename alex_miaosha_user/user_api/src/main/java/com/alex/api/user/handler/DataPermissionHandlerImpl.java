@@ -48,7 +48,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                     if (ObjectUtils.isNotEmpty(annotation)) {
                         // 判断当前用户角色决定权限
                         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-                        if (roleInfoVo == null || roleInfoVo.getRoleCode().equals("user")) {
+                        if (roleInfoVo == null || roleInfoVo.getRoleCode().contains("user")) {
                             EqualsTo useEqualsTo = new EqualsTo();
                             useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
                             useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
