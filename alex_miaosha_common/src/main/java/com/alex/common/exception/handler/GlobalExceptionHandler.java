@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result<String> handler(LoginException exception) {
         log.error("登录异常:{}", exception.getMessage());
+        exception.getStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
@@ -33,6 +34,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(CustomizeException exception) {
         log.error("自定义异常:{}", exception.getMessage());
+        exception.getStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
@@ -40,6 +42,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(RegisterException exception) {
         log.error("注册异常:{}", exception.getMessage());
+        exception.getStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
@@ -47,13 +50,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(SeckillException exception) {
         log.error("秒杀异常:{}", exception.getMessage());
+        exception.getStackTrace();
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(UserException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(UserException userException) {
-        log.error("用户异常:{}", userException.getMessage());
+        log.error("用户异常:{}", userException.getMsg());
+        userException.getStackTrace();
         return Result.error(userException.getCode(), userException.getMsg());
     }
 
@@ -65,6 +70,7 @@ public class GlobalExceptionHandler {
             errorMsg = bindException.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(","));
         }
         log.error("参数校验异常:{}", errorMsg);
+        bindException.getStackTrace();
         return Result.error("400", errorMsg);
     }
 
@@ -72,6 +78,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(ProductException e) {
         log.error("商品异常:{}", e.getMessage());
+        e.getStackTrace();
         return Result.error(e.getCode(), e.getMsg());
     }
 
@@ -80,6 +87,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(Exception ex) {
         log.error("系统异常:{}", ex.getMessage());
+        ex.getStackTrace();
         return Result.error("500", ex.getMessage());
     }
 }

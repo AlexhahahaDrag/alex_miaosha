@@ -245,10 +245,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         }
         // 获取机构信息
         List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
-        tUserVo.setOrgInfoVo(orgInfoList == null ? null : orgInfoList.get(0));
+        tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
         // 获取角色信息
         List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
-        tUserVo.setRoleInfoVo(roleInfoList == null ? null : roleInfoList.get(0));
+        tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
         // 获取菜单
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setStatus(SysConf.VALID_STATUS);

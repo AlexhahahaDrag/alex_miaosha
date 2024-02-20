@@ -21,7 +21,6 @@ public class UserException extends RuntimeException{
     private String msg;
 
     public UserException(ResultEnum resultEnum) {
-        log.error(resultEnum.getCode() + ":" + resultEnum.getValue());
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
     }
