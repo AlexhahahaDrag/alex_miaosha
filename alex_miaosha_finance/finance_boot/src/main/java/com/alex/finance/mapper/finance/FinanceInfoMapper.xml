@@ -108,7 +108,7 @@
             and finance_info.info_date >= #{financeInfoVo.infoDateStart}
           </if>
           <if test = "financeInfoVo.infoDateEnd != null">
-            and finance_info.info_date &lt;= DATE_ADD(#{financeInfoVo.infoDateEnd}, interval 1 day)
+            and finance_info.info_date &lt; DATE_ADD(#{financeInfoVo.infoDateEnd}, interval 1 day)
           </if>
         </if>
      </sql>

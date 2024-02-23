@@ -52,7 +52,7 @@
   <% if(num % 3 != 0){ %>
           </a-row>
   <% } %>
-             <a-row :gutter="24">
+            <a-row :gutter="24">
                 <a-col :span="20" style="text-align: right">
                   <a-space>
                     <a-button type="primary" @click="query"> 查找</a-button>
@@ -86,7 +86,7 @@
           </template>
         </template>
       </a-table>
-      <${entity}Detail ref="editInfo" :visible="visible" :modelInfo="modelInfo" @handleOk="handleOk"
+      <${entity}Detail ref="editInfo" :open="visible" :modelInfo="modelInfo" @handleOk="handleOk"
         @handleCancel="handleCancel"></${entity}Detail>
     </div>
   </div>
