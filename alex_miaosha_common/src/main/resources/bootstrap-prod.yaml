@@ -34,6 +34,9 @@ spring:
           - data-id: ${nacos.xxl}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+          - data-id: ${nacos.minio}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
 
 nacos:
   url: nacos:8848
@@ -50,3 +53,4 @@ nacos:
   audience: audience
   wechat: wechat
   xxl: xxl
+  minio: minio
