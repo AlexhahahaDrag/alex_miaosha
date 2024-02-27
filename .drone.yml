@@ -15,7 +15,6 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/user
-      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/web
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
@@ -25,7 +24,6 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
 #      - cp /drone/src/alex_miaosha_mission/target/alex_miaosha_mission-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission/
       - cp /drone/src/alex_miaosha_user/user_boot/target/user_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
-      - cp /drone/src/alex_miaosha_web/target/alex_miaosha_web-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
       - cp /drone/src/alex_miaosha_product/product_boot/target/product_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
@@ -35,7 +33,6 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_gateway/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
 #      - cp /drone/src/alex_miaosha_mission/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/mission/
       - cp /drone/src/alex_miaosha_user/user_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
-      - cp /drone/src/alex_miaosha_web/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/web/
       - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
       - cp /drone/src/alex_miaosha_product/product_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
