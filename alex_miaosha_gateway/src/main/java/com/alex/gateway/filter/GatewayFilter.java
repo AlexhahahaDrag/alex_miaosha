@@ -93,7 +93,11 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                     RequestContextHolder.setRequestAttributes(attributes);
                     return userApi.authToken(token);
                 }
-        );
+        ).exceptionally(e -> {
+            log.info("认证失败：{}", e.getMessage());
+            e.getStackTrace();
+            return Result.error("123", "认证失败");
+        });
         Boolean result = Optional.of(completableFuture).map(item -> {
             try {
                 return item.get().getData();
@@ -144,7 +148,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
-                            uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
+                            uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s),
+                                    "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(),
+                                    Charset.forName("UTF-8")).getBytes();
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;

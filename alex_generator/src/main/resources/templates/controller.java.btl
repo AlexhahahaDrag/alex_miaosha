@@ -67,8 +67,8 @@ public class ${table.controllerName} {
     )
     <% } %>
     public Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) ${entity}Vo ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                @RequestBody(required = false) ${entity}Vo ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Vo));
     }
 
