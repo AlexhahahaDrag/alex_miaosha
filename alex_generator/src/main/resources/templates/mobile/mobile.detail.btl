@@ -280,6 +280,7 @@ function init() {
                 formInfo.value = res[0].data;
                 <% for(field in table.fields){
                     if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
+                formInfo.value.${field.propertyName} = dayjs(formInfo.value.${field.propertyName});
                 initInfoDate(formInfo.value.${field.propertyName}, '${field.propertyName}');
                     <% } %>
                 <% } %>
