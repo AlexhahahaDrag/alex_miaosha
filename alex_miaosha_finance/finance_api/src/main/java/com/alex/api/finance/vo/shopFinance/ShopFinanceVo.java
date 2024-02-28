@@ -29,6 +29,12 @@ public class ShopFinanceVo extends BaseVo<ShopFinanceVo>{
     @ApiModelProperty(value = "商品编码")
     private String shopCode;
 
+    @ApiModelProperty(value = "收支类型")
+    private String incomeAndExpenses;
+
+    @ApiModelProperty(value = "支付方式")
+    private String payWay;
+
     @ApiModelProperty(value = "售价")
     private BigDecimal saleAmount;
 

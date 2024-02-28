@@ -36,6 +36,7 @@ public enum ResultEnum implements BaseEnum {
     USER_MOBILE_EXISTS("60006", "电话号已存在!"),
     USER_EMAIL_EXISTS("60007", "邮箱已注册!"),
     USER_NO_MOBILE_EMAIL("60008", "邮箱和手机号至少有一项不能为空!"),
+    USER_GET_INFO_ERROR("60009", "查询用户信息失败!"),
     /**
      * 商品模块
      */

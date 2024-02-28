@@ -1,6 +1,5 @@
 package com.alex.user.service.user.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
@@ -32,6 +31,7 @@ import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
 import com.alex.api.user.user.UserUtils;
 import com.alex.utils.IpUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,6 +44,8 @@ import me.zhyd.oauth.enums.scope.AuthBaiduScope;
 import me.zhyd.oauth.request.AuthBaiduRequest;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatMpRequest;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,12 +54,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -98,6 +106,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     private final RoleUserInfoService roleUserInfoService;
 
+    private final Executor taskExecutor;
+
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
         TUserVo curUser = userUtils.getLoginUser();
@@ -134,7 +144,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     @Override
     public TUserVo queryTUser(String id) {
         TUserVo user = tUserMapper.queryTUser(id);
-        if (user.getAvatar() != null) {
+        if (user != null && user.getAvatar() != null) {
             user.setAvatarUrl(getFileUrl(user.getAvatar()));
         }
         return user;
@@ -142,6 +152,20 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Override
     public TUser addTUser(TUserVo tUserVo) {
+        Map<String, Object> map = getStringObjectMap(tUserVo);
+        //校验username,mobile,email
+        judgeField(map, null);
+        TUser tUser = new TUser();
+        BeanUtils.copyProperties(tUserVo, tUser);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
+        tUser.setPassword(encoder.encode(password + tUserVo.getUsername()));
+        tUserMapper.insert(tUser);
+        return tUser;
+    }
+
+    @NotNull
+    private static Map<String, Object> getStringObjectMap(TUserVo tUserVo) {
         String username = tUserVo.getUsername();
         String mobile = tUserVo.getMobile();
         String email = tUserVo.getEmail();
@@ -158,15 +182,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         if (StringUtils.isNotEmpty(mobile)) {
             map.put(SysConf.MOBILE, mobile);
         }
-        //校验username,mobile,email
-        judgeField(map, null);
-        TUser tUser = new TUser();
-        BeanUtil.copyProperties(tUserVo, tUser);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
-        tUser.setPassword(encoder.encode(password + tUserVo.getUsername()));
-        tUserMapper.insert(tUser);
-        return tUser;
+        return map;
     }
 
     public static void main(String[] args) {
@@ -191,7 +207,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         //校验username,mobile,email
         judgeField(map, tUserVo.getId());
         TUser tUser = new TUser();
-        BeanUtil.copyProperties(tUserVo, tUser);
+        BeanUtils.copyProperties(tUserVo, tUser);
         tUserMapper.updateById(tUser);
         return tUser;
     }
@@ -208,6 +224,9 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     @Override
     public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        // TODO (majf) 2024/2/21 15:02 测试是否可以修改成CompletableFuture
+        stopWatch.start("开始登录");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             return Result.error(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
@@ -239,25 +258,83 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         TUserLogin userLogin = saveLoginLog(request, admin, uuid, ip, isRemember);
         //不返回密码到前端
         TUserVo tUserVo = new TUserVo();
-        BeanUtil.copyProperties(admin, tUserVo, "password");
-        if (admin.getAvatar() != null) {
-            tUserVo.setAvatarUrl(getFileUrl(admin.getAvatar()));
-        }
+        BeanUtils.copyProperties(admin, tUserVo, "password");
         // 获取机构信息
-        List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
-        tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
-        // 获取角色信息
-        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
-        tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
-        // 获取菜单
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
+            if (admin.getAvatar() == null) {
+                return null;
+            }
+            log.info("异步获取组织架构信息");
+            return getFileUrl(admin.getAvatar());
+        }).exceptionally(ex -> {
+            log.error("异步获取组织架构信息发生错误", ex);
+            return null; // 返回一个空列表或合适的错误处理
+        });
+        CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
+            log.info("异步获取组织架构信息");
+            RequestContextHolder.setRequestAttributes(attributes);
+            List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
+            log.info("异步获取组织架构信息{}", JSONObject.toJSONString(orgInfoList));
+            return orgInfoList;
+        }).exceptionally(ex -> {
+            log.error("异步获取组织架构信息发生错误", ex);
+            return Collections.emptyList(); // 返回一个空列表或合适的错误处理
+        });
+        CompletableFuture<List<RoleInfoVo>> rolesFuture = CompletableFuture.supplyAsync(() -> {
+            RequestContextHolder.setRequestAttributes(attributes);
+            return roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
+        });
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setStatus(SysConf.VALID_STATUS);
-        List<MenuInfoVo> menuList = menuInfoService.getList(null);
-        tUserVo.setMenuInfoVoList(menuList);
-        result.put(SysConf.MENU, menuList);
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONUtil.toJsonStr(tUserVo), expiration, TimeUnit.SECONDS);
-        result.put(SysConf.ADMIN, tUserVo);
+        CompletableFuture<List<MenuInfoVo>> menuFuture = CompletableFuture.supplyAsync(() -> {
+            RequestContextHolder.setRequestAttributes(attributes);
+            return menuInfoService.getList(menuInfoVo);
+        });
+        // 等待所有的异步操作完成
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(orgInfoFuture, rolesFuture, menuFuture);
+        // 当所有的异步操作完成后，可以做一些处理
+        allFutures.thenRun(() -> {
+            try {
+                List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
+                List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
+                List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
+                // 根据需要处理这些信息
+                log.info("用户信息: " + orgInfoList);
+                log.info("角色信息: " + roleInfoList);
+                log.info("权限信息: " + menuList);
+                tUserVo.setAvatarUrl(avatarFuture.get());
+                tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
+                tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
+                tUserVo.setMenuInfoVoList(menuList);
+                long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+                redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+                result.put(SysConf.ADMIN, tUserVo);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+            }
+        });
+        // 等待最后的处理完成
+        allFutures.join();
+        
+//// 获取机构信息
+//        List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
+//        tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
+//        // 获取角色信息
+//        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
+//        tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
+//        // 获取菜单
+//        MenuInfoVo menuInfoVo = new MenuInfoVo();
+//        menuInfoVo.setStatus(SysConf.VALID_STATUS);
+//        List<MenuInfoVo> menuList = menuInfoService.getList(null);
+//        tUserVo.setMenuInfoVoList(menuList);
+//        result.put(SysConf.MENU, menuList);
+//        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+//        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONUtil.toJsonStr(tUserVo), expiration, TimeUnit.SECONDS);
+//        result.put(SysConf.ADMIN, tUserVo);
+
+        stopWatch.stop();
+        log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
         return Result.success(result);
     }
 
@@ -293,12 +370,15 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .loginLocation(location)
                 .build();
         new Thread(userLogin::insert);
-        //添加在线用户到redis中，设置过期时间
-        try {
-            this.addOnLineAdmin(userLogin, expiration);
-        } catch (Exception e) {
-            log.error("添加在线用户失败：{}", e.getMessage());
-        }
+        taskExecutor.execute(() -> {
+            // 异步执行的代码
+            try {
+                //添加在线用户到redis中，设置过期时间
+                this.addOnLineAdmin(userLogin, expiration);
+            } catch (Exception e) {
+                log.error("添加在线用户失败：{}", e.getMessage());
+            }
+        });
         // 设置认证信息到SecurityContextHolder
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -373,7 +453,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
      * description: 添加在线用户
      * author:      alex
      * return:      void
-    */
+     */
     @Override
     public void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception {
         OnlineAdmin onlineAdmin = OnlineAdmin.builder()
@@ -487,22 +567,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
             return false;
         }
-        Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        // 得到两个日期相差的间隔，秒
-        long survivalSecond = DateUtils.diffSecondByTwoDays(DateUtils.getTimeStr(LocalDateTime.now()), sdf.format(expirationDate));
-        // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
-        if (survivalSecond < audience.getRefreshSecond()) {
-            //生成新的token
-            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
-            redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
-            String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
-            if (StringUtils.isNotBlank(onlineAdminStr)) {
-                OnlineAdmin onlineAdmin = JSONUtil.toBean(onlineAdminStr, OnlineAdmin.class);
-                onlineAdmin.setToken(newToken);
-                redisUtils.setEx(LoginKey.loginToken, newToken, JSONUtil.toJsonStr(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
-            }
-        }
+        // TODO (majf) 2024/2/21 15:03 是否可以开一个线程，将刷新token的任务添加到那个中去，不影响
+        refreshToken(token, base64Secret, uuidToken, barToken);
         // 获取在线的管理员信息
         String username = jwtTokenUtils.getUsername(token, base64Secret);
         SecurityContextHolder.getContext().getAuthentication();
@@ -518,6 +584,37 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             }
         }
         return true;
+    }
+
+    /**
+     * param: token
+     * param: base64Secret
+     * param: uuidToken
+     * param: barToken
+     * description: 判断是否需要刷新对应的token数据
+     * author:      majf
+     * return:      void
+    */
+    private void refreshToken(String token, String base64Secret, String uuidToken, String barToken) {
+        taskExecutor.execute(() -> {
+            Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            // 得到两个日期相差的间隔，秒
+            long survivalSecond = DateUtils.diffSecondByTwoDays(DateUtils.getTimeStr(LocalDateTime.now()), sdf.format(expirationDate));
+            // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
+            if (survivalSecond < audience.getRefreshSecond()) {
+                //生成新的token
+                String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
+                // TODO (majf) 2024/2/21 15:04 多次后是否需要修改uuid信息
+                redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
+                String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
+                if (StringUtils.isNotBlank(onlineAdminStr)) {
+                    OnlineAdmin onlineAdmin = JSONObject.parseObject(onlineAdminStr, OnlineAdmin.class);
+                    onlineAdmin.setToken(newToken);
+                    redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
+                }
+            }
+        });
     }
 
     public AuthRequest getAuthRequest(String appName) {

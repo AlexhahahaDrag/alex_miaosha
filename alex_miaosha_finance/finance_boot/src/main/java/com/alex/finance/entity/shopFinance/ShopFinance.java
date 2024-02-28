@@ -46,4 +46,11 @@ public class ShopFinance extends BaseEntity<ShopFinance>{
     @TableField("sale_date")
     private LocalDateTime saleDate;
 
+    @ApiModelProperty(value = "收支类型")
+    @TableField("income_and_expenses")
+    private String incomeAndExpenses;
+
+    @ApiModelProperty(value = "支付方式")
+    @TableField("pay_way")
+    private String payWay;
 }

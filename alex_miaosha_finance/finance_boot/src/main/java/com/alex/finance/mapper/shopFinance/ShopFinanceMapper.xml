@@ -4,21 +4,23 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.alex.finance.entity.shopFinance.ShopFinance">
-        <result column="id" property="id" />
-        <result column="is_delete" property="isDelete" />
-        <result column="creator" property="creator" />
-        <result column="updater" property="updater" />
-        <result column="deleter" property="deleter" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="delete_time" property="deleteTime" />
-        <result column="operator" property="operator" />
-        <result column="operate_time" property="operateTime" />
-        <result column="shop_name" property="shopName" />
-        <result column="shop_code" property="shopCode" />
-        <result column="sale_amount" property="saleAmount" />
-        <result column="is_valid" property="isValid" />
-        <result column="sale_date" property="saleDate" />
+        <result column="id" property="id"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="creator" property="creator"/>
+        <result column="updater" property="updater"/>
+        <result column="deleter" property="deleter"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="operator" property="operator"/>
+        <result column="operate_time" property="operateTime"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="shop_code" property="shopCode"/>
+        <result column="sale_amount" property="saleAmount"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="sale_date" property="saleDate"/>
+        <result column="pay_way" property="payWay"/>
+        <result column="income_and_expenses" property="incomeAndExpenses"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -33,11 +35,13 @@
         t_shop_finance.delete_time,
         t_shop_finance.operator,
         t_shop_finance.operate_time,
-        t_shop_finance.shop_name, t_shop_finance.shop_code, t_shop_finance.sale_amount, t_shop_finance.is_valid, t_shop_finance.sale_date
+        t_shop_finance.shop_name,
+        t_shop_finance.shop_code, t_shop_finance.sale_amount, t_shop_finance.is_valid, t_shop_finance.sale_date,
+        t_shop_finance.pay_way, t_shop_finance.income_and_expenses
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
-        select <include refid="Base_Column_List"/>from t_shop_finance
+        select<include refid="Base_Column_List"/>from t_shop_finance
         <where>
             t_shop_finance.is_delete = 0
             <include refid="queryInfo"/>
@@ -45,42 +49,50 @@
     </select>
 
     <select id="queryShopFinance" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
-        select <include refid="Base_Column_List"/> from t_shop_finance
+        select
+        <include refid="Base_Column_List"/>
+        from t_shop_finance
         <where>
             t_shop_finance.id = #{id}
             and t_shop_finance.is_delete = 0
         </where>
     </select>
 
-     <sql id="queryInfo">
-        <if test = "shopFinanceVo != null">
-          <if test = "shopFinanceVo.shopName != null">
-            and t_shop_finance.shop_name like concat('%', #{shopFinanceVo.shopName}, '%')
-          </if>
-          <if test = "shopFinanceVo.shopCode != null">
-            and t_shop_finance.shop_code like concat('%', #{shopFinanceVo.shopCode}, '%')
-          </if>
-          <if test = "shopFinanceVo.saleAmount != null">
-            and t_shop_finance.sale_amount = #{shopFinanceVo.saleAmount}
-          </if>
-            <if test = "shopFinanceVo.saleAmountFrom != null">
+    <sql id="queryInfo">
+        <if test="shopFinanceVo != null">
+            <if test="shopFinanceVo.shopName != null">
+                and t_shop_finance.shop_name like concat('%', #{shopFinanceVo.shopName}, '%')
+            </if>
+            <if test="shopFinanceVo.shopCode != null">
+                and t_shop_finance.shop_code like concat('%', #{shopFinanceVo.shopCode}, '%')
+            </if>
+            <if test="shopFinanceVo.saleAmount != null">
+                and t_shop_finance.sale_amount = #{shopFinanceVo.saleAmount}
+            </if>
+            <if test="shopFinanceVo.saleAmountFrom != null">
                 and t_shop_finance.sale_amount >= #{shopFinanceVo.saleAmountFrom}
             </if>
-            <if test = "shopFinanceVo.saleAmountEnd != null">
+            <if test="shopFinanceVo.saleAmountEnd != null">
                 and t_shop_finance.sale_amount &lt;= #{shopFinanceVo.saleAmountEnd}
             </if>
-          <if test = "shopFinanceVo.isValid != null">
-            and t_shop_finance.is_valid like concat('%', #{shopFinanceVo.isValid}, '%')
-          </if>
-          <if test = "shopFinanceVo.saleDate != null">
-            and t_shop_finance.sale_date = #{shopFinanceVo.saleDate}
-          </if>
-            <if test = "shopFinanceVo.saleDateFrom != null">
+            <if test="shopFinanceVo.isValid != null">
+                and t_shop_finance.is_valid like concat('%', #{shopFinanceVo.isValid}, '%')
+            </if>
+            <if test="shopFinanceVo.saleDate != null">
+                and t_shop_finance.sale_date = #{shopFinanceVo.saleDate}
+            </if>
+            <if test="shopFinanceVo.saleDateFrom != null">
                 and t_shop_finance.sale_date >= #{shopFinanceVo.saleDateFrom}
             </if>
-            <if test = "shopFinanceVo.saleDateEnd != null">
+            <if test="shopFinanceVo.saleDateEnd != null">
                 and t_shop_finance.sale_date &lt; DATE_ADD(#{shopFinanceVo.saleDateEnd}, interval 1 day)
             </if>
+            <if test="shopFinanceVo.incomeAndExpenses != null">
+                and t_shop_finance.income_and_expenses = #{shopFinanceVo.incomeAndExpenses}
+            </if>
+            <if test="shopFinanceVo.payWay != null">
+                and t_shop_finance.pay_way = #{shopFinanceVo.payWay}
+            </if>
         </if>
-     </sql>
+    </sql>
 </mapper>
