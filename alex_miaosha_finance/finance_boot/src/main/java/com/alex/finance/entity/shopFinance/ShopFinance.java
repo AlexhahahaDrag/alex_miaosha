@@ -53,4 +53,8 @@ public class ShopFinance extends BaseEntity<ShopFinance>{
     @ApiModelProperty(value = "支付方式")
     @TableField("pay_way")
     private String payWay;
+
+    @ApiModelProperty(value = "个数")
+    @TableField("sale_num")
+    private BigDecimal saleNum;
 }
