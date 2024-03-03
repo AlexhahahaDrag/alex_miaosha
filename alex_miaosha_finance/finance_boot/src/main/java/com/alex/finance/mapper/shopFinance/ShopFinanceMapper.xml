@@ -99,4 +99,66 @@
             </if>
         </if>
     </sql>
+
+    <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+        WITH RECURSIVE date_series AS (
+        SELECT
+            concat(#{searchDate}, '-01') AS DATE
+        UNION ALL
+        SELECT
+            DATE_ADD( DATE, INTERVAL 1 DAY )
+        FROM
+            date_series
+        WHERE
+            DATE_ADD( DATE, INTERVAL 1 DAY ) &lt; last_day( concat(#{searchDate}, '-01') ) + INTERVAL 1 DAY
+        ) SELECT
+        date_info.DATE AS info_date,
+        IFNULL( info.sale_amount, 0 ) AS sale_amount,
+        IFNULL( info.sale_num, 0 ) AS sale_num
+    FROM
+        date_series AS date_info
+        LEFT JOIN (
+        SELECT
+            DATE_FORMAT( sale_date, '%Y-%m-%d' ) AS dateinfo,
+            sum( sale_amount ) AS sale_amount,
+            sum( sale_num ) AS sale_num
+        FROM
+            t_shop_finance
+        WHERE
+            sale_date >= cast( concat(#{searchDate}, '-01') AS DATETIME )
+            AND sale_date &lt; DATE_ADD( cast( concat(#{searchDate}, '-01') AS DATETIME ), INTERVAL 1 MONTH )
+            AND is_valid = '1'
+            AND is_delete = '0'
+        GROUP BY
+            dateinfo
+        ) info ON date_info.DATE = info.dateinfo
+    ORDER BY
+        date_info.DATE
+    </select>
+
+    <select id="getMonthShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+        WITH recursive c ( n ) AS ( SELECT 0 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 ) SELECT
+        date_info.n AS info_date,
+        ifnull( info.sale_amount, 0 ) AS sale_amount ,
+        ifnull( info.sale_num, 0 ) AS sale_num
+        FROM
+            ( SELECT c.n FROM c ) date_info
+            LEFT JOIN (
+            SELECT
+                DATE_FORMAT( sale_date, '%m' ) AS dateinfo,
+                sum( sale_amount ) AS sale_amount,
+                sum( sale_num ) AS sale_num
+            FROM
+                t_shop_finance 
+            WHERE
+                sale_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS DATETIME ) 
+                AND sale_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS DATETIME ), INTERVAL 1 MONTH ) 
+                AND is_valid = '1' 
+                AND is_delete = '0' 
+            GROUP BY
+                dateinfo 
+            ) info ON info.dateinfo = date_info.n 
+        ORDER BY
+            date_info.n
+    </select>
 </mapper>
