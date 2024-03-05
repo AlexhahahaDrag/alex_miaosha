@@ -25,9 +25,7 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
 
     ShopFinanceVo queryShopFinance(@Param("id") Long id);
 
-    @DataPermission(table = "t_shop_finance")
     List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(@Param("searchDate") String searchDate);
 
-    @DataPermission(table = "t_shop_finance")
     List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(@Param("searchDate") String searchDate);
 }
