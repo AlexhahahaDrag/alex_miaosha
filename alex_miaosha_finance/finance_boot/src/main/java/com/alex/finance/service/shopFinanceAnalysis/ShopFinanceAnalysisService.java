@@ -1,6 +1,7 @@
 package com.alex.finance.service.shopFinanceAnalysis;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface ShopFinanceAnalysisService {
     List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(String searchDate);
 
     List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(String searchDate);
+
+    List<ShopFinanceAnalysisVo> getPayWayInfo(String searchDate);
+
+    List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate);
 }

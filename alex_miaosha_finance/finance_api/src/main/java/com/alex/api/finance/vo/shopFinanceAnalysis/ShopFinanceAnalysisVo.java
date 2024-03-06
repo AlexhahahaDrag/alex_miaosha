@@ -18,6 +18,15 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "shopFinanceAnalysisVo", description = "商店财务分析Vo")
 public class ShopFinanceAnalysisVo {
 
+    @ApiModelProperty(value = "支付方式")
+    private String payWay;
+
+    @ApiModelProperty(value = "支付方式")
+    private String payWayName;
+
+    @ApiModelProperty(value = "商品名称")
+    private String shopName;
+
     @ApiModelProperty(value = "业务日期")
     private String infoDate;
 

@@ -28,4 +28,8 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
     List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(@Param("searchDate") String searchDate);
 
     List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(@Param("searchDate") String searchDate);
+
+    List<ShopFinanceAnalysisVo> getPayWayInfo(@Param("searchDate") String searchDate);
+
+    List<ShopFinanceAnalysisVo> getShopNameInfo(@Param("searchDate") String searchDate);
 }

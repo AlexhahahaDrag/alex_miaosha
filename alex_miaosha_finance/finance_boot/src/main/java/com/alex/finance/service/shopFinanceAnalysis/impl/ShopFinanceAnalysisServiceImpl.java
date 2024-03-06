@@ -25,4 +25,16 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
         // TODO: 2024/3/5 加权限
         return shopFinanceMapper.getMonthShopFinanceInfo(searchDate);
     }
+
+    @Override
+    public List<ShopFinanceAnalysisVo> getPayWayInfo(String searchDate) {
+        // TODO: 2024/3/5 加权限
+        return shopFinanceMapper.getPayWayInfo(searchDate);
+    }
+
+    @Override
+    public List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate) {
+        // TODO: 2024/3/5 加权限
+        return shopFinanceMapper.getShopNameInfo(searchDate);
+    }
 }

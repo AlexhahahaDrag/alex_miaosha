@@ -51,4 +51,24 @@ public class ShopFinanceAnalysisController {
     public Result<List<ShopFinanceAnalysisVo>> getMonthShopFinanceInfo(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getMonthShopFinanceInfo(searchDate));
     }
+
+    @ApiOperationSupport(order = 50, author = "alex")
+    @ApiOperation(value = "获取支付方式分布", notes = "获取支付方式分布", response = Result.class)
+    @GetMapping(value = "/getPayWayInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+    )
+    public Result<List<ShopFinanceAnalysisVo>> getPayWayInfo(@RequestParam(value = "searchDate") String searchDate) {
+        return Result.success(shopFinanceAnalysisService.getPayWayInfo(searchDate));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "获取商品名称分布", notes = "获取商品名称分布", response = Result.class)
+    @GetMapping(value = "/getShopNameInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+    )
+    public Result<List<ShopFinanceAnalysisVo>> getShopNameInfo(@RequestParam(value = "searchDate") String searchDate) {
+        return Result.success(shopFinanceAnalysisService.getShopNameInfo(searchDate));
+    }
 }
