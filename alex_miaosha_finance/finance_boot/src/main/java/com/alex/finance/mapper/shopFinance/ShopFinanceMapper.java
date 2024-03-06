@@ -1,6 +1,7 @@
 package com.alex.finance.mapper.shopFinance;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.finance.entity.shopFinance.ShopFinance;
 import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -32,4 +33,6 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
     List<ShopFinanceAnalysisVo> getPayWayInfo(@Param("searchDate") String searchDate);
 
     List<ShopFinanceAnalysisVo> getShopNameInfo(@Param("searchDate") String searchDate);
+
+    ShopFinanceChainYearVo getChainAndYear(@Param("searchDate") String searchDate);
 }

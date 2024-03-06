@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * description:  商店财务表Vo
  * author:       majf
@@ -31,9 +33,9 @@ public class ShopFinanceAnalysisVo {
     private String infoDate;
 
     @ApiModelProperty(value = "销售总数")
-    private String saleAmount;
+    private BigDecimal saleAmount;
 
     @ApiModelProperty(value = "销售数量")
-    private String saleNum;
+    private BigDecimal saleNum;
 }
 

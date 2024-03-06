@@ -1,6 +1,7 @@
 package com.alex.finance.service.shopFinanceAnalysis.impl;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.finance.mapper.shopFinance.ShopFinanceMapper;
 import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,11 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     public List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate) {
         // TODO: 2024/3/5 加权限
         return shopFinanceMapper.getShopNameInfo(searchDate);
+    }
+
+    @Override
+    public ShopFinanceChainYearVo getChainAndYear(String searchDate) {
+        // TODO: 2024/3/5 加权限
+        return shopFinanceMapper.getChainAndYear(searchDate);
     }
 }
