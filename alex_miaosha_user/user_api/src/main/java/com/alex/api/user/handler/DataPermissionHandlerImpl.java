@@ -38,7 +38,10 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             Class<?> clazz = Class.forName(mappedStatementId.substring(0, mappedStatementId.lastIndexOf(".")));
             Method[] methods = clazz.getDeclaredMethods();
             String methodName = mappedStatementId.substring(mappedStatementId.lastIndexOf(".") + 1);
-            TUserVo loginUser = userUtils.getLoginUser();
+            TUserVo loginUser = null;
+            if (userUtils != null) {
+                loginUser = userUtils.getLoginUser();
+            }
             if (loginUser == null) {
                 return where;
             }
