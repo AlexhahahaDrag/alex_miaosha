@@ -1,6 +1,5 @@
 package com.alex.finance.service.shopFinanceAnalysis.impl;
 
-import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.api.user.user.UserUtils;
@@ -69,17 +68,8 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
 
     @Override
     public void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception {
-        TUserVo loginUser = userUtils.getLoginUser();
-        List<ShopFinanceAnalysisVo> curShopFinanceInfo;
-        if (loginUser == null) {
-            curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
+        List<ShopFinanceAnalysisVo> curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
                     null, null, null);
-        } else {
-            RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-            curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
-                    roleInfoVo.getRoleCode(), loginUser.getId(),
-                    loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
-        }
         for (ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
             weiXinService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "日" : "月"),
                     cur.getSaleAmount(), cur.getSaleNum());
