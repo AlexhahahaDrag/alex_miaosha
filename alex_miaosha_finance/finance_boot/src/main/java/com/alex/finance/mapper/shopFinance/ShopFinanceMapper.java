@@ -52,7 +52,7 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
                                            @Param("orgId") Long orgId);
 
     List<ShopFinanceAnalysisVo> getCurShopFinanceInfo(@Param("startDate") String startDate,
-                                                      @Param("startDate") String endDate,
+                                                      @Param("endDate") String endDate,
                                                       @Param("roleCode") String roleCode,
                                                       @Param("userId") Long userId,
                                                       @Param("orgId") Long orgId);

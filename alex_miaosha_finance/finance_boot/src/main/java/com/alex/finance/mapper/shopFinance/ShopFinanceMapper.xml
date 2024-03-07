@@ -304,17 +304,19 @@
     <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
             t_org_user_info.org_id,
-            DATE_FORMAT( sale_date, '%Y-%m-%d' ) AS info_date,
-            sum( sale_amount ) AS sale_amount,
-            sum( sale_num ) AS sale_num
+            DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m-%d' ) AS info_date,
+            sum( t_shop_finance.sale_amount ) AS sale_amount,
+            sum( t_shop_finance.sale_num ) AS sale_num
         FROM
             t_shop_finance
-            left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.user_id
+            left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.creator
+            and t_org_user_info.status = '1'
+            and t_org_user_info.is_delete = '0'
         WHERE
-            sale_date >= cast(#{startDate} AS DATETIME )
-          AND sale_date &lt; DATE_ADD( cast(#{endDate} AS DATETIME ), INTERVAL 1 DAY )
-          AND is_valid = '1'
-          AND is_delete = '0'
+            t_shop_finance.sale_date >= cast(#{startDate} AS DATETIME )
+          AND t_shop_finance.sale_date &lt; DATE_ADD( cast(#{endDate} AS DATETIME ), INTERVAL 1 DAY )
+          AND t_shop_finance.is_valid = '1'
+          AND t_shop_finance.is_delete = '0'
           and t_shop_finance.income_and_expenses = 'income'
           <include refid="roleInfo"/>
         GROUP BY
