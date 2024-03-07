@@ -465,6 +465,10 @@ public class DateUtils {
         return addTime(date, day, ChronoUnit.DAYS);
     }
 
+    public static LocalDateTime addDay(LocalDateTime date, int day) {
+        return addTime(date, day, ChronoUnit.DAYS);
+    }
+
     /**
      * @param n
      * @param formatter

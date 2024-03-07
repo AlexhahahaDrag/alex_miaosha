@@ -20,6 +20,9 @@ import java.math.BigDecimal;
 @ApiModel(value = "shopFinanceAnalysisVo", description = "商店财务分析Vo")
 public class ShopFinanceAnalysisVo {
 
+    @ApiModelProperty(value = "机构id")
+    private Long orgId;
+
     @ApiModelProperty(value = "支付方式")
     private String payWay;
 

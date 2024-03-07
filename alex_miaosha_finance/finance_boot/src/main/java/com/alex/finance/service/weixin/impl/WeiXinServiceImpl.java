@@ -12,6 +12,7 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -35,7 +36,6 @@ public class WeiXinServiceImpl implements WeiXinService {
         dataList.add(new WxMpTemplateData("type", "猫超卡", "#A9A9A9"));
         WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
                 .templateId(wechatAccountConfig.getAccountTimeOutTemplateId())
-//                .toUser(wechatAccountConfig.getUserId())
                 .url(wechatAccountConfig.getUrl() + "/wxaapi/newtmpl/getpubtemplatetitles?access_token=" + token)
                 .data(dataList)
                 .build();
@@ -43,6 +43,35 @@ public class WeiXinServiceImpl implements WeiXinService {
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
         if (wxMpUserList.getTotal() > 0) {
             for (String userId : wxMpUserList.getOpenids()) {
+                if (!wechatAccountConfig.getAccountUserId().contains(userId)) {
+                    continue;
+                }
+                templateMessage.setToUser(userId);
+                wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
+            }
+        }
+        wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
+    }
+
+    @Override
+    public void sentShopFinanceMessage(String date, BigDecimal saleAmount, BigDecimal saleNum) throws WxErrorException {
+        String token = getToken();
+        List<WxMpTemplateData> dataList = Lists.newArrayList();
+        dataList.add(new WxMpTemplateData("date", date, "#A9A9A9"));
+        dataList.add(new WxMpTemplateData("saleAmount", saleAmount.toString(), "#A9A9A9"));
+        dataList.add(new WxMpTemplateData("saleNum", saleNum.toString(), "#A9A9A9"));
+        WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
+                .templateId(wechatAccountConfig.getShopFinanceTemplateId())
+                .url(wechatAccountConfig.getUrl() + "/wxaapi/newtmpl/getpubtemplatetitles?access_token=" + token)
+                .data(dataList)
+                .build();
+        // 查询用户列表
+        WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
+        if (wxMpUserList.getTotal() > 0) {
+            for (String userId : wxMpUserList.getOpenids()) {
+                if (!wechatAccountConfig.getShopFinanceUserId().contains(userId)) {
+                    continue;
+                }
                 templateMessage.setToUser(userId);
                 wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
             }

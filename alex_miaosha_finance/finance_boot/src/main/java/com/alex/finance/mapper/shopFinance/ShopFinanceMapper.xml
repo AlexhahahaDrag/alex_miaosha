@@ -99,6 +99,18 @@
             </if>
         </if>
     </sql>
+    
+      <sql id="roleInfo">
+        <if test="roleCode != null">
+            <if test="roleCode.contains('user')">
+                AND t_shop_finance.creator = #{userId}
+            </if>
+            <if test="roleCode.contains('admin')">
+                AND t_shop_finance.creator in
+                (select user_id from alex_user.t_org_user_info where t_org_user_info.org_id = #{orgId})
+            </if>
+        </if>
+      </sql>
 
     <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         WITH RECURSIVE date_series AS (
@@ -130,6 +142,7 @@
             AND is_valid = '1'
             AND is_delete = '0'
             and t_shop_finance.income_and_expenses = 'income'
+            <include refid="roleInfo"/>
         GROUP BY
             info_date
         ) info ON date_info.DATE = info.info_date
@@ -157,6 +170,7 @@
                 AND is_valid = '1' 
                 AND is_delete = '0'
                 and t_shop_finance.income_and_expenses = 'income'
+                <include refid="roleInfo"/>
             GROUP BY
                 info_date 
             ) info ON info.info_date = date_info.n 
@@ -188,6 +202,7 @@
           AND t_shop_finance.is_valid = '1'
           AND t_shop_finance.is_delete = '0'
           and t_shop_finance.income_and_expenses = 'income'
+          <include refid="roleInfo"/>
         group by
           t_shop_finance.pay_way,
           dict_info.type_name
@@ -211,99 +226,98 @@
           AND is_valid = '1'
           AND is_delete = '0'
           and t_shop_finance.income_and_expenses = 'income'
+          <include refid="roleInfo"/>
         group by
           shop_name
     </select>
     
     <select id="getChainAndYear" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo">
-        select
-          cur_info.info_date,
-          cur_info.sale_amount,
-          cur_info.sale_num,
-          last_month.sale_amount as month_sale_amount,
-          last_month.sale_num as month_sale_num,
-          last_year.sale_amount as year_sale_amount,
-          last_year.sale_num as yaer_sale_num,
-          case
-            when last_month.sale_amount is null
-            or last_month.sale_amount = 0 then null
-            else  ROUND((cur_info.sale_amount - last_month.sale_amount) / last_month.sale_amount * 100, 2)
-          end as sale_amount_chain,
-          case
-            when last_month.sale_num is null
-            or last_month.sale_num = 0 then null
-            else ROUND((cur_info.sale_num - last_month.sale_num) / last_month.sale_num * 100, 2)
-          end as sale_num_chain,
-          case
-            when last_year.sale_amount is null
-            or last_year.sale_amount = 0 then null
-            else ROUND((cur_info.sale_amount - last_year.sale_amount) / last_year.sale_amount * 100, 2)
-          end as sale_amount_year,
-          case
-            when last_year.sale_num is null
-            or last_year.sale_num = 0 then null
-            else ROUND((cur_info.sale_num - last_year.sale_num) / last_year.sale_num * 100, 2)
-          end as sale_num_year
-        from
-          (
-            SELECT
-              DATE_FORMAT(sale_date, '%m') AS info_date,
-              sum(sale_amount) AS sale_amount,
-              sum(sale_num) AS sale_num
-            FROM
-              t_shop_finance
-            WHERE
-              sale_date >= cast(concat('2024-03', '-01') AS DATETIME)
-              AND sale_date &lt; DATE_ADD(
-                cast(concat('2024-03', '-01') AS DATETIME),
-                INTERVAL 1 MONTH
-              )
-              AND is_valid = '1'
-              AND is_delete = '0'
-              and t_shop_finance.income_and_expenses = 'income'
-            GROUP BY
-              info_date
-          ) as cur_info
-          left join (
-            SELECT
-              DATE_FORMAT(sale_date, '%m') AS info_date,
-              sum(sale_amount) AS sale_amount,
-              sum(sale_num) AS sale_num
-            FROM
-              t_shop_finance
-            WHERE
-              sale_date >= DATE_ADD(
-                cast(concat('2024-03', '-01') AS DATETIME),
-                INTERVAL 1 MONTH
-              )
-              AND sale_date &lt; cast(concat('2024-03', '-01') AS DATETIME)
-              AND is_valid = '1'
-              AND is_delete = '0'
-              and t_shop_finance.income_and_expenses = 'income'
-            GROUP BY
-              info_date
-          ) as last_month on last_month.info_date = cur_info.info_date
-          left join (
-            SELECT
-              DATE_FORMAT(sale_date, '%m') AS info_date,
-              sum(sale_amount) AS sale_amount,
-              sum(sale_num) AS sale_num
-            FROM
-              t_shop_finance
-            WHERE
-              sale_date >= DATE_ADD(
-                cast(concat('2024-03', '-01') AS DATETIME),
-                interval -1 year
-              )
-              AND sale_date &lt; DATE_ADD(
-                cast(concat('2024-03', '-01') AS DATETIME),
-                INTERVAL -11 MONTH
-              )
-              AND is_valid = '1'
-              AND is_delete = '0'
-              and t_shop_finance.income_and_expenses = 'income'
-            GROUP BY
-              info_date
-          ) as last_year on last_year.info_date = cur_info.info_date
+        select cur_info.info_date,
+               cur_info.sale_amount,
+               cur_info.sale_num,
+               last_month.sale_amount                                                            as month_sale_amount,
+               last_month.sale_num                                                               as month_sale_num,
+               last_year.sale_amount                                                             as year_sale_amount,
+               last_year.sale_num                                                                as yaer_sale_num,
+               IF(last_month.sale_amount is null
+                      or last_month.sale_amount = 0, null,
+                  ROUND((cur_info.sale_amount - last_month.sale_amount) / last_month.sale_amount * 100,
+                        2))                                                                      as sale_amount_chain,
+               IF(last_month.sale_num is null
+                      or last_month.sale_num = 0, null,
+                  ROUND((cur_info.sale_num - last_month.sale_num) / last_month.sale_num * 100,
+                        2))                                                                      as sale_num_chain,
+               IF(last_year.sale_amount is null
+                      or last_year.sale_amount = 0, null,
+                  ROUND((cur_info.sale_amount - last_year.sale_amount) / last_year.sale_amount * 100,
+                        2))                                                                      as sale_amount_year,
+               IF(last_year.sale_num is null
+                      or last_year.sale_num = 0, null,
+                  ROUND((cur_info.sale_num - last_year.sale_num) / last_year.sale_num * 100, 2)) as sale_num_year
+        from (SELECT DATE_FORMAT(sale_date, '%m') AS info_date,
+                     sum(sale_amount)             AS sale_amount,
+                     sum(sale_num)                AS sale_num
+              FROM t_shop_finance
+              WHERE sale_date >= cast(concat('2024-03', '-01') AS DATETIME)
+                AND sale_date &lt; DATE_ADD(
+                      cast(concat('2024-03', '-01') AS DATETIME),
+                      INTERVAL 1 MONTH
+                                   )
+                AND is_valid = '1'
+                AND is_delete = '0'
+                and t_shop_finance.income_and_expenses = 'income'
+                <include refid="roleInfo"/>
+              GROUP BY info_date) as cur_info
+                 left join (SELECT DATE_FORMAT(sale_date, '%m') AS info_date,
+                                   sum(sale_amount)             AS sale_amount,
+                                   sum(sale_num)                AS sale_num
+                            FROM t_shop_finance
+                            WHERE sale_date >= DATE_ADD(
+                                    cast(concat('2024-03', '-01') AS DATETIME),
+                                    INTERVAL 1 MONTH
+                                               )
+                              AND sale_date &lt; cast(concat('2024-03', '-01') AS DATETIME)
+                              AND is_valid = '1'
+                              AND is_delete = '0'
+                              and t_shop_finance.income_and_expenses = 'income'
+                              <include refid="roleInfo"/>
+                            GROUP BY info_date) as last_month on last_month.info_date = cur_info.info_date
+                 left join (SELECT DATE_FORMAT(sale_date, '%m') AS info_date,
+                                   sum(sale_amount)             AS sale_amount,
+                                   sum(sale_num)                AS sale_num
+                            FROM t_shop_finance
+                            WHERE sale_date >= DATE_ADD(
+                                    cast(concat('2024-03', '-01') AS DATETIME),
+                                    interval -1 year
+                                               )
+                              AND sale_date &lt; DATE_ADD(
+                                    cast(concat('2024-03', '-01') AS DATETIME),
+                                    INTERVAL -11 MONTH
+                                                 )
+                              AND is_valid = '1'
+                              AND is_delete = '0'
+                              and t_shop_finance.income_and_expenses = 'income'
+                              <include refid="roleInfo"/>
+                            GROUP BY info_date) as last_year on last_year.info_date = cur_info.info_date
+    </select>
+    
+    <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+        SELECT
+            t_org_user_info.org_id,
+            DATE_FORMAT( sale_date, '%Y-%m-%d' ) AS info_date,
+            sum( sale_amount ) AS sale_amount,
+            sum( sale_num ) AS sale_num
+        FROM
+            t_shop_finance
+            left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.user_id
+        WHERE
+            sale_date >= cast(#{startDate} AS DATETIME )
+          AND sale_date &lt; DATE_ADD( cast(#{endDate} AS DATETIME ), INTERVAL 1 DAY )
+          AND is_valid = '1'
+          AND is_delete = '0'
+          and t_shop_finance.income_and_expenses = 'income'
+          <include refid="roleInfo"/>
+        GROUP BY
+            t_org_user_info.org_id, info_date
     </select>
 </mapper>

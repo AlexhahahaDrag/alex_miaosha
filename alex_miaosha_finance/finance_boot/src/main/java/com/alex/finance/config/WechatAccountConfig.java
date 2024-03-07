@@ -17,5 +17,11 @@ public class WechatAccountConfig {
 
     private String accountTimeOutTemplateId;
 
+    private String accountUserId;
+
+    private String shopFinanceTemplateId;
+
+    private String shopFinanceUserId;
+
     private String userId;
 }

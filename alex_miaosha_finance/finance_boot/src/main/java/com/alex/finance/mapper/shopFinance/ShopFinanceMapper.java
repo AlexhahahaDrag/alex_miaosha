@@ -26,13 +26,34 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
 
     ShopFinanceVo queryShopFinance(@Param("id") Long id);
 
-    List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(@Param("searchDate") String searchDate);
+    List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(@Param("searchDate") String searchDate,
+                                                      @Param("roleCode") String roleCode,
+                                                      @Param("userId") Long userId,
+                                                      @Param("orgId") Long orgId);
 
-    List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(@Param("searchDate") String searchDate);
+    List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(@Param("searchDate") String searchDate,
+                                                        @Param("roleCode") String roleCode,
+                                                        @Param("userId") Long userId,
+                                                        @Param("orgId") Long orgId);
 
-    List<ShopFinanceAnalysisVo> getPayWayInfo(@Param("searchDate") String searchDate);
+    List<ShopFinanceAnalysisVo> getPayWayInfo(@Param("searchDate") String searchDate,
+                                              @Param("roleCode") String roleCode,
+                                              @Param("userId") Long userId,
+                                              @Param("orgId") Long orgId);
 
-    List<ShopFinanceAnalysisVo> getShopNameInfo(@Param("searchDate") String searchDate);
+    List<ShopFinanceAnalysisVo> getShopNameInfo(@Param("searchDate") String searchDate,
+                                                @Param("roleCode") String roleCode,
+                                                @Param("userId") Long userId,
+                                                @Param("orgId") Long orgId);
 
-    ShopFinanceChainYearVo getChainAndYear(@Param("searchDate") String searchDate);
+    ShopFinanceChainYearVo getChainAndYear(@Param("searchDate") String searchDate,
+                                           @Param("roleCode") String roleCode,
+                                           @Param("userId") Long userId,
+                                           @Param("orgId") Long orgId);
+
+    List<ShopFinanceAnalysisVo> getCurShopFinanceInfo(@Param("startDate") String startDate,
+                                                      @Param("startDate") String endDate,
+                                                      @Param("roleCode") String roleCode,
+                                                      @Param("userId") Long userId,
+                                                      @Param("orgId") Long orgId);
 }
