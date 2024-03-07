@@ -30,7 +30,7 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
         return shopFinanceMapper.getDayShopFinanceInfo(searchDate,
                 roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo().getId());
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
         return shopFinanceMapper.getMonthShopFinanceInfo(searchDate,
                 roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo().getId());
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
@@ -48,15 +48,15 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
         return shopFinanceMapper.getPayWayInfo(searchDate,
                 roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo().getId());
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate) {
         TUserVo loginUser = userUtils.getLoginUser();
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopFinanceMapper.getShopNameInfo(searchDate,roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo().getId());
+        return shopFinanceMapper.getShopNameInfo(searchDate, roleInfoVo.getRoleCode(), loginUser.getId(),
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
         TUserVo loginUser = userUtils.getLoginUser();
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
         return shopFinanceMapper.getChainAndYear(searchDate, roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo().getId());
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
@@ -78,9 +78,9 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
             RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
             curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
                     roleInfoVo.getRoleCode(), loginUser.getId(),
-                    loginUser.getOrgInfoVo().getId());
+                    loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
         }
-        for(ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
+        for (ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
             weiXinService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "日" : "月"),
                     cur.getSaleAmount(), cur.getSaleNum());
         }

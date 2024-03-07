@@ -43,7 +43,7 @@ public class WeiXinServiceImpl implements WeiXinService {
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
         if (wxMpUserList.getTotal() > 0) {
             for (String userId : wxMpUserList.getOpenids()) {
-                if (!wechatAccountConfig.getAccountUserId().contains(userId)) {
+                if (!wechatAccountConfig.getAccountUserId().contains(userId + ",")) {
                     continue;
                 }
                 templateMessage.setToUser(userId);
@@ -69,7 +69,7 @@ public class WeiXinServiceImpl implements WeiXinService {
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
         if (wxMpUserList.getTotal() > 0) {
             for (String userId : wxMpUserList.getOpenids()) {
-                if (!wechatAccountConfig.getShopFinanceUserId().contains(userId)) {
+                if (!wechatAccountConfig.getShopFinanceUserId().contains(userId + ",")) {
                     continue;
                 }
                 templateMessage.setToUser(userId);
