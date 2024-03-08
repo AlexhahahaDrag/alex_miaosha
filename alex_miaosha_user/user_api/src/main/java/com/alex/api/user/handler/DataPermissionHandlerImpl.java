@@ -97,7 +97,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                 }
             }
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return where;
     }

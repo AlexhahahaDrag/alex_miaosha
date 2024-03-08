@@ -58,6 +58,9 @@ public class UserUtils {
      * return:      com.alex.api.user.vo.user.TUserVo
     */
     public TUserVo getLoginUser() {
+        if (RequestContextHolder.getRequestAttributes() == null) {
+            return null;
+        }
         HttpServletRequest request =((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String uuidToken = request.getHeader("Authorization");
         if (StringUtils.isEmpty(uuidToken)) {
