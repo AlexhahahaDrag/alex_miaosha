@@ -304,7 +304,12 @@
     <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
             t_org_user_info.org_id,
-            DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m-%d' ) AS info_date,
+            <if test="type == 'day'">
+                DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m-%d' ) AS info_date,
+            </if>
+            <if test="type == 'month'">
+                DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m' ) AS info_date,
+            </if>
             sum( t_shop_finance.sale_amount ) AS sale_amount,
             sum( t_shop_finance.sale_num ) AS sale_num
         FROM

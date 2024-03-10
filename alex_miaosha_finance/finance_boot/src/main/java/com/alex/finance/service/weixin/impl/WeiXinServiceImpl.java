@@ -54,12 +54,12 @@ public class WeiXinServiceImpl implements WeiXinService {
     }
 
     @Override
-    public void sentShopFinanceMessage(String date, BigDecimal saleAmount, BigDecimal saleNum) throws WxErrorException {
+    public void sentShopFinanceMessage(String infoDate, BigDecimal saleAmount, BigDecimal saleNum) throws WxErrorException {
         String token = getToken();
         List<WxMpTemplateData> dataList = Lists.newArrayList();
-        dataList.add(new WxMpTemplateData("date", date, "#A9A9A9"));
-        dataList.add(new WxMpTemplateData("saleAmount", saleAmount.toString(), "#A9A9A9"));
-        dataList.add(new WxMpTemplateData("saleNum", saleNum.toString(), "#A9A9A9"));
+        dataList.add(new WxMpTemplateData("infoDate", infoDate.toString(), "#00FF00"));
+        dataList.add(new WxMpTemplateData("saleAmount", saleAmount.toString(), "#00FF00"));
+        dataList.add(new WxMpTemplateData("saleNum", saleNum.toString(), "#00FF00"));
         WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
                 .templateId(wechatAccountConfig.getShopFinanceTemplateId())
                 .url(wechatAccountConfig.getUrl() + "/wxaapi/newtmpl/getpubtemplatetitles?access_token=" + token)

@@ -55,5 +55,6 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
                                                       @Param("endDate") String endDate,
                                                       @Param("roleCode") String roleCode,
                                                       @Param("userId") Long userId,
-                                                      @Param("orgId") Long orgId);
+                                                      @Param("orgId") Long orgId,
+                                                      @Param("type") String type);
 }

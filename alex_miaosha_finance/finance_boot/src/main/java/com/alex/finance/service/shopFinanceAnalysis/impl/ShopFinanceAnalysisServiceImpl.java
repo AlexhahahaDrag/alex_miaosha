@@ -69,9 +69,9 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     @Override
     public void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception {
         List<ShopFinanceAnalysisVo> curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
-                    null, null, null);
+                    null, null, null, type);
         for (ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
-            weiXinService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "日" : "月"),
+            weiXinService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "" : "月"),
                     cur.getSaleAmount(), cur.getSaleNum());
         }
     }
