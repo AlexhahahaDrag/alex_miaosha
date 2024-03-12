@@ -265,18 +265,14 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             if (admin.getAvatar() == null) {
                 return null;
             }
-            log.info("异步获取组织架构信息");
             return getFileUrl(admin.getAvatar());
         }).exceptionally(ex -> {
             log.error("异步获取组织架构信息发生错误", ex);
             return null; // 返回一个空列表或合适的错误处理
         });
         CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
-            log.info("异步获取组织架构信息");
             RequestContextHolder.setRequestAttributes(attributes);
-            List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
-            log.info("异步获取组织架构信息{}", JSONObject.toJSONString(orgInfoList));
-            return orgInfoList;
+            return orgUserInfoService.getOrgInfoList(tUserVo.getId());
         }).exceptionally(ex -> {
             log.error("异步获取组织架构信息发生错误", ex);
             return Collections.emptyList(); // 返回一个空列表或合适的错误处理
@@ -299,10 +295,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
                 List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
                 List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
-                // 根据需要处理这些信息
-                log.info("用户信息: " + orgInfoList);
-                log.info("角色信息: " + roleInfoList);
-                log.info("权限信息: " + menuList);
                 tUserVo.setAvatarUrl(avatarFuture.get());
                 tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
                 tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));

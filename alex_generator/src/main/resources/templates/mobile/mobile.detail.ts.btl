@@ -38,6 +38,11 @@ export const rulesRef = reactive({
             required: true,
             message: label.${field.propertyName} + '不能为空！',
         },
+        <% if(field.propertyType == 'BigDecimal'){ %>
+        { pattern: /^\d+(\.\d+)?$/, message: `请输入正确的${field.comment}` }
+        <% } else if(field.propertyType == 'Integer'){ %>
+        { pattern: /^\d+?$/, message: `请输入正确的${field.comment}` }
+        <% } %>
     ],
 <% } %>
 });

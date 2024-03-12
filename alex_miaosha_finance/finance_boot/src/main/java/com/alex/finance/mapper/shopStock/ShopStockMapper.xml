@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.mapper.shopStock.ShopStockMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.entity.shopStock.ShopStock">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="shop_name" property="shopName" />
+        <result column="shop_code" property="shopCode" />
+        <result column="cost_amount" property="costAmount" />
+        <result column="sale_amount" property="saleAmount" />
+        <result column="is_valid" property="isValid" />
+        <result column="sale_date" property="saleDate" />
+        <result column="category" property="category" />
+        <result column="purchase_place" property="purchasePlace" />
+        <result column="sale_num" property="saleNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_shop_stock.id,
+        t_shop_stock.is_delete,
+        t_shop_stock.creator,
+        t_shop_stock.updater,
+        t_shop_stock.deleter,
+        t_shop_stock.create_time,
+        t_shop_stock.update_time,
+        t_shop_stock.delete_time,
+        t_shop_stock.operator,
+        t_shop_stock.operate_time,
+        t_shop_stock.shop_name, t_shop_stock.shop_code, t_shop_stock.cost_amount, t_shop_stock.sale_amount, t_shop_stock.is_valid, t_shop_stock.sale_date, t_shop_stock.category, t_shop_stock.purchase_place, t_shop_stock.sale_num
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
+        select <include refid="Base_Column_List"/>from t_shop_stock
+        <where>
+            t_shop_stock.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopStock" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
+        select <include refid="Base_Column_List"/> from t_shop_stock
+        <where>
+            t_shop_stock.id = #{id}
+            and t_shop_stock.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "shopStockVo != null">
+          <if test = "shopStockVo.shopName != null">
+            and t_shop_stock.shop_name like concat('%', #{shopStockVo.shopName}, '%')
+          </if>
+          <if test = "shopStockVo.shopCode != null">
+            and t_shop_stock.shop_code like concat('%', #{shopStockVo.shopCode}, '%')
+          </if>
+          <if test = "shopStockVo.costAmount != null">
+            and t_shop_stock.cost_amount = #{shopStockVo.costAmount}
+          </if>
+          <if test = "shopStockVo.saleAmount != null">
+            and t_shop_stock.sale_amount = #{shopStockVo.saleAmount}
+          </if>
+          <if test = "shopStockVo.isValid != null">
+            and t_shop_stock.is_valid like concat('%', #{shopStockVo.isValid}, '%')
+          </if>
+          <if test = "shopStockVo.saleDate != null">
+            and t_shop_stock.sale_date = #{shopStockVo.saleDate}
+          </if>
+          <if test = "shopStockVo.category != null">
+            and t_shop_stock.category like concat('%', #{shopStockVo.category}, '%')
+          </if>
+          <if test = "shopStockVo.purchasePlace != null">
+            and t_shop_stock.purchase_place like concat('%', #{shopStockVo.purchasePlace}, '%')
+          </if>
+          <if test = "shopStockVo.saleNum != null">
+            and t_shop_stock.sale_num = #{shopStockVo.saleNum}
+          </if>
+        </if>
+     </sql>
+</mapper>

@@ -117,11 +117,10 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     /**
      * @param menuInfoList
-     * @param menuName
-     * description: 根据菜单名称查询菜单信息
-     * author:      majf
-     * return:      com.alex.generator.vo.MenuSearchInfo
-    */
+     * @param menuName     description: 根据菜单名称查询菜单信息
+     *                     author:      majf
+     *                     return:      com.alex.generator.vo.MenuSearchInfo
+     */
     private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {
         MenuSearchInfo menuSearchInfo = new MenuSearchInfo();
         if (menuInfoList == null || menuInfoList.isEmpty() || StringUtils.isEmpty(menuName)) {
@@ -129,7 +128,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             return menuSearchInfo;
         }
         int orderBy = 0;
-        for(MenuInfoVo menuInfoVo : menuInfoList) {
+        for (MenuInfoVo menuInfoVo : menuInfoList) {
             if (menuName.equals(menuInfoVo.getName())) {
                 menuSearchInfo.setMenuInfoVo(menuInfoVo);
                 menuSearchInfo.setMenuExists(true);
@@ -180,8 +179,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         Result<List<PermissionInfoVo>> result = userApi.getPermissionInfoList(query);
         List<PermissionInfoVo> menuInfoList = result.getData();
         PermissionSearchInfo moduleMenuInfo = findPermissionInfo(menuInfoList, javaPath);
-        PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), fileName);
-        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), fileName + DETAIL);
+        PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName);
+        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName + ":" + DETAIL);
         if (!moduleMenuInfo.getPermissionExists()) {
             PermissionInfoVo addPermissionInfoVo = addPermissionInfo(getPermissionInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName)));
             moduleMenuInfo.setPermissionInfoVo(addPermissionInfoVo);
@@ -193,7 +192,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfo.setPermissionInfoVo(addPermissionInfo(addPermissionInfo));
         }
-        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail" , fileName + "/" + fileName + "Detail",
+        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail", fileName + "/" + fileName + "Detail",
                 moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo + "详情");
         if (detailMenuInfo.getPermissionExists()) {
             addChildPermissionInfo.setId(detailMenuInfo.getPermissionInfoVo().getId());
@@ -205,17 +204,16 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     /**
      * @param permissionInfoList
-     * @param permissionCode
-     * description: 根据菜单名称查询菜单信息
-     * author:      majf
-     * return:      com.alex.generator.vo.MenuSearchInfo
+     * @param permissionCode     description: 根据菜单名称查询菜单信息
+     *                           author:      majf
+     *                           return:      com.alex.generator.vo.MenuSearchInfo
      */
     private PermissionSearchInfo findPermissionInfo(List<PermissionInfoVo> permissionInfoList, String permissionCode) {
         PermissionSearchInfo permissionSearchInfo = new PermissionSearchInfo();
         if (permissionInfoList == null || permissionInfoList.isEmpty() || StringUtils.isEmpty(permissionCode)) {
             return permissionSearchInfo;
         }
-        for(PermissionInfoVo permissionInfoVo : permissionInfoList) {
+        for (PermissionInfoVo permissionInfoVo : permissionInfoList) {
             if (permissionCode.equals(permissionInfoVo.getPermissionCode())) {
                 permissionSearchInfo.setPermissionInfoVo(permissionInfoVo);
                 permissionSearchInfo.setPermissionExists(true);
@@ -269,7 +267,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator + fileName);
         pathMap.put(OutputFile.client, clientPath + separator + fileName);
         pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
-        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName +  "Detail");
+        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName + "Detail");
         pathMap.put(OutputFile.list, vuePath + separator + fileName);
         pathMap.put(OutputFile.ts, tsPath + separator + fileName);
         pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
@@ -294,9 +292,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         fastAutoGenerator.globalConfig(builder -> {
             builder.outputDir(projectPath + "\\java")
                     .author(author)
-                    .enableSwagger()
-                    .disableOpenDir()
                     .fileOverride()
+                    .enableSwagger()
+                    .disableOpenDir() // 打开目录
                     .dateType(DateType.TIME_PACK)
                     .commentDate("yyyy-MM-dd HH:mm:ss");
             if (generatorConfig.isFeign()) {
@@ -400,7 +398,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .mobileTsTsBuilder()
                     .formatMobileTsTsFileName("%sTs")
                     .build()
-            ; // 设置过滤表前缀
+            ;
         });
         fastAutoGenerator.injectionConfig(builder -> {
             builder.beforeOutputFile((tableInfo, objectMap) -> {
