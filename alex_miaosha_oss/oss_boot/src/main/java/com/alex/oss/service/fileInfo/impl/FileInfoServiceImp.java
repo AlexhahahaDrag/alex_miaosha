@@ -1,9 +1,9 @@
 package com.alex.oss.service.fileInfo.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FileException;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
@@ -13,16 +13,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +33,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> implements FileInfoService {
 
     private final FileInfoMapper fileInfoMapper;
@@ -60,9 +58,9 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         }
         FileInfoVo uploadFile = uploadFile(type, file);
         FileInfo fileInfo = new FileInfo();
-        BeanUtil.copyProperties(uploadFile, fileInfo);
+        BeanUtils.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
-        BeanUtil.copyProperties(fileInfo, uploadFile);
+        BeanUtils.copyProperties(fileInfo, uploadFile);
         return uploadFile;
     }
 
@@ -72,10 +70,10 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         FileInfoVo uploadFile = null;
         if (file != null) {
             uploadFile = uploadFile(type, file);
-            BeanUtil.copyProperties(uploadFile, fileInfo, "id");
+            BeanUtils.copyProperties(uploadFile, fileInfo, "id");
         }
         fileInfoMapper.updateById(fileInfo);
-        BeanUtil.copyProperties(fileInfo, uploadFile);
+        BeanUtils.copyProperties(fileInfo, uploadFile);
         return uploadFile;
     }
 
@@ -96,8 +94,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
-        FileInfoVo fileInfoVo = minioFileService.uploadFile(file, type);
-        return fileInfoVo;
+        return minioFileService.uploadFile(file, type);
     }
 
     @Override
@@ -114,30 +111,14 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         fileInfos.forEach(item -> {
             try {
                 String url = minioFileService.preview(item.getBucketName(), item.getUrl());
-                map.put(item.getId(), Optional.ofNullable(url).map(ii -> ii.replace("http://minio:9000", "https://mjzp.xyz")).orElse(""));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InvalidResponseException e) {
-                e.printStackTrace();
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (ServerException e) {
-                e.printStackTrace();
-            } catch (ErrorResponseException e) {
-                e.printStackTrace();
-            } catch (XmlParserException e) {
-                e.printStackTrace();
-            } catch (InsufficientDataException e) {
-                e.printStackTrace();
-            } catch (InternalException e) {
-                e.printStackTrace();
+                map.put(item.getId(), Optional.ofNullable(url).orElse(""));
+            } catch (Exception e) {
+                log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
             }
         });
         return fileInfos.parallelStream().map(item -> {
             FileInfoVo fileInfoVo = new FileInfoVo();
-            BeanUtil.copyProperties(item, fileInfoVo);
+            BeanUtils.copyProperties(item, fileInfoVo);
             fileInfoVo.setPreUrl(map.get(item.getId()));
             return fileInfoVo;
         }).collect(Collectors.toList());

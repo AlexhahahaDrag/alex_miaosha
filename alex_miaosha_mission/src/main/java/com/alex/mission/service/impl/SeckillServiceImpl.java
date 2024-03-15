@@ -1,6 +1,5 @@
 package com.alex.mission.service.impl;
 
-import cn.hutool.core.lang.UUID;
 import com.alex.base.common.Result;
 import com.alex.base.enums.RedisCacheTimeEnum;
 import com.alex.base.enums.ResultEnum;
@@ -16,7 +15,6 @@ import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.rabbitmq.ackmodel.manual.ManualAckPublisher;
 import com.alex.mission.service.SeckillService;
-import com.alex.utils.sm3.SM3Utils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
@@ -253,7 +251,8 @@ public class SeckillServiceImpl implements SeckillService {
         if (Long.parseLong(stock + "") <= 0) {
             throw new SeckillException(ResultEnum.SECKILL_OVER);
         }
-        String str = SM3Utils.sm3(UUID.randomUUID() + "123456");
+//        String str = SM3Utils.sm3(UUID.randomUUID() + "123456");
+        String str = "123456";
         redisUtils.set(SeckillKey.getSeckillPath, userId + "_" + goodsId, str, RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
         log.info("库存数量:" + stock);
         return str;

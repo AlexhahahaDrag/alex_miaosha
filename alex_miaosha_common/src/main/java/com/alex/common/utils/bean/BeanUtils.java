@@ -1,7 +1,6 @@
 package com.alex.common.utils.bean;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSONObject;
 
 /**
  *description:  bean string 转化工具
@@ -21,11 +20,11 @@ public class BeanUtils {
         } else if (String.class.equals(clazz)) {
             return (String) value;
         }
-        return JSONUtil.toJsonStr(value);
+        return JSONObject.toJSONString(value);
     }
 
     public static<T> T stringToBean(String str, Class<T> clazz) {
-        if (str == null || str.length() == 0 || clazz == null) {
+        if (str == null || str.isEmpty() || clazz == null) {
             return null;
         }
         if (clazz == Integer.class || clazz == int.class) {
@@ -35,10 +34,10 @@ public class BeanUtils {
         } if (clazz == Long.class || clazz == long.class) {
             return (T) Long.valueOf(str);
         }
-        return JSONUtil.toBean(str, clazz);
+        return JSONObject.parseObject(str, clazz);
     }
 
     public static void copyProperties(Object source, Object target, String... ignoreProperties) {
-        BeanUtil.copyProperties(source, target, ignoreProperties);
+        BeanUtils.copyProperties(source, target, ignoreProperties);
     }
 }

@@ -1,17 +1,18 @@
 package com.alex.user.service.roleInfo.impl;
 
-import com.alex.user.entity.roleInfo.RoleInfo;
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.user.entity.roleInfo.RoleInfo;
 import com.alex.user.mapper.roleInfo.RoleInfoMapper;
 import com.alex.user.service.roleInfo.RoleInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     @Override
     public Boolean addRoleInfo(RoleInfoVo roleInfoVo) {
         RoleInfo roleInfo = new RoleInfo();
-        BeanUtil.copyProperties(roleInfoVo, roleInfo);
+        BeanUtils.copyProperties(roleInfoVo, roleInfo);
         roleInfoMapper.insert(roleInfo);
         return true;
     }
@@ -48,7 +49,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     @Override
     public Boolean updateRoleInfo(RoleInfoVo roleInfoVo) {
         RoleInfo roleInfo = new RoleInfo();
-        BeanUtil.copyProperties(roleInfoVo, roleInfo);
+        BeanUtils.copyProperties(roleInfoVo, roleInfo);
         roleInfoMapper.updateById(roleInfo);
         return true;
     }

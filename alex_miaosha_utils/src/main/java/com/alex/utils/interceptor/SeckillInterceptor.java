@@ -53,7 +53,7 @@ public class SeckillInterceptor {
 //        ServletOutputStream outputStream = null;
 //        try {
 //            outputStream = response.getOutputStream();
-//            String str = JSONUtil.toJsonStr(Result.error(code, message));
+//            String str = JSONObject.toJSONString(Result.error(code, message));
 //            outputStream.write(str.getBytes("UTF-8"));
 //            outputStream.flush();
 //            outputStream.close();

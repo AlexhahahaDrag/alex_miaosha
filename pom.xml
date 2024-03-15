@@ -58,7 +58,6 @@
         <lombok.version>1.18.24</lombok.version>
         <mybatisplus.version>3.5.2</mybatisplus.version>
         <redis.version>2.7.0</redis.version>
-        <hutool.version>5.8.3</hutool.version>
         <jackson.version>2.11.3</jackson.version>
         <gson.version>2.9.0</gson.version>
         <spring-web.version>5.2.10.RELEASE</spring-web.version>
@@ -175,13 +174,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${redis.version}</version>
-            </dependency>
-
-            <!--胡涂包-->
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
             </dependency>
 
             <dependency>

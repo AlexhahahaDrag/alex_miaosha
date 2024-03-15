@@ -1,8 +1,8 @@
 package com.alex.user.service.user.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
@@ -29,7 +29,6 @@ import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
-import com.alex.api.user.user.UserUtils;
 import com.alex.utils.IpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -322,7 +321,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 //        tUserVo.setMenuInfoVoList(menuList);
 //        result.put(SysConf.MENU, menuList);
 //        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-//        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONUtil.toJsonStr(tUserVo), expiration, TimeUnit.SECONDS);
+//        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
 //        result.put(SysConf.ADMIN, tUserVo);
 
         stopWatch.stop();
@@ -385,9 +384,10 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
      * author: alex
      * return: java.lang.Integer
      */
-    private Integer setLoginCommit(HttpServletRequest request, String username) {
+    private Integer setLoginCommit(HttpServletRequest request, String username) throws Exception {
         String ip = IpUtils.getIpAddr(request);
-        String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username;
+        String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip +
+                RedisConstants.SEGMENTATION + username;
         String count = redisUtils.get(loginCountKey);
         int surplusCount = RedisConstants.NUM_FIVE;
         int exTime = 30;
@@ -473,7 +473,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             onlineAdmin.setLoginLocation(jsonResult);
         }
         // 将登录的管理员存储到在线用户表
-        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONUtil.toJsonStr(onlineAdmin), expiration, TimeUnit.SECONDS);
+        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(onlineAdmin), expiration, TimeUnit.SECONDS);
         // 在维护一张表，用于 uuid - token 互相转换
         redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
     }

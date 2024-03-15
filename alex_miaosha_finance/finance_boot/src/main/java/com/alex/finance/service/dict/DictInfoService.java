@@ -31,4 +31,6 @@ public interface DictInfoService extends IService<DictInfo> {
     DictInfo queryDictInfoByTypeCode(String typeCode);
 
     List<DictInfoVo> listByBelong(String belongTo);
+
+    boolean initDictRedis();
 }

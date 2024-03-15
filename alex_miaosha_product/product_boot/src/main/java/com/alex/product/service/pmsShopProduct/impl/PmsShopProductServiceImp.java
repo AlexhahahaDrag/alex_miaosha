@@ -1,7 +1,7 @@
 package com.alex.product.service.pmsShopProduct.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.product.entity.pmsShopProduct.PmsShopProduct;
@@ -46,7 +46,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
     @Override
     public Boolean addPmsShopProduct(PmsShopProductVo pmsShopProductVo) {
         PmsShopProduct pmsShopProduct = new PmsShopProduct();
-        BeanUtil.copyProperties(pmsShopProductVo, pmsShopProduct);
+        BeanUtils.copyProperties(pmsShopProductVo, pmsShopProduct);
         pmsShopProductMapper.insert(pmsShopProduct);
         return true;
     }
@@ -54,7 +54,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
     @Override
     public Boolean updatePmsShopProduct(PmsShopProductVo pmsShopProductVo) {
         PmsShopProduct pmsShopProduct = new PmsShopProduct();
-        BeanUtil.copyProperties(pmsShopProductVo, pmsShopProduct);
+        BeanUtils.copyProperties(pmsShopProductVo, pmsShopProduct);
         pmsShopProductMapper.updateById(pmsShopProduct);
         return true;
     }
@@ -95,7 +95,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
                 .eq(PmsShopProduct::getSkuId, skuId)
                 .eq(PmsShopProduct::getIsCompare, true);
         List<PmsShopProduct> list = this.list(query);
-        if (list != null && list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             list.forEach(item -> item.setIsCompare(false));
         }
         PmsShopProduct pmsShopProduct = PmsShopProduct.builder().skuId(skuId).build();

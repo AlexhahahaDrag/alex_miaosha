@@ -1,11 +1,11 @@
 package com.alex.gateway.filter;
 
-import cn.hutool.json.JSONUtil;
 import com.alex.api.user.api.UserApi;
 import com.alex.base.common.Result;
 import com.alex.common.utils.secret.AESUtils;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,7 +32,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -123,7 +122,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         message.addProperty("success", false);
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
-        byte[] bits = new String(AESUtils.encrypt(JSONUtil.toJsonStr(message.toString()), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), Charset.forName("UTF-8")).getBytes();
+        byte[] bits = new String(AESUtils.encrypt(JSONObject.toJSONString(message.toString()), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), StandardCharsets.UTF_8).getBytes();
         DataBuffer buffer = response.bufferFactory().wrap(bits);
         //response.setStatusCode(HttpStatus.UNAUTHORIZED);
         //指定编码，否则在浏览器中会中文乱码
@@ -148,9 +147,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
-                            uppedContent = new String(AESUtils.encrypt(JSONUtil.toJsonStr(s),
+                            uppedContent = new String(AESUtils.encrypt(JSONObject.toJSONString(s),
                                     "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(),
-                                    Charset.forName("UTF-8")).getBytes();
+                                    StandardCharsets.UTF_8).getBytes();
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;

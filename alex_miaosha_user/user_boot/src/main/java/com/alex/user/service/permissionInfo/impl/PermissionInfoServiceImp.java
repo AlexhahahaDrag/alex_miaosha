@@ -1,7 +1,7 @@
 package com.alex.user.service.permissionInfo.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.permissionInfo.PermissionInfo;
 import com.alex.user.mapper.permissionInfo.PermissionInfoMapper;
@@ -43,7 +43,7 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     @Override
     public PermissionInfoVo addPermissionInfo(PermissionInfoVo permissionInfoVo) {
         PermissionInfo permissionInfo = new PermissionInfo();
-        BeanUtil.copyProperties(permissionInfoVo, permissionInfo);
+        BeanUtils.copyProperties(permissionInfoVo, permissionInfo);
         permissionInfoMapper.insert(permissionInfo);
         permissionInfoVo.setId(permissionInfo.getId());
         return permissionInfoVo;
@@ -52,7 +52,7 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     @Override
     public PermissionInfoVo updatePermissionInfo(PermissionInfoVo permissionInfoVo) {
         PermissionInfo permissionInfo = new PermissionInfo();
-        BeanUtil.copyProperties(permissionInfoVo, permissionInfo);
+        BeanUtils.copyProperties(permissionInfoVo, permissionInfo);
         permissionInfoMapper.updateById(permissionInfo);
         permissionInfoVo.setId(permissionInfo.getId());
         return permissionInfoVo;

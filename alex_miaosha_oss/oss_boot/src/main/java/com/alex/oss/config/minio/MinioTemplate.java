@@ -1,9 +1,8 @@
 package com.alex.oss.config.minio;
 
-import cn.hutool.core.lang.Assert;
-import cn.hutool.json.JSONUtil;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.vo.ObjectItem;
+import com.alibaba.fastjson2.JSONObject;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -55,10 +55,10 @@ public class MinioTemplate implements InitializingBean {
         Integer port = minioProperties.getPort();
         String accessKey = minioProperties.getAccessKey();
         String secretKey = minioProperties.getSecretKey();
-        Assert.notBlank(url, "minio url can't be null!");
+        Assert.notNull(url, "minio url can't be null!");
         Assert.notNull(port, "minio port can't be null!");
-        Assert.notBlank(accessKey, "minio url can't be null!");
-        Assert.notBlank(secretKey, "minio url can't be null!");
+        Assert.notNull(accessKey, "minio url can't be null!");
+        Assert.notNull(secretKey, "minio url can't be null!");
         minioClient = MinioClient.builder()
                 .endpoint(url, port, false)
                 .credentials(accessKey, secretKey)
@@ -133,7 +133,7 @@ public class MinioTemplate implements InitializingBean {
                 .contentType(contentType)
                 .stream(inputStream, inputStream.available(), -1)
                 .build());
-        log.info("上传文件结果：{}", JSONUtil.toJsonStr(objectWriteResponse));
+        log.info("上传文件结果：{}", JSONObject.toJSONString(objectWriteResponse));
         // 返回地址
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("url", filename);

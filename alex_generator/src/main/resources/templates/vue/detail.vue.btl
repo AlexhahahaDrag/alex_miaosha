@@ -164,7 +164,7 @@ const getDictInfoList = () => {
 
 const emit = defineEmits(['handleOk', 'handleCancel']);
 
-const handleOk = () => {
+const handleOk = (): void => {
   loading.value = true;
   if (formRef.value) {
     formRef.value.validateFields().then(
@@ -174,12 +174,12 @@ const handleOk = () => {
   }
 };
 
-const handleCancel = () => {
+const handleCancel = (): void => {
   emit('handleCancel', false);
 };
 
 //保存${table.comment!}信息
-function save${entity}Manager() {
+const save${entity}Manager = (): void => {
   let method = '';
   <% var id = 'id';
    for(field in table.fields){
@@ -212,15 +212,15 @@ function save${entity}Manager() {
     });
 }
 
-const onFinish = (values: any) => {
+const onFinish = (values: any): void => {
   console.log('Success:', values);
 };
 
-const onFinishFailed = (errorInfo: any) => {
+const onFinishFailed = (errorInfo: any): void => {
   console.log('Failed:', errorInfo);
 };
 
-function init() {
+const init = (): void => {
 <% if(hasDict) { %>
   getDictInfoList();
 <% } %>

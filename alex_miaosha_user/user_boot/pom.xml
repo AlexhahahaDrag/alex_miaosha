@@ -79,11 +79,6 @@
           <artifactId>JustAuth</artifactId>
           <version>1.16.5</version>
         </dependency>
-        
-<!--        <dependency>-->
-<!--            <groupId>cn.hutool</groupId>-->
-<!--            <artifactId>hutool-http</artifactId>-->
-<!--        </dependency>-->
     </dependencies>
 
     <build>

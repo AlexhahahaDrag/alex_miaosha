@@ -1,8 +1,8 @@
 package com.alex.user.service.roleUserInfo.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.roleUserInfo.RoleUserInfo;
 import com.alex.user.mapper.roleUserInfo.RoleUserInfoMapper;
@@ -42,7 +42,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
     @Override
     public Boolean addRoleUserInfo(RoleUserInfoVo roleUserInfoVo) {
         RoleUserInfo roleUserInfo = new RoleUserInfo();
-        BeanUtil.copyProperties(roleUserInfoVo, roleUserInfo);
+        BeanUtils.copyProperties(roleUserInfoVo, roleUserInfo);
         roleUserInfoMapper.insert(roleUserInfo);
         return true;
     }
@@ -50,7 +50,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
     @Override
     public Boolean updateRoleUserInfo(RoleUserInfoVo roleUserInfoVo) {
         RoleUserInfo roleUserInfo = new RoleUserInfo();
-        BeanUtil.copyProperties(roleUserInfoVo, roleUserInfo);
+        BeanUtils.copyProperties(roleUserInfoVo, roleUserInfo);
         roleUserInfoMapper.updateById(roleUserInfo);
         return true;
     }

@@ -1,12 +1,11 @@
 package com.alex.utils;
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.ClassLoaderUtil;
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -31,21 +30,37 @@ public class IpUtils {
     public static Searcher searcher;
 
     static {
-        ClassLoader classLoader = ClassLoaderUtil.getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(dbPath)) {
-            searcher = Searcher.newWithBuffer(IoUtil.readBytes(inputStream));
+            try {
+                assert inputStream != null;
+                byte[] cBuff = toByteArray(inputStream);
+                searcher = Searcher.newWithBuffer(cBuff);
+            } catch (Exception e) {
+                System.out.printf("failed to load content from `%s`: %s\n", dbPath, e);
+                e.getStackTrace();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int n;
+        while ((n = input.read(buffer)) != -1) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
+    }
+
     /**
-     * @param request
-     * description: 根据请求获取ip地址
-     * author: alex
-     * return: java.lang.String
+     * @param request description: 根据请求获取ip地址
+     *                author: alex
+     *                return: java.lang.String
      */
-    public static String getIpAddr(HttpServletRequest request) {
+    public static String getIpAddr(HttpServletRequest request) throws Exception {
         if (request == null) {
             return "";
         }
@@ -65,7 +80,7 @@ public class IpUtils {
                     ipAddress = inet.getHostAddress();
                 } catch (UnknownHostException e) {
                     log.error("查不到本机ip,", e);
-                    e.printStackTrace();
+                    throw new Exception("查不到本机ip");
                 }
             }
         }
@@ -79,10 +94,9 @@ public class IpUtils {
     }
 
     /**
-     * @param request
-     * description: 获取真实ip
-     * author: alex
-     * return: java.lang.String
+     * @param request description: 获取真实ip
+     *                author: alex
+     *                return: java.lang.String
      */
     public static String getRealIp(HttpServletRequest request) {
         String ip;
@@ -92,10 +106,9 @@ public class IpUtils {
     }
 
     /**
-     * @param ip
-     * description: 校验ip
-     * author: alex
-     * return: boolean
+     * @param ip description: 校验ip
+     *           author: alex
+     *           return: boolean
      */
     private static boolean checkNotIp(String ip) {
         return ip == null || StringUtils.isEmpty(ip) ||
@@ -103,10 +116,9 @@ public class IpUtils {
     }
 
     /**
-     * @param request
-     * description: 根据请求获取系统和浏览器信息
-     * author: alex
-     * return: java.util.Map<java.lang.String, java.lang.String>
+     * @param request description: 根据请求获取系统和浏览器信息
+     *                author: alex
+     *                return: java.util.Map<java.lang.String, java.lang.String>
      */
     public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("User-Agent");
@@ -178,8 +190,7 @@ public class IpUtils {
     /**
      * 判断是否是内网IP
      *
-     * @param ip
-     * return
+     * @param ip return
      */
     public static boolean isInner(String ip) {
         String reg = "(10|172|192)\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})";
@@ -190,10 +201,9 @@ public class IpUtils {
 
     /**
      * @param content
-     * @param encodingString
-     * description: 根据ip地址获取城市信息
-     * author: alex
-     * return: java.lang.String
+     * @param encodingString description: 根据ip地址获取城市信息
+     *                       author: alex
+     *                       return: java.lang.String
      */
     public static String getAddresses(String content, String encodingString) throws Exception {
         String ip = content.substring(3);
@@ -204,10 +214,9 @@ public class IpUtils {
     }
 
     /**
-     * @param ip
-     * description: 根据ip获取城市信息
-     * author: alex
-     * return: java.lang.String
+     * @param ip description: 根据ip获取城市信息
+     *           author: alex
+     *           return: java.lang.String
      */
     public static String getCityInfo(String ip) throws Exception {
         if (StringUtils.isEmpty(dbPath)) {

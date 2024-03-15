@@ -87,4 +87,11 @@ public class DictInfoController {
     public Result<List<DictInfoVo>> listByBelong(@RequestParam(value = "belongTo", required = false) String belongTo) {
         return Result.success(dictInfoService.listByBelong(belongTo));
     }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "初始化字典数据", notes = "初始化字典数据", response = Result.class)
+    @GetMapping(value = "/initDict")
+    public Result<Boolean> initDictRedis() {
+        return Result.success(dictInfoService.initDictRedis());
+    }
 }

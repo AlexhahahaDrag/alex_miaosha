@@ -1,17 +1,18 @@
 package com.alex.product.service.pmsAttr.impl;
 
-import com.alex.product.entity.pmsAttr.PmsAttr;
 import com.alex.api.product.vo.pmsAttr.PmsAttrVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.product.entity.pmsAttr.PmsAttr;
 import com.alex.product.mapper.pmsAttr.PmsAttrMapper;
 import com.alex.product.service.pmsAttr.PmsAttrService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class PmsAttrServiceImp extends ServiceImpl<PmsAttrMapper, PmsAttr> imple
     @Override
     public Boolean addPmsAttr(PmsAttrVo pmsAttrVo) {
         PmsAttr pmsAttr = new PmsAttr();
-        BeanUtil.copyProperties(pmsAttrVo, pmsAttr);
+        BeanUtils.copyProperties(pmsAttrVo, pmsAttr);
         pmsAttrMapper.insert(pmsAttr);
         return true;
     }
@@ -48,7 +49,7 @@ public class PmsAttrServiceImp extends ServiceImpl<PmsAttrMapper, PmsAttr> imple
     @Override
     public Boolean updatePmsAttr(PmsAttrVo pmsAttrVo) {
         PmsAttr pmsAttr = new PmsAttr();
-        BeanUtil.copyProperties(pmsAttrVo, pmsAttr);
+        BeanUtils.copyProperties(pmsAttrVo, pmsAttr);
         pmsAttrMapper.updateById(pmsAttr);
         return true;
     }

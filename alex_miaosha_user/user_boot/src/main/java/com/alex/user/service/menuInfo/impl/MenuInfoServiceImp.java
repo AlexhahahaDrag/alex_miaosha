@@ -1,7 +1,7 @@
 package com.alex.user.service.menuInfo.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.menuInfo.MenuInfo;
 import com.alex.user.mapper.menuInfo.MenuInfoMapper;
@@ -80,7 +80,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     @Override
     public MenuInfoVo addMenuInfo(MenuInfoVo menuInfoVo) {
         MenuInfo menuInfo = new MenuInfo();
-        BeanUtil.copyProperties(menuInfoVo, menuInfo);
+        BeanUtils.copyProperties(menuInfoVo, menuInfo);
         menuInfoMapper.insert(menuInfo);
         menuInfoVo.setId(menuInfo.getId());
         return menuInfoVo;
@@ -89,7 +89,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     @Override
     public MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo) {
         MenuInfo menuInfo = new MenuInfo();
-        BeanUtil.copyProperties(menuInfoVo, menuInfo);
+        BeanUtils.copyProperties(menuInfoVo, menuInfo);
         menuInfoMapper.updateById(menuInfo);
         return menuInfoVo;
     }

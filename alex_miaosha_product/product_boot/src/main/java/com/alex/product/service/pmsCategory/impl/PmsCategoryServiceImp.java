@@ -1,17 +1,18 @@
 package com.alex.product.service.pmsCategory.impl;
 
-import com.alex.product.entity.pmsCategory.PmsCategory;
 import com.alex.api.product.vo.pmsCategory.PmsCategoryVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.product.entity.pmsCategory.PmsCategory;
 import com.alex.product.mapper.pmsCategory.PmsCategoryMapper;
 import com.alex.product.service.pmsCategory.PmsCategoryService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class PmsCategoryServiceImp extends ServiceImpl<PmsCategoryMapper, PmsCat
     @Override
     public Boolean addPmsCategory(PmsCategoryVo pmsCategoryVo) {
         PmsCategory pmsCategory = new PmsCategory();
-        BeanUtil.copyProperties(pmsCategoryVo, pmsCategory);
+        BeanUtils.copyProperties(pmsCategoryVo, pmsCategory);
         pmsCategoryMapper.insert(pmsCategory);
         return true;
     }
@@ -48,7 +49,7 @@ public class PmsCategoryServiceImp extends ServiceImpl<PmsCategoryMapper, PmsCat
     @Override
     public Boolean updatePmsCategory(PmsCategoryVo pmsCategoryVo) {
         PmsCategory pmsCategory = new PmsCategory();
-        BeanUtil.copyProperties(pmsCategoryVo, pmsCategory);
+        BeanUtils.copyProperties(pmsCategoryVo, pmsCategory);
         pmsCategoryMapper.updateById(pmsCategory);
         return true;
     }

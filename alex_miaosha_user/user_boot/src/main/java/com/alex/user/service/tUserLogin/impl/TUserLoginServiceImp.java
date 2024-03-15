@@ -1,17 +1,18 @@
 package com.alex.user.service.tUserLogin.impl;
 
-import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.mapper.tUserLogin.TUserLoginMapper;
 import com.alex.user.service.tUserLogin.TUserLoginService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class TUserLoginServiceImp extends ServiceImpl<TUserLoginMapper, TUserLog
     @Override
     public Boolean addTUserLogin(TUserLoginVo tUserLoginVo) {
         TUserLogin tUserLogin = new TUserLogin();
-        BeanUtil.copyProperties(tUserLoginVo, tUserLogin);
+        BeanUtils.copyProperties(tUserLoginVo, tUserLogin);
         tUserLoginMapper.insert(tUserLogin);
         return true;
     }
@@ -48,7 +49,7 @@ public class TUserLoginServiceImp extends ServiceImpl<TUserLoginMapper, TUserLog
     @Override
     public Boolean updateTUserLogin(TUserLoginVo tUserLoginVo) {
         TUserLogin tUserLogin = new TUserLogin();
-        BeanUtil.copyProperties(tUserLoginVo, tUserLogin);
+        BeanUtils.copyProperties(tUserLoginVo, tUserLogin);
         tUserLoginMapper.updateById(tUserLogin);
         return true;
     }

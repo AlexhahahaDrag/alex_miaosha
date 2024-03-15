@@ -153,7 +153,7 @@ let ${field.propertyName}List = ref<dictInfo[]>([]);
   <% } %>
 <% } %>
 
-const getDictInfoList = () => {
+const getDictInfoList = (): void => {
   getDictList("${dictType}").then((res) => {
     if (res.code == "200") {
 <% for(field in table.fields){
@@ -174,19 +174,19 @@ const getDictInfoList = () => {
 }
 <% } %>
 
-function cancelQuery() {
+const cancelQuery = (): void => {
   searchInfo.value = {};
 }
 
-function query() {
+const query = (): void => {
   get${entity}ListPage(searchInfo.value, pagination.value);
 }
 
-function handleTableChange(pagination) {
+const handleTableChange = (pagination): void => {
   get${entity}ListPage(searchInfo.value, pagination);
 }
 
-function del${entity}(ids: string) {
+const del${entity} = (ids: string): void => {
   delete${entity}(ids).then((res) => {
     if (res.code == "200") {
       message.success((res && "删除" + res.message) || "删除成功！", 3);
@@ -197,7 +197,7 @@ function del${entity}(ids: string) {
   });
 }
 
-function batchDel${entity}() {
+const batchDel${entity} = (): void => {
   let ids = "";
   if (rowIds && rowIds.length > 0) {
     rowIds.forEach((item: string) => {
@@ -215,11 +215,11 @@ let loading = ref<boolean>(false);
 
 let dataSource = ref();
 
-const cancel = (e: MouseEvent) => {
+const cancel = (e: MouseEvent): void => {
   console.log(e);
 }
 
-function get${entity}ListPage(param: SearchInfo, cur: pageInfo) {
+const get${entity}ListPage = (param: SearchInfo, cur: pageInfo): void => {
   loading.value = true;
   get${entity}Page(param, cur.current, cur.pageSize)
     .then((res) => {
@@ -237,7 +237,7 @@ function get${entity}ListPage(param: SearchInfo, cur: pageInfo) {
     });
 }
 
-function init() {
+const init = (): void => {
 <% if(hasDict) { %>
   getDictInfoList();
 <% } %>
@@ -252,7 +252,7 @@ let visible = ref<boolean>(false);
 let modelInfo = ref<ModelInfo>({});
 
 //新增和修改弹窗
-function edit${entity}(type: string, id?: number) {
+const edit${entity} = (type: string, id?: number): void => {
   if (type == "add") {
     modelInfo.value.title = "新增明细";
     modelInfo.value.id = undefined;
@@ -264,12 +264,12 @@ function edit${entity}(type: string, id?: number) {
   visible.value = true;
 }
 
-const handleOk = (v: boolean) => {
+const handleOk = (v: boolean): void => {
   visible.value = v;
   get${entity}ListPage(searchInfo.value, pagination.value);
 };
 
-const handleCancel = (v: boolean) => {
+const handleCancel = (v: boolean): void => {
   visible.value = v;
 };
 </script>

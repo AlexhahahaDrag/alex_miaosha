@@ -92,7 +92,7 @@ let ${field.propertyName}Info = ref<Info>({
    <% } %>
 <% } %>
 
-const choose = (type: string) => {
+const choose = (type: string): void => {
     switch (type) {
    <% for(field in table.fields){
           if(field.keyFlag) {
@@ -109,7 +109,7 @@ const choose = (type: string) => {
     popInfo.value.showFlag = true;
 };
 
-const selectInfo = (type: string, value: any, name: string) => {
+const selectInfo = (type: string, value: any, name: string): void => {
     popInfo.value.showFlag = false;
     switch (type) {
 <% for(field in table.fields){
@@ -131,7 +131,7 @@ const cancelInfo = () => {
     popInfo.value.showFlag = false;
 };
 
-const getListName = (list: any[], value: any, code: string, name: string) => {
+const getListName = (list: any[], value: any, code: string, name: string): void => {
    if (!list?.length) {
     return "";
    }
@@ -144,7 +144,7 @@ const getListName = (list: any[], value: any, code: string, name: string) => {
    return listName;
 };
 
-function getDictInfoList(res: any) {
+const getDictInfoList = (res: any): void => {
    if (res?.code == "200") {
 <% for(field in table.fields){
            if(field.keyFlag) {
@@ -199,7 +199,7 @@ let ${field.propertyName}Info = ref<any>({
 
 let chooseDateInfo = ref<Info>({ showFlag: false });
 
-const chooseDate = (type: string) => {
+const chooseDate = (type: string): void => {
     chooseDateInfo.value.showFlag = true;
     switch (type) {
     <% for(field in table.fields){
@@ -215,7 +215,7 @@ const chooseDate = (type: string) => {
     }
 };
 
-const selectDateInfo = (date: Dayjs, dateName: string, type: string) => {
+const selectDateInfo = (date: Dayjs, dateName: string, type: string): void => {
     switch(type) {
     <% for(field in table.fields){
         if(field.keyFlag) {
@@ -232,11 +232,11 @@ const selectDateInfo = (date: Dayjs, dateName: string, type: string) => {
     chooseDateInfo.value.showFlag = false;
 };
 
-const cancelDateInfo = () => {
+const cancelDateInfo = (): void => {
     chooseDateInfo.value.showFlag = false;
 }
 
-const initInfoDate = (infoDate: Dayjs, type: string) => {
+const initInfoDate = (infoDate: Dayjs, type: string): void => {
     if (infoDate) {
         switch(type) {
         <% for(field in table.fields){
@@ -252,7 +252,7 @@ const initInfoDate = (infoDate: Dayjs, type: string) => {
 }
 <% } %>
 
-const onSubmit = () => {
+const onSubmit = (): void => {
     let method = 'post';
     if (formInfo.value.id) {
         method = 'put'
@@ -267,7 +267,7 @@ const onSubmit = () => {
     });
 };
 
-function init() {
+const init = (): void => {
     let id: any = route?.query?.id;
     if (id) {
         Promise.all([
@@ -282,18 +282,6 @@ function init() {
                     if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
                 formInfo.value.${field.propertyName} = dayjs(formInfo.value.${field.propertyName});
                 initInfoDate(formInfo.value.${field.propertyName}, '${field.propertyName}');
-                    <% } %>
-                <% } %>
-                <% if(hasDict) { %>
-                    <% for(field in table.fields){
-                        if(field.propertyType == 'LocalDateTime' || field.propertyType == 'Date'){ %>
-                ${field.propertyName}Name.value = getListName(
-                   ${field.propertyName}Info.value.list || [],
-                   formInfo.value.${field.propertyName},
-                   "typeCode",
-                   "typeName"
-                );
-                        <% } %>
                     <% } %>
                 <% } %>
             } else {

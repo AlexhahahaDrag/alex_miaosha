@@ -1,17 +1,18 @@
 package com.alex.product.service.pmsSkuInfo.impl;
 
-import com.alex.product.entity.pmsSkuInfo.PmsSkuInfo;
 import com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.product.entity.pmsSkuInfo.PmsSkuInfo;
 import com.alex.product.mapper.pmsSkuInfo.PmsSkuInfoMapper;
 import com.alex.product.service.pmsSkuInfo.PmsSkuInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class PmsSkuInfoServiceImp extends ServiceImpl<PmsSkuInfoMapper, PmsSkuIn
     @Override
     public Boolean addPmsSkuInfo(PmsSkuInfoVo pmsSkuInfoVo) {
         PmsSkuInfo pmsSkuInfo = new PmsSkuInfo();
-        BeanUtil.copyProperties(pmsSkuInfoVo, pmsSkuInfo);
+        BeanUtils.copyProperties(pmsSkuInfoVo, pmsSkuInfo);
         pmsSkuInfoMapper.insert(pmsSkuInfo);
         return true;
     }
@@ -48,7 +49,7 @@ public class PmsSkuInfoServiceImp extends ServiceImpl<PmsSkuInfoMapper, PmsSkuIn
     @Override
     public Boolean updatePmsSkuInfo(PmsSkuInfoVo pmsSkuInfoVo) {
         PmsSkuInfo pmsSkuInfo = new PmsSkuInfo();
-        BeanUtil.copyProperties(pmsSkuInfoVo, pmsSkuInfo);
+        BeanUtils.copyProperties(pmsSkuInfoVo, pmsSkuInfo);
         pmsSkuInfoMapper.updateById(pmsSkuInfo);
         return true;
     }

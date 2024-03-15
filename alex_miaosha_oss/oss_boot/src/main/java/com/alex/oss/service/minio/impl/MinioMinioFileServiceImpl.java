@@ -1,6 +1,5 @@
 package com.alex.oss.service.minio.impl;
 
-import cn.hutool.core.io.FileUtil;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.enums.BucketNameEnum;
@@ -46,12 +45,15 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
         String fileName = file.getOriginalFilename();
         fileVo.setFileName(fileName);
         fileVo.setFileSize(file.getSize());
-        fileVo.setFileType(fileName.substring(fileName.lastIndexOf('.') + 1));
+        String suffixStr = StringUtils.isBlank(fileName) ? null : fileName.substring(fileName.lastIndexOf('.') + 1);
+        fileVo.setFileType(suffixStr);
         String bucketName = getBucket(type);
         fileVo.setBucketName(bucketName);
         fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
         // 名称为/分隔的时候，会在minio中创建目录去存储文件
-        String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" + FileUtil.getPrefix(fileName) + SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + FileUtil.getSuffix(fileName);
+        String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
+                (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
+                SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
         InputStream inputStream = file.getInputStream();
         Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
         fileVo.setUrl(upload.get("url"));
@@ -71,7 +73,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
 
     @Override
     public InputStream fileDownload(FileInfoVo fileInfo) {
-        return minioTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl(), fileInfo.getIsDelete() == 0 ? false : true);
+        return minioTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl(), fileInfo.getIsDelete() != 0);
     }
 
     /**
@@ -81,16 +83,12 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
      * return: java.lang.String
      */
     private String getBucket(String type) {
-        switch (StringUtils.isEmpty(type) ? "" : type) {
-            case "user":
-                return BucketNameEnum.USER_BUCKET.getValue();
-            case "goods":
-                return BucketNameEnum.GOODS_BUCKET.getValue();
-            case "common":
-                return BucketNameEnum.COMMON_BUCKET.getValue();
-            default:
-                return type + "-bucket";
-        }
+        return switch (StringUtils.isEmpty(type) ? "" : type) {
+            case "user" -> BucketNameEnum.USER_BUCKET.getValue();
+            case "goods" -> BucketNameEnum.GOODS_BUCKET.getValue();
+            case "common" -> BucketNameEnum.COMMON_BUCKET.getValue();
+            default -> type + "-bucket";
+        };
     }
 
     @Override

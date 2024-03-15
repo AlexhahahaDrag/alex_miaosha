@@ -10,12 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
- * description:  lua工具类
- * author:       majf
- * createDate:   2022/9/7 10:41
- * version:      1.0.0
- */
-/**
  *description:  redis lua 脚本
  *author:       majf
  *createDate:   2022/7/14 11:26
@@ -62,7 +56,6 @@ public class LuaUtils {
             return redisTemplate.execute(redisScript, Collections.singletonList(lockKey));
         } catch (Exception e) {
             log.error("统计访问次数失败！错误信息: {}", e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }

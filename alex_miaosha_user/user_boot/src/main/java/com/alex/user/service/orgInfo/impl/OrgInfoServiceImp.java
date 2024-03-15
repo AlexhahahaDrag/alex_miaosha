@@ -1,7 +1,7 @@
 package com.alex.user.service.orgInfo.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.orgInfo.OrgInfo;
 import com.alex.user.mapper.orgInfo.OrgInfoMapper;
@@ -41,7 +41,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
     @Override
     public Boolean addOrgInfo(OrgInfoVo orgInfoVo) {
         OrgInfo orgInfo = new OrgInfo();
-        BeanUtil.copyProperties(orgInfoVo, orgInfo);
+        BeanUtils.copyProperties(orgInfoVo, orgInfo);
         orgInfoMapper.insert(orgInfo);
         return true;
     }
@@ -49,7 +49,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
     @Override
     public Boolean updateOrgInfo(OrgInfoVo orgInfoVo) {
         OrgInfo orgInfo = new OrgInfo();
-        BeanUtil.copyProperties(orgInfoVo, orgInfo);
+        BeanUtils.copyProperties(orgInfoVo, orgInfo);
         orgInfoMapper.updateById(orgInfo);
         return true;
     }

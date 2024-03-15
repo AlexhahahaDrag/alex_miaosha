@@ -120,7 +120,7 @@ let isRefresh = ref<boolean>(false); //是否下拉刷新
 //   getFinancePage(searchInfo.value, pagination.value);
 // };
 
-function query(param: SearchInfo, cur: pageInfo) {
+const query = (param: SearchInfo, cur: pageInfo): void => {
   loading.value = true;
   get${entity}Page(param, cur?.current ? cur.current : 1, cur?.pageSize || 10)
     .then((res: any) => {
@@ -143,12 +143,12 @@ function query(param: SearchInfo, cur: pageInfo) {
     });
 }
 
-const add${entity} = () => {
+const add${entity} = (): void => {
   router.push({ path: '/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Detail' });
 }
 
 let userMap = {};
-function getUserInfoList() {
+const getUserInfoList = (): void => {
   getUserManagerList({}).then((res: any) => {
     if (res?.code == '200') {
       if (res?.data) {
@@ -162,21 +162,21 @@ function getUserInfoList() {
   });
 }
 
-const refresh = () => {
+const refresh = (): void => {
   pagination.value.current = 0;
   dataSource.value = []
   query(searchInfo.value, pagination.value);
 }
 
-const onRefresh = () => {
+const onRefresh = (): void => {
   query(searchInfo.value, pagination.value);
 };
 
-const beforeClose = (e: any) => {
+const beforeClose = (e: any): void => {
   console.log(e);
 };
 
-const del${entity} = (id: number) => {
+const del${entity} = (id: number): void => {
   delete${entity}(id + '').then((res: any) => {
     if (res?.code == '200') {
       refresh();
@@ -187,7 +187,7 @@ const del${entity} = (id: number) => {
   })
 };
 
-function init() {
+const init = (): void => {
   dataSource.value = [];
   pagination.value.current = 0;
   query(searchInfo.value, pagination.value);

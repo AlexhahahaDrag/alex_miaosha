@@ -1,12 +1,12 @@
 package com.alex.api.user.user;
 
-import cn.hutool.json.JSONUtil;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +74,6 @@ public class UserUtils {
         if (StringUtils.isEmpty(onlineAdminStr)) {
             return null;
         }
-        return JSONUtil.toBean(onlineAdminStr, TUserVo.class);
+        return JSONObject.parseObject(onlineAdminStr, TUserVo.class);
     }
 }

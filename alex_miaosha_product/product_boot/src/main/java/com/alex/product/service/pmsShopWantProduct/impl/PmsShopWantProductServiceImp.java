@@ -1,7 +1,7 @@
 package com.alex.product.service.pmsShopWantProduct.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.product.entity.pmsShopWantProduct.PmsShopWantProduct;
 import com.alex.product.mapper.pmsShopWantProduct.PmsShopWantProductMapper;
@@ -46,7 +46,7 @@ public class PmsShopWantProductServiceImp extends ServiceImpl<PmsShopWantProduct
     @Override
     public Boolean addPmsShopWantProduct(PmsShopWantProductVo pmsShopWantProductVo) {
         PmsShopWantProduct pmsShopWantProduct = new PmsShopWantProduct();
-        BeanUtil.copyProperties(pmsShopWantProductVo, pmsShopWantProduct);
+        BeanUtils.copyProperties(pmsShopWantProductVo, pmsShopWantProduct);
         pmsShopWantProductMapper.insert(pmsShopWantProduct);
         return true;
     }
@@ -54,7 +54,7 @@ public class PmsShopWantProductServiceImp extends ServiceImpl<PmsShopWantProduct
     @Override
     public Boolean updatePmsShopWantProduct(PmsShopWantProductVo pmsShopWantProductVo) {
         PmsShopWantProduct pmsShopWantProduct = new PmsShopWantProduct();
-        BeanUtil.copyProperties(pmsShopWantProductVo, pmsShopWantProduct);
+        BeanUtils.copyProperties(pmsShopWantProductVo, pmsShopWantProduct);
         pmsShopWantProductMapper.updateById(pmsShopWantProduct);
         return true;
     }

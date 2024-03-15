@@ -1,10 +1,10 @@
 package com.alex.product.service.pmsBrand.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.oss.api.OssApi;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
 import com.alex.base.common.Result;
+import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.product.entity.pmsBrand.PmsBrand;
 import com.alex.product.mapper.pmsBrand.PmsBrandMapper;
@@ -15,10 +15,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +42,8 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
             return brankPage;
         }
         List<Long> fileIdList = records.parallelStream()
-                .filter(item -> item.getLogo() != null)
                 .map(PmsBrandVo::getLogo)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         try {
             Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
@@ -85,7 +82,7 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
     @Override
     public Boolean addPmsBrand(PmsBrandVo pmsBrandVo) {
         PmsBrand pmsBrand = new PmsBrand();
-        BeanUtil.copyProperties(pmsBrandVo, pmsBrand);
+        BeanUtils.copyProperties(pmsBrandVo, pmsBrand);
         pmsBrandMapper.insert(pmsBrand);
         return true;
     }
@@ -93,7 +90,7 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
     @Override
     public Boolean updatePmsBrand(PmsBrandVo pmsBrandVo) {
         PmsBrand pmsBrand = new PmsBrand();
-        BeanUtil.copyProperties(pmsBrandVo, pmsBrand);
+        BeanUtils.copyProperties(pmsBrandVo, pmsBrand);
         pmsBrandMapper.updateById(pmsBrand);
         return true;
     }

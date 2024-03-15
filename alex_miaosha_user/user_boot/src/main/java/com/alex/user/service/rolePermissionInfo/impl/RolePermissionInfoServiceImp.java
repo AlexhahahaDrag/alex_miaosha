@@ -1,17 +1,18 @@
 package com.alex.user.service.rolePermissionInfo.impl;
 
-import com.alex.user.entity.rolePermissionInfo.RolePermissionInfo;
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
+import com.alex.common.utils.bean.BeanUtils;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.user.entity.rolePermissionInfo.RolePermissionInfo;
 import com.alex.user.mapper.rolePermissionInfo.RolePermissionInfoMapper;
 import com.alex.user.service.rolePermissionInfo.RolePermissionInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class RolePermissionInfoServiceImp extends ServiceImpl<RolePermissionInfo
     @Override
     public Boolean addRolePermissionInfo(RolePermissionInfoVo rolePermissionInfoVo) {
         RolePermissionInfo rolePermissionInfo = new RolePermissionInfo();
-        BeanUtil.copyProperties(rolePermissionInfoVo, rolePermissionInfo);
+        BeanUtils.copyProperties(rolePermissionInfoVo, rolePermissionInfo);
         rolePermissionInfoMapper.insert(rolePermissionInfo);
         return true;
     }
@@ -48,7 +49,7 @@ public class RolePermissionInfoServiceImp extends ServiceImpl<RolePermissionInfo
     @Override
     public Boolean updateRolePermissionInfo(RolePermissionInfoVo rolePermissionInfoVo) {
         RolePermissionInfo rolePermissionInfo = new RolePermissionInfo();
-        BeanUtil.copyProperties(rolePermissionInfoVo, rolePermissionInfo);
+        BeanUtils.copyProperties(rolePermissionInfoVo, rolePermissionInfo);
         rolePermissionInfoMapper.updateById(rolePermissionInfo);
         return true;
     }
