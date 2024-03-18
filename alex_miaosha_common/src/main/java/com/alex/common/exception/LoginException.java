@@ -24,4 +24,9 @@ public class LoginException extends RuntimeException{
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
     }
+
+    public LoginException(String code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 }

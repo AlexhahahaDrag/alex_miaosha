@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * description: 管理员表restApi
@@ -94,11 +95,11 @@ public class TUserController {
             @ApiImplicitParam(value = "密码", name = "password", type = "String.class"),
             @ApiImplicitParam(value = "是否记住我", name = "isRememberMe", type = "Boolean.class")
     })
-    public Result<Object> doLogin(HttpServletRequest request,
-                                  @RequestParam(value = "username", required = false) String username,
-                                  @RequestParam(value = "password", required = false) String password,
-                                  @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
-        return tUserService.login(request, username, password, isRememberMe);
+    public Result<Map<String, Object>> doLogin(HttpServletRequest request,
+                                               @RequestParam(value = "username", required = false) String username,
+                                               @RequestParam(value = "password", required = false) String password,
+                                               @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
+        return Result.success(tUserService.login(request, username, password, isRememberMe));
     }
 
     @GetMapping("/third/{appName}")

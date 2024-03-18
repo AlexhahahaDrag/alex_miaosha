@@ -14,6 +14,7 @@ import com.alex.base.enums.ResultEnum;
 import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
+import com.alex.common.exception.LoginException;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
@@ -70,7 +71,7 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- *
+ * <p>
  * description: 管理员表服务实现类
  * author: alex
  * createDate: 2022-12-26 17:20:38
@@ -222,17 +223,24 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     }
 
     @Override
-    public Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
+    public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
         StopWatch stopWatch = new StopWatch();
         // TODO (majf) 2024/2/21 15:02 测试是否可以修改成CompletableFuture
         stopWatch.start("开始登录");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            return Result.error(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
+            throw new LoginException(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
         String ip = IpUtils.getIpAddr(request);
         String limitCount = redisUtils.get(LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip + RedisConstants.SEGMENTATION + username);
         if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
-            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE);
+            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
+        }
+        TUserVo redisUser = redisUtils.get(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, TUserVo.class);
+        Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
+        if (redisUser != null) {
+            // TODO (majf) 2024/3/18 10:22 更新过期时间
+            result.put(SysConf.ADMIN, redisUser);
+            return result;
         }
         LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery()
                 .eq(TUser::getStatus, EStatus.ENABLE.getCode())
@@ -241,16 +249,15 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         TUser admin = this.getOne(query);
         if (admin == null) {
             //设置错误登录次数
-            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         //对密码进行加盐加密验证，采用SHA-256 + 随机盐【动态加盐】 + 密钥对密码进行加密
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         boolean isPassword = encoder.matches(password + admin.getUsername(), admin.getPassword());
         if (!isPassword) {
             //密码错误，返回提示信息
-            return Result.error(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
-        Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
         //保存登录信息
@@ -300,6 +307,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 tUserVo.setMenuInfoVoList(menuList);
                 long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
                 redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
                 result.put(SysConf.ADMIN, tUserVo);
             } catch (InterruptedException | ExecutionException e) {
                 throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
@@ -307,7 +315,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         });
         // 等待最后的处理完成
         allFutures.join();
-        
+
 //// 获取机构信息
 //        List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
 //        tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
@@ -326,7 +334,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
-        return Result.success(result);
+        return result;
     }
 
     private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {
@@ -339,8 +347,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         try {
             map = IpUtils.getOsAndBrowserInfo(request);
             location = IpUtils.getCityInfo(ip);
-            log.info("ip:{}", ip);
-            log.info("地址：{}", location);
+            log.info("ip:{},地址：{}", ip, location);
         } catch (Exception e) {
             log.error("获取ip地址和设备信息失败：{}", e.getMessage());
         }
@@ -586,7 +593,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
      * description: 判断是否需要刷新对应的token数据
      * author:      majf
      * return:      void
-    */
+     */
     private void refreshToken(String token, String base64Secret, String uuidToken, String barToken) {
         taskExecutor.execute(() -> {
             Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);

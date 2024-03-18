@@ -10,6 +10,7 @@ import me.zhyd.oauth.request.AuthRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 管理员表 服务类
@@ -31,7 +32,7 @@ public interface TUserService extends IService<TUser> {
 
     Boolean deleteTUser(String ids);
 
-    Result<Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
+    Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
 
     List<TUserVo> getList(TUserVo tUserVo);
 
