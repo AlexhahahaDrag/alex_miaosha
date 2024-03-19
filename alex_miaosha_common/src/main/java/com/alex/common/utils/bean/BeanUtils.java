@@ -1,6 +1,6 @@
 package com.alex.common.utils.bean;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  *description:  bean string 转化工具

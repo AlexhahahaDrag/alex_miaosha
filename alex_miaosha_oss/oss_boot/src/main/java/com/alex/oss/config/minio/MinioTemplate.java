@@ -2,7 +2,7 @@ package com.alex.oss.config.minio;
 
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.vo.ObjectItem;
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;

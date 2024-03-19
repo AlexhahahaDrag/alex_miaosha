@@ -1,6 +1,7 @@
 package com.alex.finance.service.dict.impl;
 
 import com.alex.api.finance.vo.dict.DictInfoVo;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.redis.key.DictKey;
 import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.redis.RedisUtils;
@@ -56,6 +57,10 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
 
     @Override
     public DictInfo addDictInfo(DictInfoVo dictInfoVo) {
+        long count = getTypeCodeCount(dictInfoVo);
+        if (count > 0) {
+            throw new FinanceException("500", "字典编码已存在");
+        }
         DictInfo dictInfo = new DictInfo();
         BeanUtils.copyProperties(dictInfoVo, dictInfo);
         dictInfoMapper.insert(dictInfo);
@@ -65,11 +70,26 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
 
     @Override
     public DictInfo updateDictInfo(DictInfoVo dictInfoVo) {
+        long count = getTypeCodeCount(dictInfoVo);
+        if (count > 0) {
+            throw new FinanceException("500", "字典编码已存在");
+        }
         DictInfo dictInfo = new DictInfo();
         BeanUtils.copyProperties(dictInfoVo, dictInfo);
         dictInfoMapper.updateById(dictInfo);
         initDictRedis();
         return dictInfo;
+    }
+
+    private Long getTypeCodeCount(DictInfoVo dictInfoVo) {
+        LambdaQueryWrapper<DictInfo> query = Wrappers.<DictInfo>lambdaQuery()
+                .eq(DictInfo::getTypeCode, dictInfoVo.getTypeCode())
+                .eq(DictInfo::getBelongTo, dictInfoVo.getBelongTo())
+                .eq(DictInfo::getIsDelete, 0);
+        if (dictInfoVo.getId() != null) {
+            query.ne(DictInfo::getId, dictInfoVo.getId());
+        }
+        return this.count();
     }
 
     @Override
