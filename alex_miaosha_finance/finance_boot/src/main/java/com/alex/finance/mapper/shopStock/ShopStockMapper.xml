@@ -62,6 +62,18 @@
             and t_shop_stock.is_delete = 0
         </where>
     </select>
+    
+    <select id="getShopList" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
+        select <include refid="Base_Column_List"/> from t_shop_stock
+        <where>
+           <if test="ids != null">
+           t_shop_stock.id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+           </if>
+        </where>
+    </select>
 
      <sql id="queryInfo">
         <if test = "shopStockVo != null">

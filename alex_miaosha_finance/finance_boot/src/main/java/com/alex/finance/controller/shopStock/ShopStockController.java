@@ -1,25 +1,23 @@
 package com.alex.finance.controller.shopStock;
 
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
-import com.alex.finance.entity.shopStock.ShopStock;
+import com.alex.finance.service.shopStock.ShopStockService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.finance.service.shopStock.ShopStockService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * description:  商店库存表restApi
@@ -77,5 +75,12 @@ public class ShopStockController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(shopStockService.deleteShopStock(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "根据商品ids获取商品列表", notes = "根据商品ids获取商品列表", response = Result.class)
+    @GetMapping(path = "/getShopList")
+    public Result<List<ShopStockVo>> getShopList(@RequestParam(value = "ids") String ids) {
+        return Result.success(shopStockService.getShopList(ids));
     }
 }
