@@ -1,14 +1,14 @@
 package com.alex.api.finance.vo.shopStock;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * description:  商店库存表Vo
@@ -49,4 +49,9 @@ public class ShopStockVo extends BaseVo<ShopStockVo>{
     @ApiModelProperty(value = "数量")
     private BigDecimal saleNum;
 
+    @ApiModelProperty(value = "原商品编码")
+    private String oldShopCode;
+
+    @ApiModelProperty(value = "描述")
+    private String description;
 }

@@ -3,15 +3,14 @@ package com.alex.finance.entity.shopStock;
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.alex.common.config.Long2StringSerializer;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * description:  商店库存表类
@@ -62,4 +61,11 @@ public class ShopStock extends BaseEntity<ShopStock>{
     @TableField("sale_num")
     private BigDecimal saleNum;
 
+    @ApiModelProperty(value = "原商品编码")
+    @TableField("old_shop_code")
+    private String oldShopCode;
+
+    @ApiModelProperty(value = "描述")
+    @TableField("description")
+    private String description;
 }

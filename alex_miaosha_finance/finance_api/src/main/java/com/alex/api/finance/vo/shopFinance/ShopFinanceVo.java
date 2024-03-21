@@ -1,15 +1,15 @@
 package com.alex.api.finance.vo.shopFinance;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * description:  商店财务表Vo

@@ -23,6 +23,8 @@
         <result column="category" property="category" />
         <result column="purchase_place" property="purchasePlace" />
         <result column="sale_num" property="saleNum" />
+        <result column="old_shop_code" property="oldShopCode" />
+        <result column="description" property="description" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -37,7 +39,12 @@
         t_shop_stock.delete_time,
         t_shop_stock.operator,
         t_shop_stock.operate_time,
-        t_shop_stock.shop_name, t_shop_stock.shop_code, t_shop_stock.cost_amount, t_shop_stock.sale_amount, t_shop_stock.is_valid, t_shop_stock.sale_date, t_shop_stock.category, t_shop_stock.purchase_place, t_shop_stock.sale_num
+        t_shop_stock.shop_name, t_shop_stock.shop_code,
+            t_shop_stock.cost_amount, t_shop_stock.sale_amount,
+            t_shop_stock.is_valid, t_shop_stock.sale_date,
+            t_shop_stock.category, t_shop_stock.purchase_place,
+            t_shop_stock.sale_num, t_shop_stock.old_shop_code,
+            t_shop_stock.description
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
@@ -84,6 +91,9 @@
           </if>
           <if test = "shopStockVo.saleNum != null">
             and t_shop_stock.sale_num = #{shopStockVo.saleNum}
+          </if>
+            <if test = "shopStockVo.oldShopCode != null">
+            and t_shop_stock.old_shop_code like concat('%', #{shopStockVo.oldShopCode}, '%')
           </if>
         </if>
      </sql>
