@@ -238,7 +238,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         TUserVo redisUser = redisUtils.get(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, TUserVo.class);
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String headers = request.getHeader(audience.getTokenHeader());
-        if (redisUser != null && StringUtils.isNotBlank(headers)) {
+        if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
             // TODO (majf) 2024/3/18 10:22 更新过期时间
             result.put(SysConf.TOKEN, headers);
             result.put(SysConf.ADMIN, redisUser);
