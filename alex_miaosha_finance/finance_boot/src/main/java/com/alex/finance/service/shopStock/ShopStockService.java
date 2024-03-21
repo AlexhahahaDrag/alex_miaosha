@@ -1,9 +1,11 @@
 package com.alex.finance.service.shopStock;
 
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.entity.shopStock.ShopStock;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * 商店库存表 服务类
@@ -23,4 +25,6 @@ public interface ShopStockService extends IService<ShopStock> {
     Boolean updateShopStock(ShopStockVo shopStockVo);
 
     Boolean deleteShopStock(String ids);
+
+    List<ShopStockVo> getShopList(String ids);
 }

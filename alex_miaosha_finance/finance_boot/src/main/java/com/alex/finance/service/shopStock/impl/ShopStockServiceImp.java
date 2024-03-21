@@ -1,17 +1,20 @@
 package com.alex.finance.service.shopStock.impl;
 
-import com.alex.finance.entity.shopStock.ShopStock;
+import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.finance.entity.shopStock.ShopStock;
 import com.alex.finance.mapper.shopStock.ShopStockMapper;
 import com.alex.finance.service.shopStock.ShopStockService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import cn.hutool.core.bean.BeanUtil;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -61,5 +64,13 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         List<String> idArr = Arrays.asList(ids.split(","));
         shopStockMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public List<ShopStockVo> getShopList(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        return shopStockMapper.getShopList(Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()));
     }
 }
