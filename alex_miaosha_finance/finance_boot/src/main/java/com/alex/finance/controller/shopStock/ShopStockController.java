@@ -1,5 +1,6 @@
 package com.alex.finance.controller.shopStock;
 
+import com.alex.api.finance.vo.saleOrder.SaleOrderVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
@@ -43,8 +44,8 @@ public class ShopStockController {
             @ApiImplicitParam(value = "查询条件", name = "shopStockVo")}
     )
     public Result<Page<ShopStockVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                @RequestBody(required = false) ShopStockVo shopStockVo) {
+                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                             @RequestBody(required = false) ShopStockVo shopStockVo) {
         return Result.success(shopStockService.getPage(pageNum, pageSize, shopStockVo));
     }
 
@@ -80,7 +81,15 @@ public class ShopStockController {
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "根据商品ids获取商品列表", notes = "根据商品ids获取商品列表", response = Result.class)
     @GetMapping(path = "/getShopList")
-    public Result<List<ShopStockVo>> getShopList(@RequestParam(value = "ids") String ids) {
+    public Result<List<ShopStockVo>> getShopList(@RequestParam(value = "ids") String ids)  {
         return Result.success(shopStockService.getShopList(ids));
+    }
+
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "提交订单", notes = "提交订单", response = Result.class)
+    @PostMapping(path = "/submitOrder")
+    public Result<Boolean> submitOrder(@Validated({Insert.class}) @RequestBody SaleOrderVo saleOrderVo) throws Exception {
+        return Result.success(shopStockService.submitOrder(saleOrderVo));
     }
 }

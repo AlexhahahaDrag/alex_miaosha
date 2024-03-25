@@ -13,7 +13,11 @@ public enum ResultEnum implements BaseEnum {
 
     UNAUTHORIZED("403", "没有权限"),
 
+    /**
+     * 公共
+     */
     REPEAT_COMMIT("40010", "请勿重复提交表单!"),
+
     /**
      * 服务器模块
      */
@@ -37,6 +41,7 @@ public enum ResultEnum implements BaseEnum {
     USER_EMAIL_EXISTS("60007", "邮箱已注册!"),
     USER_NO_MOBILE_EMAIL("60008", "邮箱和手机号至少有一项不能为空!"),
     USER_GET_INFO_ERROR("60009", "查询用户信息失败!"),
+
     /**
      * 商品模块
      */
@@ -60,6 +65,11 @@ public enum ResultEnum implements BaseEnum {
     REPEATED_REGISTER_USERNAME("500601", "用户名已经被注册"),
     REPEATED_REGISTER_IDENTITY("500602", "身份证已经被注册"),
 
+    /**
+     * 财务模块
+     */
+    FINANCE_NOT_EXISTS("80001", "库存不存在！"),
+    FINANCE_NOT_SAVE("80002", "库存不足！"),
 
     /**
      * 订单模块

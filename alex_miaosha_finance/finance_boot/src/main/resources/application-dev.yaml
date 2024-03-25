@@ -16,7 +16,7 @@ mybatis-plus:
 
 logging:
   level:
-    com.alex.finance.mapper: debug
+    com.alex.finance: debug
 
 xxl:
   job:

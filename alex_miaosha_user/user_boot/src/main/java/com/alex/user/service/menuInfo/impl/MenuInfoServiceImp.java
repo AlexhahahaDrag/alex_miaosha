@@ -1,7 +1,6 @@
 package com.alex.user.service.menuInfo.impl;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.menuInfo.MenuInfo;
 import com.alex.user.mapper.menuInfo.MenuInfoMapper;
@@ -9,6 +8,7 @@ import com.alex.user.service.menuInfo.MenuInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

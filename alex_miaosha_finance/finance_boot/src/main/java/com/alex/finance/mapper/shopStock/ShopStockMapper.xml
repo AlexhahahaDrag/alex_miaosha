@@ -53,6 +53,7 @@
             t_shop_stock.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_shop_stock.operate_time desc
     </select>
 
     <select id="queryShopStock" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
@@ -104,8 +105,11 @@
           <if test = "shopStockVo.saleNum != null">
             and t_shop_stock.sale_num = #{shopStockVo.saleNum}
           </if>
-            <if test = "shopStockVo.oldShopCode != null">
+          <if test = "shopStockVo.oldShopCode != null">
             and t_shop_stock.old_shop_code like concat('%', #{shopStockVo.oldShopCode}, '%')
+          </if>
+          <if test = "shopStockVo.isShopping != null and shopStockVo.isShopping">
+            and t_shop_stock.sale_num > 0
           </if>
         </if>
      </sql>

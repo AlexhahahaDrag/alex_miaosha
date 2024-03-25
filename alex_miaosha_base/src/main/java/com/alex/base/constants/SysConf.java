@@ -39,4 +39,8 @@ public class SysConf {
     public static final String INVALID_STATUS = "0";
 
     public static final String RESULT_SUCCESS = "200";
+
+    public static final String INCOME_STATUS = "income";
+
+    public static final String EXPENSE_STATUS = "expense";
 }

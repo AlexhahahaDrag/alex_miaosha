@@ -1,7 +1,6 @@
 package com.alex.user.service.permissionInfo.impl;
 
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.permissionInfo.PermissionInfo;
 import com.alex.user.mapper.permissionInfo.PermissionInfoMapper;
@@ -9,6 +8,7 @@ import com.alex.user.service.permissionInfo.PermissionInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

@@ -9,17 +9,18 @@ import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
 import com.alex.api.user.api.UserApi;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.mapper.finance.FinanceInfoMapper;
 import com.alex.finance.service.finance.FinanceInfoService;
-import com.alex.common.utils.bean.BeanUtils;
-import com.alex.common.utils.string.StringUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -102,6 +103,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean importFinance(MultipartFile file) throws Exception {
         List<ImportFinanceInfoVo> excelInfo = getExcelInfo(file);
         if (excelInfo == null || excelInfo.isEmpty()) {
@@ -138,7 +140,6 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         //告诉easypoi我们自定义的验证器
         importParams.setDictHandler(iExcelDictHandler);
         result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportFinanceInfoVo.class, importParams);
-        List<ImportFinanceInfoVo> list = result.getList();
-        return list;
+        return result.getList();
     }
 }

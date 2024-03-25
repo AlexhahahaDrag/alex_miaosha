@@ -2,7 +2,6 @@ package com.alex.user.service.roleUserInfo.impl;
 
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.entity.roleUserInfo.RoleUserInfo;
 import com.alex.user.mapper.roleUserInfo.RoleUserInfoMapper;
@@ -10,6 +9,7 @@ import com.alex.user.service.roleUserInfo.RoleUserInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

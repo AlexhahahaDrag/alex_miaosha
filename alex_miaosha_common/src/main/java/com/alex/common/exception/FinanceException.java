@@ -21,11 +21,13 @@ public class FinanceException extends RuntimeException{
     private String msg;
 
     public FinanceException(ResultEnum resultEnum) {
+        super(resultEnum.getValue());
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
     }
 
     public FinanceException(String code, String message) {
+        super(message);
         log.error(code + ":" + message);
         this.code = code;
         this.msg = message;

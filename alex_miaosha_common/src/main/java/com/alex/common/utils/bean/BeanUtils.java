@@ -36,8 +36,4 @@ public class BeanUtils {
         }
         return JSONObject.parseObject(str, clazz);
     }
-
-    public static void copyProperties(Object source, Object target, String... ignoreProperties) {
-        BeanUtils.copyProperties(source, target, ignoreProperties);
-    }
 }

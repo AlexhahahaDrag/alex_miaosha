@@ -3,7 +3,6 @@ package com.alex.finance.service.dict.impl;
 import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.common.exception.FinanceException;
 import com.alex.common.redis.key.DictKey;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.dict.DictInfo;
@@ -15,6 +14,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -139,7 +139,7 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
             }
         } else {
             List<DictInfoVo> dictAll = redisUtils.keysList(DictKey.dictKey, DictInfoVo.class);
-            if (dictAll == null && dictAll.isEmpty()) {
+            if (dictAll == null || dictAll.isEmpty()) {
                 dictAll = dictInfoMapper.listByBelong(null);
             }
             res.addAll(dictAll);

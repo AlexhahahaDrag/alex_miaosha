@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.List;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
-import com.alex.common.utils.bean.BeanUtils;
+import org.springframework.beans.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 
 /**
