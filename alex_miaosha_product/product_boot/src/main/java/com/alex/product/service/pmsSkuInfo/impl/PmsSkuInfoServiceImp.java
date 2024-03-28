@@ -1,7 +1,6 @@
 package com.alex.product.service.pmsSkuInfo.impl;
 
 import com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.product.entity.pmsSkuInfo.PmsSkuInfo;
 import com.alex.product.mapper.pmsSkuInfo.PmsSkuInfoMapper;
@@ -9,6 +8,7 @@ import com.alex.product.service.pmsSkuInfo.PmsSkuInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

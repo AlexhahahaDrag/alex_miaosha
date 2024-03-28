@@ -53,8 +53,6 @@
 
 + alex_miaosha_user：用户模块，管理用户、角色及机构等相关信息。
 
-+ alex_miaosha_web：
-
 ## 项目使用
 
 nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_miaosha_uaa、alex_miaosha_web、alex_miaosha_misssion
@@ -100,7 +98,9 @@ nacos、redis、rabbitmq、alex_miaosha_monitor、alex_miaosha_gateway、alex_mi
 ## todo
 
 了解 LVS（Linux Virtual Server）即Linux虚拟服务器，是由章文嵩博士主导的开源负载均衡项目
->>>>>>> 369b7db (提交到本地仓库的消息)
-=======
-了解 LVS（Linux Virtual Server）即Linux虚拟服务器，是由章文嵩博士主导的开源负载均衡项目
->>>>>>> 2786f1ab4be4f616b1d617e336d4141ecaaee508
+
+> > > > > > > 369b7db (提交到本地仓库的消息)
+> > > > > > > =======
+> > > > > > > 
+> > > > > > > 了解 LVS（Linux Virtual Server）即Linux虚拟服务器，是由章文嵩博士主导的开源负载均衡项目
+> > > > > > > 2786f1ab4be4f616b1d617e336d4141ecaaee508

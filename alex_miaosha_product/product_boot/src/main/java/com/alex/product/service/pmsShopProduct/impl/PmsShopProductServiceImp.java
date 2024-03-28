@@ -1,7 +1,6 @@
 package com.alex.product.service.pmsShopProduct.impl;
 
 import com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.product.entity.pmsShopProduct.PmsShopProduct;
@@ -13,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

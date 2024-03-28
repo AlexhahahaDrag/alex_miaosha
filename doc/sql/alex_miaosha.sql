@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS alex_miaosha;
+USE alex_miaosha;
 /*
  Navicat Premium Data Transfer
 

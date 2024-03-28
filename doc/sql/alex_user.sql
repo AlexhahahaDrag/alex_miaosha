@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS alex_user;
+USE alex_user;
 /*
  Navicat Premium Data Transfer
 
@@ -290,7 +292,7 @@ CREATE TABLE `t_role_info`  (
 -- ----------------------------
 -- Records of t_role_info
 -- ----------------------------
-INSERT INTO `t_role_info` VALUES (1746681834919378946, 'root', '超级管理员', '超级管理员', '1', 1, '2024-01-15 07:52:56', NULL, NULL, NULL, NULL, 0, 1, '2024-01-15 07:52:56');
+INSERT INTO `t_role_info` VALUES (1746681834919378946, 'super_super', '超级管理员', '超级管理员', '1', 1, '2024-01-15 07:52:56', NULL, NULL, NULL, NULL, 0, 1, '2024-01-15 07:52:56');
 
 -- ----------------------------
 -- Table structure for t_role_permission_info

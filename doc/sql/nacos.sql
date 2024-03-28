@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS nacos;
+USE nacos;
 /*
  Navicat Premium Data Transfer
 

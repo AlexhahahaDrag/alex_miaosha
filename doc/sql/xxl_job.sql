@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS xxl_job;
+USE xxl_job;
 /*
  Navicat Premium Data Transfer
 

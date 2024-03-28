@@ -3,7 +3,6 @@ package com.alex.oss.service.fileInfo.impl;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FileException;
-import com.alex.common.utils.bean.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.entity.fileInfo.FileInfo;
 import com.alex.oss.mapper.fileInfo.FileInfoMapper;
@@ -16,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,6 +73,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             BeanUtils.copyProperties(uploadFile, fileInfo, "id");
         }
         fileInfoMapper.updateById(fileInfo);
+        assert uploadFile != null;
         BeanUtils.copyProperties(fileInfo, uploadFile);
         return uploadFile;
     }

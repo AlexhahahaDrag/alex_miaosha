@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS alex_finance;
+USE alex_finance;
 /*
  Navicat Premium Data Transfer
 

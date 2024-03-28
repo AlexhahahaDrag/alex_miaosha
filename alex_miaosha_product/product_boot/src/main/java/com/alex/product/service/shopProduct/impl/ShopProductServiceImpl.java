@@ -40,9 +40,9 @@ public class ShopProductServiceImpl implements ShopProductService {
                 case JD:
                     List<String> jdList = productList.parallelStream()
                             .filter(item -> SourceType.JD.getCode().equals(item.getSource()))
-                            .map(item -> getStr(item))
+                            .map(this::getStr)
                             .collect(Collectors.toList());
-                    if (jdList == null || jdList.isEmpty()) {
+                    if (jdList.isEmpty()) {
                         break;
                     }
                     result.addAll(jdProductService.parse(jdList, sourceType.getCode()));
@@ -50,20 +50,20 @@ public class ShopProductServiceImpl implements ShopProductService {
                 case TB:
                     List<String> tbList = productList.parallelStream()
                             .filter(item -> SourceType.TB.getCode().equals(item.getSource()))
-                            .map(item -> getStr(item))
+                            .map(this::getStr)
                             .collect(Collectors.toList());
-                    if (tbList == null || tbList.isEmpty()) {
+                    if (tbList.isEmpty()) {
                         break;
                     }
                     result.addAll(jdProductService.parse(tbList, sourceType.getCode()));
                     break;
             }
         }
-        if (result != null && !result.isEmpty()) {
+        if (!result.isEmpty()) {
             List<PmsShopProduct> collect = result.parallelStream().map(item -> {
                 PmsShopProduct pmsShopProduct = new PmsShopProduct();
                 BeanUtils.copyProperties(item, pmsShopProduct);
-                pmsShopProduct.setPrice(Optional.ofNullable(item).map(a -> new BigDecimal(a.getPrice())).orElse(null));
+                pmsShopProduct.setPrice(Optional.of(item).map(a -> new BigDecimal(a.getPrice())).orElse(null));
                 return pmsShopProduct;
             }).collect(Collectors.toList());
             pmsShopProductService.saveBatch(collect);
@@ -72,10 +72,8 @@ public class ShopProductServiceImpl implements ShopProductService {
     }
 
     private String getStr(PmsShopWantProductVo pmsShopWantProductVo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getName()).orElse(""))
-                .append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getShop()).orElse(""))
-                .append(Optional.ofNullable(pmsShopWantProductVo).map(i -> i.getIcons()).orElse(""));
-        return sb.toString();
+        return Optional.ofNullable(pmsShopWantProductVo).map(PmsShopWantProductVo::getName).orElse("") +
+                Optional.ofNullable(pmsShopWantProductVo).map(PmsShopWantProductVo::getShop).orElse("") +
+                Optional.ofNullable(pmsShopWantProductVo).map(PmsShopWantProductVo::getIcons).orElse("");
     }
 }

@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS alex_product;
+USE alex_product;
 /*
  Navicat Premium Data Transfer
 

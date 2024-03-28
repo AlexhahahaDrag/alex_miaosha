@@ -130,7 +130,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (goods == null) {
             return Result.error(ResultEnum.GOODS_NOT_EXISTS);
         }
-        BeanUtils.copyProperties(goodsDTO, goods);
+        org.springframework.beans.BeanUtils.copyProperties(goodsDTO, goods);
         int i = goodsMapper.updateById(goods);
         if (i > 0) {
             //更新缓存信息
@@ -226,13 +226,13 @@ public class GoodsServiceImpl implements GoodsService {
 
     private Goods goodsDTOToGoods(GoodsDTO goodsDTO, String... ignore) {
         Goods goods = new Goods();
-        BeanUtils.copyProperties(goodsDTO, goods, ignore);
+        org.springframework.beans.BeanUtils.copyProperties(goodsDTO, goods, ignore);
         return goods;
     }
 
     private GoodsDTO goodsToGoodsDTO(Goods goods, String... ignore) {
         GoodsDTO goodsDTO = new GoodsDTO();
-        BeanUtils.copyProperties(goods, goodsDTO, ignore);
+        org.springframework.beans.BeanUtils.copyProperties(goods, goodsDTO, ignore);
         return goodsDTO;
     }
 }
