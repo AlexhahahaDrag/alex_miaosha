@@ -180,7 +180,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         List<PermissionInfoVo> menuInfoList = result.getData();
         PermissionSearchInfo moduleMenuInfo = findPermissionInfo(menuInfoList, javaPath);
         PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName);
-        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName + ":" + DETAIL);
+        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName + ":" + "detail");
         if (!moduleMenuInfo.getPermissionExists()) {
             PermissionInfoVo addPermissionInfoVo = addPermissionInfo(getPermissionInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName)));
             moduleMenuInfo.setPermissionInfoVo(addPermissionInfoVo);
@@ -245,12 +245,12 @@ public class GeneratorServiceImpl implements GeneratorService {
     private Map<OutputFile, String> pathMap(String fileName, String separator, String javaPath, String projectPath, String clientPathProject) {
         String bootDir = "/java/com/alex" + separator + javaPath;
         String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
-        String controllerPath = projectPath + bootDir + separator + "controller";
-        String entityPath = projectPath + bootDir + separator + "entity";
-        String mapperPath = projectPath + bootDir + separator + "mapper";
-        String servicePath = projectPath + bootDir + separator + "service";
-        String voPath = clientPathProject + apiDir + separator + "vo";
-        String clientPath = clientPathProject + apiDir + separator + "api";
+        String controllerPath = projectPath + bootDir + separator + fileName + separator + "controller";
+        String entityPath = projectPath + bootDir + separator + fileName + separator + "entity";
+        String mapperPath = projectPath + bootDir + separator + fileName + separator + "mapper";
+        String servicePath = projectPath + bootDir + separator + fileName + separator + "service";
+        String voPath = clientPathProject + apiDir + separator + fileName + separator + "vo";
+        String clientPath = clientPathProject + apiDir + separator + fileName + separator + "api";
         String vuePath = StringUtils.isNotEmpty(
                 generatorConfig.getVuePath()) ? generatorConfig.getVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
         String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
@@ -259,14 +259,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         String mobileVuePath = StringUtils.isNotEmpty(
                 generatorConfig.getMobileVuePath()) ? generatorConfig.getMobileVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
         Map<OutputFile, String> pathMap = new HashMap<>();
-        pathMap.put(OutputFile.mapperXml, mapperPath + separator + fileName);
-        pathMap.put(OutputFile.service, servicePath + separator + fileName);
-        pathMap.put(OutputFile.serviceImpl, servicePath + separator + fileName + separator + "impl");
-        pathMap.put(OutputFile.mapper, mapperPath + separator + fileName);
-        pathMap.put(OutputFile.entity, entityPath + separator + fileName);
-        pathMap.put(OutputFile.vo, voPath + separator + fileName);
-        pathMap.put(OutputFile.client, clientPath + separator + fileName);
-        pathMap.put(OutputFile.controller, controllerPath + separator + fileName);
+        pathMap.put(OutputFile.mapperXml, mapperPath + separator);
+        pathMap.put(OutputFile.service, servicePath + separator);
+        pathMap.put(OutputFile.serviceImpl, servicePath + separator + separator + "impl");
+        pathMap.put(OutputFile.mapper, mapperPath + separator);
+        pathMap.put(OutputFile.entity, entityPath + separator);
+        pathMap.put(OutputFile.vo, voPath + separator);
+        pathMap.put(OutputFile.client, clientPath + separator);
+        pathMap.put(OutputFile.controller, controllerPath + separator);
         pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName + "Detail");
         pathMap.put(OutputFile.list, vuePath + separator + fileName);
         pathMap.put(OutputFile.ts, tsPath + separator + fileName);
@@ -282,6 +282,10 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
         return dataSourceConfig;
+    }
+
+    private String getFileName(String fileName, String defaultFileName) {
+        return StringUtils.isBlank(fileName) ? defaultFileName : fileName + ".";
     }
 
     private FastAutoGenerator fastAutoGenerator(DataSourceConfig.Builder dataSourceConfig, String projectPath,
@@ -307,25 +311,26 @@ public class GeneratorServiceImpl implements GeneratorService {
                 builder.enableMobileGenerator();
             }
         });
+        String file = getFileName(fileName, "");
         fastAutoGenerator.packageConfig(builder -> {
             builder.parent(generatorConfig.getParentPackage()) // 设置父包名
-                    .entity(boot + "entity" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .service(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .serviceImpl(boot + "service" + (StringUtils.isBlank(fileName) ? "" : "." + fileName) + ".impl")
-                    .mapper(boot + "mapper" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .controller(boot + "controller" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .vo(api + "vo" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .client(api + "api" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .detailTs(boot + "vue" + ((StringUtils.isBlank(fileName) ? "detail" : fileName) + "Detail") + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .detailVue(boot + "vue" + ((StringUtils.isBlank(fileName) ? "detail" : fileName) + "Detail") + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .listTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .listVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .tsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .mobileDetailTs(boot + "vue." + ((StringUtils.isBlank(fileName) ? "detail" : fileName) + "Detail") + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .mobileDetail(boot + "vue." + ((StringUtils.isBlank(fileName) ? "detail" : fileName) + "Detail") + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .mobileTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .mobileVue(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
-                    .mobileTsTs(boot + "vue" + (StringUtils.isBlank(fileName) ? "" : "." + fileName))
+                    .entity(boot + file + "entity")
+                    .service(boot + file + "service")
+                    .serviceImpl(boot + file + "service" + ".impl")
+                    .mapper(boot + file + "mapper")
+                    .controller(boot + file + "controller")
+                    .vo(api + file + "vo")
+                    .client(api + file + "api")
+                    .detailTs(boot + "vue" + (getFileName(fileName, "detail") + "Detail") + file)
+                    .detailVue(boot + "vue" + (getFileName(fileName, "detail") + "Detail") + file)
+                    .listTs(boot + "vue" + file)
+                    .listVue(boot + "vue" + file)
+                    .tsTs(boot + "vue" + file)
+                    .mobileDetailTs(boot + "vue." + (getFileName(fileName, "detail") + "Detail") + file)
+                    .mobileDetail(boot + "vue." + (getFileName(fileName, "detail") + "Detail") + file)
+                    .mobileTs(boot + "vue" + file)
+                    .mobileVue(boot + "vue" + file)
+                    .mobileTsTs(boot + "vue" + file)
                     .pathInfo(pathMap); // 设置mapperXml生成路径
         });
         fastAutoGenerator.strategyConfig(builder -> {

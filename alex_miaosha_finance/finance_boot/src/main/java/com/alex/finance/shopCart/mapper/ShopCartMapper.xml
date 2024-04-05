@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.shopCart.mapper.ShopCartMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.shopCart.entity.ShopCart">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="shop_id" property="shopId" />
+        <result column="user_id" property="userId" />
+        <result column="customer_id" property="customerId" />
+        <result column="is_valid" property="isValid" />
+        <result column="sale_num" property="saleNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_shop_cart.id,
+        t_shop_cart.is_delete,
+        t_shop_cart.creator,
+        t_shop_cart.updater,
+        t_shop_cart.deleter,
+        t_shop_cart.create_time,
+        t_shop_cart.update_time,
+        t_shop_cart.delete_time,
+        t_shop_cart.operator,
+        t_shop_cart.operate_time,
+        t_shop_cart.shop_id, t_shop_cart.user_id, t_shop_cart.customer_id, t_shop_cart.is_valid, t_shop_cart.sale_num
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.shopCart.vo.ShopCartVo">
+        select <include refid="Base_Column_List"/>from t_shop_cart
+        <where>
+            t_shop_cart.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopCart" resultType="com.alex.api.finance.shopCart.vo.ShopCartVo">
+        select <include refid="Base_Column_List"/> from t_shop_cart
+        <where>
+            t_shop_cart.id = #{id}
+            and t_shop_cart.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "shopCartVo != null">
+          <if test = "shopCartVo.shopId != null">
+            and t_shop_cart.shop_id = #{shopCartVo.shopId}
+          </if>
+          <if test = "shopCartVo.userId != null">
+            and t_shop_cart.user_id = #{shopCartVo.userId}
+          </if>
+          <if test = "shopCartVo.customerId != null">
+            and t_shop_cart.customer_id = #{shopCartVo.customerId}
+          </if>
+          <if test = "shopCartVo.isValid != null">
+            and t_shop_cart.is_valid like concat('%', #{shopCartVo.isValid}, '%')
+          </if>
+          <if test = "shopCartVo.saleNum != null">
+            and t_shop_cart.sale_num = #{shopCartVo.saleNum}
+          </if>
+        </if>
+     </sql>
+</mapper>
