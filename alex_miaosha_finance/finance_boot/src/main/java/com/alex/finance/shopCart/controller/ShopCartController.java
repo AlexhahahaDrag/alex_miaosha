@@ -7,7 +7,6 @@ import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
