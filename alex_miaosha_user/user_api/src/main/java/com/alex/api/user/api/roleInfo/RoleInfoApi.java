@@ -26,8 +26,8 @@ public interface RoleInfoApi {
     @ApiOperation(value = "获取角色信息表分页", notes = "获取角色信息表分页", response = Result.class)
     @PostMapping(value = "/api/v1//role-info/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "roleInfoVo")}
     )
     Result<Page<RoleInfoVo>> getRoleInfoPage(@RequestParam(value = "pageNum", required = false) Long pageNum,

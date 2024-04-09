@@ -22,6 +22,7 @@
         <result column="pay_way" property="payWay"/>
         <result column="income_and_expenses" property="incomeAndExpenses"/>
         <result column="sale_num" property="saleNum"/>
+        <result column="shop_order_id" property="shopOrderId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -40,7 +41,7 @@
         t_shop_finance.shop_code, t_shop_finance.sale_amount,
         t_shop_finance.is_valid, t_shop_finance.sale_date,
         t_shop_finance.pay_way, t_shop_finance.income_and_expenses,
-        t_shop_finance.sale_num
+        t_shop_finance.sale_num, t_shop_finance.shop_order_id
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
@@ -96,6 +97,9 @@
             </if>
             <if test="shopFinanceVo.payWay != null">
                 and t_shop_finance.pay_way = #{shopFinanceVo.payWay}
+            </if>
+             <if test="shopFinanceVo.shopOrderId != null">
+                and t_shop_finance.shop_order_id = #{shopFinanceVo.shopOrderId}
             </if>
         </if>
     </sql>

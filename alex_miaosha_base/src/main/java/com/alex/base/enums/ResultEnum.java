@@ -71,6 +71,8 @@ public enum ResultEnum implements BaseEnum {
     FINANCE_NOT_EXISTS("80001", "库存不存在！"),
     FINANCE_NOT_SAVE("80002", "库存不足！"),
 
+    FINANCE_NOT_IN_CART("80003", "商品已在购物车中！"),
+
     /**
      * 订单模块
      */

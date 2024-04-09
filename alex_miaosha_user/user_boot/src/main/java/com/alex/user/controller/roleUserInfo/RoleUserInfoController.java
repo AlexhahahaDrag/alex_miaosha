@@ -1,5 +1,6 @@
 package com.alex.user.controller.roleUserInfo;
 
+import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
 import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,9 @@ public class RoleUserInfoController {
     @ApiOperation(value = "获取用户角色信息表分页", notes = "获取用户角色信息表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "roleUserInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "roleUserInfoVo", dataTypeClass = RoleUserInfoVo.class)}
     )
     public Result<Page<RoleUserInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                                  @RequestParam(value = "pageSize", required = false) Long pageSize,

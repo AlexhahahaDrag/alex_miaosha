@@ -38,8 +38,8 @@ public class PmsCategoryController {
     @ApiOperation(value = "获取商品三级分类分页", notes = "获取商品三级分类分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "pmsCategoryVo")}
     )
     public Result<Page<PmsCategoryVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,

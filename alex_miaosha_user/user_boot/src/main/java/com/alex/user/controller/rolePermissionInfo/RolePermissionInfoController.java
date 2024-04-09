@@ -1,25 +1,21 @@
 package com.alex.user.controller.rolePermissionInfo;
 
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
-import com.alex.user.entity.rolePermissionInfo.RolePermissionInfo;
+import com.alex.user.service.rolePermissionInfo.RolePermissionInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.user.service.rolePermissionInfo.RolePermissionInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * description:  角色权限信息表restApi
@@ -40,9 +36,9 @@ public class RolePermissionInfoController {
     @ApiOperation(value = "获取角色权限信息表分页", notes = "获取角色权限信息表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "rolePermissionInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "rolePermissionInfoVo", dataTypeClass = RolePermissionInfoVo.class)}
     )
     public Result<Page<RolePermissionInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                                  @RequestParam(value = "pageSize", required = false) Long pageSize,

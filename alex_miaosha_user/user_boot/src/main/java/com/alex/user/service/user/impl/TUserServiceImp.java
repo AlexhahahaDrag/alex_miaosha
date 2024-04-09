@@ -187,8 +187,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = "1234@com";
-        String pass = encoder.encode(password + "mj");
+        String password = "12345";
+        String pass = encoder.encode(password + "Bxh");
         System.out.println(pass);
     }
 

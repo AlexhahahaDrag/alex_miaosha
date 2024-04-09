@@ -1,6 +1,5 @@
 package com.alex.finance.service.shopStock;
 
-import com.alex.api.finance.vo.saleOrder.SaleOrderVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.finance.entity.shopStock.ShopStock;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +27,4 @@ public interface ShopStockService extends IService<ShopStock> {
     Boolean deleteShopStock(String ids);
 
     List<ShopStockVo> getShopList(String ids);
-
-    Boolean submitOrder(SaleOrderVo saleOrderVo) throws Exception;
 }

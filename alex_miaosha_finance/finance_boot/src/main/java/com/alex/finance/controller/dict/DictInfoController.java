@@ -39,9 +39,9 @@ public class DictInfoController {
     @ApiOperation(value = "获取字典表分页", notes = "获取字典表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "dictInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "dictInfoVo", dataTypeClass = DictInfoVo.class)}
     )
     public Result<Page<DictInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
@@ -82,7 +82,7 @@ public class DictInfoController {
     @ApiOperation(value = "获取字典表列表", notes = "获取字典表列表", response = Result.class)
     @GetMapping(value = "/listByBelong")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "分类", name = "belongTo")}
+            @ApiImplicitParam(value = "分类", name = "belongTo", dataTypeClass = String.class)}
     )
     public Result<List<DictInfoVo>> listByBelong(@RequestParam(value = "belongTo", required = false) String belongTo) {
         return Result.success(dictInfoService.listByBelong(belongTo));

@@ -37,7 +37,7 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取天收入明细", notes = "获取天收入明细", response = Result.class)
     @GetMapping(value = "/getDayShopFinanceInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<ShopFinanceAnalysisVo>> getDayShopFinanceInfo(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getDayShopFinanceInfo(searchDate));
@@ -47,7 +47,7 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取月收入明细", notes = "获取月收入明细", response = Result.class)
     @GetMapping(value = "/getMonthShopFinanceInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<ShopFinanceAnalysisVo>> getMonthShopFinanceInfo(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getMonthShopFinanceInfo(searchDate));
@@ -57,7 +57,7 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取支付方式分布", notes = "获取支付方式分布", response = Result.class)
     @GetMapping(value = "/getPayWayInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<ShopFinanceAnalysisVo>> getPayWayInfo(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getPayWayInfo(searchDate));
@@ -67,7 +67,7 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取商品名称分布", notes = "获取商品名称分布", response = Result.class)
     @GetMapping(value = "/getShopNameInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<ShopFinanceAnalysisVo>> getShopNameInfo(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getShopNameInfo(searchDate));
@@ -77,7 +77,7 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取商品销售环同比", notes = "获取商品销售环同比", response = Result.class)
     @GetMapping(value = "/getChainAndYear")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<ShopFinanceChainYearVo> getChainAndYear(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getChainAndYear(searchDate));

@@ -51,6 +51,34 @@
             and t_shop_cart.is_delete = 0
         </where>
     </select>
+    
+    <select id="list" resultType="com.alex.api.finance.shopCart.vo.ShopCartVo">
+        select <include refid="Base_Column_List"/>,
+          t_shop_stock.shop_name,
+          t_shop_stock.shop_code,
+          t_shop_stock.cost_amount,
+          t_shop_stock.sale_amount,
+          t_shop_stock.is_valid,
+          t_shop_stock.sale_date,
+          t_shop_stock.category,
+          t_shop_stock.purchase_place,
+          t_shop_stock.sale_num as stock_num,
+          t_shop_stock.old_shop_code,
+          t_shop_stock.description,
+          t_shop_stock.sale_num > 0 as checked
+        from t_shop_cart
+        left join t_shop_stock
+        on t_shop_cart.shop_id = t_shop_stock.id
+        <where>
+            t_shop_cart.is_delete = 0
+            <if test="ids != null">
+            and t_shop_cart.id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+           </if>
+        </where>
+    </select>
 
      <sql id="queryInfo">
         <if test = "shopCartVo != null">

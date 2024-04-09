@@ -76,4 +76,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
     @ApiModelProperty(name = "infoDateEnd", value = "结束业务日期")
     private BigDecimal[] amountSearch;
+
+    @ApiModelProperty(value = "销售订单id")
+    private Long shopOrderId;
 }

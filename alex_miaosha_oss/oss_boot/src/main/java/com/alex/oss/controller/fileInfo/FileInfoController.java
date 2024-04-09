@@ -36,9 +36,9 @@ public class FileInfoController {
     @ApiOperation(value = "获取文件信息表分页", notes = "获取文件信息表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "fileInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "fileInfoVo", dataTypeClass = FileInfoVo.class)}
     )
     public Result<Page<FileInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
@@ -83,7 +83,7 @@ public class FileInfoController {
     @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
     @GetMapping("/fileDownload")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "id", name = "id", required = true)}
+            @ApiImplicitParam(value = "id", name = "id", required = true, dataTypeClass = Long.class)}
     )
     public Result fileDownload(@RequestParam(value = "id") Long id) {
         return Result.success(fileInfoService.fileDownload(id));
@@ -93,7 +93,7 @@ public class FileInfoController {
     @ApiOperation(value = "获取文件信息", notes = "获取文件信息", response = Result.class)
     @GetMapping("/getFileInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true)}
+            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true, dataTypeClass = List.class)}
     )
     public Result<List<FileInfoVo>> getFileInfo(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
         return Result.success(fileInfoService.getFileInfo(fileIdList));

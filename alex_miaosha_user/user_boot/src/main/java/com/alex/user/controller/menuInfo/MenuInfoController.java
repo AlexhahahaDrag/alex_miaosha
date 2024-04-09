@@ -38,13 +38,13 @@ public class MenuInfoController {
     @ApiOperation(value = "获取菜单管理表分页", notes = "获取菜单管理表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "menuInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "menuInfoVo", dataTypeClass = MenuInfoVo.class)}
     )
     public Result<Page<MenuInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) MenuInfoVo menuInfoVo) {
+                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                            @RequestBody(required = false) MenuInfoVo menuInfoVo) {
         return Result.success(menuInfoService.getPage(pageNum, pageSize, menuInfoVo));
     }
 
@@ -52,7 +52,7 @@ public class MenuInfoController {
     @ApiOperation(value = "获取菜单管理列表", notes = "获取菜单管理列表", response = Result.class)
     @PostMapping(value = "/list")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "查询条件", name = "menuInfoVo")}
+            @ApiImplicitParam(value = "查询条件", name = "menuInfoVo", dataTypeClass = MenuInfoVo.class)}
     )
     public Result<List<MenuInfoVo>> getList(@RequestBody(required = false) MenuInfoVo menuInfoVo) {
         return Result.success(menuInfoService.getList(menuInfoVo));

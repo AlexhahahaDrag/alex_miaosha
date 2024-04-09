@@ -26,8 +26,8 @@ public interface ${table.clientName} {
     @ApiOperation(value = "获取${table.comment!}分页", notes = "获取${table.comment!}分页", response = Result.class)
     @PostMapping(value = "/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}")}
     )
     Result<Page<${table.voName}>> get${entity}Page(@RequestParam(value = "pageNum", required = false) Long pageNum,

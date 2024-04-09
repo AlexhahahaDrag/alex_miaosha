@@ -36,8 +36,8 @@ public class PmsBrandController {
     @ApiOperation(value = "获取品牌分页", notes = "获取品牌分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "pmsBrandVo")}
     )
     public Result<Page<PmsBrandVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,

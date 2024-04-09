@@ -37,7 +37,6 @@ generator:
   tsPath: E:\workspace\myself\frontend\alex_miaosha_front\src\api
   mobileVuePath: E:\workspace\myself\frontend\alex_miaosha_mobile\src\views
   mobileTsPath: E:\workspace\myself\frontend\alex_miaosha_mobile\src\api
-
 #  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
 #  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
 #  javaPath: D:\project\alex_miaosha

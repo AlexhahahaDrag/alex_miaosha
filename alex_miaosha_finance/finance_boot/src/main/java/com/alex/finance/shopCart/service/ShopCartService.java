@@ -1,9 +1,11 @@
 package com.alex.finance.shopCart.service;
 
 import com.alex.api.finance.shopCart.vo.ShopCartVo;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.shopCart.entity.ShopCart;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * 购物车表 服务类
@@ -23,4 +25,6 @@ public interface ShopCartService extends IService<ShopCart> {
     Boolean updateShopCart(ShopCartVo shopCartVo);
 
     Boolean deleteShopCart(String ids);
+
+    List<ShopCartVo> list(String ids);
 }

@@ -36,8 +36,8 @@ public class FinanceAnalysisController {
     @ApiOperation(value = "获取余额", notes = "获取余额", response = Result.class)
     @GetMapping(value = "/getBalance")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo"),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate")}
+            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", dataTypeClass = String.class)}
     )
     public Result<List<AnalysisVo>> getTypeCodeSum(@RequestParam(value = "belongTo", required = false) Long belongTo,
                                                    @RequestParam(value = "searchDate", required = false) String searchDate) {
@@ -48,9 +48,9 @@ public class FinanceAnalysisController {
     @ApiOperation(value = "获取收入", notes = "获取收入", response = Result.class)
     @GetMapping(value = "/getIncomeAndExpense")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo"),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true),
-            @ApiImplicitParam(value = "收入支出类型（收入:income,支出:expense）", name = "type")}
+            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(value = "收入支出类型（收入:income,支出:expense）", name = "type", dataTypeClass = String.class)}
     )
     public Result<List<AnalysisVo>> getIncomeAndExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
                                                         @RequestParam(value = "searchDate") String searchDate,
@@ -62,8 +62,8 @@ public class FinanceAnalysisController {
     @ApiOperation(value = "获取天花费明细", notes = "获取天花费明细", response = Result.class)
     @GetMapping(value = "/getDayExpense")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo"),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<AnalysisVo>> getDayExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
                                                   @RequestParam(value = "searchDate") String searchDate) {
@@ -74,8 +74,8 @@ public class FinanceAnalysisController {
     @ApiOperation(value = "获取月花费明细", notes = "获取月花费明细", response = Result.class)
     @GetMapping(value = "/getMonthExpense")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo"),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true)}
+            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
     )
     public Result<List<AnalysisVo>> getMonthExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
                                                     @RequestParam(value = "searchDate") String searchDate) {

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.shopOrderDetail.mapper.ShopOrderDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.shopOrderDetail.entity.ShopOrderDetail">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="order_id" property="orderId" />
+        <result column="shop_name" property="shopName" />
+        <result column="shop_code" property="shopCode" />
+        <result column="sale_amount" property="saleAmount" />
+        <result column="is_valid" property="isValid" />
+        <result column="sale_date" property="saleDate" />
+        <result column="pay_way" property="payWay" />
+        <result column="sale_num" property="saleNum" />
+        <result column="shop_stock_id" property="shopStockId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_shop_order_detail.id,
+        t_shop_order_detail.is_delete,
+        t_shop_order_detail.creator,
+        t_shop_order_detail.updater,
+        t_shop_order_detail.deleter,
+        t_shop_order_detail.create_time,
+        t_shop_order_detail.update_time,
+        t_shop_order_detail.delete_time,
+        t_shop_order_detail.operator,
+        t_shop_order_detail.operate_time,
+        t_shop_order_detail.order_id, t_shop_order_detail.shop_name, t_shop_order_detail.shop_code, t_shop_order_detail.sale_amount, t_shop_order_detail.is_valid, t_shop_order_detail.sale_date, t_shop_order_detail.pay_way, t_shop_order_detail.sale_num, t_shop_order_detail.shop_stock_id
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
+        select <include refid="Base_Column_List"/>from t_shop_order_detail
+        <where>
+            t_shop_order_detail.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopOrderDetail" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
+        select <include refid="Base_Column_List"/> from t_shop_order_detail
+        <where>
+            t_shop_order_detail.id = #{id}
+            and t_shop_order_detail.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "shopOrderDetailVo != null">
+          <if test = "shopOrderDetailVo.orderId != null">
+            and t_shop_order_detail.order_id = #{shopOrderDetailVo.orderId}
+          </if>
+          <if test = "shopOrderDetailVo.shopName != null">
+            and t_shop_order_detail.shop_name like concat('%', #{shopOrderDetailVo.shopName}, '%')
+          </if>
+          <if test = "shopOrderDetailVo.shopCode != null">
+            and t_shop_order_detail.shop_code like concat('%', #{shopOrderDetailVo.shopCode}, '%')
+          </if>
+          <if test = "shopOrderDetailVo.saleAmount != null">
+            and t_shop_order_detail.sale_amount = #{shopOrderDetailVo.saleAmount}
+          </if>
+          <if test = "shopOrderDetailVo.isValid != null">
+            and t_shop_order_detail.is_valid like concat('%', #{shopOrderDetailVo.isValid}, '%')
+          </if>
+          <if test = "shopOrderDetailVo.saleDate != null">
+            and t_shop_order_detail.sale_date = #{shopOrderDetailVo.saleDate}
+          </if>
+          <if test = "shopOrderDetailVo.payWay != null">
+            and t_shop_order_detail.pay_way like concat('%', #{shopOrderDetailVo.payWay}, '%')
+          </if>
+          <if test = "shopOrderDetailVo.saleNum != null">
+            and t_shop_order_detail.sale_num = #{shopOrderDetailVo.saleNum}
+          </if>
+          <if test = "shopOrderDetailVo.shopStockId != null">
+            and t_shop_order_detail.shop_stock_id = #{shopOrderDetailVo.shopStockId}
+          </if>
+        </if>
+     </sql>
+</mapper>

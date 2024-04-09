@@ -61,14 +61,14 @@ public class ${table.controllerName} {
     @PostMapping(value = "/page")
     <% if(swagger){ %>
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}", dataTypeClass = ${table.voName}.class)}
     )
     <% } %>
     public Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                @RequestBody(required = false) ${entity}Vo ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                             @RequestBody(required = false) ${entity}Vo ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Vo));
     }
 

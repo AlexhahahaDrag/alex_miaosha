@@ -47,9 +47,9 @@ public class TUserController {
     @ApiOperation(value = "获取管理员表分页", notes = "获取管理员表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "tUserVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "tUserVo", dataTypeClass = TUserVo.class)}
     )
     public Result<Page<TUserVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                          @RequestParam(value = "pageSize", required = false) Long pageSize,
@@ -91,9 +91,9 @@ public class TUserController {
     @PostMapping("/login")
     @ApiOperation(value = "登录")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "用户名称", name = "username", type = "String.class"),
-            @ApiImplicitParam(value = "密码", name = "password", type = "String.class"),
-            @ApiImplicitParam(value = "是否记住我", name = "isRememberMe", type = "Boolean.class")
+            @ApiImplicitParam(value = "用户名称", name = "username", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "密码", name = "password", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "是否记住我", name = "isRememberMe", dataTypeClass = String.class)
     })
     public Result<Map<String, Object>> doLogin(HttpServletRequest request,
                                                @RequestParam(value = "username", required = false) String username,
@@ -103,7 +103,7 @@ public class TUserController {
     }
 
     @GetMapping("/third/{appName}")
-    public void renderAuth(@PathVariable(value = "appName")String appName, HttpServletResponse response) throws IOException {
+    public void renderAuth(@PathVariable(value = "appName") String appName, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = tUserService.getAuthRequest(appName);
         response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }
@@ -125,7 +125,7 @@ public class TUserController {
     @ApiOperation(value = "获取管理员列表", notes = "获取管理员列表", response = Result.class)
     @PostMapping(value = "/list")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "查询条件", name = "tUserVo")}
+            @ApiImplicitParam(value = "查询条件", name = "tUserVo", dataTypeClass = TUserVo.class)}
     )
     public Result<List<TUserVo>> getList(@RequestBody(required = false) TUserVo tUserVo) {
         return Result.success(tUserService.getList(tUserVo));
@@ -135,7 +135,7 @@ public class TUserController {
     @ApiOperation(value = "获取用户详情", notes = "获取用户详情", response = Result.class)
     @GetMapping(value = "/getUserInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "用户名", name = "username")}
+            @ApiImplicitParam(value = "用户名", name = "username", dataTypeClass = String.class)}
     )
     public TUserVo getUserByUsername(@RequestParam(value = "username") String username) {
         return tUserService.getUserByUsername(username);
@@ -145,7 +145,7 @@ public class TUserController {
     @ApiOperation(value = "根据token校验用户权限", notes = "根据token校验用户权限", response = Result.class)
     @GetMapping(value = "/authToken")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "token", name = "token")}
+            @ApiImplicitParam(value = "token", name = "token", dataTypeClass = String.class)}
     )
     public Result<Boolean> authToken(@RequestParam(value = "token") String token) {
         return Result.success(tUserService.authToken(token));

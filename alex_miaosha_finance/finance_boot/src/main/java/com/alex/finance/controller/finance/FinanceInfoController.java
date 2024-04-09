@@ -40,9 +40,9 @@ public class FinanceInfoController {
     @ApiOperation(value = "获取财务信息表分页", notes = "获取财务信息表分页", response = Result.class)
     @PostMapping(value = "/page")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum"),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize"),
-            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo", dataTypeClass = FinanceInfoVo.class)}
     )
     public Result<IPage<FinanceInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
@@ -54,7 +54,7 @@ public class FinanceInfoController {
     @ApiOperation(value = "获取财务信息表列表", notes = "获取财务信息表列表", response = Result.class)
     @PostMapping(value = "/list")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo")}
+            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo", dataTypeClass = FinanceInfoVo.class)}
     )
     public Result<List<FinanceInfoVo>> getList(@RequestBody FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.getList(financeInfoVo));
