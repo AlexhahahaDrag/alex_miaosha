@@ -1,6 +1,8 @@
 package com.alex.api.finance.vo.shopFinance;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -58,4 +60,8 @@ public class ShopFinanceVo extends BaseVo<ShopFinanceVo>{
 
     @ApiModelProperty(value = "销售日期到")
     private LocalDate saleDateEnd;
+
+    @ApiModelProperty(value = "销售订单id")
+    @JsonSerialize(using = Long2StringSerializer.class)
+    private Long shopOrderId;
 }

@@ -188,6 +188,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
             // TODO (majf) 2024/3/22 15:55 测试将来修改成有效
             shopFinance.setIsValid(SysConf.INVALID_STATUS);
             shopFinance.setShopOrderId(shopOrderVo.getId());
+            shopFinance.setIncomeAndExpenses(SysConf.INCOME_STATUS);
             return shopFinance;
         }).toList();
         shopFinanceService.saveBatch(shopFinanceList);
