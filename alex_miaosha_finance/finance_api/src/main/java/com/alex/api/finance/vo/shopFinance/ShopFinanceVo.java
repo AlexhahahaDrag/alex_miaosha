@@ -2,6 +2,7 @@ package com.alex.api.finance.vo.shopFinance;
 
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -64,4 +65,8 @@ public class ShopFinanceVo extends BaseVo<ShopFinanceVo>{
     @ApiModelProperty(value = "销售订单id")
     @JsonSerialize(using = Long2StringSerializer.class)
     private Long shopOrderId;
+
+    @ApiModelProperty(value = "商品库存id")
+    @JsonSerialize(using = Long2StringSerializer.class)
+    private Long shopStockId;
 }

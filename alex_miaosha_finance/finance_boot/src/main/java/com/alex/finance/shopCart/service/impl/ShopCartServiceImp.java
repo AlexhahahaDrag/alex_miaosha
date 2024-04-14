@@ -45,8 +45,8 @@ public class ShopCartServiceImp extends ServiceImpl<ShopCartMapper, ShopCart> im
     @Override
     public Boolean addShopCart(ShopCartVo shopCartVo) {
         // 根据人员和商品id查询商品是否存在
+        // TODO: 2024/4/14 后期修改成按照机构编码校验 
         Wrapper<ShopCart> query = Wrappers.<ShopCart>lambdaQuery()
-                .eq(ShopCart::getUserId, shopCartVo.getUserId())
                 .eq(ShopCart::getShopId, shopCartVo.getShopId());
         List<ShopCart> list = this.list(query);
         if (!list.isEmpty()) {

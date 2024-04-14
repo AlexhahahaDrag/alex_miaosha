@@ -184,11 +184,9 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
                     sum, shopOrderVo.getSaleAmount(), finalAvg, finalSumNum));
             first.set(false);
             shopFinance.setIncomeAndExpenses(SysConf.INCOME_STATUS);
-            shopFinance.setIncomeAndExpenses(shopOrderVo.getPayWay());
-            // TODO (majf) 2024/3/22 15:55 测试将来修改成有效
-            shopFinance.setIsValid(SysConf.INVALID_STATUS);
+            shopFinance.setPayWay(shopOrderVo.getPayWay());
+            shopFinance.setIsValid(SysConf.VALID_STATUS);
             shopFinance.setShopOrderId(shopOrderVo.getId());
-            shopFinance.setIncomeAndExpenses(SysConf.INCOME_STATUS);
             return shopFinance;
         }).toList();
         shopFinanceService.saveBatch(shopFinanceList);
