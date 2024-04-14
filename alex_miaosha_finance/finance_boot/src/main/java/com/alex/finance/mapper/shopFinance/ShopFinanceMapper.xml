@@ -214,20 +214,22 @@
     
     <select id="getShopNameInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
-          category,
-          case when category is null then '老的数据' else dict_info.type_name end as shop_name,
-          sum(sale_amount) AS sale_amount,
-          sum(sale_num) AS sale_num
+          t_shop_stock.category,
+          case when t_shop_stock.category is null then '老的数据' else dict_info.type_name end as shop_name,
+          sum(t_shop_finance.sale_amount) AS sale_amount,
+          sum(t_shop_finance.sale_num) AS sale_num
         FROM
           t_shop_finance
+        left join t_shop_stock
+         on t_shop_stock.id =  t_shop_finance.shop_stock_id
         left join dict_info
-         on dict_info.type_code = t_shop_finance.category
+         on dict_info.type_code = t_shop_stock.category
             and dict_info.belong_to = 'shop_category'
             and dict_info.is_valid = '1'
             and dict_info.is_delete = '0'
         WHERE
-          sale_date >= cast(concat(#{searchDate}, '-01') AS DATETIME)
-          AND sale_date &lt; DATE_ADD(
+          t_shop_finance.sale_date >= cast(concat(#{searchDate}, '-01') AS DATETIME)
+          AND t_shop_finance.sale_date &lt; DATE_ADD(
             cast(concat(#{searchDate}, '-01') AS DATETIME),
             INTERVAL 1 MONTH
           )
@@ -236,7 +238,7 @@
           and t_shop_finance.income_and_expenses = 'income'
           <include refid="roleInfo"/>
         group by
-            t_shop_finance.category,
+            t_shop_stock.category,
             dict_info.type_name
     </select>
     

@@ -10,6 +10,7 @@ import com.alex.finance.entity.shopFinance.ShopFinance;
 import com.alex.finance.entity.shopStock.ShopStock;
 import com.alex.finance.service.shopFinance.ShopFinanceService;
 import com.alex.finance.service.shopStock.ShopStockService;
+import com.alex.finance.shopCart.service.ShopCartService;
 import com.alex.finance.shopOrder.entity.ShopOrder;
 import com.alex.finance.shopOrder.mapper.ShopOrderMapper;
 import com.alex.finance.shopOrder.service.ShopOrderService;
@@ -30,6 +31,7 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -55,6 +57,8 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
     private final ShopFinanceService shopFinanceService;
 
     private final ShopOrderDetailService shopOrderDetailService;
+
+    private final ShopCartService shopCartService;
 
     @Override
     public Page<ShopOrderVo> getPage(Long pageNum, Long pageSize, ShopOrderVo shopOrderVo) {
@@ -156,7 +160,21 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
                 log.error("更新库存信息失败：{}", e.getMessage());
             }
         });
-        // TODO (majf) 2024/4/9 16:02 减少购物车中的信息
+        List<Long> shopCartIds = shopOrderDetailVoList.parallelStream()
+                .map(ShopOrderDetailVo::getShopCartId)
+                .filter(Objects::nonNull)
+                .toList();
+        if (!shopCartIds.isEmpty()) {
+            taskExecutor.execute(() -> {
+                try {
+                    //3. 删除购物车信息
+                    RequestContextHolder.setRequestAttributes(attributes);
+                    shopCartService.removeByIds(shopCartIds);
+                } catch (Exception e) {
+                    log.error("删除购物车信息失败：{}", e.getMessage());
+                }
+            });
+        }
         return true;
     }
 
@@ -170,7 +188,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         BigDecimal sumNum  = BigDecimal.ZERO;
         BigDecimal avg = BigDecimal.ZERO;
         if (needReallocation) {
-            sumNum = shopOrderDetailVoList.parallelStream().map(ShopOrderDetailVo::getSaleNum).reduce(BigDecimal.ZERO, BigDecimal::add);
+            sumNum = BigDecimal.valueOf(shopOrderDetailVoList.size());
             avg = sum.subtract(shopOrderVo.getSaleAmount()).divide(sumNum, RoundingMode.DOWN);
         }
         BigDecimal finalSumNum = sumNum;
