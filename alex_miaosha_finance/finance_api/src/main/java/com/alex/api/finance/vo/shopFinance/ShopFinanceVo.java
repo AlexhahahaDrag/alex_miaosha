@@ -2,7 +2,6 @@ package com.alex.api.finance.vo.shopFinance;
 
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

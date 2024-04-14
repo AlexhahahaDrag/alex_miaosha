@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -82,5 +83,12 @@ public class ShopStockController {
     @GetMapping(path = "/getShopList")
     public Result<List<ShopStockVo>> getShopList(@RequestParam(value = "ids") String ids)  {
         return Result.success(shopStockService.getShopList(ids));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @PostMapping(value = "/importShopStockInfo")
+    @ApiOperation(value = "导入商品库存信息", notes = "导入商品库存信息", response = Result.class)
+    public Result<Boolean> importShopStockInfo(@RequestPart("file") MultipartFile file) throws Exception {
+        return Result.success(shopStockService.importShopStockInfo(file));
     }
 }
