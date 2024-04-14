@@ -64,4 +64,7 @@ public class ShopFinanceVo extends BaseVo<ShopFinanceVo>{
     @ApiModelProperty(value = "销售订单id")
     @JsonSerialize(using = Long2StringSerializer.class)
     private Long shopOrderId;
+
+    @ApiModelProperty(value = "类别,字典(shop_category)")
+    private String category;
 }

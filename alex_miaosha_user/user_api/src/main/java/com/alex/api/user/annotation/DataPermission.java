@@ -10,5 +10,5 @@ public @interface DataPermission {
 
     String[] where() default {};
 
-    String field() default "creator";
+    String field() default "operator";
 }

@@ -4,6 +4,7 @@ import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.finance.entity.shopStock.ShopStock;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,4 +28,6 @@ public interface ShopStockService extends IService<ShopStock> {
     Boolean deleteShopStock(String ids);
 
     List<ShopStockVo> getShopList(String ids);
+
+    boolean importShopStockInfo(MultipartFile file) throws Exception;
 }

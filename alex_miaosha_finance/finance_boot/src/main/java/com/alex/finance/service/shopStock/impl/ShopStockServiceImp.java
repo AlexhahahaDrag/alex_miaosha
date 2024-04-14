@@ -1,9 +1,17 @@
 package com.alex.finance.service.shopStock.impl;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import cn.hutool.core.bean.BeanUtil;
+import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
+import com.alex.api.finance.vo.shopStock.ImportShopStockInfoVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
+import com.alex.base.constants.SysConf;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.entity.shopStock.ShopStock;
+import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.mapper.shopStock.ShopStockMapper;
 import com.alex.finance.service.shopFinance.ShopFinanceService;
 import com.alex.finance.service.shopStock.ShopStockService;
@@ -12,7 +20,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +42,8 @@ import java.util.stream.Collectors;
 public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock> implements ShopStockService {
 
     private final ShopStockMapper shopStockMapper;
+
+    private final IExcelDictHandlerImpl iExcelDictHandler;
 
     @Override
     public Page<ShopStockVo> getPage(Long pageNum, Long pageSize, ShopStockVo shopStockVo) {
@@ -77,5 +90,41 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             return Lists.newArrayList();
         }
         return shopStockMapper.getShopList(Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean importShopStockInfo(MultipartFile file) throws Exception {
+        List<ImportShopStockInfoVo> excelInfo = getExcelInfo(file);
+        if (excelInfo == null || excelInfo.isEmpty()) {
+            return true;
+        }
+        //将导入文件转化为bean
+        List<ShopStock> shopStockList = excelInfo.parallelStream()
+                .map(item -> {
+                    ShopStock stock = new ShopStock();
+                    BeanUtils.copyProperties(item, stock);
+                    stock.setIsValid(SysConf.VALID_STATUS);
+                    return stock;
+                }).toList();
+        this.saveBatch(shopStockList);
+        return true;
+    }
+
+    private List<ImportShopStockInfoVo> getExcelInfo(MultipartFile file) throws Exception {
+        ExcelImportResult<ImportShopStockInfoVo> result;
+        ImportParams importParams = new ImportParams();
+        //设置导入位置
+        importParams.setHeadRows(1);
+        //设置首行
+        importParams.setTitleRows(0);
+        importParams.setStartRows(0);
+        importParams.setStartSheetIndex(0);
+        //是否需要校验上传的Excel
+        importParams.setNeedVerify(false);
+        //告诉easypoi我们自定义的验证器
+        importParams.setDictHandler(iExcelDictHandler);
+        result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportShopStockInfoVo.class, importParams);
+        return result.getList();
     }
 }

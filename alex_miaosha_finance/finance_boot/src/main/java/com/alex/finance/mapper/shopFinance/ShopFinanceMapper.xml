@@ -23,6 +23,7 @@
         <result column="income_and_expenses" property="incomeAndExpenses"/>
         <result column="sale_num" property="saleNum"/>
         <result column="shop_order_id" property="shopOrderId"/>
+        <result column="category" property="category"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -41,7 +42,8 @@
         t_shop_finance.shop_code, t_shop_finance.sale_amount,
         t_shop_finance.is_valid, t_shop_finance.sale_date,
         t_shop_finance.pay_way, t_shop_finance.income_and_expenses,
-        t_shop_finance.sale_num, t_shop_finance.shop_order_id
+        t_shop_finance.sale_num, t_shop_finance.shop_order_id,
+        t_shop_finance.category
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
@@ -196,9 +198,7 @@
             and dict_info.is_valid = '1'
             and dict_info.is_delete = '0'
         WHERE
-            t_shop_finance.sale_date >= cast(
-            concat(SUBSTR(#{searchDate}, 1, 4), '-01-01') AS DATETIME
-          )
+            t_shop_finance.sale_date >= cast(concat(#{searchDate}, '-01') AS DATETIME)
           AND t_shop_finance.sale_date &lt; DATE_ADD(
             cast(concat(#{searchDate}, '-01') AS DATETIME),
             INTERVAL 1 MONTH
@@ -214,25 +214,30 @@
     
     <select id="getShopNameInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
-          shop_name,
+          category,
+          case when category is null then '老的数据' else dict_info.type_name end as shop_name,
           sum(sale_amount) AS sale_amount,
           sum(sale_num) AS sale_num
         FROM
           t_shop_finance
+        left join dict_info
+         on dict_info.type_code = t_shop_finance.category
+            and dict_info.belong_to = 'shop_category'
+            and dict_info.is_valid = '1'
+            and dict_info.is_delete = '0'
         WHERE
-          sale_date >= cast(
-            concat(SUBSTR(#{searchDate}, 1, 4), '-01-01') AS DATETIME
-          )
+          sale_date >= cast(concat(#{searchDate}, '-01') AS DATETIME)
           AND sale_date &lt; DATE_ADD(
             cast(concat(#{searchDate}, '-01') AS DATETIME),
             INTERVAL 1 MONTH
           )
-          AND is_valid = '1'
-          AND is_delete = '0'
+          AND t_shop_finance.is_valid = '1'
+          AND t_shop_finance.is_delete = '0'
           and t_shop_finance.income_and_expenses = 'income'
           <include refid="roleInfo"/>
         group by
-          shop_name
+            t_shop_finance.category,
+            dict_info.type_name
     </select>
     
     <select id="getChainAndYear" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo">

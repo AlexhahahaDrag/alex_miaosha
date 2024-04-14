@@ -60,4 +60,8 @@ public class ShopFinance extends BaseEntity<ShopFinance>{
     @ApiModelProperty(value = "销售订单id")
     @TableField("shop_order_id")
     private Long shopOrderId;
+
+    @ApiModelProperty(value = "类别,字典(shop_category)")
+    @TableField("category")
+    private String category;
 }

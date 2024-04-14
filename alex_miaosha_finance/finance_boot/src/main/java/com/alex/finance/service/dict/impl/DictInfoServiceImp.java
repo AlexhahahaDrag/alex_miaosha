@@ -89,7 +89,7 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
         if (dictInfoVo.getId() != null) {
             query.ne(DictInfo::getId, dictInfoVo.getId());
         }
-        return this.count();
+        return this.count(query);
     }
 
     @Override
