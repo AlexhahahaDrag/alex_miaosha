@@ -61,6 +61,18 @@ public class ImportShopStockInfoVo implements Serializable, IExcelModel, IExcelD
     @ApiModelProperty(value = "原商品编码")
     private String oldShopCode;
 
+    @Excel(name = "款式")
+    @ApiModelProperty(value = "款式")
+    private String style;
+
+    @Excel(name = "颜色")
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    @Excel(name = "尺码")
+    @ApiModelProperty(value = "尺码")
+    private String size;
+
     @ApiModelProperty(value = "描述")
     private String description;
 

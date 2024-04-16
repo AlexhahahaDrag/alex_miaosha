@@ -57,4 +57,7 @@ public class ShopStockVo extends BaseVo<ShopStockVo>{
 
     @ApiModelProperty(value = "是否商品页面")
     private Boolean isShopping;
+
+    @ApiModelProperty(value = "标题")
+    private String title;
 }

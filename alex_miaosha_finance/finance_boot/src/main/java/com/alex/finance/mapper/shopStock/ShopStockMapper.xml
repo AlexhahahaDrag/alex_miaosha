@@ -111,6 +111,10 @@
           <if test = "shopStockVo.isShopping != null and shopStockVo.isShopping">
             and t_shop_stock.sale_num > 0
           </if>
+          <if test = "shopStockVo.title != null and shopStockVo.title != ''">
+            and (t_shop_stock.shop_name like concat('%', #{shopStockVo.title}, '%') or
+            t_shop_stock.old_shop_code like concat('%', #{shopStockVo.title}, '%'))
+          </if>
         </if>
      </sql>
 </mapper>

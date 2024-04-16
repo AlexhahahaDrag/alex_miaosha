@@ -100,14 +100,13 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             return true;
         }
         //将导入文件转化为bean
-        List<ShopStock> shopStockList = excelInfo.parallelStream()
-                .map(item -> {
-                    ShopStock stock = new ShopStock();
-                    BeanUtils.copyProperties(item, stock);
-                    stock.setIsValid(SysConf.VALID_STATUS);
-                    return stock;
-                }).toList();
-        this.saveBatch(shopStockList);
+        excelInfo.forEach(item -> {
+            ShopStock stock = new ShopStock();
+            BeanUtils.copyProperties(item, stock);
+            stock.setIsValid(SysConf.VALID_STATUS);
+            stock.insert();
+
+        });
         return true;
     }
 
