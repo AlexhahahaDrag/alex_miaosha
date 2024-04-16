@@ -1,7 +1,6 @@
 package com.alex.api.finance.shopStockAttrs.vo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
