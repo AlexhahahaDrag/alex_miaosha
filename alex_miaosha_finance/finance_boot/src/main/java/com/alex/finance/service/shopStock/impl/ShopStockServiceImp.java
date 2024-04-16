@@ -4,17 +4,16 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import cn.hutool.core.bean.BeanUtil;
-import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
 import com.alex.api.finance.vo.shopStock.ImportShopStockInfoVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.finance.entity.finance.FinanceInfo;
 import com.alex.finance.entity.shopStock.ShopStock;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.mapper.shopStock.ShopStockMapper;
-import com.alex.finance.service.shopFinance.ShopFinanceService;
 import com.alex.finance.service.shopStock.ShopStockService;
+import com.alex.finance.shopStockAttrs.entity.ShopStockAttrs;
+import com.alex.finance.shopStockAttrs.service.ShopStockAttrsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -44,6 +43,8 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
     private final ShopStockMapper shopStockMapper;
 
     private final IExcelDictHandlerImpl iExcelDictHandler;
+
+    private final ShopStockAttrsService shopStockAttrsService;
 
     @Override
     public Page<ShopStockVo> getPage(Long pageNum, Long pageSize, ShopStockVo shopStockVo) {
@@ -99,15 +100,25 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         if (excelInfo == null || excelInfo.isEmpty()) {
             return true;
         }
+        List<ShopStockAttrs> attrsList = Lists.newArrayList();
         //将导入文件转化为bean
         excelInfo.forEach(item -> {
             ShopStock stock = new ShopStock();
             BeanUtils.copyProperties(item, stock);
             stock.setIsValid(SysConf.VALID_STATUS);
-            stock.insert();
-
+//            stock.insert();
+            attrsList.add(getAttr("size", "尺码", item.getSize(), stock.getId()));
+            attrsList.add(getAttr("color", "颜色", item.getSize(), stock.getId()));
+            attrsList.add(getAttr("style", "款式", item.getSize(), stock.getId()));
         });
+        shopStockAttrsService.saveBatch(attrsList);
         return true;
+    }
+
+    private ShopStockAttrs getAttr(String code, String name, String value, Long stockId) {
+        ShopStockAttrs shopStockAttrs = new ShopStockAttrs();
+        shopStockAttrs.setAttrCode(code).setAttrName(name).setAttrValue(value).setStockId(stockId);
+        return shopStockAttrs;
     }
 
     private List<ImportShopStockInfoVo> getExcelInfo(MultipartFile file) throws Exception {

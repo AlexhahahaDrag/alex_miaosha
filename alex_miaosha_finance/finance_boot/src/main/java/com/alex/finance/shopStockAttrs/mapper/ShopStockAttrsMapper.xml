@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.shopStockAttrs.mapper.ShopStockAttrsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.shopStockAttrs.entity.ShopStockAttrs">
+        <result column="id" property="id" />
+        <result column="is_delete" property="isDelete" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="stock_id" property="stockId" />
+        <result column="attr_code" property="attrCode" />
+        <result column="attr_name" property="attrName" />
+        <result column="attr_value" property="attrValue" />
+        <result column="is_valid" property="isValid" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_shop_stock_attrs.id,
+        t_shop_stock_attrs.is_delete,
+        t_shop_stock_attrs.creator,
+        t_shop_stock_attrs.updater,
+        t_shop_stock_attrs.deleter,
+        t_shop_stock_attrs.create_time,
+        t_shop_stock_attrs.update_time,
+        t_shop_stock_attrs.delete_time,
+        t_shop_stock_attrs.operator,
+        t_shop_stock_attrs.operate_time,
+        t_shop_stock_attrs.stock_id, t_shop_stock_attrs.attr_code, t_shop_stock_attrs.attr_name, t_shop_stock_attrs.attr_value, t_shop_stock_attrs.is_valid, t_shop_stock_attrs.`description`
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
+        select <include refid="Base_Column_List"/>from t_shop_stock_attrs
+        <where>
+            t_shop_stock_attrs.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopStockAttrs" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
+        select <include refid="Base_Column_List"/> from t_shop_stock_attrs
+        <where>
+            t_shop_stock_attrs.id = #{id}
+            and t_shop_stock_attrs.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "shopStockAttrsVo != null">
+          <if test = "shopStockAttrsVo.stockId != null">
+            and t_shop_stock_attrs.stock_id = #{shopStockAttrsVo.stockId}
+          </if>
+          <if test = "shopStockAttrsVo.attrCode != null">
+            and t_shop_stock_attrs.attr_code like concat('%', #{shopStockAttrsVo.attrCode}, '%')
+          </if>
+          <if test = "shopStockAttrsVo.attrName != null">
+            and t_shop_stock_attrs.attr_name like concat('%', #{shopStockAttrsVo.attrName}, '%')
+          </if>
+          <if test = "shopStockAttrsVo.attrValue != null">
+            and t_shop_stock_attrs.attr_value like concat('%', #{shopStockAttrsVo.attrValue}, '%')
+          </if>
+          <if test = "shopStockAttrsVo.isValid != null">
+            and t_shop_stock_attrs.is_valid like concat('%', #{shopStockAttrsVo.isValid}, '%')
+          </if>
+          <if test = "shopStockAttrsVo.description != null">
+            and t_shop_stock_attrs.description like concat('%', #{shopStockAttrsVo.description}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>
