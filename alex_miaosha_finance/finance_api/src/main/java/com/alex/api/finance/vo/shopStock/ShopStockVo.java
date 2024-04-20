@@ -1,5 +1,6 @@
 package com.alex.api.finance.vo.shopStock;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alex.common.common.BaseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -60,4 +61,13 @@ public class ShopStockVo extends BaseVo<ShopStockVo>{
 
     @ApiModelProperty(value = "标题")
     private String title;
+
+    @ApiModelProperty(value = "款式")
+    private String style;
+
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    @ApiModelProperty(value = "尺码")
+    private String size;
 }

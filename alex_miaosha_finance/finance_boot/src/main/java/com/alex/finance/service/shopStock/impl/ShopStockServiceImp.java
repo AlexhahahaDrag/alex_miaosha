@@ -107,17 +107,34 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             BeanUtils.copyProperties(item, stock);
             stock.setIsValid(SysConf.VALID_STATUS);
 //            stock.insert();
-            attrsList.add(getAttr("size", "尺码", item.getSize(), stock.getId()));
-            attrsList.add(getAttr("color", "颜色", item.getSize(), stock.getId()));
-            attrsList.add(getAttr("style", "款式", item.getSize(), stock.getId()));
+            if (StringUtils.isNotEmpty(item.getSize())) {
+                attrsList.add(getAttr("size", "尺码", item.getSize(), stock.getId()));
+            }
+            if (StringUtils.isNotEmpty(item.getSize())) {
+                attrsList.add(getAttr("color", "颜色", item.getColor(), stock.getId()));
+            }
+            if (StringUtils.isNotEmpty(item.getSize())) {
+                attrsList.add(getAttr("style", "款式", item.getStyle(), stock.getId()));
+            }
         });
         shopStockAttrsService.saveBatch(attrsList);
         return true;
     }
 
+    /**
+     * @param code
+     * @param name
+     * @param value
+     * @param stockId
+     * @description: 拼接商品库存属性数据
+     * @author:      alex
+     * @return:      com.alex.finance.shopStockAttrs.entity.ShopStockAttrs
+    */
+
     private ShopStockAttrs getAttr(String code, String name, String value, Long stockId) {
         ShopStockAttrs shopStockAttrs = new ShopStockAttrs();
-        shopStockAttrs.setAttrCode(code).setAttrName(name).setAttrValue(value).setStockId(stockId);
+        shopStockAttrs.setAttrCode(code).setAttrName(name)
+                .setAttrValue(value).setStockId(stockId).setIsValid(SysConf.VALID_STATUS);
         return shopStockAttrs;
     }
 
