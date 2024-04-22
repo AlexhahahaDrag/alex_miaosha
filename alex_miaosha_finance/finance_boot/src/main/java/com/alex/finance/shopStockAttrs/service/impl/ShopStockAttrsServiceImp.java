@@ -1,17 +1,20 @@
 package com.alex.finance.shopStockAttrs.service.impl;
 
-import com.alex.finance.shopStockAttrs.entity.ShopStockAttrs;
 import com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.finance.shopStockAttrs.entity.ShopStockAttrs;
 import com.alex.finance.shopStockAttrs.mapper.ShopStockAttrsMapper;
 import com.alex.finance.shopStockAttrs.service.ShopStockAttrsService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
-import java.util.Arrays;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import com.alex.common.utils.string.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -61,5 +64,11 @@ public class ShopStockAttrsServiceImp extends ServiceImpl<ShopStockAttrsMapper, 
         List<String> idArr = Arrays.asList(ids.split(","));
         shopStockAttrsMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public Boolean deleteShopStockAttrsByStockId(Long stockId) {
+        LambdaUpdateWrapper<ShopStockAttrs> update = Wrappers.<ShopStockAttrs>lambdaUpdate().eq(ShopStockAttrs::getStockId, stockId);
+        return shopStockAttrsMapper.delete(update)> 0;
     }
 }

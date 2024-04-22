@@ -7,6 +7,8 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.shopStock.ImportShopStockInfoVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.constants.SysConf;
+import com.alex.common.redis.key.ShopStockKey;
+import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.shopStock.ShopStock;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
@@ -14,6 +16,7 @@ import com.alex.finance.mapper.shopStock.ShopStockMapper;
 import com.alex.finance.service.shopStock.ShopStockService;
 import com.alex.finance.shopStockAttrs.entity.ShopStockAttrs;
 import com.alex.finance.shopStockAttrs.service.ShopStockAttrsService;
+import com.alex.finance.utils.CodeUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -46,6 +49,8 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
 
     private final ShopStockAttrsService shopStockAttrsService;
 
+    private final CodeUtils codeUtils;
+
     @Override
     public Page<ShopStockVo> getPage(Long pageNum, Long pageSize, ShopStockVo shopStockVo) {
         Page<ShopStockVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
@@ -61,17 +66,46 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
     public Boolean addShopStock(ShopStockVo shopStockVo) {
         ShopStock shopStock = new ShopStock();
         BeanUtil.copyProperties(shopStockVo, shopStock);
-        // TODO (majf) 2024/3/22 11:52 生成商品编码  时间 + 地点 + 类别 + 序号
-        // shopStock.setCode(DateUtil.format(new Date(), "yyyyMMddHHmmssSSS") + shopStockVo.getLocation() + shopStockVo.getCategory() + shopStockVo.getSeq());
+        String saleDate = DateUtils.getTimeStr(shopStockVo.getSaleDate(), "yyyyMMdd");
+        shopStock.setShopCode(codeUtils.getCode(ShopStockKey.shopStockKey, saleDate, shopStockVo.getPurchasePlace(), shopStockVo.getCategory()));
         shopStockMapper.insert(shopStock);
+        List<ShopStockAttrs> attrsList = Lists.newArrayList();
+        getShopStockAttrs(attrsList, shopStockVo.getSize(), shopStockVo.getColor(), shopStockVo.getStyle(), shopStock.getId());
+        if (!attrsList.isEmpty()) {
+            shopStockAttrsService.saveBatch(attrsList);
+        }
         return true;
     }
 
+    private void getShopStockAttrs( List<ShopStockAttrs> attrsList, String size, String color, String style, Long id) {
+        if (StringUtils.isNotEmpty(size)) {
+            attrsList.add(getAttr("size", "尺码", size, id));
+        }
+        if (StringUtils.isNotEmpty(size)) {
+            attrsList.add(getAttr("color", "颜色", color, id));
+        }
+        if (StringUtils.isNotEmpty(size)) {
+            attrsList.add(getAttr("style", "款式", style, id));
+        }
+    }
+
+    /**
+     * param: shopStockVo
+     * description: 更新商品库存属性
+     * author:      majf
+     * return:      java.lang.Boolean
+    */
     @Override
     public Boolean updateShopStock(ShopStockVo shopStockVo) {
         ShopStock shopStock = new ShopStock();
         BeanUtil.copyProperties(shopStockVo, shopStock);
         shopStockMapper.updateById(shopStock);
+        List<ShopStockAttrs> attrsList = Lists.newArrayList();
+        getShopStockAttrs(attrsList, shopStockVo.getSize(), shopStockVo.getColor(), shopStockVo.getStyle(), shopStock.getId());
+        if (!attrsList.isEmpty()) {
+            shopStockAttrsService.deleteShopStockAttrsByStockId(shopStock.getId());
+            shopStockAttrsService.saveBatch(attrsList);
+        }
         return true;
     }
 
@@ -106,18 +140,12 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             ShopStock stock = new ShopStock();
             BeanUtils.copyProperties(item, stock);
             stock.setIsValid(SysConf.VALID_STATUS);
-//            stock.insert();
-            if (StringUtils.isNotEmpty(item.getSize())) {
-                attrsList.add(getAttr("size", "尺码", item.getSize(), stock.getId()));
-            }
-            if (StringUtils.isNotEmpty(item.getSize())) {
-                attrsList.add(getAttr("color", "颜色", item.getColor(), stock.getId()));
-            }
-            if (StringUtils.isNotEmpty(item.getSize())) {
-                attrsList.add(getAttr("style", "款式", item.getStyle(), stock.getId()));
-            }
+            stock.insert();
+            getShopStockAttrs(attrsList, item.getSize(), item.getColor(), item.getStyle(), stock.getId());
         });
-        shopStockAttrsService.saveBatch(attrsList);
+        if (!attrsList.isEmpty()) {
+            shopStockAttrsService.saveBatch(attrsList);
+        }
         return true;
     }
 

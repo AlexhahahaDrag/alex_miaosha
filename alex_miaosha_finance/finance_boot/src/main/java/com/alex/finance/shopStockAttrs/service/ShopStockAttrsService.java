@@ -23,4 +23,6 @@ public interface ShopStockAttrsService extends IService<ShopStockAttrs> {
     Boolean updateShopStockAttrs(ShopStockAttrsVo shopStockAttrsVo);
 
     Boolean deleteShopStockAttrs(String ids);
+
+    Boolean deleteShopStockAttrsByStockId(Long stockId);
 }

@@ -5,6 +5,7 @@ import com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FinanceException;
+import com.alex.common.redis.key.ShopStockKey;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.entity.shopFinance.ShopFinance;
 import com.alex.finance.entity.shopStock.ShopStock;
@@ -15,6 +16,7 @@ import com.alex.finance.shopOrder.entity.ShopOrder;
 import com.alex.finance.shopOrder.mapper.ShopOrderMapper;
 import com.alex.finance.shopOrder.service.ShopOrderService;
 import com.alex.finance.shopOrderDetail.service.ShopOrderDetailService;
+import com.alex.finance.utils.CodeUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +30,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +62,8 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
     private final ShopOrderDetailService shopOrderDetailService;
 
     private final ShopCartService shopCartService;
+
+    private final CodeUtils codeUtils;
 
     @Override
     public Page<ShopOrderVo> getPage(Long pageNum, Long pageSize, ShopOrderVo shopOrderVo) {
@@ -127,6 +132,8 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         BigDecimal saleCount = shopOrderDetailVoList.parallelStream().map(ShopOrderDetailVo::getSaleNum).reduce(BigDecimal.ZERO, BigDecimal::add);
         ShopOrder shopOrder = new ShopOrder();
         BeanUtils.copyProperties(shopOrderVo, shopOrder);
+        String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        shopOrder.setSaleOrderCode(saleOrderCode);
         shopOrder.setSaleCount(saleCount);
         shopOrder.insert();
         shopOrderVo.setId(shopOrder.getId());
