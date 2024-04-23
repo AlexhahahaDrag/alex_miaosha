@@ -30,6 +30,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -130,6 +131,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         // 1.保存订单数据
         // 计算商品总数
         BigDecimal saleCount = shopOrderDetailVoList.parallelStream().map(ShopOrderDetailVo::getSaleNum).reduce(BigDecimal.ZERO, BigDecimal::add);
+        shopOrderVo.setSaleDate(LocalDateTime.now());
         ShopOrder shopOrder = new ShopOrder();
         BeanUtils.copyProperties(shopOrderVo, shopOrder);
         String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
