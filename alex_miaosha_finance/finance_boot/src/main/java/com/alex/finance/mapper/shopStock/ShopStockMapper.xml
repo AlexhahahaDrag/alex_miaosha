@@ -73,7 +73,23 @@
     </select>
 
     <select id="queryShopStock" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
-        select <include refid="Base_Column_List"/> from t_shop_stock
+        with attr_info as (
+            SELECT
+                stock_id,
+                MAX( CASE WHEN attr_code = 'style' THEN attr_value END ) AS style,
+                MAX( CASE WHEN attr_code = 'color' THEN attr_value END ) AS color,
+                MAX( CASE WHEN attr_code = 'size' THEN TRIM( UPPER( attr_value )) END ) AS size
+            FROM
+                t_shop_stock_attrs
+            WHERE
+                is_valid = '1'
+                AND is_delete = '0'
+            GROUP BY
+                stock_id
+        )
+        select <include refid="Base_Column_List"/>,
+             attr_info.style, attr_info.color, attr_info.size from t_shop_stock
+                  left join attr_info on t_shop_stock.id = attr_info.stock_id
         <where>
             t_shop_stock.id = #{id}
             and t_shop_stock.is_delete = 0
