@@ -137,6 +137,8 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         shopOrder.setSaleOrderCode(saleOrderCode);
         shopOrder.setSaleCount(saleCount);
+        shopOrder.setSaleOrderName("销售单");
+        shopOrder.setIsValid(SysConf.VALID_STATUS);
         shopOrder.insert();
         shopOrderVo.setId(shopOrder.getId());
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();

@@ -24,7 +24,7 @@ public class CodeUtils {
     public String getCode(KeyPrefix key, String date, String... info){
         String countStr = redisUtils.get(key, date);
         Integer count = Integer.parseInt(StringUtils.isEmpty(countStr) ? "0" : countStr) + 1;
-        redisUtils.set(ShopStockKey.shopStockKey, date, count, 24 * 60 * 60 * 1000);
+        redisUtils.set(ShopStockKey.shopStockKey, date, count, 24 * 60 * 60);
         StringBuilder code = new StringBuilder();
         for (String i : info) {
             code.append(i);

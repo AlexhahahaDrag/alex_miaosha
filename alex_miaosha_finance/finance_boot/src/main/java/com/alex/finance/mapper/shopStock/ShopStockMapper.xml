@@ -116,12 +116,6 @@
           <if test = "shopStockVo.shopCode != null">
             and t_shop_stock.shop_code like concat('%', #{shopStockVo.shopCode}, '%')
           </if>
-          <if test = "shopStockVo.costAmount != null">
-            and t_shop_stock.cost_amount = #{shopStockVo.costAmount}
-          </if>
-          <if test = "shopStockVo.saleAmount != null">
-            and t_shop_stock.sale_amount = #{shopStockVo.saleAmount}
-          </if>
           <if test = "shopStockVo.isValid != null">
             and t_shop_stock.is_valid like concat('%', #{shopStockVo.isValid}, '%')
           </if>

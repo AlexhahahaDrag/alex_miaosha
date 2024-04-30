@@ -285,14 +285,14 @@
                             FROM t_shop_finance
                             WHERE sale_date >= DATE_ADD(
                                     cast(concat(#{searchDate}, '-01') AS DATETIME),
-                                    INTERVAL 1 MONTH
+                                    INTERVAL - 1 MONTH
                                                )
                               AND sale_date &lt; cast(concat(#{searchDate}, '-01') AS DATETIME)
                               AND is_valid = '1'
                               AND is_delete = '0'
                               and t_shop_finance.income_and_expenses = 'income'
                               <include refid="roleInfo"/>
-                            GROUP BY info_date) as last_month on last_month.info_date = cur_info.info_date
+                            GROUP BY info_date) as last_month on 1 = 1
                  left join (SELECT DATE_FORMAT(sale_date, '%m') AS info_date,
                                    sum(sale_amount)             AS sale_amount,
                                    sum(sale_num)                AS sale_num
@@ -337,5 +337,16 @@
           <include refid="roleInfo"/>
         GROUP BY
             t_org_user_info.org_id, info_date
+    </select>
+    
+    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+        select
+            sum(sale_num) as sale_num,
+            sum(sale_num * cost_amount) as cost_amount
+        FROM
+            t_shop_stock
+        WHERE
+            is_valid = '1'
+          AND is_delete = '0'
     </select>
 </mapper>

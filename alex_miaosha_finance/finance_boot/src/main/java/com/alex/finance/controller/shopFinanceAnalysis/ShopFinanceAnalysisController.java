@@ -2,6 +2,7 @@ package com.alex.finance.controller.shopFinanceAnalysis;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 import com.alex.base.common.Result;
 import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -81,5 +82,12 @@ public class ShopFinanceAnalysisController {
     )
     public Result<ShopFinanceChainYearVo> getChainAndYear(@RequestParam(value = "searchDate") String searchDate) {
         return Result.success(shopFinanceAnalysisService.getChainAndYear(searchDate));
+    }
+
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "获取店铺库存信息", notes = "获取店铺库存信息", response = Result.class)
+    @GetMapping(value = "/getAllStockInfo")
+    public Result<ShopStockAnalysisVo> getAllShopStockInfo() {
+        return Result.success(shopFinanceAnalysisService.getAllShopStockInfo());
     }
 }

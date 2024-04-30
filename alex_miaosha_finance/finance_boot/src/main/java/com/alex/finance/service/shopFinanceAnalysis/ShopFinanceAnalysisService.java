@@ -2,6 +2,7 @@ package com.alex.finance.service.shopFinanceAnalysis;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface ShopFinanceAnalysisService {
     ShopFinanceChainYearVo getChainAndYear(String searchDate);
 
     void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception;
+
+    ShopStockAnalysisVo getAllShopStockInfo();
 }

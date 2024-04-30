@@ -45,10 +45,12 @@
             t_shop_order.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_shop_order.operate_time desc
     </select>
 
     <select id="queryShopOrder" resultType="com.alex.api.finance.shopOrder.vo.ShopOrderVo">
         select <include refid="Base_Column_List"/> from t_shop_order
+                left join
         <where>
             t_shop_order.id = #{id}
             and t_shop_order.is_delete = 0

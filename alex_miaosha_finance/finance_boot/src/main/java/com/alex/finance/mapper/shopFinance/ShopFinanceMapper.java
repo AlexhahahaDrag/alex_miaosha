@@ -2,6 +2,7 @@ package com.alex.finance.mapper.shopFinance;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 import com.alex.finance.entity.shopFinance.ShopFinance;
 import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -57,4 +58,7 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
                                                       @Param("userId") Long userId,
                                                       @Param("orgId") Long orgId,
                                                       @Param("type") String type);
+
+    @DataPermission(table = "t_shop_stock")
+    ShopStockAnalysisVo getAllShopStockInfo();
 }
