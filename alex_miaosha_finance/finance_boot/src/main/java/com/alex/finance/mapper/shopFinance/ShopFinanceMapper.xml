@@ -269,9 +269,9 @@
                      sum(sale_amount)             AS sale_amount,
                      sum(sale_num)                AS sale_num
               FROM t_shop_finance
-              WHERE sale_date >= cast(concat(#{searchDate}, '-01') AS DATETIME)
+              WHERE sale_date >= cast(#{startDate} AS DATETIME)
                 AND sale_date &lt; DATE_ADD(
-                      cast(concat(#{searchDate}, '-01') AS DATETIME),
+                      cast(#{endDate} AS DATETIME),
                       INTERVAL 1 MONTH
                                    )
                 AND is_valid = '1'
@@ -284,10 +284,10 @@
                                    sum(sale_num)                AS sale_num
                             FROM t_shop_finance
                             WHERE sale_date >= DATE_ADD(
-                                    cast(concat(#{searchDate}, '-01') AS DATETIME),
+                                    cast(#{startDate} AS DATETIME),
                                     INTERVAL - 1 MONTH
                                                )
-                              AND sale_date &lt; cast(concat(#{searchDate}, '-01') AS DATETIME)
+                              AND sale_date &lt; cast(#{endDate} AS DATETIME)
                               AND is_valid = '1'
                               AND is_delete = '0'
                               and t_shop_finance.income_and_expenses = 'income'
@@ -298,11 +298,11 @@
                                    sum(sale_num)                AS sale_num
                             FROM t_shop_finance
                             WHERE sale_date >= DATE_ADD(
-                                    cast(concat(#{searchDate}, '-01') AS DATETIME),
+                                    cast(#{startDate} AS DATETIME),
                                     interval -1 year
                                                )
                               AND sale_date &lt; DATE_ADD(
-                                    cast(concat(#{searchDate}, '-01') AS DATETIME),
+                                    cast(#{endDate} AS DATETIME),
                                     INTERVAL -11 MONTH
                                                  )
                               AND is_valid = '1'
@@ -320,6 +320,9 @@
             </if>
             <if test="type == 'month'">
                 DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m' ) AS info_date,
+            </if>
+            <if test="type == 'year'">
+                DATE_FORMAT( t_shop_finance.sale_date, '%Y' ) AS info_date,
             </if>
             sum( t_shop_finance.sale_amount ) AS sale_amount,
             sum( t_shop_finance.sale_num ) AS sale_num

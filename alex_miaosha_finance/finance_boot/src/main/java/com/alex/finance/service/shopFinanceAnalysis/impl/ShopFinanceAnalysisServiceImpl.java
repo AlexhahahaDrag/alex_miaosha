@@ -60,10 +60,10 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     }
 
     @Override
-    public ShopFinanceChainYearVo getChainAndYear(String searchDate) {
+    public ShopFinanceChainYearVo getChainAndYear(String startDate, String endDate) {
         TUserVo loginUser = userUtils.getLoginUser();
         RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopFinanceMapper.getChainAndYear(searchDate, roleInfoVo.getRoleCode(), loginUser.getId(),
+        return shopFinanceMapper.getChainAndYear(startDate, endDate, roleInfoVo.getRoleCode(), loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 

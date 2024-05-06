@@ -22,7 +22,7 @@ public interface ShopFinanceAnalysisService {
 
     List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate);
 
-    ShopFinanceChainYearVo getChainAndYear(String searchDate);
+    ShopFinanceChainYearVo getChainAndYear(String startDate, String endDate);
 
     void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception;
 

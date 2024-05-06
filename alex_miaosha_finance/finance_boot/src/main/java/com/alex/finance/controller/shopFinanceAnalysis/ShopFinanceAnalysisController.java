@@ -78,10 +78,12 @@ public class ShopFinanceAnalysisController {
     @ApiOperation(value = "获取商品销售环同比", notes = "获取商品销售环同比", response = Result.class)
     @GetMapping(value = "/getChainAndYear")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "startDate", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "endDate", required = true, dataTypeClass = String.class)}
     )
-    public Result<ShopFinanceChainYearVo> getChainAndYear(@RequestParam(value = "searchDate") String searchDate) {
-        return Result.success(shopFinanceAnalysisService.getChainAndYear(searchDate));
+    public Result<ShopFinanceChainYearVo> getChainAndYear(@RequestParam(value = "startDate") String startDate,
+                                                          @RequestParam(value = "endDate") String endDate) {
+        return Result.success(shopFinanceAnalysisService.getChainAndYear(startDate, endDate));
     }
 
     @ApiOperationSupport(order = 80, author = "alex")

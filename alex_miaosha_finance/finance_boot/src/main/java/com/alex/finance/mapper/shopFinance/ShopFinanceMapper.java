@@ -47,7 +47,8 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
                                                 @Param("userId") Long userId,
                                                 @Param("orgId") Long orgId);
 
-    ShopFinanceChainYearVo getChainAndYear(@Param("searchDate") String searchDate,
+    ShopFinanceChainYearVo getChainAndYear(@Param("startDate") String startDate,
+                                           @Param("endDate") String endDate,
                                            @Param("roleCode") String roleCode,
                                            @Param("userId") Long userId,
                                            @Param("orgId") Long orgId);
