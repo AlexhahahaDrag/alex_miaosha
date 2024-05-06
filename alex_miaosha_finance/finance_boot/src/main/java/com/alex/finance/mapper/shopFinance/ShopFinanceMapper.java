@@ -1,6 +1,6 @@
 package com.alex.finance.mapper.shopFinance;
 
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 import com.alex.finance.entity.shopFinance.ShopFinance;
@@ -62,4 +62,9 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
 
     @DataPermission(table = "t_shop_stock")
     ShopStockAnalysisVo getAllShopStockInfo();
+
+    @DataPermission(table = "t_shop_finance")
+    ShopFinanceChainYearVo getBenefitInfo(@Param("startDate") String startDate,
+                                          @Param("endDate") String endDate,
+                                          @Param("searchType") String searchType);
 }

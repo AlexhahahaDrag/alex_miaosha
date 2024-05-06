@@ -109,16 +109,16 @@
       <sql id="roleInfo">
         <if test="roleCode != null">
             <if test="roleCode.contains('user')">
-                AND t_shop_finance.creator = #{userId}
+                AND t_shop_finance.operator = #{userId}
             </if>
             <if test="roleCode.contains('admin')">
-                AND t_shop_finance.creator in
+                AND t_shop_finance.operator in
                 (select user_id from alex_user.t_org_user_info where t_org_user_info.org_id = #{orgId})
             </if>
         </if>
       </sql>
 
-    <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
         WITH RECURSIVE date_series AS (
         SELECT
             concat(#{searchDate}, '-01') AS DATE
@@ -132,21 +132,25 @@
         ) SELECT
         date_info.DATE AS info_date,
         IFNULL( info.sale_amount, 0 ) AS sale_amount,
-        IFNULL( info.sale_num, 0 ) AS sale_num
+        IFNULL( info.sale_num, 0 ) AS sale_num,
+        IFNULL( info.sale_cost, 0 ) AS sale_cost
     FROM
         date_series AS date_info
         LEFT JOIN (
         SELECT
-            DATE_FORMAT( sale_date, '%Y-%m-%d' ) AS info_date,
-            sum( sale_amount ) AS sale_amount,
-            sum( sale_num ) AS sale_num
+            DATE_FORMAT( t_shop_finance.sale_date, '%Y-%m-%d' ) AS info_date,
+            sum( t_shop_finance.sale_amount ) AS sale_amount,
+            sum( t_shop_finance.sale_num ) AS sale_num,
+            sum( t_shop_finance.sale_num *  t_shop_stock.cost_amount ) AS sale_cost
         FROM
             t_shop_finance
+        left join t_shop_stock
+            on t_shop_stock.id =  t_shop_finance.shop_stock_id
         WHERE
-            sale_date >= cast( concat(#{searchDate}, '-01') AS DATETIME )
-            AND sale_date &lt; DATE_ADD( cast( concat(#{searchDate}, '-01') AS DATETIME ), INTERVAL 1 MONTH )
-            AND is_valid = '1'
-            AND is_delete = '0'
+            t_shop_finance.sale_date >= cast( concat(#{searchDate}, '-01') AS DATETIME )
+            AND t_shop_finance.sale_date &lt; DATE_ADD( cast( concat(#{searchDate}, '-01') AS DATETIME ), INTERVAL 1 MONTH )
+            AND t_shop_finance.is_valid = '1'
+            AND t_shop_finance.is_delete = '0'
             and t_shop_finance.income_and_expenses = 'income'
             <include refid="roleInfo"/>
         GROUP BY
@@ -156,25 +160,29 @@
         date_info.DATE
     </select>
 
-    <select id="getMonthShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getMonthShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
         WITH recursive c ( n ) AS ( SELECT 0 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 ) SELECT
         date_info.n AS info_date,
         ifnull( info.sale_amount, 0 ) AS sale_amount ,
-        ifnull( info.sale_num, 0 ) AS sale_num
+        ifnull( info.sale_num, 0 ) AS sale_num,
+        IFNULL( info.sale_cost, 0 ) AS sale_cost
         FROM
             ( SELECT c.n FROM c ) date_info
             LEFT JOIN (
             SELECT
-                DATE_FORMAT( sale_date, '%m' ) AS info_date,
-                sum( sale_amount ) AS sale_amount,
-                sum( sale_num ) AS sale_num
+                DATE_FORMAT( t_shop_finance.sale_date, '%m' ) AS info_date,
+                sum( t_shop_finance.sale_amount ) AS sale_amount,
+                sum( t_shop_finance.sale_num ) AS sale_num,
+                sum( t_shop_finance.sale_num * t_shop_stock.cost_amount ) AS sale_cost
             FROM
-                t_shop_finance 
+                t_shop_finance
+            left join t_shop_stock
+                on t_shop_stock.id =  t_shop_finance.shop_stock_id
             WHERE
-                sale_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS DATETIME ) 
-                AND sale_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS DATETIME ), INTERVAL 1 MONTH ) 
-                AND is_valid = '1' 
-                AND is_delete = '0'
+                t_shop_finance.sale_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS DATETIME )
+                AND t_shop_finance.sale_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS DATETIME ), INTERVAL 1 MONTH )
+                AND t_shop_finance.is_valid = '1'
+                AND t_shop_finance.is_delete = '0'
                 and t_shop_finance.income_and_expenses = 'income'
                 <include refid="roleInfo"/>
             GROUP BY
@@ -184,7 +192,7 @@
             date_info.n
     </select>
 
-    <select id="getPayWayInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getPayWayInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
         SELECT
           t_shop_finance.pay_way,
           dict_info.type_name as pay_way_name,
@@ -212,7 +220,7 @@
           dict_info.type_name
     </select>
     
-    <select id="getShopNameInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getShopNameInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
         SELECT
           t_shop_stock.category,
           case when t_shop_stock.category is null then '老的数据' else dict_info.type_name end as shop_name,
@@ -287,7 +295,7 @@
                                     cast(#{startDate} AS DATETIME),
                                     INTERVAL - 1 MONTH
                                                )
-                              AND sale_date &lt; cast(#{endDate} AS DATETIME)
+                              AND sale_date &lt; cast(#{startDate} AS DATETIME)
                               AND is_valid = '1'
                               AND is_delete = '0'
                               and t_shop_finance.income_and_expenses = 'income'
@@ -303,7 +311,7 @@
                                                )
                               AND sale_date &lt; DATE_ADD(
                                     cast(#{endDate} AS DATETIME),
-                                    INTERVAL -11 MONTH
+                                    INTERVAL -1 year
                                                  )
                               AND is_valid = '1'
                               AND is_delete = '0'
@@ -312,7 +320,7 @@
                             GROUP BY info_date) as last_year on last_year.info_date = cur_info.info_date
     </select>
     
-    <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
         SELECT
             t_org_user_info.org_id,
             <if test="type == 'day'">
@@ -328,7 +336,7 @@
             sum( t_shop_finance.sale_num ) AS sale_num
         FROM
             t_shop_finance
-            left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.creator
+            left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.operator
             and t_org_user_info.status = '1'
             and t_org_user_info.is_delete = '0'
         WHERE
@@ -342,7 +350,7 @@
             t_org_user_info.org_id, info_date
     </select>
     
-    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
+    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo">
         select
             sum(sale_num) as sale_num,
             sum(sale_num * cost_amount) as cost_amount
@@ -352,4 +360,93 @@
             is_valid = '1'
           AND is_delete = '0'
     </select>
+    
+    <select id="getBenefitInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo">
+        select cur_info.info_date,
+               cur_info.sale_amount,
+               cur_info.sale_num,
+               last_month.sale_amount                                                            as month_sale_amount,
+               last_month.sale_num                                                               as month_sale_num,
+               last_year.sale_amount                                                             as year_sale_amount,
+               last_year.sale_num                                                                as yaer_sale_num,
+               IF(last_month.sale_amount is null
+                      or last_month.sale_amount = 0, null,
+                  ROUND((cur_info.sale_amount - last_month.sale_amount) / last_month.sale_amount * 100,
+                        2))                                                                      as sale_amount_chain,
+               IF(last_month.sale_num is null
+                      or last_month.sale_num = 0, null,
+                  ROUND((cur_info.sale_num - last_month.sale_num) / last_month.sale_num * 100,
+                        2))                                                                      as sale_num_chain,
+               IF(last_year.sale_amount is null
+                      or last_year.sale_amount = 0, null,
+                  ROUND((cur_info.sale_amount - last_year.sale_amount) / last_year.sale_amount * 100,
+                        2))                                                                      as sale_amount_year,
+               IF(last_year.sale_num is null
+                      or last_year.sale_num = 0, null,
+                  ROUND((cur_info.sale_num - last_year.sale_num) / last_year.sale_num * 100, 2)) as sale_num_year
+        from(
+        <include refid="getBenefitSql">
+            <property name="type" value="cur"/>
+        </include>
+        ) as cur_info
+        left join (
+        <include refid="getBenefitSql">
+            <property name="type" value="lastMonth"/>
+        </include>
+        ) as last_month on 1 = 1
+        left join (
+        <include refid="getBenefitSql">
+            <property name="type" value="lastYear"/>
+        </include>
+        ) as last_year on last_year.info_date = cur_info.info_date
+        order by cur_info.info_date
+    </select>
+    
+     <sql id="getBenefitSql">
+        SELECT
+          t_org_user_info.org_id,
+          DATE_FORMAT(t_shop_finance.sale_date,
+            <if test="searchType == 'month'">'%m'</if>
+            <if test="searchType == 'year'">'%Y'</if>) AS info_date,
+          sum(
+            IFNULL(t_shop_finance.sale_amount, 0) - IFNULL(t_shop_stock.cost_amount, 0) * IFNULL(t_shop_finance.sale_num, 0)
+          ) as sale_amount,
+          sum(
+            t_shop_stock.cost_amount * t_shop_finance.sale_num
+          ) as sale_num
+        FROM
+          t_shop_finance
+          left join alex_user.t_org_user_info on t_org_user_info.user_id = t_shop_finance.operator
+          and t_org_user_info.status = '1'
+          and t_org_user_info.is_delete = '0'
+          left join t_shop_stock on t_shop_stock.id = t_shop_finance.shop_stock_id
+        WHERE
+          t_shop_finance.is_valid = '1'
+          AND t_shop_finance.is_delete = '0'
+          and t_shop_finance.income_and_expenses = 'income'
+          <if test="'${type}' == 'cur'">
+            and t_shop_finance.sale_date >= cast(#{startDate} AS DATETIME)
+            AND t_shop_finance.sale_date &lt; DATE_ADD(cast(#{endDate} AS DATETIME), INTERVAL 1 DAY)
+          </if>
+          <if test="'${type}' == 'lastMonth'">
+            AND t_shop_finance.sale_date >= DATE_ADD(
+                                    cast(#{startDate} AS DATETIME),
+                                    INTERVAL - 1 MONTH
+                                               )
+            AND t_shop_finance.sale_date &lt; cast(#{startDate} AS DATETIME)
+          </if>
+          <if test="'${type}' == 'lastYear'">
+            and t_shop_finance.sale_date >= DATE_ADD(
+                                    cast(#{startDate} AS DATETIME),
+                                    interval -1 year
+                                               )
+            AND t_shop_finance.sale_date &lt; DATE_ADD(
+                                    cast(#{endDate} AS DATETIME),
+                                    INTERVAL -1 year
+                                               )
+          </if>
+        group by
+          t_org_user_info.org_id,
+          info_date
+      </sql>
 </mapper>

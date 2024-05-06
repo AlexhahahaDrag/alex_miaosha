@@ -1,8 +1,7 @@
 package com.alex.finance.service.shopFinanceAnalysis.impl;
 
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.api.user.vo.user.TUserVo;
@@ -78,7 +77,7 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     }
 
     @Override
-    public ShopStockAnalysisVo getAllShopStockInfo() {
-        return shopFinanceMapper.getAllShopStockInfo();
+    public ShopFinanceChainYearVo getBenefitInfo(String startDate, String endDate, String searchType) {
+        return shopFinanceMapper.getBenefitInfo(startDate, endDate, searchType);
     }
 }

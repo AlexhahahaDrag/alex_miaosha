@@ -1,4 +1,4 @@
-package com.alex.api.finance.vo.shopFinanceAnalysis;
+package com.alex.api.finance.shopStockAnalysis.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,5 +40,8 @@ public class ShopFinanceAnalysisVo {
 
     @ApiModelProperty(value = "销售数量")
     private BigDecimal saleNum;
+
+    @ApiModelProperty(value = "销售成本")
+    private BigDecimal saleCost;
 }
 

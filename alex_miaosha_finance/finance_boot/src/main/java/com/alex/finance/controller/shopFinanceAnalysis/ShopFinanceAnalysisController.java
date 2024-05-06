@@ -1,8 +1,7 @@
 package com.alex.finance.controller.shopFinanceAnalysis;
 
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
+import com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 import com.alex.base.common.Result;
 import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -86,10 +85,17 @@ public class ShopFinanceAnalysisController {
         return Result.success(shopFinanceAnalysisService.getChainAndYear(startDate, endDate));
     }
 
-    @ApiOperationSupport(order = 80, author = "alex")
-    @ApiOperation(value = "获取店铺库存信息", notes = "获取店铺库存信息", response = Result.class)
-    @GetMapping(value = "/getAllStockInfo")
-    public Result<ShopStockAnalysisVo> getAllShopStockInfo() {
-        return Result.success(shopFinanceAnalysisService.getAllShopStockInfo());
+    @ApiOperationSupport(order = 90, author = "alex")
+    @ApiOperation(value = "获取当前利润信息", notes = "获取当前利润信息", response = Result.class)
+    @GetMapping(value = "/getBenefitInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "startDate", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "endDate", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(value = "查找类型(year/month)", name = "searchType", required = true, dataTypeClass = String.class)}
+    )
+    public Result<ShopFinanceChainYearVo> getBenefitInfo(@RequestParam(value = "startDate") String startDate,
+                                                         @RequestParam(value = "endDate") String endDate,
+                                                         @RequestParam(value = "searchType") String searchType) {
+        return Result.success(shopFinanceAnalysisService.getBenefitInfo(startDate, endDate, searchType));
     }
 }
