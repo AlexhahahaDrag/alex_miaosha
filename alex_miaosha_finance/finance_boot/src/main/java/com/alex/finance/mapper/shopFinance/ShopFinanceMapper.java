@@ -63,8 +63,10 @@ public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
     @DataPermission(table = "t_shop_stock")
     ShopStockAnalysisVo getAllShopStockInfo();
 
-    @DataPermission(table = "t_shop_finance")
     ShopFinanceChainYearVo getBenefitInfo(@Param("startDate") String startDate,
                                           @Param("endDate") String endDate,
-                                          @Param("searchType") String searchType);
+                                          @Param("searchType") String searchType,
+                                          @Param("roleCode") String roleCode,
+                                          @Param("userId") Long userId,
+                                          @Param("orgId") Long orgId);
 }

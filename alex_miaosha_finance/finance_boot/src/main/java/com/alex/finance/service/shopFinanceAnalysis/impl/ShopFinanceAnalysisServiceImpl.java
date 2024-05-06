@@ -69,7 +69,7 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     @Override
     public void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception {
         List<ShopFinanceAnalysisVo> curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
-                    null, null, null, type);
+                null, null, null, type);
         for (ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
             weiXinService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "" : "月"),
                     cur.getSaleAmount(), cur.getSaleNum());
@@ -78,6 +78,9 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
 
     @Override
     public ShopFinanceChainYearVo getBenefitInfo(String startDate, String endDate, String searchType) {
-        return shopFinanceMapper.getBenefitInfo(startDate, endDate, searchType);
+        TUserVo loginUser = userUtils.getLoginUser();
+        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
+        return shopFinanceMapper.getBenefitInfo(startDate, endDate, searchType, roleInfoVo.getRoleCode(), loginUser.getId(),
+                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 }

@@ -4,12 +4,25 @@
     
     <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo">
         select
-            sum(sale_num) as sale_num,
-            sum(sale_num * cost_amount) as cost_amount
+            sum(t_shop_stock.sale_num) as sale_num,
+            sum(t_shop_stock.sale_num * t_shop_stock.cost_amount) as cost_amount
         FROM
             t_shop_stock
         WHERE
             is_valid = '1'
           AND is_delete = '0'
+        <include refid="roleInfo"/>
     </select>
+
+    <sql id="roleInfo">
+        <if test="roleCode != null">
+            <if test="roleCode.contains('user')">
+                AND t_shop_stock.operator = #{userId}
+            </if>
+            <if test="roleCode.contains('admin')">
+                AND t_shop_stock.operator in
+                (select user_id from alex_user.t_org_user_info where t_org_user_info.org_id = #{orgId})
+            </if>
+        </if>
+    </sql>
 </mapper>

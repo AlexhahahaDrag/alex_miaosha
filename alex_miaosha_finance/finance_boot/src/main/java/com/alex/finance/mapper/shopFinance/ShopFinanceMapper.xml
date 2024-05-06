@@ -445,6 +445,7 @@
                                     INTERVAL -1 year
                                                )
           </if>
+          <include refid="roleInfo"/>
         group by
           t_org_user_info.org_id,
           info_date
