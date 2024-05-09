@@ -1,8 +1,7 @@
 package com.alex.finance.service.shopFinanceAnalysis;
 
-import com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo;
+import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
 
 import java.util.List;
 

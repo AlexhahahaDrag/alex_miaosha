@@ -2,18 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.alex.finance.shopStockAnalysis.mapper.ShopStockAnalysisMapper">
     
-    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo">
-        select
-            sum(t_shop_stock.sale_num) as sale_num,
-            sum(t_shop_stock.sale_num * t_shop_stock.cost_amount) as cost_amount
-        FROM
-            t_shop_stock
-        WHERE
-            is_valid = '1'
-          AND is_delete = '0'
-        <include refid="roleInfo"/>
-    </select>
-
     <sql id="roleInfo">
         <if test="roleCode != null">
             <if test="roleCode.contains('user')">
@@ -25,4 +13,72 @@
             </if>
         </if>
     </sql>
+    
+    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAnalysisVo">
+        select
+            sum(t_shop_stock.sale_num) as sale_num,
+            sum(t_shop_stock.sale_num * t_shop_stock.cost_amount) as cost_amount
+        FROM
+            t_shop_stock
+        WHERE
+            is_valid = '1'
+          AND is_delete = '0'
+        <include refid="roleInfo"/>
+    </select>
+
+    <select id="getAllAmountInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo">
+        select
+          dict_info.type_code,
+          dict_info.type_name,
+          sum(
+            case t_shop_finance.income_and_expenses
+              when 'income' then t_shop_finance.sale_amount
+              else - t_shop_finance.sale_amount
+            end
+          ) as amount
+        from
+          dict_info
+          left join t_shop_finance on dict_info.type_code = t_shop_finance.pay_way
+        where
+          dict_info.belong_to = 'shop_pay_way'
+          and t_shop_finance.is_delete = '0'
+          and t_shop_finance.is_valid = '1'
+          <include refid="com.alex.finance.mapper.shopFinance.ShopFinanceMapper.roleInfo"/>
+        group by
+          dict_info.type_code,
+          dict_info.type_name
+        union all
+        select
+          'shop' as type_code,
+          '店内衣服' as type_name,
+          sum(
+            IFNULL(t_shop_stock.sale_num, 0) * IFNULL(t_shop_stock.cost_amount, 0)
+          ) as amount
+        from
+          t_shop_stock
+        where
+          t_shop_stock.is_delete = '0'
+          and t_shop_stock.is_valid = '1'
+        <include refid="roleInfo"/>
+    </select>
+    
+    <select id="getCashAmountInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo">
+        select
+          'all' as type_code,
+          '全部' as type_name,
+          sum(
+            case t_shop_finance.income_and_expenses
+              when 'income' then t_shop_finance.sale_amount
+              else - t_shop_finance.sale_amount
+            end
+          ) as amount
+        from
+          dict_info
+          left join t_shop_finance on dict_info.type_code = t_shop_finance.pay_way
+        where
+          dict_info.belong_to = 'shop_pay_way'
+          and t_shop_finance.is_delete = '0'
+          and t_shop_finance.is_valid = '1'
+          <include refid="com.alex.finance.mapper.shopFinance.ShopFinanceMapper.roleInfo"/>
+    </select>
 </mapper>

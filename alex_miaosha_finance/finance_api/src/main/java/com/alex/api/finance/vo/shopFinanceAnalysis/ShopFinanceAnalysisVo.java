@@ -1,4 +1,4 @@
-package com.alex.api.finance.shopStockAnalysis.vo;
+package com.alex.api.finance.vo.shopFinanceAnalysis;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,6 +1,7 @@
 package com.alex.finance.shopStockAnalysis.controller;
 
-import com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo;
+import com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo;
+import com.alex.api.finance.shopStockAnalysis.vo.ShopStockAnalysisVo;
 import com.alex.base.common.Result;
 import com.alex.finance.shopStockAnalysis.service.ShopStockAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * author: majf
@@ -32,5 +35,19 @@ public class ShopStockAnalysisController {
     @GetMapping(value = "/getAllStockInfo")
     public Result<ShopStockAnalysisVo> getAllShopStockInfo() {
         return Result.success(shopStockAnalysisService.getAllShopStockInfo());
+    }
+
+    @ApiOperationSupport(order = 20, author = "alex")
+    @ApiOperation(value = "获取店铺金额信息", notes = "获取店铺金额信息", response = Result.class)
+    @GetMapping(value = "/getAllAmountInfo")
+    public Result<List<ShopStockAmountVo>> getAllAmountInfo() {
+        return Result.success(shopStockAnalysisService.getAllAmountInfo());
+    }
+
+    @ApiOperationSupport(order = 30, author = "alex")
+    @ApiOperation(value = "获取现金库存信息", notes = "获取现金库存信息", response = Result.class)
+    @GetMapping(value = "/getCashAmountInfo")
+    public Result<ShopStockAmountVo> getCashAmountInfo() {
+        return Result.success(shopStockAnalysisService.getCashAmountInfo());
     }
 }

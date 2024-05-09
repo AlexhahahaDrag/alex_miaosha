@@ -118,7 +118,7 @@
         </if>
       </sql>
 
-    <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
+    <select id="getDayShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         WITH RECURSIVE date_series AS (
         SELECT
             concat(#{searchDate}, '-01') AS DATE
@@ -160,7 +160,7 @@
         date_info.DATE
     </select>
 
-    <select id="getMonthShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
+    <select id="getMonthShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         WITH recursive c ( n ) AS ( SELECT 0 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 ) SELECT
         date_info.n AS info_date,
         ifnull( info.sale_amount, 0 ) AS sale_amount ,
@@ -192,7 +192,7 @@
             date_info.n
     </select>
 
-    <select id="getPayWayInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
+    <select id="getPayWayInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
           t_shop_finance.pay_way,
           dict_info.type_name as pay_way_name,
@@ -220,7 +220,7 @@
           dict_info.type_name
     </select>
     
-    <select id="getShopNameInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
+    <select id="getShopNameInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
           t_shop_stock.category,
           case when t_shop_stock.category is null then '老的数据' else dict_info.type_name end as shop_name,
@@ -320,7 +320,7 @@
                             GROUP BY info_date) as last_year on last_year.info_date = cur_info.info_date
     </select>
     
-    <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopFinanceAnalysisVo">
+    <select id="getCurShopFinanceInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo">
         SELECT
             t_org_user_info.org_id,
             <if test="type == 'day'">
@@ -350,7 +350,7 @@
             t_org_user_info.org_id, info_date
     </select>
     
-    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.vo.shopFinanceAnalysis.ShopStockAnalysisVo">
+    <select id="getAllShopStockInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAnalysisVo">
         select
             sum(sale_num) as sale_num,
             sum(sale_num * cost_amount) as cost_amount
