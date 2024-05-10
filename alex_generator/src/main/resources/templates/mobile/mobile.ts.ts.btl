@@ -1,5 +1,5 @@
 import {
-  getDataOne,
+  getData,
   postData,
   putData,
   deleteData,
@@ -19,7 +19,7 @@ export function get${entity}Page(params: any, pageNo: number | null | undefined,
 }
 
 export function get${entity}Detail(id: number): Promise<any> {
-  return getDataOne(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?id=' + id);
+  return getData(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?id=' + id);
 }
 
 export function delete${entity}(ids: string) : Promise<any>{

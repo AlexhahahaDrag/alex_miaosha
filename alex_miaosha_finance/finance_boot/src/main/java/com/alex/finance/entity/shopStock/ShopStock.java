@@ -68,4 +68,8 @@ public class ShopStock extends BaseEntity<ShopStock>{
     @ApiModelProperty(value = "描述")
     @TableField("description")
     private String description;
+
+    @ApiModelProperty(value = "库存批次")
+    @TableField("stock_batch")
+    private String stockBatch;
 }

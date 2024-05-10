@@ -25,6 +25,7 @@
         <result column="sale_num" property="saleNum" />
         <result column="old_shop_code" property="oldShopCode" />
         <result column="description" property="description" />
+        <result column="stock_batch" property="stockBatch" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -40,11 +41,11 @@
         t_shop_stock.operator,
         t_shop_stock.operate_time,
         t_shop_stock.shop_name, t_shop_stock.shop_code,
-            t_shop_stock.cost_amount, t_shop_stock.sale_amount,
-            t_shop_stock.is_valid, t_shop_stock.sale_date,
-            t_shop_stock.category, t_shop_stock.purchase_place,
-            t_shop_stock.sale_num, t_shop_stock.old_shop_code,
-            t_shop_stock.description
+        t_shop_stock.cost_amount, t_shop_stock.sale_amount,
+        t_shop_stock.is_valid, t_shop_stock.sale_date,
+        t_shop_stock.category, t_shop_stock.purchase_place,
+        t_shop_stock.sale_num, t_shop_stock.old_shop_code,
+        t_shop_stock.description, t_shop_stock.stock_batch
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.vo.shopStock.ShopStockVo">
