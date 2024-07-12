@@ -42,11 +42,12 @@ public class SwaggerConfig {
                 .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
                 .build();
         globalRequestParameters.add(requestParameter);
+
         return new Docket(DocumentationType.OAS_30)
                 .pathMapping("/am-finance")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.alex.finance.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.alex.finance")) // 添加多个包
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-finance")

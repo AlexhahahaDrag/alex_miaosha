@@ -2,6 +2,7 @@ package com.alex.finance.job;
 
 import com.alex.common.utils.date.DateUtils;
 import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,5 +42,13 @@ public class ShopFinanceNoticeJob {
                 LocalDateTime.now().with(TemporalAdjusters.firstDayOfNextMonth()).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
                 "month");
         log.info("===============结束调用店铺财务当月统计信息查询===================耗时：{}", Duration.ofNanos(System.nanoTime() - startTime));
+    }
+
+    @XxlJob("demoJobHandler")
+    public void demoJobHandler() throws Exception {
+        XxlJobHelper.log("demoJobHandler");
+        XxlJobHelper.log("demoJobHandler:", XxlJobHelper.getJobParam());
+        log.info("===============demoJobHandler===================耗时");
+        XxlJobHelper.handleSuccess("demoJobHandler success");
     }
 }

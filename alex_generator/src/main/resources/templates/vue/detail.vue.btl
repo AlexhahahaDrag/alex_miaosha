@@ -43,9 +43,12 @@
           <a-col :span='12'>
             <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
               <% if (strutil.contain(field.comment, '字典')) { %>
-              <a-select ref="select" v-model:value="formState.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+              <a-select ref="select" v-model:value="formState.${field.propertyName}" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
                 :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
               </a-select>
+              <% else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'Date') { %>
+              <a-date-picker v-model:value="formState.${field.propertyName}" :format="'YYYY-MM-DD'"
+                              :getPopupContainer="(triggerNode: any) => { return triggerNode.parentNode }" />
               <% } else { %>
               <a-input v-model:value='formState.${field.propertyName}' :placeholder="'请填写' + labelMap['${field.propertyName}'].label"></a-input>
               <% } %>

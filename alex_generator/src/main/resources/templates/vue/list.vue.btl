@@ -37,7 +37,7 @@
             <a-col :span="8">
               <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
     <% if (strutil.contain(field.comment, '字典')) { %>
-                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" mode="combobox" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
                   :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
                 </a-select>
     <% } else { %>
@@ -53,7 +53,7 @@
           </a-row>
   <% } %>
             <a-row :gutter="24">
-                <a-col :span="20" style="text-align: right">
+                <a-col :span="20" style="text-align: right; margin-bottom: 20px;">
                   <a-space>
                     <a-button type="primary" @click="query"> 查找</a-button>
                     <a-button type="primary" @click="cancelQuery">清空</a-button>
@@ -63,7 +63,7 @@
         </a-form>
       </div>
     </div>
-    <div class="button">
+    <div class="button" style="margin-left: 10px;">
       <a-space>
         <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
         <a-button type="primary" @click="query">导入</a-button>

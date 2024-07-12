@@ -48,7 +48,9 @@
                 <% } %>
             <% } %>
             <include refid="queryInfo"/>
+            and ${table.name}.is_delete = 0
         </where>
+        order by ${table.name}.operate_time desc
     </select>
 
     <select id="query${entity}" resultType="${package.Vo}.${table.voName}">

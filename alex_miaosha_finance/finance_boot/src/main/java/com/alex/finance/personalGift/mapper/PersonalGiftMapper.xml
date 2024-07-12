@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.personalGift.mapper.PersonalGiftMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.personalGift.entity.PersonalGift">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="deleter" property="deleter" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="event_name" property="eventName" />
+        <result column="amount" property="amount" />
+        <result column="other_person" property="otherPerson" />
+        <result column="event_time" property="eventTime" />
+        <result column="remarks" property="remarks" />
+        <result column="action" property="action" />
+        <result column="notice_num" property="noticeNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_personal_gift.id,
+        t_personal_gift.creator,
+        t_personal_gift.updater,
+        t_personal_gift.deleter,
+        t_personal_gift.create_time,
+        t_personal_gift.update_time,
+        t_personal_gift.delete_time,
+        t_personal_gift.operator,
+        t_personal_gift.operate_time,
+        t_personal_gift.event_name, t_personal_gift.amount, t_personal_gift.other_person, t_personal_gift.event_time, t_personal_gift.remarks, t_personal_gift.`action`, t_personal_gift.notice_num
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftVo">
+        select <include refid="Base_Column_List"/>from t_personal_gift
+        <where>
+            <include refid="queryInfo"/>
+            and is_delete = 0
+        </where>
+        order by operate_time desc
+    </select>
+
+    <select id="queryPersonalGift" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftVo">
+        select <include refid="Base_Column_List"/> from t_personal_gift
+        <where>
+            t_personal_gift.id = #{id}
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "personalGiftVo != null">
+          <if test = "personalGiftVo.eventName != null">
+            and t_personal_gift.event_name like concat('%', #{personalGiftVo.eventName}, '%')
+          </if>
+          <if test = "personalGiftVo.amount != null">
+            and t_personal_gift.amount = #{personalGiftVo.amount}
+          </if>
+          <if test = "personalGiftVo.otherPerson != null">
+            and t_personal_gift.other_person like concat('%', #{personalGiftVo.otherPerson}, '%')
+          </if>
+          <if test = "personalGiftVo.eventTime != null">
+            and t_personal_gift.event_time = #{personalGiftVo.eventTime}
+          </if>
+          <if test = "personalGiftVo.remarks != null">
+            and t_personal_gift.remarks like concat('%', #{personalGiftVo.remarks}, '%')
+          </if>
+          <if test = "personalGiftVo.action != null">
+            and t_personal_gift.action = #{personalGiftVo.action}
+          </if>
+          <if test = "personalGiftVo.noticeNum != null">
+            and t_personal_gift.notice_num = #{personalGiftVo.noticeNum}
+          </if>
+        </if>
+     </sql>
+</mapper>

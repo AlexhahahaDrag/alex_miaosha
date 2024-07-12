@@ -24,6 +24,7 @@ public interface TUserMapper extends BaseMapper<TUser> {
 
     TUserVo queryTUser(@Param("id") String id);
 
+    @DataPermission()
     List<TUserVo> getList(@Param("tUserVo") TUserVo tUserVo);
 
     TUserVo getUserInfo(@Param("tUserVo") TUserVo tUserVo);
