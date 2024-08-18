@@ -18,6 +18,7 @@
         <result column="batch_name" property="batchName" />
         <result column="is_valid" property="isValid" />
         <result column="description" property="description" />
+        <result column="purchase_place" property="purchasePlace" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -32,11 +33,17 @@
         t_shop_stock_batch.delete_time,
         t_shop_stock_batch.operator,
         t_shop_stock_batch.operate_time,
-        t_shop_stock_batch.batch_code, t_shop_stock_batch.batch_name, t_shop_stock_batch.is_valid, t_shop_stock_batch.`description`
+        t_shop_stock_batch.batch_code, t_shop_stock_batch.batch_name, t_shop_stock_batch.is_valid, t_shop_stock_batch.`description`,
+        t_shop_stock_batch.purchase_place
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo">
-        select <include refid="Base_Column_List"/>from t_shop_stock_batch
+        select <include refid="Base_Column_List"/>, dict_info.type_name as purchase_place_name
+        from t_shop_stock_batch
+        left join dict_info on dict_info.belong_to = 'stock_place'
+            and dict_info.type_code = t_shop_stock_batch.purchase_place
+            and dict_info.is_delete = 0
+            and dict_info.is_valid = 1
         <where>
             t_shop_stock_batch.is_delete = 0
             <include refid="queryInfo"/>
@@ -52,7 +59,12 @@
     </select>
     
     <select id="getList" resultType="com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo">
-        select <include refid="Base_Column_List"/>from t_shop_stock_batch
+        select <include refid="Base_Column_List"/>, dict_info.type_name as purchase_place_name
+        from t_shop_stock_batch
+        left join dict_info on dict_info.belong_to = 'stock_place'
+            and dict_info.type_code = t_shop_stock_batch.purchase_place
+            and dict_info.is_delete = 0
+            and dict_info.is_valid = 1
         <where>
             t_shop_stock_batch.is_delete = 0
             <include refid="queryInfo"/>

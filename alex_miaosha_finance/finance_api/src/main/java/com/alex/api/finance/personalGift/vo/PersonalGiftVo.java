@@ -43,4 +43,6 @@ public class PersonalGiftVo extends BaseVo<PersonalGiftVo>{
     @ApiModelProperty(value = "通知次数")
     private Integer noticeNum;
 
+    @ApiModelProperty(value = "关键字")
+    private String keyword;
 }

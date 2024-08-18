@@ -40,4 +40,7 @@ public class ShopStockBatch extends BaseEntity<ShopStockBatch>{
     @TableField("`description`")
     private String description;
 
+    @ApiModelProperty(value = "进货地点,字典(stock_place) ")
+    @TableField("purchase_place")
+    private String purchasePlace;
 }

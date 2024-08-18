@@ -75,6 +75,9 @@
           <if test = "personalGiftVo.noticeNum != null">
             and t_personal_gift.notice_num = #{personalGiftVo.noticeNum}
           </if>
+          <if test = "personalGiftVo.keyword != null">
+            and (t_personal_gift.event_name like concat('%', #{personalGiftVo.keyword}, '%') or t_personal_gift.other_person like concat('%', #{personalGiftVo.keyword}, '%') or t_personal_gift.remarks like concat('%', #{personalGiftVo.keyword}, '%'))
+          </if>
         </if>
      </sql>
 </mapper>

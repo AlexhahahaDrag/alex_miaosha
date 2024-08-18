@@ -31,6 +31,12 @@ public class ShopStockBatchVo extends BaseVo<ShopStockBatchVo>{
     @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "进货地点,字典(stock_place) ")
+    private String purchasePlace;
+
+    @ApiModelProperty(value = "进货地点,字典(stock_place) ")
+    private String purchasePlaceName;
+
     @ApiModelProperty(value = "标题")
     private String title;
 }
