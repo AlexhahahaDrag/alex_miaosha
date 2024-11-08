@@ -82,7 +82,6 @@
                 <a-button type="primary" size="small" danger>删除</a-button>
               </a-popconfirm>
             </a-space>
-            <span></span>
           </template>
         </template>
       </a-table>
@@ -274,5 +273,4 @@ const handleCancel = (v: boolean): void => {
 };
 </script>
 <style lang="scss" scoped>
-@import "@/style/index.scss";
 </style>

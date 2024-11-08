@@ -19,6 +19,8 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
 
     Page<${table.voName}> getPage(Long pageNum, Long pageSize, ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
 
+    List<${table.voName}> getList(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+
     ${table.voName} query${entity}(Long id);
 
     Boolean add${entity}(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});

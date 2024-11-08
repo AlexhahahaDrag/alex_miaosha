@@ -259,7 +259,7 @@ public class IpUtils {
     }
 
     public static void main(String args[]) throws Exception {
-        String ip = "112.39.99.209";
+        String ip = "175.164.89.163";
         String cityIpString = getCityInfo(ip);
         System.out.println(cityIpString);
     }

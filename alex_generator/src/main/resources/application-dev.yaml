@@ -8,7 +8,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
-    url: jdbc:mysql://${info.ip}:3336/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${info.ip}:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
@@ -22,7 +22,7 @@ logging:
 generator:
   vue: true
   feign: true
-  mobile: true
+  mobile: false
   tablePrefix: t_
   logicDeleteColumnName: is_delete
   logicDeletePropertyName: isDelete
@@ -30,13 +30,13 @@ generator:
   addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
   parentPackage: com.alex
 
-  javaPath: E:\workspace\myself\backend\alex_miaosha
+  javaPath: E:\majf\backend\alex_miaosha
   voPath:
   feignPath:
-  vuePath: E:\workspace\myself\frontend\alex_miaosha_front\src\views
-  tsPath: E:\workspace\myself\frontend\alex_miaosha_front\src\api
-  mobileVuePath: E:\workspace\myself\frontend\alex_miaosha_mobile\src\views
-  mobileTsPath: E:\workspace\myself\frontend\alex_miaosha_mobile\src\api
+  vuePath: E:\majf\frontend\alex_miaosha_front\src\views
+  tsPath: E:\majf\frontend\alex_miaosha_front\src\api
+  mobileVuePath: E:\majf\frontend\alex_miaosha_mobile\src\views
+  mobileTsPath: E:\majf\frontend\alex_miaosha_mobile\src\api
 #  mobileVuePath: D:\project\alex_miaosha_mobile\src\views
 #  mobileTsPath: D:\project\alex_miaosha_mobile\src\api
 #  javaPath: D:\project\alex_miaosha

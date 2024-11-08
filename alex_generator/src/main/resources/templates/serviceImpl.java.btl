@@ -38,6 +38,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
+    public List<${table.voName}> getList(${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.getList(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)});
+    }
+
+    @Override
     public ${table.voName} query${entity}(Long id) {
         return ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.query${entity}(id);
     }
