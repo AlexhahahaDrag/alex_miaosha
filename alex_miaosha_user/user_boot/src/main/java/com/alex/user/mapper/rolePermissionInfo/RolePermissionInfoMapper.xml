@@ -42,6 +42,14 @@
             <include refid="queryInfo"/>
         </where>
     </select>
+    
+    <select id="getList" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+        select <include refid="Base_Column_List"/>from t_role_permission_info
+        <where>
+            t_role_permission_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
 
     <select id="queryRolePermissionInfo" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
         select <include refid="Base_Column_List"/> from t_role_permission_info

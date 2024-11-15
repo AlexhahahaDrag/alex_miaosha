@@ -1,9 +1,11 @@
 package com.alex.user.service.rolePermissionInfo;
 
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.user.entity.rolePermissionInfo.RolePermissionInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * 角色权限信息表 服务类
@@ -15,6 +17,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface RolePermissionInfoService extends IService<RolePermissionInfo> {
 
     Page<RolePermissionInfoVo> getPage(Long pageNum, Long pageSize, RolePermissionInfoVo rolePermissionInfoVo);
+
+    List<RolePermissionInfoVo> getList(RolePermissionInfoVo rolePermissionInfoVo);
 
     RolePermissionInfoVo queryRolePermissionInfo(Long id);
 

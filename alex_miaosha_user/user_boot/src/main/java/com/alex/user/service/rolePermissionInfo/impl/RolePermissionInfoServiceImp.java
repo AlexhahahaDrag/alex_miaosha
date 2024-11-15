@@ -34,6 +34,11 @@ public class RolePermissionInfoServiceImp extends ServiceImpl<RolePermissionInfo
     }
 
     @Override
+    public List<RolePermissionInfoVo> getList(RolePermissionInfoVo rolePermissionInfoVo) {
+        return rolePermissionInfoMapper.getList(rolePermissionInfoVo);
+    }
+
+    @Override
     public RolePermissionInfoVo queryRolePermissionInfo(Long id) {
         return rolePermissionInfoMapper.queryRolePermissionInfo(id);
     }
