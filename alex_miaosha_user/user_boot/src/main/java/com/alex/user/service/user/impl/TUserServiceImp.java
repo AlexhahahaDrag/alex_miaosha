@@ -225,7 +225,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
     @Override
     public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
         StopWatch stopWatch = new StopWatch();
-        // TODO (majf) 2024/2/21 15:02 测试是否可以修改成CompletableFuture
         stopWatch.start("开始登录");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new LoginException(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
@@ -308,8 +307,11 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
                 tUserVo.setMenuInfoVoList(menuList);
                 long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-                redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
                 redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+                // 将登录的管理员存储到在线用户表
+                redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+                // 在维护一张表，用于 uuid - token 互相转换
+                redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
                 result.put(SysConf.ADMIN, tUserVo);
             } catch (InterruptedException | ExecutionException e) {
                 throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
@@ -481,10 +483,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         } else {
             onlineAdmin.setLoginLocation(jsonResult);
         }
-        // 将登录的管理员存储到在线用户表
-        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(onlineAdmin), expiration, TimeUnit.SECONDS);
-        // 在维护一张表，用于 uuid - token 互相转换
-        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
     }
 
     private void judgeField(Map<String, Object> map, Long id) {
@@ -610,7 +608,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
                 String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
                 if (StringUtils.isNotBlank(onlineAdminStr)) {
-                    OnlineAdmin onlineAdmin = JSONObject.parseObject(onlineAdminStr, OnlineAdmin.class);
+                    TUserVo onlineAdmin = JSONObject.parseObject(onlineAdminStr, TUserVo.class);
                     onlineAdmin.setToken(newToken);
                     redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
                 }

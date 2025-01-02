@@ -95,7 +95,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ).exceptionally(e -> {
             log.info("认证失败：{}", e.getMessage());
             e.getStackTrace();
-            return Result.error("123", "认证失败");
+            return Result.error("403", "认证失败");
         });
         Boolean result = Optional.of(completableFuture).map(item -> {
             try {

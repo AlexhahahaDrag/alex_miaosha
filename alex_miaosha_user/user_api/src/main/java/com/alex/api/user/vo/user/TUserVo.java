@@ -105,4 +105,7 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "菜单信息")
     List<MenuInfoVo> menuInfoVoList;
+
+    @ApiModelProperty(value = "token信息")
+    private String token;
 }

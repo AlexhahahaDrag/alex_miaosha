@@ -70,7 +70,7 @@ public class UserUtils {
         if (barToken == null) {
             return  null;
         }
-        String onlineAdminStr = redisUtils.get(LoginKey.loginAdmin, barToken);
+        String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
         if (StringUtils.isEmpty(onlineAdminStr)) {
             return null;
         }
