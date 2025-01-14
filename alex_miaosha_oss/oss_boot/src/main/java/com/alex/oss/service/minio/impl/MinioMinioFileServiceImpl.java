@@ -57,6 +57,8 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
         InputStream inputStream = file.getInputStream();
         Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
         fileVo.setUrl(upload.get("url"));
+        Map<String, String> stringStringMap = minioTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
+        fileVo.setThumbnailUrl(stringStringMap.get("url"));
         stopWatch.stop();
         log.info("耗时：{}", stopWatch.getTotalTimeMillis());
         return fileVo;
@@ -94,5 +96,30 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
     @Override
     public String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
         return minioTemplate.preview(bucketName, objectName);
+    }
+
+    @Override
+    public FileInfoVo thumbnail(MultipartFile file, String type) throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        FileInfoVo fileVo = new FileInfoVo();
+        String fileName = file.getOriginalFilename();
+        fileVo.setFileName(fileName);
+        fileVo.setFileSize(file.getSize());
+        String suffixStr = StringUtils.isBlank(fileName) ? null : fileName.substring(fileName.lastIndexOf('.') + 1);
+        fileVo.setFileType(suffixStr);
+        String bucketName = getBucket(type);
+        fileVo.setBucketName(bucketName);
+        fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
+        // 名称为/分隔的时候，会在minio中创建目录去存储文件
+        String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
+                (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
+                SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
+        InputStream inputStream = file.getInputStream();
+        Map<String, String> stringStringMap = minioTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
+        fileVo.setThumbnailUrl(stringStringMap.get("url"));
+        stopWatch.stop();
+        log.info("耗时：{}", stopWatch.getTotalTimeMillis());
+        return fileVo;
     }
 }

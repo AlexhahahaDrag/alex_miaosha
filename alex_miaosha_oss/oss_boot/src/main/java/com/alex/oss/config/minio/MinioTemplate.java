@@ -11,6 +11,7 @@ import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -117,8 +117,8 @@ public class MinioTemplate implements InitializingBean {
     }
 
     /**
-     * @param bucketName
-     * @param filename
+     * @param bucketName 包名称
+     * @param filename 文件名称
      * @param inputStream
      * description: 上传文件到minio
      * author: majf
@@ -145,7 +145,6 @@ public class MinioTemplate implements InitializingBean {
      *
      * @param fileName 文件名
      * @param delete   是否删除
-     * @throws IOException
      */
     public void fileDownload(String bucketName, String fileName, Boolean delete, HttpServletResponse response) {
         InputStream inputStream = null;
@@ -155,13 +154,13 @@ public class MinioTemplate implements InitializingBean {
                 response.setHeader("Content-type", "text/html;charset=UTF-8");
                 String data = "文件下载失败";
                 OutputStream ps = response.getOutputStream();
-                ps.write(data.getBytes("UTF-8"));
+                ps.write(data.getBytes(StandardCharsets.UTF_8));
                 return;
             }
             outputStream = response.getOutputStream();
             // 获取文件对象
             inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-            byte buf[] = new byte[1024];
+            byte[] buf = new byte[1024];
             int length = 0;
             response.reset();
             response.setHeader("Content-Disposition", "attachment;filename=" +
@@ -182,13 +181,15 @@ public class MinioTemplate implements InitializingBean {
             String data = "文件下载失败";
             try {
                 OutputStream ps = response.getOutputStream();
-                ps.write(data.getBytes("UTF-8"));
+                ps.write(data.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } finally {
             try {
-                outputStream.close();
+                if (outputStream != null) {
+                    outputStream.close();
+                }
                 if (inputStream != null) {
                     inputStream.close();
                 }
@@ -214,23 +215,9 @@ public class MinioTemplate implements InitializingBean {
             }
             // 获取文件对象
             inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-        } catch (ServerException e) {
-            throw new RuntimeException(e);
-        } catch (InsufficientDataException e) {
-            throw new RuntimeException(e);
-        } catch (ErrorResponseException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidResponseException e) {
-            throw new RuntimeException(e);
-        } catch (XmlParserException e) {
-            throw new RuntimeException(e);
-        } catch (InternalException e) {
+        } catch (ServerException | InternalException | XmlParserException | InvalidResponseException |
+                 InvalidKeyException | NoSuchAlgorithmException | IOException | ErrorResponseException |
+                 InsufficientDataException e) {
             throw new RuntimeException(e);
         } finally {
             try {
@@ -298,5 +285,40 @@ public class MinioTemplate implements InitializingBean {
                         .object(objectKey)
                         .expiry(60 * 60, TimeUnit.SECONDS)
                         .build());
+    }
+
+    // 生成缩略图
+    public Map<String, String> thumbnail(String bucketName, String filename, InputStream inputStream, String contentType) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        // 确保存储桶存在
+        existBucket(bucketName);
+
+        // 创建输出流用于保存生成的缩略图
+        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
+
+        // 使用 Thumbnails 生成缩略图
+        Thumbnails.of(inputStream)
+                .size(200, 200)
+                .outputFormat("jpg") // 可根据需求指定格式
+                .toOutputStream(thumbnailStream);
+
+        // 将生成的缩略图数据上传到 MinIO
+        ObjectWriteResponse objectWriteResponse = minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object("thumbnail_" + filename)
+                        .contentType(contentType)
+                        .stream(new ByteArrayInputStream(thumbnailStream.toByteArray()), thumbnailStream.size(), -1)
+                        .build()
+        );
+
+        log.info("上传文件结果：{}", JSONObject.toJSONString(objectWriteResponse));
+
+        // 返回生成的缩略图地址
+        Map<String, String> resultMap = new HashMap<>();
+        // TODO (majf) 2025/1/14 17:05 修改文件名称
+        int index = filename.lastIndexOf(".");
+        filename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
+        resultMap.put("url", filename);
+        return resultMap;
     }
 }

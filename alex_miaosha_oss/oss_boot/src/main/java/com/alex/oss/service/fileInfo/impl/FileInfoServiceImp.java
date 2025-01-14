@@ -124,4 +124,17 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             return fileInfoVo;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public FileInfoVo addThumbnailFileInfo(String type, MultipartFile file) throws Exception {
+        if (file == null) {
+            throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
+        }
+        FileInfoVo uploadFile = minioFileService.thumbnail(file, type);
+        FileInfo fileInfo = new FileInfo();
+        BeanUtils.copyProperties(uploadFile, fileInfo);
+        fileInfoMapper.insert(fileInfo);
+        BeanUtils.copyProperties(fileInfo, uploadFile);
+        return uploadFile;
+    }
 }

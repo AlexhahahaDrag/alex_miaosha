@@ -37,4 +37,6 @@ public interface FileInfoService extends IService<FileInfo> {
      * return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
     */
     List<FileInfoVo> getFileInfo(List<Long> fileIdList);
+
+    FileInfoVo addThumbnailFileInfo(String type, MultipartFile multipartFile) throws Exception;
 }

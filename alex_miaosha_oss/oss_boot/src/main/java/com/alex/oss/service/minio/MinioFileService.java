@@ -25,4 +25,6 @@ public interface MinioFileService {
     InputStream fileDownload(FileInfoVo fileInfo);
 
     String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException;
+
+    FileInfoVo thumbnail(MultipartFile file, String type) throws Exception;
 }

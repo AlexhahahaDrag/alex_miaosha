@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class FileInfoController {
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping
     public Result<FileInfoVo> add(@RequestParam(value = "type", required = false) String type,
-                               @RequestPart(value = "file") MultipartFile file) throws Exception {
+                                  @RequestPart(value = "file") MultipartFile file) throws Exception {
         return Result.success(fileInfoService.addFileInfo(type, file));
     }
 
@@ -67,8 +68,8 @@ public class FileInfoController {
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping
     public Result<FileInfoVo> update(@RequestParam(value = "id") Long id,
-                                  @RequestParam(value = "type", required = false) String type,
-                                  @RequestPart(value = "file") MultipartFile file) throws Exception {
+                                     @RequestParam(value = "type", required = false) String type,
+                                     @RequestPart(value = "file") MultipartFile file) throws Exception {
         return Result.success(fileInfoService.updateFileInfo(id, type, file));
     }
 
@@ -85,7 +86,7 @@ public class FileInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "id", name = "id", required = true, dataTypeClass = Long.class)}
     )
-    public Result fileDownload(@RequestParam(value = "id") Long id) {
+    public Result<InputStream> fileDownload(@RequestParam(value = "id") Long id) {
         return Result.success(fileInfoService.fileDownload(id));
     }
 
@@ -97,5 +98,14 @@ public class FileInfoController {
     )
     public Result<List<FileInfoVo>> getFileInfo(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
         return Result.success(fileInfoService.getFileInfo(fileIdList));
+    }
+
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)
+    @PostMapping
+    public Result<FileInfoVo> addThumbnail(@RequestParam(value = "type", required = false) String type,
+                                           @RequestPart(value = "file") MultipartFile file) throws Exception {
+        return Result.success(fileInfoService.addThumbnailFileInfo(type, file));
     }
 }

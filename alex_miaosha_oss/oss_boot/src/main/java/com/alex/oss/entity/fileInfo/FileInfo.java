@@ -46,4 +46,7 @@ public class FileInfo extends BaseEntity<FileInfo>{
     @TableField("url")
     private String url;
 
+    @ApiModelProperty(value = "缩略图url")
+    @TableField("thumbnail_url")
+    private String thumbnailUrl;
 }
