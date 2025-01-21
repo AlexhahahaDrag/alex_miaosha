@@ -64,6 +64,15 @@ public class FileInfoController {
         return Result.success(fileInfoService.addFileInfo(type, file));
     }
 
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 35, author = "alex")
+    @ApiOperation(value = "批量新增文件信息", notes = "批量新增文件信息", response = Result.class)
+    @PostMapping(value = "/batch")
+    public Result<List<FileInfoVo>> addBatch(@RequestParam(value = "type", required = false) String type,
+                                             @RequestPart(value = "file") List<MultipartFile> files) throws Exception {
+        return Result.success(fileInfoService.addBatchFileInfo(type, files));
+    }
+
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping
@@ -103,7 +112,7 @@ public class FileInfoController {
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)
-    @PostMapping
+    @PostMapping(value = "addThumbnail")
     public Result<FileInfoVo> addThumbnail(@RequestParam(value = "type", required = false) String type,
                                            @RequestPart(value = "file") MultipartFile file) throws Exception {
         return Result.success(fileInfoService.addThumbnailFileInfo(type, file));

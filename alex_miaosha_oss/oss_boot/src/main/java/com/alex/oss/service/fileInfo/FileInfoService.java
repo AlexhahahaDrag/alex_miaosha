@@ -24,6 +24,8 @@ public interface FileInfoService extends IService<FileInfo> {
 
     FileInfoVo addFileInfo(String type, MultipartFile multipartFile) throws Exception;
 
+    List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles) throws Exception;
+
     FileInfoVo updateFileInfo(Long id, String type, MultipartFile file) throws Exception;
 
     Boolean deleteFileInfo(String ids);

@@ -55,10 +55,10 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
                 (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
                 SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
         InputStream inputStream = file.getInputStream();
-        Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
-        fileVo.setUrl(upload.get("url"));
         Map<String, String> stringStringMap = minioTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
         fileVo.setThumbnailUrl(stringStringMap.get("url"));
+        Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
+        fileVo.setUrl(upload.get("url"));
         stopWatch.stop();
         log.info("耗时：{}", stopWatch.getTotalTimeMillis());
         return fileVo;

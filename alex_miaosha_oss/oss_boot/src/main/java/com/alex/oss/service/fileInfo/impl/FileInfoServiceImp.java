@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -62,6 +63,24 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         fileInfoMapper.insert(fileInfo);
         BeanUtils.copyProperties(fileInfo, uploadFile);
         return uploadFile;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<FileInfoVo> addBatchFileInfo(String type,  List<MultipartFile> multipartFiles) throws Exception {
+        if (multipartFiles == null || multipartFiles.isEmpty()) {
+            throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
+        }
+        List<FileInfoVo> fileInfoVos = new ArrayList<>();
+        for (MultipartFile file : multipartFiles) {
+            FileInfoVo uploadFile = uploadFile(type, file);
+            FileInfo fileInfo = new FileInfo();
+            BeanUtils.copyProperties(uploadFile, fileInfo);
+            fileInfoMapper.insert(fileInfo);
+            BeanUtils.copyProperties(fileInfo, uploadFile);
+            fileInfoVos.add(uploadFile);
+        }
+        return fileInfoVos;
     }
 
     @Override

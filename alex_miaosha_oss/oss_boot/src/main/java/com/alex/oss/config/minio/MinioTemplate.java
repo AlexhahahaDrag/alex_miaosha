@@ -12,6 +12,7 @@ import io.minio.messages.Item;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -66,10 +69,9 @@ public class MinioTemplate implements InitializingBean {
     }
 
     /**
-     * @param name
-     * description: 判断bucket是否存在，不存在则创建
-     * author: majf
-     * return: void
+     * @param name description: 判断bucket是否存在，不存在则创建
+     *             author: majf
+     *             return: void
      */
     public void existBucket(String name) {
         try {
@@ -83,10 +85,9 @@ public class MinioTemplate implements InitializingBean {
     }
 
     /**
-     * @param bucketName
-     * description: 创建存储bucket
-     * author: majf
-     * return: java.lang.Boolean
+     * @param bucketName description: 创建存储bucket
+     *                   author: majf
+     *                   return: java.lang.Boolean
      */
     public Boolean makeBucket(String bucketName) {
         try {
@@ -102,7 +103,7 @@ public class MinioTemplate implements InitializingBean {
      * 删除存储bucket
      *
      * @param bucketName 存储bucket名称
-     * return Boolean
+     *                   return Boolean
      */
     public Boolean removeBucket(String bucketName) {
         try {
@@ -117,12 +118,11 @@ public class MinioTemplate implements InitializingBean {
     }
 
     /**
-     * @param bucketName 包名称
-     * @param filename 文件名称
-     * @param inputStream
-     * description: 上传文件到minio
-     * author: majf
-     * return: java.util.Map<java.lang.String, java.lang.String>
+     * @param bucketName  包名称
+     * @param filename    文件名称
+     * @param inputStream description: 上传文件到minio
+     *                    author: majf
+     *                    return: java.util.Map<java.lang.String, java.lang.String>
      */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
         existBucket(bucketName);
@@ -202,10 +202,9 @@ public class MinioTemplate implements InitializingBean {
     /**
      * @param bucketName
      * @param fileName
-     * @param delete
-     * description: 下载文件流
-     * author: alex
-     * return: java.io.InputStream
+     * @param delete     description: 下载文件流
+     *                   author: alex
+     *                   return: java.io.InputStream
      */
     public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
         InputStream inputStream = null;
@@ -235,7 +234,7 @@ public class MinioTemplate implements InitializingBean {
      * 查看文件对象
      *
      * @param bucketName 存储bucket名称
-     * return 存储bucket内文件对象信息
+     *                   return 存储bucket内文件对象信息
      */
     public List<ObjectItem> listObjects(String bucketName) {
         Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).build());
@@ -294,13 +293,18 @@ public class MinioTemplate implements InitializingBean {
 
         // 创建输出流用于保存生成的缩略图
         ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
+        BufferedImage bufferedImage = ImageIO.read(inputStream);
+        if (bufferedImage != null) {
+            // 使用 Thumbnails 生成缩略图
+            Thumbnails.of(bufferedImage)
+                    .size(200, 200)
+                    .outputFormat("jpg") // 可根据需求指定格式
+                    .toOutputStream(thumbnailStream);
 
-        // 使用 Thumbnails 生成缩略图
-        Thumbnails.of(inputStream)
-                .size(200, 200)
-                .outputFormat("jpg") // 可根据需求指定格式
-                .toOutputStream(thumbnailStream);
-
+        } else {
+            // 处理无效图像格式的情况
+            throw new UnsupportedFormatException("Invalid image format.");
+        }
         // 将生成的缩略图数据上传到 MinIO
         ObjectWriteResponse objectWriteResponse = minioClient.putObject(
                 PutObjectArgs.builder()

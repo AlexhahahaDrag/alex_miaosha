@@ -319,23 +319,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         });
         // 等待最后的处理完成
         allFutures.join();
-
-//// 获取机构信息
-//        List<OrgInfoVo> orgInfoList = orgUserInfoService.getOrgInfoList(tUserVo.getId());
-//        tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
-//        // 获取角色信息
-//        List<RoleInfoVo> roleInfoList = roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
-//        tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
-//        // 获取菜单
-//        MenuInfoVo menuInfoVo = new MenuInfoVo();
-//        menuInfoVo.setStatus(SysConf.VALID_STATUS);
-//        List<MenuInfoVo> menuList = menuInfoService.getList(null);
-//        tUserVo.setMenuInfoVoList(menuList);
-//        result.put(SysConf.MENU, menuList);
-//        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-//        redisUtils.setEx(LoginKey.loginAdmin, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
-//        result.put(SysConf.ADMIN, tUserVo);
-
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
         return result;
