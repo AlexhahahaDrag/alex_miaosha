@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.prepaidCardInfoT.mapper.PrepaidCardInfoTMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="card_id" property="cardId" />
+        <result column="card_name" property="cardName" />
+        <result column="user_id" property="userId" />
+        <result column="initial_balance" property="initialBalance" />
+        <result column="current_balance" property="currentBalance" />
+        <result column="expire_date" property="expireDate" />
+        <result column="card_status" property="cardStatus" />
+        <result column="version" property="version" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        prepaid_card_info_t.id,
+        prepaid_card_info_t.creator,
+        prepaid_card_info_t.create_time,
+        prepaid_card_info_t.updater,
+        prepaid_card_info_t.update_time,
+        prepaid_card_info_t.operator,
+        prepaid_card_info_t.operate_time,
+        prepaid_card_info_t.deleter,
+        prepaid_card_info_t.delete_time,
+        prepaid_card_info_t.is_delete,
+        prepaid_card_info_t.card_id, prepaid_card_info_t.card_name, prepaid_card_info_t.user_id, prepaid_card_info_t.initial_balance, prepaid_card_info_t.current_balance, prepaid_card_info_t.expire_date, prepaid_card_info_t.card_status, prepaid_card_info_t.version
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">
+        select <include refid="Base_Column_List"/>from prepaid_card_info_t
+        <where>
+            prepaid_card_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_card_info_t.is_delete = 0
+        </where>
+        order by prepaid_card_info_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">
+        select <include refid="Base_Column_List"/>from prepaid_card_info_t
+        <where>
+            prepaid_card_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_card_info_t.is_delete = 0
+        </where>
+        order by prepaid_card_info_t.operate_time desc
+    </select>
+
+    <select id="queryPrepaidCardInfoT" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">
+        select <include refid="Base_Column_List"/> from prepaid_card_info_t
+        <where>
+            prepaid_card_info_t.id = #{id}
+            and prepaid_card_info_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "prepaidCardInfoTVo != null">
+          <if test = "prepaidCardInfoTVo.cardId != null">
+            and prepaid_card_info_t.card_id = #{prepaidCardInfoTVo.cardId}
+          </if>
+          <if test = "prepaidCardInfoTVo.cardName != null">
+            and prepaid_card_info_t.card_name like concat('%', #{prepaidCardInfoTVo.cardName}, '%')
+          </if>
+          <if test = "prepaidCardInfoTVo.userId != null">
+            and prepaid_card_info_t.user_id like concat('%', #{prepaidCardInfoTVo.userId}, '%')
+          </if>
+          <if test = "prepaidCardInfoTVo.initialBalance != null">
+            and prepaid_card_info_t.initial_balance = #{prepaidCardInfoTVo.initialBalance}
+          </if>
+          <if test = "prepaidCardInfoTVo.currentBalance != null">
+            and prepaid_card_info_t.current_balance = #{prepaidCardInfoTVo.currentBalance}
+          </if>
+          <if test = "prepaidCardInfoTVo.expireDate != null">
+            and prepaid_card_info_t.expire_date = #{prepaidCardInfoTVo.expireDate}
+          </if>
+          <if test = "prepaidCardInfoTVo.cardStatus != null">
+            and prepaid_card_info_t.card_status like concat('%', #{prepaidCardInfoTVo.cardStatus}, '%')
+          </if>
+          <if test = "prepaidCardInfoTVo.version != null">
+            and prepaid_card_info_t.version = #{prepaidCardInfoTVo.version}
+          </if>
+        </if>
+     </sql>
+</mapper>

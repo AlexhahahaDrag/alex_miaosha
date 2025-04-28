@@ -391,7 +391,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             redisUtils.setEx(loginCountKey, Integer.toString(curCount), exTime, TimeUnit.MINUTES);
         } else {
             surplusCount -= 1;
-            redisUtils.setEx(loginCountKey, RedisConstants.NUM_ONE + "", exTime, TimeUnit.MINUTES);
+            redisUtils.setEx(loginCountKey, String.valueOf(RedisConstants.NUM_ONE), exTime, TimeUnit.MINUTES);
         }
         return surplusCount;
     }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.prepaidConsumeRecordT.mapper.PrepaidConsumeRecordTMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.prepaidConsumeRecordT.entity.PrepaidConsumeRecordT">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="card_id" property="cardId" />
+        <result column="order_no" property="orderNo" />
+        <result column="amount" property="amount" />
+        <result column="balance_after" property="balanceAfter" />
+        <result column="merchant_name" property="merchantName" />
+        <result column="consume_time" property="consumeTime" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        prepaid_consume_record_t.id,
+        prepaid_consume_record_t.creator,
+        prepaid_consume_record_t.create_time,
+        prepaid_consume_record_t.updater,
+        prepaid_consume_record_t.update_time,
+        prepaid_consume_record_t.operator,
+        prepaid_consume_record_t.operate_time,
+        prepaid_consume_record_t.deleter,
+        prepaid_consume_record_t.delete_time,
+        prepaid_consume_record_t.is_delete,
+        prepaid_consume_record_t.card_id, prepaid_consume_record_t.order_no, prepaid_consume_record_t.amount, prepaid_consume_record_t.balance_after, prepaid_consume_record_t.merchant_name, prepaid_consume_record_t.consume_time, prepaid_consume_record_t.`description`
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/>from prepaid_consume_record_t
+        <where>
+            prepaid_consume_record_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+        order by prepaid_consume_record_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/>from prepaid_consume_record_t
+        <where>
+            prepaid_consume_record_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+        order by prepaid_consume_record_t.operate_time desc
+    </select>
+
+    <select id="queryPrepaidConsumeRecordT" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/> from prepaid_consume_record_t
+        <where>
+            prepaid_consume_record_t.id = #{id}
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "prepaidConsumeRecordTVo != null">
+          <if test = "prepaidConsumeRecordTVo.cardId != null">
+            and prepaid_consume_record_t.card_id = #{prepaidConsumeRecordTVo.cardId}
+          </if>
+          <if test = "prepaidConsumeRecordTVo.orderNo != null">
+            and prepaid_consume_record_t.order_no like concat('%', #{prepaidConsumeRecordTVo.orderNo}, '%')
+          </if>
+          <if test = "prepaidConsumeRecordTVo.amount != null">
+            and prepaid_consume_record_t.amount = #{prepaidConsumeRecordTVo.amount}
+          </if>
+          <if test = "prepaidConsumeRecordTVo.balanceAfter != null">
+            and prepaid_consume_record_t.balance_after = #{prepaidConsumeRecordTVo.balanceAfter}
+          </if>
+          <if test = "prepaidConsumeRecordTVo.merchantName != null">
+            and prepaid_consume_record_t.merchant_name like concat('%', #{prepaidConsumeRecordTVo.merchantName}, '%')
+          </if>
+          <if test = "prepaidConsumeRecordTVo.consumeTime != null">
+            and prepaid_consume_record_t.consume_time = #{prepaidConsumeRecordTVo.consumeTime}
+          </if>
+          <if test = "prepaidConsumeRecordTVo.description != null">
+            and prepaid_consume_record_t.description like concat('%', #{prepaidConsumeRecordTVo.description}, '%')
+          </if>
+        </if>
+     </sql>
+</mapper>
