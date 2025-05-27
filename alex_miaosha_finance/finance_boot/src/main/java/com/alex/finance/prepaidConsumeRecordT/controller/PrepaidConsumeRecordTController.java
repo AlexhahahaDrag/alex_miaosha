@@ -1,30 +1,28 @@
 package com.alex.finance.prepaidConsumeRecordT.controller;
 
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
+import com.alex.finance.prepaidConsumeRecordT.service.PrepaidConsumeRecordTService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
-import com.alex.finance.prepaidConsumeRecordT.entity.PrepaidConsumeRecordT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.finance.prepaidConsumeRecordT.service.PrepaidConsumeRecordTService;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * description:  消费卡交易记录表restApi
  * author:       alex
- * createDate:   2025-04-28 20:58:14
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @ApiSort(105)

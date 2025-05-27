@@ -1,7 +1,7 @@
 package com.alex.api.finance.prepaidConsumeRecordT.vo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * description:  消费卡交易记录表Vo
  * author:       alex
- * createDate:   2025-04-28 20:58:14
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @Getter

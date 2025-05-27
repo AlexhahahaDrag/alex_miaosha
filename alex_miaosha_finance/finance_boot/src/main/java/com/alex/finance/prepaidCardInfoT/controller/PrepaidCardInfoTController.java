@@ -1,30 +1,31 @@
 package com.alex.finance.prepaidCardInfoT.controller;
 
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
+import com.alex.finance.prepaidCardInfoT.service.PrepaidCardInfoTService;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
-import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.finance.prepaidCardInfoT.service.PrepaidCardInfoTService;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * description:  消费卡信息表restApi
  * author:       alex
- * createDate:   2025-04-28 20:58:16
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @ApiSort(105)
@@ -50,6 +51,16 @@ public class PrepaidCardInfoTController {
         return Result.success(prepaidCardInfoTService.getPage(pageNum, pageSize, prepaidCardInfoTVo));
     }
 
+    @ApiOperationSupport(order = 15, author = "alex")
+    @ApiOperation(value = "获取消费卡信列表", notes = "获取消费卡信列表", response = Result.class)
+    @PostMapping(value = "/list")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "查询条件", name = "prepaidCardInfoTVo", dataTypeClass = PrepaidCardInfoTVo.class)}
+    )
+    public Result<List<PrepaidCardInfoTVo>> getList(@RequestBody(required = false) PrepaidCardInfoTVo prepaidCardInfoTVo) {
+        return Result.success(prepaidCardInfoTService.getList(prepaidCardInfoTVo));
+    }
+
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取消费卡信息表详情", notes = "获取消费卡信息表详情", response = Result.class)
     @GetMapping
@@ -61,7 +72,7 @@ public class PrepaidCardInfoTController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增消费卡信息表", notes = "新增消费卡信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) {
+    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception {
         return Result.success(prepaidCardInfoTService.addPrepaidCardInfoT(prepaidCardInfoTVo));
     }
 
@@ -77,5 +88,12 @@ public class PrepaidCardInfoTController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(prepaidCardInfoTService.deletePrepaidCardInfoT(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "消费/充值金额", notes = "消费/充值金额", response = Result.class)
+    @PostMapping(value = "consumeAndRecharge")
+    public Result<Boolean> consumeAndRecharge(@RequestBody @Validated PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
+        return Result.success(prepaidCardInfoTService.consumeAndRecharge(prepaidCardConsumeVo));
     }
 }

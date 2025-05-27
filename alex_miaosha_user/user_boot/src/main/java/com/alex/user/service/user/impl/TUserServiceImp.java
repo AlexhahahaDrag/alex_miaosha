@@ -266,59 +266,61 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         //不返回密码到前端
         TUserVo tUserVo = new TUserVo();
         BeanUtils.copyProperties(admin, tUserVo, "password");
+        // 在维护一张表，用于 uuid - token 互相转换
+        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
+
         // 获取机构信息
-        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-        CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
-            if (admin.getAvatar() == null) {
-                return null;
-            }
-            return getFileUrl(admin.getAvatar());
-        }).exceptionally(ex -> {
-            log.error("异步获取组织架构信息发生错误", ex);
-            return null; // 返回一个空列表或合适的错误处理
-        });
-        CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return orgUserInfoService.getOrgInfoList(tUserVo.getId());
-        }).exceptionally(ex -> {
-            log.error("异步获取组织架构信息发生错误", ex);
-            return Collections.emptyList(); // 返回一个空列表或合适的错误处理
-        });
-        CompletableFuture<List<RoleInfoVo>> rolesFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
-        });
-        MenuInfoVo menuInfoVo = new MenuInfoVo();
-        menuInfoVo.setStatus(SysConf.VALID_STATUS);
-        CompletableFuture<List<MenuInfoVo>> menuFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return menuInfoService.getList(menuInfoVo);
-        });
-        // 等待所有的异步操作完成
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(orgInfoFuture, rolesFuture, menuFuture);
-        // 当所有的异步操作完成后，可以做一些处理
-        allFutures.thenRun(() -> {
-            try {
-                List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
-                List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
-                List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
-                tUserVo.setAvatarUrl(avatarFuture.get());
-                tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
-                tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
-                tUserVo.setMenuInfoVoList(menuList);
-                long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
-                // 将登录的管理员存储到在线用户表
-                redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
-                // 在维护一张表，用于 uuid - token 互相转换
-                redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
-                result.put(SysConf.ADMIN, tUserVo);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
-            }
-        });
+//        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+//        CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
+//            if (admin.getAvatar() == null) {
+//                return null;
+//            }
+//            return getFileUrl(admin.getAvatar());
+//        }).exceptionally(ex -> {
+//            log.error("异步获取组织架构信息发生错误", ex);
+//            return null; // 返回一个空列表或合适的错误处理
+//        });
+//        // todo 去掉机构、角色
+//        CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
+//            RequestContextHolder.setRequestAttributes(attributes);
+//            return orgUserInfoService.getOrgInfoList(tUserVo.getId());
+//        }).exceptionally(ex -> {
+//            log.error("异步获取组织架构信息发生错误", ex);
+//            return Collections.emptyList(); // 返回一个空列表或合适的错误处理
+//        });
+//        CompletableFuture<List<RoleInfoVo>> rolesFuture = CompletableFuture.supplyAsync(() -> {
+//            RequestContextHolder.setRequestAttributes(attributes);
+//            return roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
+//        });
+//        MenuInfoVo menuInfoVo = new MenuInfoVo();
+//        menuInfoVo.setStatus(SysConf.VALID_STATUS);
+//        CompletableFuture<List<MenuInfoVo>> menuFuture = CompletableFuture.supplyAsync(() -> {
+//            RequestContextHolder.setRequestAttributes(attributes);
+//            return menuInfoService.getList(menuInfoVo);
+//        });
+//        // 等待所有的异步操作完成
+//        CompletableFuture<Void> allFutures = CompletableFuture.allOf(orgInfoFuture, rolesFuture, menuFuture);
+//        // 当所有的异步操作完成后，可以做一些处理
+//        allFutures.thenRun(() -> {
+//            try {
+//                List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
+//                List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
+//                List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
+//                tUserVo.setAvatarUrl(avatarFuture.get());
+//                tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
+//                tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
+//                tUserVo.setMenuInfoVoList(menuList);
+//                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+//                // 将登录的管理员存储到在线用户表
+//                redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+//                result.put(SysConf.ADMIN, tUserVo);
+//            } catch (InterruptedException | ExecutionException e) {
+//                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+//            }
+//        });
         // 等待最后的处理完成
-        allFutures.join();
+//        allFutures.join();
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
         return result;

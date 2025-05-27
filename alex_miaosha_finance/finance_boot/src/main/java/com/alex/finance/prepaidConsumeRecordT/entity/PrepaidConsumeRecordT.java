@@ -7,16 +7,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.alex.common.config.Long2StringSerializer;
 
 /**
  * description:  消费卡交易记录表类
  * author:       alex
- * createDate: 2025-04-28 20:58:14
+ * createDate: 2025-04-30 08:21:48
  * version:      1.0.0
  */
 @Getter

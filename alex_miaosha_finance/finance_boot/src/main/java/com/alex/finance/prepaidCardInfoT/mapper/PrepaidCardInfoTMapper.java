@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import com.alex.api.user.annotation.DataPermission;
 
+import java.util.List;
+
 /**
  * description:  消费卡信息表 mapper
  * author:       alex
- * createDate:   2025-04-28 20:58:16
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @Mapper
@@ -23,4 +25,6 @@ public interface PrepaidCardInfoTMapper extends BaseMapper<PrepaidCardInfoT> {
     List<PrepaidCardInfoTVo> getList(@Param("prepaidCardInfoTVo") PrepaidCardInfoTVo prepaidCardInfoTVo);
 
     PrepaidCardInfoTVo queryPrepaidCardInfoT(@Param("id") Long id);
+
+    PrepaidCardInfoTVo queryPrepaidCardInfo(@Param("prepaidCardInfoTVo") PrepaidCardInfoTVo prepaidCardInfoTVo);
 }

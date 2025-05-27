@@ -1,14 +1,21 @@
 package com.alex.finance.prepaidCardInfoT.service.impl;
 
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
+import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.finance.prepaidCardInfoT.mapper.PrepaidCardInfoTMapper;
 import com.alex.finance.prepaidCardInfoT.service.PrepaidCardInfoTService;
+import com.alex.finance.prepaidConsumeRecordT.service.PrepaidConsumeRecordTService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -17,7 +24,7 @@ import com.alex.common.utils.string.StringUtils;
  * <p>
  * description:  消费卡信息表服务实现类
  * author:       alex
- * createDate:   2025-04-28 20:58:16
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @Service
@@ -25,6 +32,8 @@ import com.alex.common.utils.string.StringUtils;
 public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapper, PrepaidCardInfoT> implements PrepaidCardInfoTService {
 
     private final PrepaidCardInfoTMapper prepaidCardInfoTMapper;
+
+    private final PrepaidConsumeRecordTService prepaidConsumeRecordTService;
 
     @Override
     public Page<PrepaidCardInfoTVo> getPage(Long pageNum, Long pageSize, PrepaidCardInfoTVo prepaidCardInfoTVo) {
@@ -43,10 +52,23 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
     }
 
     @Override
-    public Boolean addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo) {
+    public Boolean addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception {
+        PrepaidCardInfoTVo query = new PrepaidCardInfoTVo();
+        query.setCardName(prepaidCardInfoTVo.getCardName());
+        List<PrepaidCardInfoTVo> list = getList(query);
+        if (list != null && list.size() > 0) {
+            throw new Exception("卡号已存在");
+        }
         PrepaidCardInfoT prepaidCardInfoT = new PrepaidCardInfoT();
         BeanUtils.copyProperties(prepaidCardInfoTVo, prepaidCardInfoT);
         prepaidCardInfoTMapper.insert(prepaidCardInfoT);
+        // 添加充值记录
+        PrepaidConsumeRecordTVo prepaidConsumeRecordTVo = new PrepaidConsumeRecordTVo();
+        prepaidConsumeRecordTVo.setConsumeTime(LocalDateTime.now());
+        prepaidConsumeRecordTVo.setId(prepaidCardInfoT.getId());
+        prepaidConsumeRecordTVo.setAmount(prepaidCardInfoTVo.getCurrentBalance());
+        prepaidConsumeRecordTService.addPrepaidConsumeRecordT(prepaidConsumeRecordTVo);
+
         return true;
     }
 
@@ -60,11 +82,85 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
 
     @Override
     public Boolean deletePrepaidCardInfoT(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
         prepaidCardInfoTMapper.deleteBatchIds(idArr);
+        return true;
+    }
+
+    @Override
+    public Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
+        BigDecimal consumeAmount;
+        boolean res;
+        switch (prepaidCardConsumeVo.getType()) {
+            case "consume" -> {
+                consumeAmount = prepaidCardConsumeVo.getConsumeAmount().multiply(new BigDecimal("-1"));
+                res = consume(prepaidCardConsumeVo);
+            }
+            case "recharge" -> {
+                consumeAmount = prepaidCardConsumeVo.getConsumeAmount();
+                res = recharge(prepaidCardConsumeVo);
+            }
+            default -> throw new RuntimeException("未知操作类型");
+        }
+        if (res) {
+            // 添加消费充值记录
+            PrepaidConsumeRecordTVo prepaidConsumeRecordTVo = new PrepaidConsumeRecordTVo();
+            prepaidConsumeRecordTVo.setConsumeTime(prepaidCardConsumeVo.getConsumeTime() == null ? LocalDateTime.now() : prepaidCardConsumeVo.getConsumeTime());
+            prepaidConsumeRecordTVo.setId(prepaidCardConsumeVo.getId());
+            prepaidConsumeRecordTVo.setAmount(consumeAmount);
+        }
+        return true;
+    }
+
+    // 消费
+    public Boolean consume(PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
+        if (prepaidCardConsumeVo.getId() == null) {
+            throw new Exception("卡号不能为空");
+        }
+        if (prepaidCardConsumeVo.getConsumeAmount() == null || BigDecimal.ZERO.compareTo(prepaidCardConsumeVo.getConsumeAmount()) == 0) {
+            throw new Exception("消费金额不能为空");
+        }
+        // 校验消费金额是否够用
+        PrepaidCardInfoTVo prepaidCardInfoTVo = prepaidCardInfoTMapper.queryPrepaidCardInfoT(prepaidCardConsumeVo.getId());
+        if (prepaidCardInfoTVo.getCurrentBalance() == null || prepaidCardInfoTVo.getCurrentBalance().compareTo(prepaidCardConsumeVo.getConsumeAmount()) < 0) {
+            throw new Exception("卡余额不足");
+        }
+        BigDecimal consumeAmount = prepaidCardConsumeVo.getConsumeAmount().multiply(new BigDecimal(-1));
+        // 消费
+        PrepaidCardInfoTVo dbVo = prepaidCardInfoTMapper.queryPrepaidCardInfoT(prepaidCardConsumeVo.getId());
+        dbVo.setCurrentBalance(prepaidCardInfoTVo.getCurrentBalance().add(consumeAmount));
+        updatePrepaidCardInfoT(dbVo);
+        return true;
+    }
+
+    // 充值
+    public Boolean recharge(PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
+        if (prepaidCardConsumeVo.getId() == null) {
+            // 校验卡编码是否重复
+            PrepaidCardInfoTVo query = new PrepaidCardInfoTVo();
+            query.setCardId(prepaidCardConsumeVo.getCardId());
+            PrepaidCardInfoTVo dbVo = prepaidCardInfoTMapper.queryPrepaidCardInfo(query);
+            if (dbVo != null) {
+                throw new Exception("卡编码重复");
+            }
+            PrepaidCardInfoTVo prepaidCardInfoTVo = new PrepaidCardInfoTVo();
+            prepaidCardInfoTVo.setCardId(prepaidCardConsumeVo.getCardId());
+            prepaidCardInfoTVo.setCardName(prepaidCardConsumeVo.getCardName());
+            prepaidCardInfoTVo.setInitialBalance(prepaidCardConsumeVo.getConsumeAmount());
+            prepaidCardInfoTVo.setCurrentBalance(prepaidCardConsumeVo.getConsumeAmount());
+            addPrepaidCardInfoT(prepaidCardInfoTVo);
+        } else {
+            // 根据card_id查询卡是否存在
+            PrepaidCardInfoTVo dbVo = prepaidCardInfoTMapper.queryPrepaidCardInfoT(prepaidCardConsumeVo.getId());
+            if (dbVo == null) {
+                throw new Exception("卡不存在");
+            }
+            dbVo.setCurrentBalance(dbVo.getCurrentBalance().add(prepaidCardConsumeVo.getConsumeAmount()));
+            updatePrepaidCardInfoT(dbVo);
+        }
         return true;
     }
 }

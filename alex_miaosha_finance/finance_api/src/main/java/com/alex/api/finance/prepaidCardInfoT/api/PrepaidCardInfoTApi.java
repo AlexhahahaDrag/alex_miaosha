@@ -1,21 +1,19 @@
 package com.alex.api.finance.prepaidCardInfoT.api;
 
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.base.common.Result;
-import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 
 /**
  * description:  消费卡信息表controller
  * author:       alex
- * createDate:   2025-04-28 20:58:16
+ * createDate:   2025-04-30 08:21:48
  * version:      1.0.0
  */
 @Component
@@ -31,8 +29,8 @@ public interface PrepaidCardInfoTApi {
             @ApiImplicitParam(value = "查询条件", name = "prepaidCardInfoTVo")}
     )
     Result<Page<PrepaidCardInfoTVo>> getPrepaidCardInfoTPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                            @RequestBody(required = false) PrepaidCardInfoTVo prepaidCardInfoTVo);
+                                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                             @RequestBody(required = false) PrepaidCardInfoTVo prepaidCardInfoTVo);
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取消费卡信息表详情", notes = "获取消费卡信息表详情", response = Result.class)
