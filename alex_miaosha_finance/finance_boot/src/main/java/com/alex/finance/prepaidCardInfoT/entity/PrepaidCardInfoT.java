@@ -58,4 +58,8 @@ public class PrepaidCardInfoT extends BaseEntity<PrepaidCardInfoT>{
     @TableField("version")
     @Version
     private Integer version;
+
+    @ApiModelProperty(value = "排序")
+    @TableField("order_no")
+    private Integer orderNo;
 }

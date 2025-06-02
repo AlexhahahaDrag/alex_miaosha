@@ -1,6 +1,8 @@
 package com.alex.api.finance.prepaidCardInfoT.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,12 +26,14 @@ import java.time.LocalDateTime;
 public class PrepaidCardConsumeVo extends BaseVo<PrepaidCardConsumeVo> {
 
     @ApiModelProperty(value = "卡编码")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private String cardId;
 
     @ApiModelProperty(value = "卡名称")
     private String cardName;
 
     @ApiModelProperty(value = "当前操作人")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long userId;
 
     @ApiModelProperty(value = "消费金额")
@@ -41,4 +45,7 @@ public class PrepaidCardConsumeVo extends BaseVo<PrepaidCardConsumeVo> {
 
     @ApiModelProperty(value = "消费日期")
     private LocalDateTime consumeTime;
+
+    @ApiModelProperty(value = "描述")
+    private String description;
 }

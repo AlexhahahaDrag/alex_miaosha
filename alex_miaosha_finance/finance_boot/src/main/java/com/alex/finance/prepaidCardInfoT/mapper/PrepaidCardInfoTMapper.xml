@@ -36,7 +36,11 @@
         prepaid_card_info_t.deleter,
         prepaid_card_info_t.delete_time,
         prepaid_card_info_t.is_delete,
-        prepaid_card_info_t.card_id, prepaid_card_info_t.card_name, prepaid_card_info_t.user_id, prepaid_card_info_t.initial_balance, prepaid_card_info_t.current_balance, prepaid_card_info_t.expire_date, prepaid_card_info_t.card_status, prepaid_card_info_t.version
+        prepaid_card_info_t.card_id, prepaid_card_info_t.card_name,
+        prepaid_card_info_t.user_id, prepaid_card_info_t.initial_balance,
+        prepaid_card_info_t.current_balance, prepaid_card_info_t.expire_date,
+        prepaid_card_info_t.card_status, prepaid_card_info_t.version,
+        prepaid_card_info_t.order_no
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">
@@ -46,7 +50,7 @@
             <include refid="queryInfo"/>
             and prepaid_card_info_t.is_delete = 0
         </where>
-        order by prepaid_card_info_t.operate_time desc
+        order by prepaid_card_info_t.order_no asc, prepaid_card_info_t.operate_time desc
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">
@@ -55,7 +59,7 @@
             prepaid_card_info_t.is_delete = 0
             <include refid="queryInfo"/>
         </where>
-        order by prepaid_card_info_t.operate_time desc
+        order by prepaid_card_info_t.order_no asc, prepaid_card_info_t.operate_time desc
     </select>
 
     <select id="queryPrepaidCardInfoT" resultType="com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo">

@@ -43,7 +43,7 @@
             prepaid_card_info_t.card_name as card_name,
             if(prepaid_consume_record_t.amount >= 0, '充值', '消费') as type
             from prepaid_consume_record_t
-               left join prepaid_card_info_t
+             join prepaid_card_info_t
                on prepaid_consume_record_t.card_id = prepaid_card_info_t.id
               and prepaid_card_info_t.is_delete = 0
         <where>

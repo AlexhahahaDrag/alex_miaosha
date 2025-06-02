@@ -108,7 +108,9 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
             prepaidConsumeRecordTVo.setConsumeTime(prepaidCardConsumeVo.getConsumeTime() == null ? LocalDateTime.now() : prepaidCardConsumeVo.getConsumeTime());
             prepaidConsumeRecordTVo.setCardId(prepaidCardConsumeVo.getId());
             prepaidConsumeRecordTVo.setAmount(consumeAmount);
-            prepaidConsumeRecordTVo.setDescription("recharge".equals(prepaidCardConsumeVo.getType()) ? "充值" : "消费");
+            prepaidConsumeRecordTVo.setDescription(prepaidCardConsumeVo.getDescription() == null ?
+                    "recharge".equals(prepaidCardConsumeVo.getType()) ? "充值" : "消费" :
+                    prepaidCardConsumeVo.getDescription());
             prepaidConsumeRecordTService.addPrepaidConsumeRecordT(prepaidConsumeRecordTVo);
         }
         return true;
@@ -154,7 +156,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
             dbVo = addPrepaidCardInfoT(prepaidCardInfoTVo);
         } else {
             // 根据card_id查询卡是否存在
-             dbVo = prepaidCardInfoTMapper.queryPrepaidCardInfoT(prepaidCardConsumeVo.getId());
+            dbVo = prepaidCardInfoTMapper.queryPrepaidCardInfoT(prepaidCardConsumeVo.getId());
             if (dbVo == null) {
                 throw new Exception("卡不存在");
             }

@@ -5,7 +5,9 @@ import com.alex.common.common.BaseVo;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.alex.common.config.Long2StringSerializer;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -25,6 +27,7 @@ import lombok.experimental.Accessors;
 public class PrepaidCardInfoTVo extends BaseVo<PrepaidCardInfoTVo>{
 
     @ApiModelProperty(value = "卡号（业务唯一标识）")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private String cardId;
 
     @ApiModelProperty(value = "卡名称")
@@ -48,4 +51,7 @@ public class PrepaidCardInfoTVo extends BaseVo<PrepaidCardInfoTVo>{
     @ApiModelProperty(value = "版本")
     @Version
     private Integer version;
+
+    @ApiModelProperty(value = "排序")
+    private Integer orderNo;
 }
