@@ -32,7 +32,6 @@ public class PrepaidCardConsumeVo extends BaseVo<PrepaidCardConsumeVo> {
     @ApiModelProperty(value = "当前操作人")
     private Long userId;
 
-    @NotBlank(message = "消费金额不能为空")
     @ApiModelProperty(value = "消费金额")
     private BigDecimal consumeAmount;
 

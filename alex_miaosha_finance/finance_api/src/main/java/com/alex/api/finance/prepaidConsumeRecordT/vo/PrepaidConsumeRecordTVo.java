@@ -25,6 +25,12 @@ public class PrepaidConsumeRecordTVo extends BaseVo<PrepaidConsumeRecordTVo>{
     @ApiModelProperty(value = "卡号（关联prepaid_card_info_t.card_id）")
     private Long cardId;
 
+    @ApiModelProperty(value = "卡名称")
+    private String cardName;
+
+    @ApiModelProperty(value = "消费类型")
+    private String type;
+
     @ApiModelProperty(value = "交易流水号（业务唯一）")
     private String orderNo;
 

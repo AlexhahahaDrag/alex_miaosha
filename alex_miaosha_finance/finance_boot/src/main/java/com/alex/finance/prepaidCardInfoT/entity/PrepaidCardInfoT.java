@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -55,6 +56,6 @@ public class PrepaidCardInfoT extends BaseEntity<PrepaidCardInfoT>{
 
     @ApiModelProperty(value = "版本")
     @TableField("version")
+    @Version
     private Integer version;
-
 }

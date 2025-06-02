@@ -2,6 +2,7 @@ package com.alex.finance.prepaidCardInfoT.service;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
+import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -23,7 +24,7 @@ public interface PrepaidCardInfoTService extends IService<PrepaidCardInfoT> {
 
     PrepaidCardInfoTVo queryPrepaidCardInfoT(Long id);
 
-    Boolean addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception;
+    PrepaidCardInfoTVo addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception;
 
     Boolean updatePrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo);
 

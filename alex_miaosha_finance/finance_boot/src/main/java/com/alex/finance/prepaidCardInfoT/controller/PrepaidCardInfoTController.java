@@ -72,7 +72,7 @@ public class PrepaidCardInfoTController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增消费卡信息表", notes = "新增消费卡信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception {
+    public Result<PrepaidCardInfoTVo> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception {
         return Result.success(prepaidCardInfoTService.addPrepaidCardInfoT(prepaidCardInfoTVo));
     }
 
