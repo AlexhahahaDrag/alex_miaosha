@@ -44,7 +44,7 @@
             <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
               <% if (strutil.contain(field.comment, '字典')) { %>
               <a-select ref="select" v-model:value="formState.${field.propertyName}"
-                :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                :placeholder="'请选择' + labelMap['${field.propertyName}'].label"
                 :field-names="{ label: 'typeName', value: 'typeCode' }"
                 :options="${field.propertyName}List"
                 :allowClear="true">

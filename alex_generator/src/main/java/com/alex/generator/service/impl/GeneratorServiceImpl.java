@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.FileSystems;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     private void executeGenerate(String tableName, String moduleName, String javaPathName,
                                  String author, String javaPath, String fileNameInfo) throws Exception {
-        String separator = System.getProperty("file.separator");
+        String separator = FileSystems.getDefault().getSeparator();
         String base = "/src/main/";
         String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
@@ -171,7 +172,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         return menuInfoVoResult.getData();
     }
 
-    // TODO (majf) 2024/1/16 20:17 测试添加权限功能是否好使
     private void addPermission(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
         // 查询主菜单是否存在
         PermissionInfoVo query = new PermissionInfoVo();
@@ -269,7 +269,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.controller, controllerPath + separator);
         pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName + "Detail");
         pathMap.put(OutputFile.list, vuePath + separator + fileName);
-        pathMap.put(OutputFile.ts, tsPath + separator + fileName);
+        // TODO (majf) 2025/6/6 11:18 测试ts的路径
+        pathMap.put(OutputFile.ts, tsPath + separator + fileName + separator + "api");
         pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
         pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + fileName + "Detail");
         pathMap.put(OutputFile.mobileVue, mobileVuePath + separator + fileName);

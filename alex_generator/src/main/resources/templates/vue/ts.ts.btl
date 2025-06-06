@@ -6,7 +6,7 @@ import {
   baseService,
 } from "@/api/common/index";
 
-const base${entity} = "/api/v1/<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>";
+const base${entity} = "/api/v1<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>";
 
 const ${entity}Url = {
   page: "/page",
