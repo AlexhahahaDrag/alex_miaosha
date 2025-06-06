@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DataPermissionInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -36,6 +37,9 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils)));
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        // 添加乐观锁拦截器
+        // TODO: 2025/6/2 测试乐观锁 
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         return interceptor;
     }
 

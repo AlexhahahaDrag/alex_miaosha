@@ -2,6 +2,7 @@ package com.alex.common.exception.handler;
 
 import com.alex.base.common.Result;
 import com.alex.common.exception.*;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -23,30 +24,30 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(LoginException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<String> handler(LoginException exception) {
-        log.error("登录异常:{}", exception.getMessage(), exception);
+        log.error("登录异常:{},{}", exception.getMsg(), JSONObject.toJSONString(exception));
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(CustomizeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(CustomizeException exception) {
-        log.error("自定义异常:{}", exception.getMessage(), exception);
+        log.error("自定义异常:{}", exception.getMsg(), exception);
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(RegisterException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(RegisterException exception) {
-        log.error("注册异常:{}", exception.getMessage(), exception);
+        log.error("注册异常:{}", exception.getMsg(), exception);
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
     @ExceptionHandler(SeckillException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Object> handle(SeckillException exception) {
-        log.error("秒杀异常:{}", exception.getMessage(), exception);
+        log.error("秒杀异常:{}", exception.getMsg(), exception);
         return Result.error(exception.getCode(), exception.getMsg());
     }
 
@@ -71,14 +72,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(ProductException e) {
-        log.error("商品异常:{}", e.getMessage(), e);
+        log.error("商品异常:{}", e.getMsg(), e);
         return Result.error(e.getCode(), e.getMsg());
     }
 
     @ExceptionHandler(FinanceException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(FinanceException e) {
-        log.error("财务异常:{}", e.getMessage(), e);
+        log.error("财务异常:{}", e.getMsg(), e);
         return Result.error(e.getCode(), e.getMsg());
     }
 

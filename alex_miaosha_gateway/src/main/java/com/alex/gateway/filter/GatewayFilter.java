@@ -123,6 +123,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
         byte[] bits = new String(AESUtils.encrypt(JSONObject.toJSONString(message.toString()), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), StandardCharsets.UTF_8).getBytes();
+//        byte[] bits = JSONObject.toJSONString(message.toString()).getBytes();
+
         DataBuffer buffer = response.bufferFactory().wrap(bits);
         //response.setStatusCode(HttpStatus.UNAUTHORIZED);
         //指定编码，否则在浏览器中会中文乱码
@@ -147,9 +149,11 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
+                            // TODO: 2025/5/14 测试，过后删除 
                             uppedContent = new String(AESUtils.encrypt(JSONObject.toJSONString(s),
                                     "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(),
                                     StandardCharsets.UTF_8).getBytes();
+//                            uppedContent = JSONObject.toJSONString(s).getBytes();
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;

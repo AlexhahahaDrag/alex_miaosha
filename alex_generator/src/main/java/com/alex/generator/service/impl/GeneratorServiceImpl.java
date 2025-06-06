@@ -192,14 +192,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfo.setPermissionInfoVo(addPermissionInfo(addPermissionInfo));
         }
-//        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail", fileName + "/" + fileName + "Detail",
-//                moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo + "详情");
-//        if (detailMenuInfo.getPermissionExists()) {
-//            addChildPermissionInfo.setId(detailMenuInfo.getPermissionInfoVo().getId());
-//            menuInfo.setPermissionInfoVo(updatePermissionInfo(addChildPermissionInfo));
-//        } else {
-//            menuInfo.setPermissionInfoVo(addPermissionInfo(addChildPermissionInfo));
-//        }
+        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail", fileName + "/" + fileName + "Detail",
+                moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo + "详情");
+        if (detailMenuInfo.getPermissionExists()) {
+            addChildPermissionInfo.setId(detailMenuInfo.getPermissionInfoVo().getId());
+            menuInfo.setPermissionInfoVo(updatePermissionInfo(addChildPermissionInfo));
+        } else {
+            menuInfo.setPermissionInfoVo(addPermissionInfo(addChildPermissionInfo));
+        }
     }
 
     /**
