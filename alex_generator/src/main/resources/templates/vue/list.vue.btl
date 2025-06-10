@@ -37,11 +37,11 @@
             <a-col :span="8">
               <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
     <% if (strutil.contain(field.comment, '字典')) { %>
-                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label"
                   :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
                 </a-select>
     <% } else { %>
-                <a-input v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label" allow-clear />
+                <a-input v-model:value="searchInfo.${field.propertyName}" :placeholder="'请输入' + labelMap['${field.propertyName}'].label" allow-clear />
     <% } %>
               </a-form-item>
             </a-col>
@@ -66,7 +66,6 @@
     <div class="button" style="margin-left: 10px;">
       <a-space>
         <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
-        <a-button type="primary" @click="query">导入</a-button>
         <a-button type="primary" danger @click="batchDel${entity}">删除</a-button>
       </a-space>
     </div>
@@ -99,7 +98,7 @@ import {
   ModelInfo,
   pageInfo,
 } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
-import { get${entity}Page, delete${entity} } from "@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts";
+import { get${entity}Page, delete${entity} } from "./api/index";
 import { message } from "ant-design-vue";
 <% if(hasDict){ %>
 import { getDictList } from "@/api/finance/dict/dictManager";

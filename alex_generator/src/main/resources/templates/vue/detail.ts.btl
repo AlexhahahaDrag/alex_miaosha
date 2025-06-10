@@ -8,11 +8,11 @@ export interface ${entity}Detail {
   id?: number,
 <% for(field in table.fields){ %>
     <% if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
-  ${field.propertyName}?: number;
-    <% } else if (field.propertyType == 'LocalDateTime') { %>
-  ${field.propertyName}?: Dayjs | string;
+${field.propertyName}?: number;
+    <% } else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'LocalDate' || field.propertyType == 'ZonedDateTime') { %>
+${field.propertyName}?: Dayjs | string;
     <% } else { %>
-  ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
     <% } %>
 <% } %>
 }
