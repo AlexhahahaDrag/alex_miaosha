@@ -30,3 +30,4 @@ target
 logs
 */jasypt.yaml
 */.gradle
+*/drone-att.txt
