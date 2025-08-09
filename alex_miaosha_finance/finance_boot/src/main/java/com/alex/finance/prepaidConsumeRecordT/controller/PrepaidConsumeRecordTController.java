@@ -43,9 +43,9 @@ public class PrepaidConsumeRecordTController {
             @ApiImplicitParam(value = "查询条件", name = "prepaidConsumeRecordTVo", dataTypeClass = PrepaidConsumeRecordTVo.class)}
     )
     public Result<Page<PrepaidConsumeRecordTVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                             @RequestBody(required = false) PrepaidConsumeRecordTVo prepaidConsumeRecordTVo) {
-        return Result.success(prepaidConsumeRecordTService.getPage(pageNum, pageSize, prepaidConsumeRecordTVo));
+                                                         @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                         @RequestBody(required = false) PrepaidConsumeRecordTVo prePaidConsumeRecordVo) {
+        return Result.success(prepaidConsumeRecordTService.getPage(pageNum, pageSize, prePaidConsumeRecordVo));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

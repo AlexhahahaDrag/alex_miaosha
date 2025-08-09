@@ -22,15 +22,15 @@ public interface PrepaidConsumeRecordTApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取消费卡交易记录表分页", notes = "获取消费卡交易记录表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//prepaid-consume-record-t/page")
+    @PostMapping(value = "/api/v1/prepaid-consume-record-t/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "prepaidConsumeRecordTVo")}
     )
     Result<Page<PrepaidConsumeRecordTVo>> getPrepaidConsumeRecordTPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                            @RequestBody(required = false) PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
+                                                                       @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                                       @RequestBody(required = false) PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取消费卡交易记录表详情", notes = "获取消费卡交易记录表详情", response = Result.class)

@@ -22,7 +22,7 @@
         <result column="consume_time" property="consumeTime"/>
         <result column="description" property="description"/>
     </resultMap>
-
+    
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         prepaid_consume_record_t.id,
@@ -93,8 +93,22 @@
           <if test="prepaidConsumeRecordTVo.consumeTime != null">
             and prepaid_consume_record_t.consume_time = #{prepaidConsumeRecordTVo.consumeTime}
           </if>
+          <if test="prepaidConsumeRecordTVo.startDate != null">
+            and prepaid_consume_record_t.consume_time >= #{prepaidConsumeRecordTVo.startDate}
+          </if>
+          <if test="prepaidConsumeRecordTVo.endDate != null">
+            and prepaid_consume_record_t.consume_time &lt;= #{prepaidConsumeRecordTVo.endDate}
+          </if>
           <if test="prepaidConsumeRecordTVo.description != null">
             and prepaid_consume_record_t.description like concat('%', #{prepaidConsumeRecordTVo.description}, '%')
+          </if>
+          <if test="prepaidConsumeRecordTVo.type != null">
+           <if test="prepaidConsumeRecordTVo.type == 'income'">
+                and prepaid_consume_record_t.amount &gt;= 0
+           </if>
+            <if test="prepaidConsumeRecordTVo.type == 'expense'">
+                and prepaid_consume_record_t.amount &lt; 0
+            </if>
           </if>
         </if>
      </sql>

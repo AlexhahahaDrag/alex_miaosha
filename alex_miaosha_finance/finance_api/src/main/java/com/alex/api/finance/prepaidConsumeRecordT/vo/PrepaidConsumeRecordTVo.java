@@ -1,10 +1,6 @@
 package com.alex.api.finance.prepaidConsumeRecordT.vo;
 
 import com.alex.common.common.BaseVo;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import com.alex.common.config.Long2StringSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
@@ -12,6 +8,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * description:  消费卡交易记录表Vo
@@ -53,4 +52,9 @@ public class PrepaidConsumeRecordTVo extends BaseVo<PrepaidConsumeRecordTVo>{
     @ApiModelProperty(value = "交易描述")
     private String description;
 
+    @ApiModelProperty(value = "开始时间")
+    private LocalDateTime startDate;
+
+    @ApiModelProperty(value = "结束时间")
+    private LocalDateTime endDate;
 }
