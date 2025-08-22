@@ -89,3 +89,17 @@ gateway:
     enabled: true
     # 字符编码
     charset: "UTF-8"
+
+# 通用加密配置
+alex:
+  encryption:
+    # AES加密密钥
+    key: "20230610HelloDog"
+    # AES加密向量
+    iv: "1234567890123456"
+    # AES填充模式
+    padding: "PKCS5Padding"
+    # 是否启用加密
+    enabled: true
+    # 字符编码
+    charset: "UTF-8"

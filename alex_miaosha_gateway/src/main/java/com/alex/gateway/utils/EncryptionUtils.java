@@ -34,12 +34,9 @@ public class EncryptionUtils {
                 return content.getBytes(StandardCharsets.UTF_8);
             }
             
-            return new String(AESUtils.encrypt(
-                    content, 
-                    encryptionConfig.getKey(), 
-                    encryptionConfig.getIv(), 
-                    encryptionConfig.getPadding()
-            ).getBytes(), StandardCharsets.UTF_8).getBytes();
+            // 使用配置化的AES加密
+            String encrypted = AESUtils.encryptWithConfig(content);
+            return encrypted.getBytes(StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.error("加密失败: {}", e.getMessage(), e);
             throw new RuntimeException("加密失败", e);
@@ -58,12 +55,8 @@ public class EncryptionUtils {
                 return new String(encryptedContent, StandardCharsets.UTF_8);
             }
             
-            return AESUtils.decrypt(
-                    new String(encryptedContent, StandardCharsets.UTF_8),
-                    encryptionConfig.getKey(),
-                    encryptionConfig.getIv(),
-                    encryptionConfig.getPadding()
-            );
+            // 使用配置化的AES解密
+            return AESUtils.decryptWithConfig(new String(encryptedContent, StandardCharsets.UTF_8));
         } catch (Exception e) {
             log.error("解密失败: {}", e.getMessage(), e);
             throw new RuntimeException("解密失败", e);

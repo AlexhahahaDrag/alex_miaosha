@@ -149,9 +149,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
-                            // TODO: 2025/5/14 测试，过后删除 
                             uppedContent = encryptionUtils.encrypt(JSONObject.toJSONString(s));
-//                            uppedContent = JSONObject.toJSONString(s).getBytes();
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;

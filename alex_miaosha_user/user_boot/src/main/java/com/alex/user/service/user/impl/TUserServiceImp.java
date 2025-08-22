@@ -238,7 +238,20 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String headers = request.getHeader(audience.getTokenHeader());
         if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
-            // TODO (majf) 2024/3/18 10:22 更新过期时间
+            // 更新token过期时间
+            long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+            
+            // 重新设置Redis中相关key的值和过期时间
+            redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+            redisUtils.setEx(LoginKey.loginToken, headers, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+            
+            // 获取token对应的uuid并更新过期时间
+            String tokenId = redisUtils.get(LoginKey.loginUuid, headers, String.class);
+            if (StringUtils.isNotBlank(tokenId)) {
+                redisUtils.setEx(LoginKey.loginUuid, tokenId, headers, expiration, TimeUnit.SECONDS);
+            }
+            
+            log.info("用户 {} 已登录，更新token过期时间，新过期时间：{} 秒", username, expiration);
             result.put(SysConf.TOKEN, headers);
             result.put(SysConf.ADMIN, redisUser);
             return result;
@@ -281,7 +294,6 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
             log.error("异步获取组织架构信息发生错误", ex);
             return null; // 返回一个空列表或合适的错误处理
         });
-        // todo 去掉机构、角色
         CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
             RequestContextHolder.setRequestAttributes(attributes);
             return orgUserInfoService.getOrgInfoList(tUserVo.getId());
