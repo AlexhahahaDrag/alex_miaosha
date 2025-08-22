@@ -6,8 +6,8 @@ spring:
     name: alex-user-${spring.profiles.active}
 
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-    driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
+    type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql驱动包
     url: jdbc:mysql://${info.ip}:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
@@ -22,3 +22,43 @@ logging:
 isRememberMeExpiresSecond: 86400 #记住密码一天
 
 defaultPassword: 1234@com
+
+# Token刷新配置
+token:
+  refresh:
+    # 核心线程数
+    core-pool-size: 2
+    # 最大线程数
+    max-pool-size: 4
+    # 队列容量
+    queue-capacity: 100
+    # 线程空闲时间（秒）
+    keep-alive-seconds: 60
+    # 线程名前缀
+    thread-name-prefix: "token-refresh-"
+
+# 在线用户管理配置
+online-user:
+  # 核心线程数
+  core-pool-size: 1
+  # 最大线程数
+  max-pool-size: 2
+  # 队列容量
+  queue-capacity: 50
+  # 线程空闲时间（秒）
+  keep-alive-seconds: 30
+  # 线程名前缀
+  thread-name-prefix: "online-user-"
+
+# 通用异步任务配置
+async-task:
+  # 核心线程数
+  core-pool-size: 3
+  # 最大线程数
+  max-pool-size: 6
+  # 队列容量
+  queue-capacity: 200
+  # 线程空闲时间（秒）
+  keep-alive-seconds: 60
+  # 线程名前缀
+  thread-name-prefix: "async-task-"

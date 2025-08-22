@@ -26,6 +26,8 @@ import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.menuInfo.MenuInfoService;
 import com.alex.user.service.orgUserInfo.OrgUserInfoService;
 import com.alex.user.service.roleUserInfo.RoleUserInfoService;
+import com.alex.user.service.token.TokenRefreshService;
+import com.alex.user.service.online.OnlineUserService;
 import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
@@ -106,7 +108,9 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
 
     private final RoleUserInfoService roleUserInfoService;
 
-    private final Executor taskExecutor;
+    private final TokenRefreshService tokenRefreshService;
+
+    private final OnlineUserService onlineUserService;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
@@ -369,15 +373,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 .loginLocation(location)
                 .build();
         new Thread(userLogin::insert);
-        taskExecutor.execute(() -> {
-            // 异步执行的代码
-            try {
-                //添加在线用户到redis中，设置过期时间
-                this.addOnLineAdmin(userLogin, expiration);
-            } catch (Exception e) {
-                log.error("添加在线用户失败：{}", e.getMessage());
-            }
-        });
+        // 异步添加在线用户到redis中
+        onlineUserService.addOnlineUserAsync(userLogin, expiration);
         // 设置认证信息到SecurityContextHolder
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -563,8 +560,8 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
             return false;
         }
-        // TODO (majf) 2024/2/21 15:03 是否可以开一个线程，将刷新token的任务添加到那个中去，不影响
-        refreshToken(token, base64Secret, uuidToken, barToken);
+        // 异步刷新token，不阻塞主流程
+        tokenRefreshService.refreshTokenAsync(token, base64Secret, uuidToken, barToken);
         // 获取在线的管理员信息
         String username = jwtTokenUtils.getUsername(token, base64Secret);
         SecurityContextHolder.getContext().getAuthentication();
@@ -582,36 +579,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
         return true;
     }
 
-    /**
-     * param: token
-     * param: base64Secret
-     * param: uuidToken
-     * param: barToken
-     * description: 判断是否需要刷新对应的token数据
-     * author:      majf
-     * return:      void
-     */
-    private void refreshToken(String token, String base64Secret, String uuidToken, String barToken) {
-        taskExecutor.execute(() -> {
-            Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            // 得到两个日期相差的间隔，秒
-            long survivalSecond = DateUtils.diffSecondByTwoDays(DateUtils.getTimeStr(LocalDateTime.now()), sdf.format(expirationDate));
-            // 而旧的Token将会在不久之后从Redis中过期,当存活时间小于更新时间，那么将颁发新的Token到客户端，同时重置新的过期时间
-            if (survivalSecond < audience.getRefreshSecond()) {
-                //生成新的token
-                String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
-                // TODO (majf) 2024/2/21 15:04 多次后是否需要修改uuid信息
-                redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
-                String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
-                if (StringUtils.isNotBlank(onlineAdminStr)) {
-                    TUserVo onlineAdmin = JSONObject.parseObject(onlineAdminStr, TUserVo.class);
-                    onlineAdmin.setToken(newToken);
-                    redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
-                }
-            }
-        });
-    }
+
 
     public AuthRequest getAuthRequest(String appName) {
         AuthRequest authRequest = null;

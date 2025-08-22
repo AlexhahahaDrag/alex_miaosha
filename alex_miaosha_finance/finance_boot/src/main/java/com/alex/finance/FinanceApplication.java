@@ -13,13 +13,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * description:
- * author:       majf
- * createDate:   2022/10/10 16:56
- * version:      1.0.0
+ * @description:
+ * @author:       majf
+ * @createDate:   2022/10/10 16:56
+ * @version:      1.0.0
  */
 @EnableDiscoveryClient
 @SpringBootApplication

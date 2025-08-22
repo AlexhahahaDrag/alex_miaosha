@@ -23,4 +23,6 @@ public class LoginKey extends BasePrefix {
     public static LoginKey loginAdmin = new LoginKey("login:admin");
 
     public static LoginKey loginIpSource = new LoginKey("login:ip_source");
+
+    public static LoginKey loginOnlineUser = new LoginKey("login:online_user");
 }

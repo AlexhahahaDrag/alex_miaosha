@@ -114,10 +114,10 @@
      </sql>
 
     <!-- 趋势统计：按天聚合充值与消费（消费取绝对值） -->
-    <select id="aggregateTrendByDay" resultType="java.util.HashMap">
+    <select id="aggregateTrendByDay" resultType="java.util.Map">
         select
           date(prepaid_consume_record_t.consume_time) as bucketDate,
-          sum(case when prepaid_consume_record_t.amount < 0 then -prepaid_consume_record_t.amount else 0 end) as expenseAmount,
+          sum(case when prepaid_consume_record_t.amount &lt; 0 then -prepaid_consume_record_t.amount else 0 end) as expenseAmount,
           sum(case when prepaid_consume_record_t.amount >= 0 then prepaid_consume_record_t.amount else 0 end) as rechargeAmount
         from prepaid_consume_record_t
         <where>
@@ -137,9 +137,9 @@
     </select>
 
     <!-- 区间汇总：充值与消费总额（消费取绝对值） -->
-    <select id="sumExpenseAndRecharge" resultType="java.util.HashMap">
+    <select id="sumExpenseAndRecharge" resultType="java.util.Map">
         select
-          sum(case when prepaid_consume_record_t.amount < 0 then -prepaid_consume_record_t.amount else 0 end) as expenseAmount,
+          sum(case when prepaid_consume_record_t.amount &lt; 0 then -prepaid_consume_record_t.amount else 0 end) as expenseAmount,
           sum(case when prepaid_consume_record_t.amount >= 0 then prepaid_consume_record_t.amount else 0 end) as rechargeAmount
         from prepaid_consume_record_t
         <where>

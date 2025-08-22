@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -33,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapper, PrepaidCardInfoT> implements PrepaidCardInfoTService {
+
+    private static final Logger log = LoggerFactory.getLogger(PrepaidCardInfoTServiceImp.class);
 
     private final PrepaidCardInfoTMapper prepaidCardInfoTMapper;
 
@@ -82,15 +86,17 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
     public PrepaidDashboardOverviewVo dashboardOverview(Long userId) {
         // 总卡数
         PrepaidCardInfoTVo query = new PrepaidCardInfoTVo();
-        query.setUserId(userId);
+        if (userId != null) {
+            query.setUserId(userId);
+        }
         List<PrepaidCardInfoTVo> cards = prepaidCardInfoTMapper.getList(query);
         int totalCards = cards == null ? 0 : cards.size();
 
         // 总余额
         java.math.BigDecimal totalBalance = java.math.BigDecimal.ZERO;
-        if (cards != null) {
+        if (cards != null && !cards.isEmpty()) {
             for (PrepaidCardInfoTVo c : cards) {
-                if (c.getCurrentBalance() != null) {
+                if (c != null && c.getCurrentBalance() != null) {
                     totalBalance = totalBalance.add(c.getCurrentBalance());
                 }
             }
@@ -113,15 +119,29 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         java.math.BigDecimal lastMonthExpense = java.math.BigDecimal.ZERO;
         java.math.BigDecimal lastMonthRecharge = java.math.BigDecimal.ZERO;
 
-        if (cards != null) {
+        if (cards != null && !cards.isEmpty()) {
             for (PrepaidCardInfoTVo c : cards) {
-                Long cardDbId = c.getId();
-                Map<String, Object> thisMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startThisMonth, endThisMonth);
-                Map<String, Object> lastMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startLastMonth, endLastMonth);
-                monthExpense = monthExpense.add(toBigDecimal(thisMonth.get("expenseAmount")));
-                monthRecharge = monthRecharge.add(toBigDecimal(thisMonth.get("rechargeAmount")));
-                lastMonthExpense = lastMonthExpense.add(toBigDecimal(lastMonth.get("expenseAmount")));
-                lastMonthRecharge = lastMonthRecharge.add(toBigDecimal(lastMonth.get("rechargeAmount")));
+                if (c != null && c.getId() != null) {
+                    Long cardDbId = c.getId();
+                    try {
+                        Map<String, Object> thisMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startThisMonth, endThisMonth);
+                        Map<String, Object> lastMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startLastMonth, endLastMonth);
+                        
+                        // 安全处理Map结果
+                        if (thisMonth != null) {
+                            monthExpense = monthExpense.add(toBigDecimal(thisMonth.get("expenseAmount")));
+                            monthRecharge = monthRecharge.add(toBigDecimal(thisMonth.get("rechargeAmount")));
+                        }
+                        
+                        if (lastMonth != null) {
+                            lastMonthExpense = lastMonthExpense.add(toBigDecimal(lastMonth.get("expenseAmount")));
+                            lastMonthRecharge = lastMonthRecharge.add(toBigDecimal(lastMonth.get("rechargeAmount")));
+                        }
+                    } catch (Exception e) {
+                        // 记录日志但不影响整体计算
+                        log.warn("计算卡ID {} 的消费记录时发生异常: {}", cardDbId, e.getMessage());
+                    }
+                }
             }
         }
 
@@ -131,13 +151,18 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         // 卡数环比：本月新增卡 vs 上月新增卡
         int thisMonthNewCards = 0;
         int lastMonthNewCards = 0;
-        if (cards != null) {
+        if (cards != null && !cards.isEmpty()) {
             for (PrepaidCardInfoTVo c : cards) {
-                if (c.getCreateTime() != null) {
-                    if (!c.getCreateTime().isBefore(startThisMonth) && c.getCreateTime().isBefore(endThisMonth)) {
-                        thisMonthNewCards++;
-                    } else if (!c.getCreateTime().isBefore(startLastMonth) && c.getCreateTime().isBefore(endLastMonth)) {
-                        lastMonthNewCards++;
+                if (c != null && c.getCreateTime() != null) {
+                    try {
+                        if (!c.getCreateTime().isBefore(startThisMonth) && c.getCreateTime().isBefore(endThisMonth)) {
+                            thisMonthNewCards++;
+                        } else if (!c.getCreateTime().isBefore(startLastMonth) && c.getCreateTime().isBefore(endLastMonth)) {
+                            lastMonthNewCards++;
+                        }
+                    } catch (Exception e) {
+                        // 记录日志但不影响整体计算
+                        log.warn("计算卡创建时间时发生异常: {}", e.getMessage());
                     }
                 }
             }
@@ -158,7 +183,12 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
     private java.math.BigDecimal toBigDecimal(Object value) {
         if (value == null) return java.math.BigDecimal.ZERO;
         if (value instanceof java.math.BigDecimal) return (java.math.BigDecimal) value;
-        return new java.math.BigDecimal(value.toString());
+        try {
+            return new java.math.BigDecimal(value.toString());
+        } catch (NumberFormatException e) {
+            log.warn("无法将值 {} 转换为BigDecimal，使用默认值0", value);
+            return java.math.BigDecimal.ZERO;
+        }
     }
     @Override
     public Boolean deletePrepaidCardInfoT(String ids) {

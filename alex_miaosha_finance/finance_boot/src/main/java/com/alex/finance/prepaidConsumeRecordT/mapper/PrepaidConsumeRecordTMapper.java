@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * description:  消费卡交易记录表 mapper
- * author:       alex
- * createDate:   2025-04-30 08:21:48
- * version:      1.0.0
+ * @description:  消费卡交易记录表 mapper
+ * @author:       alex
+ * @createDate:   2025-04-30 08:21:48
+ * @version:      1.0.0
  */
 @Mapper
 public interface PrepaidConsumeRecordTMapper extends BaseMapper<PrepaidConsumeRecordT> {
