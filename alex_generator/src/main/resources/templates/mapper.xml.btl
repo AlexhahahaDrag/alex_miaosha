@@ -35,7 +35,9 @@
 <% for(field in table.commonFields){ %>
         ${table.name}.${field.columnName},
 <% } %>
-        ${table.fieldNames}
+<% for(field in table.fields){ %>
+        ${table.name}.${field.name},
+<% } %>
     </sql>
 <% } %>
 

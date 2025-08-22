@@ -2,9 +2,9 @@ package com.alex.gateway.filter;
 
 import com.alex.api.user.api.UserApi;
 import com.alex.base.common.Result;
-import com.alex.common.utils.secret.AESUtils;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
+import com.alex.gateway.utils.EncryptionUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +54,8 @@ import java.util.concurrent.ExecutionException;
 public class GatewayFilter implements GlobalFilter, Ordered {
 
     private final GatewayAudience audience;
+    
+    private final EncryptionUtils encryptionUtils;
 
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
 
@@ -122,9 +124,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         message.addProperty("success", false);
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
-        byte[] bits = new String(AESUtils.encrypt(JSONObject.toJSONString(message.toString()), "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(), StandardCharsets.UTF_8).getBytes();
-//        byte[] bits = JSONObject.toJSONString(message.toString()).getBytes();
-
+        byte[] bits = encryptionUtils.encrypt(JSONObject.toJSONString(message.toString()));
         DataBuffer buffer = response.bufferFactory().wrap(bits);
         //response.setStatusCode(HttpStatus.UNAUTHORIZED);
         //指定编码，否则在浏览器中会中文乱码
@@ -150,9 +150,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         byte[] uppedContent;
                         try {
                             // TODO: 2025/5/14 测试，过后删除 
-                            uppedContent = new String(AESUtils.encrypt(JSONObject.toJSONString(s),
-                                    "20230610HelloDog", "1234567890123456", "PKCS5Padding").getBytes(),
-                                    StandardCharsets.UTF_8).getBytes();
+                            uppedContent = encryptionUtils.encrypt(JSONObject.toJSONString(s));
 //                            uppedContent = JSONObject.toJSONString(s).getBytes();
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));

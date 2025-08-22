@@ -6,33 +6,145 @@ import {
   baseService,
 } from "@/api/common/index";
 
+// 定义接口类型
+interface PageParams {
+  pageNum?: number;
+  pageSize?: number;
+  [key: string]: any;
+}
+
+interface ApiResponse<T = any> {
+  code: number;
+  message: string;
+  data: T;
+  success: boolean;
+}
+
+// 请求方法枚举
+enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE'
+}
+
+// 基础URL配置
 const base${entity} = "/api/v1<% if(isNotEmpty(package.ModuleName)){ %>/${package.ModuleName}<% } %>/<% if(isNotEmpty(controllerMappingHyphenStyle)){ %>${controllerMappingHyphen}<% }else{ %>${table.entityPath}<% } %>";
 
-const ${entity}Url = {
+// API端点配置
+const ${entity}Endpoints = {
   page: "/page",
-  url: "",
-};
+  detail: "",
+  delete: "",
+  create: "",
+  update: "",
+} as const;
 
-export function get${entity}Page(params: any, pageNo: number | null | undefined, pageSize : number | null| undefined): Promise<any> {
-  let url = baseService.${javaPath} + base${entity} + ${entity}Url.page + "?pageNum=" + (pageNo ? pageNo : 1) + "&pageSize=" + (pageSize ? pageSize : 10);
-  return postData(url, params);
-}
 
-export function get${entity}Detail(id: number): Promise<any> {
-  return getData(baseService.${javaPath} + base${entity} + ${entity}Url.url + "?id=" + id);
-}
 
-export function delete${entity}(ids: string) : Promise<any>{
-  return deleteData(baseService.${javaPath} + base${entity} + ${entity}Url.url + "?ids=" + ids);
-}
-
-export function addOrEdit${entity}(
-  method: string,
-  params: any
-): Promise<any> {
-  if ("put" == method) {
-    return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
-  } else {
-    return postData(baseService.${javaPath} + base${entity} +  ${entity}Url.url, params);
+/**
+ * 获取${entity}分页数据
+ * @param params 查询参数
+ * @param pageNo 页码，默认为1
+ * @param pageSize 每页大小，默认为10
+ * @returns Promise<ApiResponse>
+ */
+export async function get${entity}Page(
+  params: Record<string, any> = {},
+  pageNo?: number | null,
+  pageSize?: number | null
+): Promise<ApiResponse> {
+  try {
+    const pageNum = pageNo && pageNo > 0 ? pageNo : 1;
+    const size = pageSize && pageSize > 0 ? pageSize : 10;
+    const url = baseService.${javaPath} + base${entity} + ${entity}Endpoints.page + `?pageNum=${pageNum}&pageSize=${size}`;
+    return await postData(url, params);
+  } catch (error) {
+    console.error('获取${entity}分页数据失败:', error);
+    throw error;
   }
+}
+
+/**
+ * 获取${entity}详情
+ * @param id 记录ID
+ * @returns Promise<ApiResponse>
+ */
+export async function get${entity}Detail(id: number): Promise<ApiResponse> {
+  try {
+    if (!id || id <= 0) {
+      throw new Error('无效的ID参数');
+    }
+    const url = baseService.${javaPath} + base${entity} + ${entity}Endpoints.detail + `?id=${id}`;
+    return await getData(url);
+  } catch (error) {
+    console.error('获取${entity}详情失败:', error);
+    throw error;
+  }
+}
+
+/**
+ * 删除${entity}记录
+ * @param ids 要删除的记录ID，支持单个ID或逗号分隔的多个ID
+ * @returns Promise<ApiResponse>
+ */
+export async function delete${entity}(ids: string | number | (string | number)[]): Promise<ApiResponse> {
+  try {
+    if (!ids) {
+      throw new Error('删除ID不能为空');
+    }
+    
+    // 处理不同类型的ID参数
+    const idParam = Array.isArray(ids) ? ids.join(',') : String(ids);
+    const url = baseService.${javaPath} + base${entity} + ${entity}Endpoints.delete + `?ids=${idParam}`;
+    return await deleteData(url);
+  } catch (error) {
+    console.error('删除${entity}失败:', error);
+    throw error;
+  }
+}
+
+/**
+ * 创建或更新${entity}记录
+ * @param method HTTP方法 ('POST' 用于创建, 'PUT' 用于更新)
+ * @param params 请求参数
+ * @returns Promise<ApiResponse>
+ */
+export async function addOrEdit${entity}(
+  method: HttpMethod.POST | HttpMethod.PUT,
+  params: Record<string, any>
+): Promise<ApiResponse> {
+  try {
+    if (!params) {
+      throw new Error('请求参数不能为空');
+    }
+    const endpoint = method === HttpMethod.PUT ? ${entity}Endpoints.update : ${entity}Endpoints.create;
+    const url = baseService.${javaPath} + base${entity} + endpoint;
+    if (method === HttpMethod.PUT) {
+      return await putData(url, params);
+    } else {
+      return await postData(url, params);
+    }
+  } catch (error) {
+    console.error('创建或更新${entity}失败:', error);
+    throw error;
+  }
+}
+
+/**
+ * 创建${entity}记录
+ * @param params 创建参数
+ * @returns Promise<ApiResponse>
+ */
+export async function create${entity}(params: Record<string, any>): Promise<ApiResponse> {
+  return addOrEdit${entity}(HttpMethod.POST, params);
+}
+
+/**
+ * 更新${entity}记录
+ * @param params 更新参数
+ * @returns Promise<ApiResponse>
+ */
+export async function update${entity}(params: Record<string, any>): Promise<ApiResponse> {
+  return addOrEdit${entity}(HttpMethod.PUT, params);
 }

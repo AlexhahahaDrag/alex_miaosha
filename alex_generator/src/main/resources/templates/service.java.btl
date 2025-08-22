@@ -7,10 +7,10 @@ import ${superServiceClassPackage};
 
 /**
  * ${table.comment!} 服务类
- * author: ${author}
- * createDate: ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * description: 我是由代码生成器生成
- * version: 1.0.0
+ * @author: ${author}
+ * @createDate: ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @description: 我是由代码生成器生成
+ * @version: 1.0.0
  */
 <% if(kotlin){ %>
 interface ${table.serviceName} : ${superServiceClass}<${entity}>

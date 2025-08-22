@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * description:  消费卡交易记录表restApi
- * author:       alex
- * createDate:   2025-04-30 08:21:48
- * version:      1.0.0
+ * @description:  消费卡交易记录表restApi
+ * @author:       alex
+ * @createDate:   2025-04-30 08:21:48
+ * @version:      1.0.0
  */
 @ApiSort(105)
 @Api(value = "消费卡交易记录表相关接口", tags = {"消费卡交易记录表相关接口"})

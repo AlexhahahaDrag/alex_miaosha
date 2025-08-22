@@ -4,6 +4,7 @@ import ${package.Vo}.${table.voName};
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,10 +32,11 @@ import ${superControllerClassPackage};
 <% } %>
 
 /**
- * description:  ${table.comment!}restApi
- * author:       ${author}
- * createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
- * version:      1.0.0
+ * ${table.comment!} 控制器
+ * 
+ * @author ${author}
+ * @since ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @version 1.0.0
  */
 @ApiSort(105)
 @Api(value = "${table.comment!}相关接口", tags = {"${table.comment!}相关接口"})
@@ -54,49 +56,95 @@ public class ${table.controllerName} extends ${superControllerClass} {
 public class ${table.controllerName} {
     <% } %>
 
+    /**
+     * ${table.comment!} 服务
+     */
     private final ${table.serviceName} ${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)};
 
+    /**
+     * 分页查询${table.comment!}
+     * 
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @param ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)} 查询条件
+     * @return 分页结果
+     */
+    @LogRestRequest(apiName = "获取${table.comment!}分页")
     @ApiOperationSupport(order = 10, author = "${author}")
-    @ApiOperation(value = "获取${table.comment!}分页", notes = "获取${table.comment!}分页", response = Result.class)
+    @ApiOperation(value = "获取${table.comment!}分页", notes = "分页查询${table.comment!}列表", response = Result.class)
     @PostMapping(value = "/page")
     <% if(swagger){ %>
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
-            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class, example = "1"),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class, example = "10"),
             @ApiImplicitParam(value = "查询条件", name = "${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}", dataTypeClass = ${table.voName}.class)}
     )
     <% } %>
-    public Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                             @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                             @RequestBody(required = false) ${entity}Vo ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
-        return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Vo));
+    public Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Long pageNum,
+                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Long pageSize,
+                                                 @RequestBody(required = false) ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+        return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
+    /**
+     * 根据ID查询${table.comment!}详情
+     * 
+     * @param id 主键ID
+     * @return ${table.comment!}详情
+     */
+    @LogRestRequest(apiName = "获取${table.comment!}详情")
     @ApiOperationSupport(order = 20, author = "${author}")
-    @ApiOperation(value = "获取${table.comment!}详情", notes = "获取${table.comment!}详情", response = Result.class)
-    @GetMapping
-    public Result<${table.voName}> query(@RequestParam(value = "id") Long id) {
+    @ApiOperation(value = "获取${table.comment!}详情", notes = "根据ID查询${table.comment!}详细信息", response = Result.class)
+    @GetMapping(value = "/{id}")
+    <% if(swagger){ %>
+    @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
+    <% } %>
+    public Result<${table.voName}> getById(@PathVariable("id") Long id) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.query${entity}(id));
     }
 
+    /**
+     * 新增${table.comment!}
+     * 
+     * @param ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)} ${table.comment!}信息
+     * @return 操作结果
+     */
+    @LogRestRequest(apiName = "新增${table.comment!}")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "${author}")
-    @ApiOperation(value = "新增${table.comment!}", notes = "新增${table.comment!}", response = Result.class)
+    @ApiOperation(value = "新增${table.comment!}", notes = "创建新的${table.comment!}记录", response = Result.class)
     @PostMapping
     public Result<Boolean> add(@Validated({Insert.class}) @RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.add${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
+    /**
+     * 修改${table.comment!}
+     * 
+     * @param ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)} ${table.comment!}信息
+     * @return 操作结果
+     */
+    @LogRestRequest(apiName = "修改${table.comment!}")
     @ApiOperationSupport(order = 40, author = "${author}")
-    @ApiOperation(value = "修改${table.comment!}", notes = "修改${table.comment!}", response = Result.class)
+    @ApiOperation(value = "修改${table.comment!}", notes = "更新${table.comment!}信息", response = Result.class)
     @PutMapping
     public Result<Boolean> update(@Validated({Update.class}) @RequestBody ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.update${entity}(${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
+    /**
+     * 删除${table.comment!}
+     * 
+     * @param ids 主键ID列表，多个ID用逗号分隔
+     * @return 操作结果
+     */
+    @LogRestRequest(apiName = "删除${table.comment!}")
     @ApiOperationSupport(order = 50, author = "${author}")
-    @ApiOperation(value = "刪除${table.comment!}", notes = "刪除${table.comment!}", response = Result.class)
+    @ApiOperation(value = "删除${table.comment!}", notes = "根据ID列表批量删除${table.comment!}", response = Result.class)
     @DeleteMapping
+    <% if(swagger){ %>
+    @ApiImplicitParam(value = "主键ID列表，多个ID用逗号分隔", name = "ids", required = true, dataTypeClass = String.class, example = "1,2,3")
+    <% } %>
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.delete${entity}(ids));
     }

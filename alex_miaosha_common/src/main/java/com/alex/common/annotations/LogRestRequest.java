@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 日志打印注解
  *
- * @author <a href="mailto:hongcq@emrubik.com">hongcq</a>
+ * @author <a href="mailto:majf@emrubik.com">hongcq</a>
  * @version 1.0 $ 2024/12/11 14:40
  */
 @Target(ElementType.METHOD)
