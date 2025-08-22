@@ -18,6 +18,9 @@ import io.swagger.annotations.ApiImplicitParams;
 import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * description:  消费卡交易记录表restApi
@@ -75,5 +78,21 @@ public class PrepaidConsumeRecordTController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(prepaidConsumeRecordTService.deletePrepaidConsumeRecordT(ids));
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "消费趋势（按天）", notes = "返回区间内每日消费/充值聚合")
+    @GetMapping(value = "/trend/day")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "卡主键ID，可空代表查询所有卡", name = "cardId", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "开始日期(yyyy-MM-dd)", name = "startDate", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "结束日期(yyyy-MM-dd)", name = "endDate", dataTypeClass = String.class)
+    })
+    public Result<List<Map<String, Object>>> trendByDay(@RequestParam(value = "cardId", required = false) Long cardId,
+                                                        @RequestParam("startDate") String startDate,
+                                                        @RequestParam("endDate") String endDate) {
+        LocalDate s = LocalDate.parse(startDate);
+        LocalDate e = LocalDate.parse(endDate);
+        return Result.success(prepaidConsumeRecordTService.aggregateTrendByDay(cardId, s, e));
     }
 }

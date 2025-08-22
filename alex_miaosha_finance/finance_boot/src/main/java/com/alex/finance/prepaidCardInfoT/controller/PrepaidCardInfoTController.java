@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidDashboardOverviewVo;
 
 import java.util.List;
 
@@ -95,5 +96,12 @@ public class PrepaidCardInfoTController {
     @PostMapping(value = "consumeAndRecharge")
     public Result<Boolean> consumeAndRecharge(@RequestBody @Validated PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
         return Result.success(prepaidCardInfoTService.consumeAndRecharge(prepaidCardConsumeVo));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "仪表盘总览", notes = "返回总卡数、总余额、本月消费与充值及环比")
+    @GetMapping(value = "/dashboard/overview")
+    public Result<PrepaidDashboardOverviewVo> dashboard(@RequestParam(value = "userId", required = false) Long userId) {
+        return Result.success(prepaidCardInfoTService.dashboardOverview(userId));
     }
 }

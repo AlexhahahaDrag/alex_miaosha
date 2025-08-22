@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.alex.api.user.annotation.DataPermission;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * description:  消费卡交易记录表 mapper
@@ -25,4 +26,15 @@ public interface PrepaidConsumeRecordTMapper extends BaseMapper<PrepaidConsumeRe
     List<PrepaidConsumeRecordTVo> getList(@Param("prepaidConsumeRecordTVo") PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
 
     PrepaidConsumeRecordTVo queryPrepaidConsumeRecordT(@Param("id") Long id);
+
+    /**
+     * 分桶统计消费/充值趋势（按天）
+     */
+    List<Map<String, Object>> aggregateTrendByDay(@Param("cardId") Long cardId,
+                                                  @Param("startDate") java.time.LocalDate startDate,
+                                                  @Param("endDate") java.time.LocalDate endDate);
+
+    Map<String, Object> sumExpenseAndRecharge(@Param("cardId") Long cardId,
+                                              @Param("startTime") java.time.LocalDateTime startTime,
+                                              @Param("endTime") java.time.LocalDateTime endTime);
 }

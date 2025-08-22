@@ -2,7 +2,7 @@ package com.alex.finance.prepaidCardInfoT.service;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
-import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidDashboardOverviewVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -31,4 +31,9 @@ public interface PrepaidCardInfoTService extends IService<PrepaidCardInfoT> {
     Boolean deletePrepaidCardInfoT(String ids);
 
     Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception;
+
+    /**
+     * 仪表盘总览
+     */
+    PrepaidDashboardOverviewVo dashboardOverview(Long userId);
 }

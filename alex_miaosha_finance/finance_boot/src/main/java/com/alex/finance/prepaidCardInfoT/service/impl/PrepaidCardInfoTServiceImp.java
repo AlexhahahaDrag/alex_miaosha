@@ -2,6 +2,7 @@ package com.alex.finance.prepaidCardInfoT.service.impl;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
+import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidDashboardOverviewVo;
 import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.finance.prepaidCardInfoT.mapper.PrepaidCardInfoTMapper;
@@ -14,6 +15,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Arrays;
 
 import lombok.RequiredArgsConstructor;
@@ -76,6 +78,88 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         return true;
     }
 
+    @Override
+    public PrepaidDashboardOverviewVo dashboardOverview(Long userId) {
+        // 总卡数
+        PrepaidCardInfoTVo query = new PrepaidCardInfoTVo();
+        query.setUserId(userId);
+        List<PrepaidCardInfoTVo> cards = prepaidCardInfoTMapper.getList(query);
+        int totalCards = cards == null ? 0 : cards.size();
+
+        // 总余额
+        java.math.BigDecimal totalBalance = java.math.BigDecimal.ZERO;
+        if (cards != null) {
+            for (PrepaidCardInfoTVo c : cards) {
+                if (c.getCurrentBalance() != null) {
+                    totalBalance = totalBalance.add(c.getCurrentBalance());
+                }
+            }
+        }
+
+        // 本月与上月区间
+        java.time.LocalDate now = java.time.LocalDate.now();
+        java.time.LocalDate firstDayThisMonth = now.withDayOfMonth(1);
+        java.time.LocalDate firstDayNextMonth = firstDayThisMonth.plusMonths(1);
+        java.time.LocalDate firstDayLastMonth = firstDayThisMonth.minusMonths(1);
+
+        java.time.LocalDateTime startThisMonth = firstDayThisMonth.atStartOfDay();
+        java.time.LocalDateTime endThisMonth = firstDayNextMonth.atStartOfDay();
+        java.time.LocalDateTime startLastMonth = firstDayLastMonth.atStartOfDay();
+        java.time.LocalDateTime endLastMonth = firstDayThisMonth.atStartOfDay();
+
+        // 汇总（所有卡）
+        java.math.BigDecimal monthExpense = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal monthRecharge = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal lastMonthExpense = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal lastMonthRecharge = java.math.BigDecimal.ZERO;
+
+        if (cards != null) {
+            for (PrepaidCardInfoTVo c : cards) {
+                Long cardDbId = c.getId();
+                Map<String, Object> thisMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startThisMonth, endThisMonth);
+                Map<String, Object> lastMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startLastMonth, endLastMonth);
+                monthExpense = monthExpense.add(toBigDecimal(thisMonth.get("expenseAmount")));
+                monthRecharge = monthRecharge.add(toBigDecimal(thisMonth.get("rechargeAmount")));
+                lastMonthExpense = lastMonthExpense.add(toBigDecimal(lastMonth.get("expenseAmount")));
+                lastMonthRecharge = lastMonthRecharge.add(toBigDecimal(lastMonth.get("rechargeAmount")));
+            }
+        }
+
+        java.math.BigDecimal monthExpenseMoM = monthExpense.subtract(lastMonthExpense);
+        java.math.BigDecimal monthRechargeMoM = monthRecharge.subtract(lastMonthRecharge);
+
+        // 卡数环比：本月新增卡 vs 上月新增卡
+        int thisMonthNewCards = 0;
+        int lastMonthNewCards = 0;
+        if (cards != null) {
+            for (PrepaidCardInfoTVo c : cards) {
+                if (c.getCreateTime() != null) {
+                    if (!c.getCreateTime().isBefore(startThisMonth) && c.getCreateTime().isBefore(endThisMonth)) {
+                        thisMonthNewCards++;
+                    } else if (!c.getCreateTime().isBefore(startLastMonth) && c.getCreateTime().isBefore(endLastMonth)) {
+                        lastMonthNewCards++;
+                    }
+                }
+            }
+        }
+        int totalCardsMoM = thisMonthNewCards - lastMonthNewCards;
+
+        return new PrepaidDashboardOverviewVo()
+                .setTotalCards(totalCards)
+                .setTotalCardsMoM(totalCardsMoM)
+                .setTotalBalance(totalBalance)
+                .setTotalBalanceMoM(java.math.BigDecimal.ZERO) // 如需余额环比，可按期初期末余额计算
+                .setMonthExpense(monthExpense)
+                .setMonthExpenseMoM(monthExpenseMoM)
+                .setMonthRecharge(monthRecharge)
+                .setMonthRechargeMoM(monthRechargeMoM);
+    }
+
+    private java.math.BigDecimal toBigDecimal(Object value) {
+        if (value == null) return java.math.BigDecimal.ZERO;
+        if (value instanceof java.math.BigDecimal) return (java.math.BigDecimal) value;
+        return new java.math.BigDecimal(value.toString());
+    }
     @Override
     public Boolean deletePrepaidCardInfoT(String ids) {
         if (StringUtils.isEmpty(ids)) {

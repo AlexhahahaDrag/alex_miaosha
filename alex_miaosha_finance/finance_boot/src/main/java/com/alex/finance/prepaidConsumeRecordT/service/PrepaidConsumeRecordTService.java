@@ -6,6 +6,8 @@ import com.alex.finance.prepaidConsumeRecordT.entity.PrepaidConsumeRecordT;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
+import java.time.LocalDate;
 
 /**
  * 消费卡交易记录表 服务类
@@ -27,4 +29,14 @@ public interface PrepaidConsumeRecordTService extends IService<PrepaidConsumeRec
     Boolean updatePrepaidConsumeRecordT(PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
 
     Boolean deletePrepaidConsumeRecordT(String ids);
+
+    /**
+     * 趋势统计（按天）
+     */
+    List<Map<String, Object>> aggregateTrendByDay(Long cardId, LocalDate startDate, LocalDate endDate);
+
+    /**
+     * 区间汇总（用于本月/上月充值与消费）
+     */
+    Map<String, Object> sumExpenseAndRecharge(Long cardId, java.time.LocalDateTime startTime, java.time.LocalDateTime endTime);
 }

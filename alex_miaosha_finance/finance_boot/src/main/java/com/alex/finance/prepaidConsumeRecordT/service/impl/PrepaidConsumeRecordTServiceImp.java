@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -66,5 +69,15 @@ public class PrepaidConsumeRecordTServiceImp extends ServiceImpl<PrepaidConsumeR
         List<String> idArr = Arrays.asList(ids.split(","));
         prepaidConsumeRecordTMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public List<Map<String, Object>> aggregateTrendByDay(Long cardId, LocalDate startDate, LocalDate endDate) {
+        return prepaidConsumeRecordTMapper.aggregateTrendByDay(cardId, startDate, endDate);
+    }
+
+    @Override
+    public Map<String, Object> sumExpenseAndRecharge(Long cardId, LocalDateTime startTime, LocalDateTime endTime) {
+        return prepaidConsumeRecordTMapper.sumExpenseAndRecharge(cardId, startTime, endTime);
     }
 }
