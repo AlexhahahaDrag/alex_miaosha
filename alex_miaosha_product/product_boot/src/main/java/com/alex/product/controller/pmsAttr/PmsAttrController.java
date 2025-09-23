@@ -4,6 +4,7 @@ import com.alex.api.product.vo.pmsAttr.PmsAttrVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,6 +37,7 @@ public class PmsAttrController {
 
     private final PmsAttrService pmsAttrService;
 
+    @LogRestRequest(apiName = "获取商品属性分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品属性分页", notes = "获取商品属性分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -50,6 +52,7 @@ public class PmsAttrController {
         return Result.success(pmsAttrService.getPage(pageNum, pageSize, pmsAttrVo));
     }
 
+    @LogRestRequest(apiName = "获取商品属性详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商品属性详情", notes = "获取商品属性详情", response = Result.class)
     @GetMapping
@@ -57,6 +60,7 @@ public class PmsAttrController {
         return Result.success(pmsAttrService.queryPmsAttr(id));
     }
 
+    @LogRestRequest(apiName = "新增商品属性")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商品属性", notes = "新增商品属性", response = Result.class)
@@ -65,6 +69,7 @@ public class PmsAttrController {
         return Result.success(pmsAttrService.addPmsAttr(pmsAttrVo));
     }
 
+    @LogRestRequest(apiName = "修改商品属性")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商品属性", notes = "修改商品属性", response = Result.class)
     @PutMapping
@@ -72,6 +77,7 @@ public class PmsAttrController {
         return Result.success(pmsAttrService.updatePmsAttr(pmsAttrVo));
     }
 
+    @LogRestRequest(apiName = "刪除商品属性")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商品属性", notes = "刪除商品属性", response = Result.class)
     @DeleteMapping

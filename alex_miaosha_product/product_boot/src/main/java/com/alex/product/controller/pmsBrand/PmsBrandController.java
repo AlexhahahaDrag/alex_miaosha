@@ -6,6 +6,7 @@ import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.product.service.pmsBrand.PmsBrandService;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -32,6 +33,7 @@ public class PmsBrandController {
 
     private final PmsBrandService pmsBrandService;
 
+    @LogRestRequest(apiName = "获取品牌分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取品牌分页", notes = "获取品牌分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -46,6 +48,7 @@ public class PmsBrandController {
         return Result.success(pmsBrandService.getPage(pageNum, pageSize, pmsBrandVo));
     }
 
+    @LogRestRequest(apiName = "获取品牌详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取品牌详情", notes = "获取品牌详情", response = Result.class)
     @GetMapping
@@ -53,6 +56,7 @@ public class PmsBrandController {
         return Result.success(pmsBrandService.queryPmsBrand(id));
     }
 
+    @LogRestRequest(apiName = "新增品牌")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增品牌", notes = "新增品牌", response = Result.class)
@@ -61,6 +65,7 @@ public class PmsBrandController {
         return Result.success(pmsBrandService.addPmsBrand(pmsBrandVo));
     }
 
+    @LogRestRequest(apiName = "修改品牌")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改品牌", notes = "修改品牌", response = Result.class)
     @PutMapping
@@ -68,6 +73,7 @@ public class PmsBrandController {
         return Result.success(pmsBrandService.updatePmsBrand(pmsBrandVo));
     }
 
+    @LogRestRequest(apiName = "刪除品牌")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除品牌", notes = "刪除品牌", response = Result.class)
     @DeleteMapping
@@ -75,6 +81,7 @@ public class PmsBrandController {
         return Result.success(pmsBrandService.deletePmsBrand(ids));
     }
 
+    @LogRestRequest(apiName = "测试接口")
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "test", notes = "刪除品牌", response = Result.class)
     @GetMapping(value = "test")

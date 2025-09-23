@@ -3,6 +3,7 @@ package com.alex.product.controller.pmsShopProduct;
 import com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.product.service.pmsShopProduct.PmsShopProductService;
@@ -34,6 +35,7 @@ public class PmsShopProductController {
 
     private final PmsShopProductService pmsShopProductService;
 
+    @LogRestRequest(apiName = "获取商品网上商品信息分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品网上商品信息分页", notes = "获取商品网上商品信息分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.getPage(pageNum, pageSize, pmsShopProductVo));
     }
 
+    @LogRestRequest(apiName = "获取商品网上商品信息详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商品网上商品信息详情", notes = "获取商品网上商品信息详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.queryPmsShopProduct(id));
     }
 
+    @LogRestRequest(apiName = "新增商品网上商品信息")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商品网上商品信息", notes = "新增商品网上商品信息", response = Result.class)
@@ -63,6 +67,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.addPmsShopProduct(pmsShopProductVo));
     }
 
+    @LogRestRequest(apiName = "修改商品网上商品信息")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商品网上商品信息", notes = "修改商品网上商品信息", response = Result.class)
     @PutMapping
@@ -70,6 +75,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.updatePmsShopProduct(pmsShopProductVo));
     }
 
+    @LogRestRequest(apiName = "刪除商品网上商品信息")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商品网上商品信息", notes = "刪除商品网上商品信息", response = Result.class)
     @DeleteMapping
@@ -77,6 +83,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.deletePmsShopProduct(ids));
     }
 
+    @LogRestRequest(apiName = "获取商品网上最新商品信息分页")
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "获取商品网上最新商品信息分页", notes = "获取商品网上最新商品信息分页", response = Result.class)
     @PostMapping(value = "/newestPage")
@@ -91,6 +98,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.getNewestProductPage(pageNum, pageSize, pmsShopProductVo));
     }
 
+    @LogRestRequest(apiName = "获取商品网上历史数据")
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "获取商品网上历史数据", notes = "获取商品网上历史数据", response = Result.class)
     @GetMapping(value = "/hisInfo")
@@ -101,6 +109,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.getProductHisInfo(skuId, startTime));
     }
 
+    @LogRestRequest(apiName = "获取商品对比数据")
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取商品对比数据", notes = "获取商品对比数据", response = Result.class)
     @GetMapping(value = "/compareInfo")
@@ -111,6 +120,7 @@ public class PmsShopProductController {
         return Result.success(pmsShopProductService.getCompareInfo(skuId, searchTime));
     }
 
+    @LogRestRequest(apiName = "修改需要对比的商品版本")
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "修改需要对比的商品版本", notes = "修改需要对比的商品版本", response = Result.class)
     @GetMapping(value = "/updateCompareInfo")

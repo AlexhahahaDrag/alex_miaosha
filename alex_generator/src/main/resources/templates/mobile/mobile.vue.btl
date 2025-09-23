@@ -88,10 +88,10 @@ import {
     delete${entity},
 } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { getUserManagerList, } from '@/api/user/userManager';
+import { type PageInfo } from '@/views/common/config/index';
 import {
   SearchInfo,
   pagination,
-  pageInfo,
 } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { showSuccessToast, showFailToast } from 'vant';
 
@@ -121,27 +121,31 @@ let isRefresh = ref<boolean>(false); //是否下拉刷新
 //   getFinancePage(searchInfo.value, pagination.value);
 // };
 
-const query = (param: SearchInfo, cur: pageInfo): void => {
+const query = async (param: SearchInfo, cur: PageInfo): Promise<void> => {
   loading.value = true;
-  get${entity}Page(param, cur?.current ? cur.current : 1, cur?.pageSize || 10)
-    .then((res: any) => {
-      if (res?.code == '200') {
-        dataSource.value = [...dataSource.value, ...res.data.records];
-        pagination.value.current = res.data.current + 1;
-        pagination.value.pageSize = res.data.size;
-        pagination.value.total = res.data.total;
-        if ((pagination.value.total|| 0) <
-              (pagination.value.current || 1) * (pagination.value.pageSize || 10)) {
-          finished.value = true;
-        }
-      } else {
-        showFailToast((res?.message) || '查询列表失败！');
+  try {
+    const { code, data, message } = await get${entity}Page(
+      param,
+      cur?.current ? cur.current : 1,
+      cur?.pageSize || 10,
+    );
+
+    if (code == '200') {
+      dataSource.value = [...dataSource.value, ...data.records];
+      pagination.value.current = data.current + 1;
+      pagination.value.pageSize = data.size;
+      pagination.value.total = data.total;
+      if ((pagination.value.total || 0) <
+            (pagination.value.current || 1) * (pagination.value.pageSize || 10)) {
+        finished.value = true;
       }
-    })
-    .finally(() => {
-      isRefresh.value = false;
-      loading.value = false;
-    });
+    } else {
+      showFailToast(message || '查询列表失败！');
+    }
+  } finally {
+    isRefresh.value = false;
+    loading.value = false;
+  }
 }
 
 const add${entity} = (): void => {
@@ -149,24 +153,27 @@ const add${entity} = (): void => {
 }
 
 let userMap = {};
-const getUserInfoList = (): void => {
-  getUserManagerList({}).then((res: any) => {
-    if (res?.code == '200') {
-      if (res?.data) {
-        res.data.forEach((user: { id: string | number; nickName: any; }) => {
+const getUserInfoList = async (): Promise<void> => {
+  try {
+    const { code, data, message } = await getUserManagerList({});
+    if (code == '200') {
+      if (data) {
+        data.forEach((user: { id: string | number; nickName: any; }) => {
           userMap[user.id] = user.nickName;
         });
       }
     } else {
-      showFailToast((res?.message) || '查询列表失败！');
+      showFailToast(message || '查询列表失败！');
     }
-  });
+  } catch (error) {
+    showFailToast('获取用户信息失败！');
+  }
 }
 
-const refresh = (): void => {
+const refresh = async (): Promise<void> => {
   pagination.value.current = 0;
   dataSource.value = []
-  query(searchInfo.value, pagination.value);
+  await query(searchInfo.value, pagination.value);
 }
 
 const onRefresh = (): void => {
@@ -177,23 +184,26 @@ const beforeClose = (e: any): void => {
   console.log(e);
 };
 
-const del${entity} = (id: number): void => {
-  delete${entity}(id + '').then((res: any) => {
-    if (res?.code == '200') {
+const del${entity} = async (id: number): Promise<void> => {
+  try {
+    const { code, message } = await delete${entity}(id + '');
+    if (code == '200') {
       refresh();
-      showSuccessToast((res?.message) || '删除成功！');
+      showSuccessToast(message || '删除成功！');
     } else {
-      showFailToast((res?.message) || '删除失败，请联系管理员！');
+      showFailToast(message || '删除失败，请联系管理员！');
     }
-  })
+  } catch (error) {
+    showFailToast('删除失败，请联系管理员！');
+  }
 };
 
-const init = (): void => {
+const init = async (): Promise<void> => {
   dataSource.value = [];
   pagination.value.current = 0;
-  query(searchInfo.value, pagination.value);
+  await query(searchInfo.value, pagination.value);
   //获取用户信息
-  getUserInfoList();
+  await getUserInfoList();
 }
 
 init();

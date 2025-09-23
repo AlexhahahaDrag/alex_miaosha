@@ -1,3 +1,5 @@
+import type { TableColumnsType } from 'ant-design-vue';
+
 <% for(field in table.fields){
  if(field.propertyType == 'LocalDateTime' || field.propertyType == 'LocalDate'){ %>
 import { Dayjs } from 'dayjs';
@@ -16,19 +18,6 @@ if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.prop
   ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
 <% } %>
 <% } %>
-}
-
-export interface pageInfo {
-  current?: number;
-  pageSize?: number;
-  total?: number;
-  showTotal: Function;
-  showSizeChanger: boolean;
-  pageSizeOptions: string[];
-  showSizeChange: Function;
-  size: string;
-  showQuickJumper: boolean;
-  defaultPageSize: number;
 }
 
 export let pagination = ref<any>({
@@ -56,7 +45,7 @@ export let pagination = ref<any>({
   defaultPageSize: 10,
 });
 
-export const columns = ref<any>([
+export const columns = ref<TableColumnsType>([
 <% for(field in table.fields){
     if(field.keyFlag) {
         continue;
@@ -91,16 +80,4 @@ export interface DataItem {
   ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
     <% } %>
 <% } %>
-}
-
-export interface ModelInfo {
-  title?: string;
-  width?: string;
-  id?: number | undefined;
-  confirmLoading?: boolean;
-}
-
-export interface dictInfo {
-  typeCode?: string | number | undefined,
-  typeName?: string | undefined,
 }

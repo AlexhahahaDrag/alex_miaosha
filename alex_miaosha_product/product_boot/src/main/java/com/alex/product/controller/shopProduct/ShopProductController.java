@@ -3,6 +3,7 @@ package com.alex.product.controller.shopProduct;
 
 import com.alex.api.product.vo.product.jd.Content;
 import com.alex.base.common.Result;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.product.service.shopProduct.ShopProductService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -24,6 +25,7 @@ public class ShopProductController {
 
     private final ShopProductService shopProductService;
 
+    @LogRestRequest(apiName = "获取商城商品")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商城商品", notes = "获取商城商品", response = Result.class)
     @GetMapping("/shopProduct")

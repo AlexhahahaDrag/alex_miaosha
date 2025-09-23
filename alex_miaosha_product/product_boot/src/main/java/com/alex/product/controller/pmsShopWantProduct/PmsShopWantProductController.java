@@ -3,6 +3,7 @@ package com.alex.product.controller.pmsShopWantProduct;
 import com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.product.service.pmsShopWantProduct.PmsShopWantProductService;
@@ -32,6 +33,7 @@ public class PmsShopWantProductController {
 
     private final PmsShopWantProductService pmsShopWantProductService;
 
+    @LogRestRequest(apiName = "获取商品想买网上商品信息分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品想买网上商品信息分页", notes = "获取商品想买网上商品信息分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -46,6 +48,7 @@ public class PmsShopWantProductController {
         return Result.success(pmsShopWantProductService.getPage(pageNum, pageSize, pmsShopWantProductVo));
     }
 
+    @LogRestRequest(apiName = "获取商品想买网上商品信息详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商品想买网上商品信息详情", notes = "获取商品想买网上商品信息详情", response = Result.class)
     @GetMapping
@@ -53,6 +56,7 @@ public class PmsShopWantProductController {
         return Result.success(pmsShopWantProductService.queryPmsShopWantProduct(id));
     }
 
+    @LogRestRequest(apiName = "新增商品想买网上商品信息")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商品想买网上商品信息", notes = "新增商品想买网上商品信息", response = Result.class)
@@ -61,6 +65,7 @@ public class PmsShopWantProductController {
         return Result.success(pmsShopWantProductService.addPmsShopWantProduct(pmsShopWantProductVo));
     }
 
+    @LogRestRequest(apiName = "修改商品想买网上商品信息")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商品想买网上商品信息", notes = "修改商品想买网上商品信息", response = Result.class)
     @PutMapping
@@ -68,6 +73,7 @@ public class PmsShopWantProductController {
         return Result.success(pmsShopWantProductService.updatePmsShopWantProduct(pmsShopWantProductVo));
     }
 
+    @LogRestRequest(apiName = "刪除商品想买网上商品信息")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商品想买网上商品信息", notes = "刪除商品想买网上商品信息", response = Result.class)
     @DeleteMapping

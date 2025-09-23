@@ -3,6 +3,7 @@ package com.alex.user.controller.menuInfo;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.service.menuInfo.MenuInfoService;
@@ -34,6 +35,7 @@ public class MenuInfoController {
 
     private final MenuInfoService menuInfoService;
 
+    @LogRestRequest(apiName = "获取菜单管理表分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取菜单管理表分页", notes = "获取菜单管理表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class MenuInfoController {
         return Result.success(menuInfoService.getPage(pageNum, pageSize, menuInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取菜单管理列表")
     @ApiOperationSupport(order = 15, author = "alex")
     @ApiOperation(value = "获取菜单管理列表", notes = "获取菜单管理列表", response = Result.class)
     @PostMapping(value = "/list")
@@ -58,6 +61,7 @@ public class MenuInfoController {
         return Result.success(menuInfoService.getList(menuInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取菜单管理表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取菜单管理表详情", notes = "获取菜单管理表详情", response = Result.class)
     @GetMapping
@@ -65,6 +69,7 @@ public class MenuInfoController {
         return Result.success(menuInfoService.queryMenuInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增菜单管理表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增菜单管理表", notes = "新增菜单管理表", response = Result.class)
@@ -73,6 +78,7 @@ public class MenuInfoController {
         return Result.success(menuInfoService.addMenuInfo(menuInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改菜单管理表")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改菜单管理表", notes = "修改菜单管理表", response = Result.class)
     @PutMapping
@@ -80,6 +86,7 @@ public class MenuInfoController {
         return Result.success(menuInfoService.updateMenuInfo(menuInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除菜单管理表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除菜单管理表", notes = "刪除菜单管理表", response = Result.class)
     @DeleteMapping

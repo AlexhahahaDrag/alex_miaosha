@@ -5,6 +5,7 @@ import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,6 +38,7 @@ public class RoleUserInfoController {
 
     private final RoleUserInfoService roleUserInfoService;
 
+    @LogRestRequest(apiName = "获取用户角色信息表分页")
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取用户角色信息表分页", notes = "获取用户角色信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -51,6 +53,7 @@ public class RoleUserInfoController {
         return Result.success(roleUserInfoService.getPage(pageNum, pageSize, roleUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取用户角色信息表详情")
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取用户角色信息表详情", notes = "获取用户角色信息表详情", response = Result.class)
     @GetMapping
@@ -58,6 +61,7 @@ public class RoleUserInfoController {
         return Result.success(roleUserInfoService.queryRoleUserInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增用户角色信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增用户角色信息表", notes = "新增用户角色信息表", response = Result.class)
@@ -66,6 +70,7 @@ public class RoleUserInfoController {
         return Result.success(roleUserInfoService.addRoleUserInfo(roleUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改用户角色信息表")
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改用户角色信息表", notes = "修改用户角色信息表", response = Result.class)
     @PutMapping
@@ -73,6 +78,7 @@ public class RoleUserInfoController {
         return Result.success(roleUserInfoService.updateRoleUserInfo(roleUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除用户角色信息表")
     @ApiOperationSupport(order = 50, author = "majf")
     @ApiOperation(value = "刪除用户角色信息表", notes = "刪除用户角色信息表", response = Result.class)
     @DeleteMapping

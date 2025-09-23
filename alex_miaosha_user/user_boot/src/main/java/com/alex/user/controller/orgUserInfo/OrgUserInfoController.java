@@ -4,6 +4,7 @@ import com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +35,7 @@ public class OrgUserInfoController {
 
     private final OrgUserInfoService orgUserInfoService;
 
+    @LogRestRequest(apiName = "获取用户公司信息表分页")
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取用户公司信息表分页", notes = "获取用户公司信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class OrgUserInfoController {
         return Result.success(orgUserInfoService.getPage(pageNum, pageSize, orgUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取用户公司信息表详情")
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取用户公司信息表详情", notes = "获取用户公司信息表详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class OrgUserInfoController {
         return Result.success(orgUserInfoService.queryOrgUserInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增用户公司信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增用户公司信息表", notes = "新增用户公司信息表", response = Result.class)
@@ -63,6 +67,7 @@ public class OrgUserInfoController {
         return Result.success(orgUserInfoService.addOrgUserInfo(orgUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改用户公司信息表")
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改用户公司信息表", notes = "修改用户公司信息表", response = Result.class)
     @PutMapping
@@ -70,6 +75,7 @@ public class OrgUserInfoController {
         return Result.success(orgUserInfoService.updateOrgUserInfo(orgUserInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除用户公司信息表")
     @ApiOperationSupport(order = 50, author = "majf")
     @ApiOperation(value = "刪除用户公司信息表", notes = "刪除用户公司信息表", response = Result.class)
     @DeleteMapping

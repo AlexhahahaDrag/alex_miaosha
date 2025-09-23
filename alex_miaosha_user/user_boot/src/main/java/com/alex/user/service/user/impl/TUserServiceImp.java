@@ -24,10 +24,10 @@ import com.alex.user.entity.tUserLogin.TUserLogin;
 import com.alex.user.entity.user.TUser;
 import com.alex.user.mapper.user.TUserMapper;
 import com.alex.user.service.menuInfo.MenuInfoService;
+import com.alex.user.service.online.OnlineUserService;
 import com.alex.user.service.orgUserInfo.OrgUserInfoService;
 import com.alex.user.service.roleUserInfo.RoleUserInfoService;
 import com.alex.user.service.token.TokenRefreshService;
-import com.alex.user.service.online.OnlineUserService;
 import com.alex.user.service.user.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
@@ -61,13 +61,11 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -335,7 +333,7 @@ public class TUserServiceImp extends ServiceImpl<TUserMapper, TUser> implements 
                 throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
             }
         });
-//         等待最后的处理完成
+        // 等待最后的处理完成
         allFutures.join();
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());

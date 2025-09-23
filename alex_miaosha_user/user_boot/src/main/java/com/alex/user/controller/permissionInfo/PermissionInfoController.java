@@ -3,6 +3,7 @@ package com.alex.user.controller.permissionInfo;
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.service.permissionInfo.PermissionInfoService;
@@ -34,6 +35,7 @@ public class PermissionInfoController {
 
     private final PermissionInfoService permissionInfoService;
 
+    @LogRestRequest(apiName = "获取权限信息表分页")
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取权限信息表分页", notes = "获取权限信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class PermissionInfoController {
         return Result.success(permissionInfoService.getPage(pageNum, pageSize, permissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取权限信息表详情")
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取权限信息表详情", notes = "获取权限信息表详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class PermissionInfoController {
         return Result.success(permissionInfoService.queryPermissionInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增权限信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增权限信息表", notes = "新增权限信息表", response = Result.class)
@@ -63,6 +67,7 @@ public class PermissionInfoController {
         return Result.success(permissionInfoService.addPermissionInfo(permissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改权限信息表")
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改权限信息表", notes = "修改权限信息表", response = Result.class)
     @PutMapping
@@ -70,6 +75,7 @@ public class PermissionInfoController {
         return Result.success(permissionInfoService.updatePermissionInfo(permissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除权限信息表")
     @ApiOperationSupport(order = 50, author = "majf")
     @ApiOperation(value = "刪除权限信息表", notes = "刪除权限信息表", response = Result.class)
     @DeleteMapping
@@ -77,6 +83,7 @@ public class PermissionInfoController {
         return Result.success(permissionInfoService.deletePermissionInfo(ids));
     }
 
+    @LogRestRequest(apiName = "获取权限管理列表")
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "获取权限管理列表", notes = "获取权限管理列表", response = Result.class)
     @PostMapping(value = "/list")

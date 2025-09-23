@@ -3,6 +3,7 @@ package com.alex.user.controller.user;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
@@ -43,6 +44,7 @@ public class TUserController {
 
     private final TUserService tUserService;
 
+    @LogRestRequest(apiName = "获取管理员表分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取管理员表分页", notes = "获取管理员表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -57,6 +59,7 @@ public class TUserController {
         return Result.success(tUserService.getPage(pageNum, pageSize, tUserVo));
     }
 
+    @LogRestRequest(apiName = "获取管理员表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取管理员表详情", notes = "获取管理员表详情", response = Result.class)
     @GetMapping
@@ -64,6 +67,7 @@ public class TUserController {
         return Result.success(tUserService.queryTUser(id));
     }
 
+    @LogRestRequest(apiName = "新增管理员表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增管理员表", notes = "新增管理员表", response = Result.class)
@@ -72,6 +76,7 @@ public class TUserController {
         return Result.success(tUserService.addTUser(tUserVo));
     }
 
+    @LogRestRequest(apiName = "修改管理员表")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改管理员表", notes = "修改管理员表", response = Result.class)
     @PutMapping
@@ -79,6 +84,7 @@ public class TUserController {
         return Result.success(tUserService.updateTUser(tUserVo));
     }
 
+    @LogRestRequest(apiName = "刪除管理员表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除管理员表", notes = "刪除管理员表", response = Result.class)
     @DeleteMapping
@@ -86,6 +92,7 @@ public class TUserController {
         return Result.success(tUserService.deleteTUser(ids));
     }
 
+    @LogRestRequest(apiName = "用户登录")
     @ApiOperationSupport(order = 60, author = "alex")
     @AccessLimit()
     @PostMapping("/login")
@@ -102,18 +109,21 @@ public class TUserController {
         return Result.success(tUserService.login(request, username, password, isRememberMe));
     }
 
+    @LogRestRequest(apiName = "第三方登录渲染")
     @GetMapping("/third/{appName}")
     public void renderAuth(@PathVariable(value = "appName") String appName, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = tUserService.getAuthRequest(appName);
         response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }
 
+    @LogRestRequest(apiName = "第三方登录回调")
     @GetMapping("/callback")
     public Object login(AuthCallback callback) {
         AuthRequest authRequest = tUserService.getAuthRequest("baidu");
         return authRequest.login(callback);
     }
 
+    @LogRestRequest(apiName = "用户登出")
     @ApiOperationSupport(order = 65, author = "alex")
     @PostMapping("/logout")
     @ApiOperation(value = "登出")
@@ -121,6 +131,7 @@ public class TUserController {
         return tUserService.logout(request);
     }
 
+    @LogRestRequest(apiName = "获取管理员列表")
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取管理员列表", notes = "获取管理员列表", response = Result.class)
     @PostMapping(value = "/list")
@@ -131,6 +142,7 @@ public class TUserController {
         return Result.success(tUserService.getList(tUserVo));
     }
 
+    @LogRestRequest(apiName = "获取用户详情")
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "获取用户详情", notes = "获取用户详情", response = Result.class)
     @GetMapping(value = "/getUserInfo")
@@ -141,6 +153,7 @@ public class TUserController {
         return tUserService.getUserByUsername(username);
     }
 
+    @LogRestRequest(apiName = "根据token校验用户权限")
     @ApiOperationSupport(order = 90, author = "alex")
     @ApiOperation(value = "根据token校验用户权限", notes = "根据token校验用户权限", response = Result.class)
     @GetMapping(value = "/authToken")

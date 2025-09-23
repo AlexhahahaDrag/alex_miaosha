@@ -4,6 +4,7 @@ import com.alex.api.product.vo.pmsCategory.PmsCategoryVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +35,7 @@ public class PmsCategoryController {
 
     private final PmsCategoryService pmsCategoryService;
 
+    @LogRestRequest(apiName = "获取商品三级分类分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品三级分类分页", notes = "获取商品三级分类分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class PmsCategoryController {
         return Result.success(pmsCategoryService.getPage(pageNum, pageSize, pmsCategoryVo));
     }
 
+    @LogRestRequest(apiName = "获取商品三级分类详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商品三级分类详情", notes = "获取商品三级分类详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class PmsCategoryController {
         return Result.success(pmsCategoryService.queryPmsCategory(id));
     }
 
+    @LogRestRequest(apiName = "新增商品三级分类")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商品三级分类", notes = "新增商品三级分类", response = Result.class)
@@ -63,6 +67,7 @@ public class PmsCategoryController {
         return Result.success(pmsCategoryService.addPmsCategory(pmsCategoryVo));
     }
 
+    @LogRestRequest(apiName = "修改商品三级分类")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商品三级分类", notes = "修改商品三级分类", response = Result.class)
     @PutMapping
@@ -70,6 +75,7 @@ public class PmsCategoryController {
         return Result.success(pmsCategoryService.updatePmsCategory(pmsCategoryVo));
     }
 
+    @LogRestRequest(apiName = "刪除商品三级分类")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商品三级分类", notes = "刪除商品三级分类", response = Result.class)
     @DeleteMapping

@@ -3,6 +3,7 @@ package com.alex.user.controller.rolePermissionInfo;
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.service.rolePermissionInfo.RolePermissionInfoService;
@@ -32,6 +33,7 @@ public class RolePermissionInfoController {
 
     private final RolePermissionInfoService rolePermissionInfoService;
 
+    @LogRestRequest(apiName = "获取角色权限信息表分页")
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取角色权限信息表分页", notes = "获取角色权限信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -46,6 +48,7 @@ public class RolePermissionInfoController {
         return Result.success(rolePermissionInfoService.getPage(pageNum, pageSize, rolePermissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取角色权限信息表详情")
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取角色权限信息表详情", notes = "获取角色权限信息表详情", response = Result.class)
     @GetMapping
@@ -53,6 +56,7 @@ public class RolePermissionInfoController {
         return Result.success(rolePermissionInfoService.queryRolePermissionInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增角色权限信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色权限信息表", notes = "新增角色权限信息表", response = Result.class)
@@ -61,6 +65,7 @@ public class RolePermissionInfoController {
         return Result.success(rolePermissionInfoService.addRolePermissionInfo(rolePermissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改角色权限信息表")
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改角色权限信息表", notes = "修改角色权限信息表", response = Result.class)
     @PutMapping
@@ -68,6 +73,7 @@ public class RolePermissionInfoController {
         return Result.success(rolePermissionInfoService.updateRolePermissionInfo(rolePermissionInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除角色权限信息表")
     @ApiOperationSupport(order = 50, author = "majf")
     @ApiOperation(value = "刪除角色权限信息表", notes = "刪除角色权限信息表", response = Result.class)
     @DeleteMapping

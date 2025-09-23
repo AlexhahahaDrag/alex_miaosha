@@ -90,13 +90,12 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { ModelInfo, PageInfo } from '@/views/common/config';
+import { pagination } from '@/views/common/config';
 import {
   SearchInfo,
-  pagination,
   columns,
   DataItem,
-  ModelInfo,
-  pageInfo,
 } from "./${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs";
 import { get${entity}Page, delete${entity} } from "./api/index";
 import { message } from "ant-design-vue";
@@ -180,12 +179,12 @@ const query = (): void => {
   get${entity}ListPage(searchInfo.value, pagination.value);
 }
 
-const handleTableChange = (pagination): void => {
+const handleTableChange = (pagination: PageInfo): void => {
   get${entity}ListPage(searchInfo.value, pagination);
 }
 
 const del${entity} = (ids: string): void => {
-  delete${entity}(ids).then((res) => {
+  delete${entity}(ids).then((res: any) => {
     if (res.code == "200") {
       message.success((res && "删除" + res.message) || "删除成功！", 3);
       get${entity}ListPage(searchInfo.value, pagination.value);
@@ -217,7 +216,7 @@ const cancel = (e: MouseEvent): void => {
   console.log(e);
 }
 
-const get${entity}ListPage = (param: SearchInfo, cur: pageInfo): void => {
+const get${entity}ListPage = (param: SearchInfo, cur: PageInfo): void => {
   loading.value = true;
   get${entity}Page(param, cur.current, cur.pageSize)
     .then((res) => {

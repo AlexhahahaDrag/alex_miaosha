@@ -3,6 +3,7 @@ package com.alex.user.controller.tUserLogin;
 import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.user.service.tUserLogin.TUserLoginService;
@@ -32,6 +33,7 @@ public class TUserLoginController {
 
     private final TUserLoginService tUserLoginService;
 
+    @LogRestRequest(apiName = "获取用户登录表分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取用户登录表分页", notes = "获取用户登录表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -46,6 +48,7 @@ public class TUserLoginController {
         return Result.success(tUserLoginService.getPage(pageNum, pageSize, tUserLoginVo));
     }
 
+    @LogRestRequest(apiName = "获取用户登录表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取用户登录表详情", notes = "获取用户登录表详情", response = Result.class)
     @GetMapping
@@ -53,6 +56,7 @@ public class TUserLoginController {
         return Result.success(tUserLoginService.queryTUserLogin(id));
     }
 
+    @LogRestRequest(apiName = "新增用户登录表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增用户登录表", notes = "新增用户登录表", response = Result.class)
@@ -61,6 +65,7 @@ public class TUserLoginController {
         return Result.success(tUserLoginService.addTUserLogin(tUserLoginVo));
     }
 
+    @LogRestRequest(apiName = "修改用户登录表")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改用户登录表", notes = "修改用户登录表", response = Result.class)
     @PutMapping
@@ -68,6 +73,7 @@ public class TUserLoginController {
         return Result.success(tUserLoginService.updateTUserLogin(tUserLoginVo));
     }
 
+    @LogRestRequest(apiName = "刪除用户登录表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除用户登录表", notes = "刪除用户登录表", response = Result.class)
     @DeleteMapping

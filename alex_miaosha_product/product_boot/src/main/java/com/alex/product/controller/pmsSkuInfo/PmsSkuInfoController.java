@@ -4,6 +4,7 @@ import com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +35,7 @@ public class PmsSkuInfoController {
 
     private final PmsSkuInfoService pmsSkuInfoService;
 
+    @LogRestRequest(apiName = "获取sku信息分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取sku信息分页", notes = "获取sku信息分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -48,6 +50,7 @@ public class PmsSkuInfoController {
         return Result.success(pmsSkuInfoService.getPage(pageNum, pageSize, pmsSkuInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取sku信息详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取sku信息详情", notes = "获取sku信息详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class PmsSkuInfoController {
         return Result.success(pmsSkuInfoService.queryPmsSkuInfo(id));
     }
 
+    @LogRestRequest(apiName = "新增sku信息")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增sku信息", notes = "新增sku信息", response = Result.class)
@@ -63,6 +67,7 @@ public class PmsSkuInfoController {
         return Result.success(pmsSkuInfoService.addPmsSkuInfo(pmsSkuInfoVo));
     }
 
+    @LogRestRequest(apiName = "修改sku信息")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改sku信息", notes = "修改sku信息", response = Result.class)
     @PutMapping
@@ -70,6 +75,7 @@ public class PmsSkuInfoController {
         return Result.success(pmsSkuInfoService.updatePmsSkuInfo(pmsSkuInfoVo));
     }
 
+    @LogRestRequest(apiName = "刪除sku信息")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除sku信息", notes = "刪除sku信息", response = Result.class)
     @DeleteMapping

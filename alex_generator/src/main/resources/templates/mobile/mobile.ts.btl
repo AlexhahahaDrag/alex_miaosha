@@ -1,3 +1,5 @@
+import { type PageInfo } from '@/views/common/config/index';
+
 <% for(field in table.fields){
  if(field.propertyType == 'BigDecimal'){ %>
 import { Dayjs } from 'dayjs';
@@ -18,20 +20,7 @@ export interface SearchInfo {
 <% } %>
 }
 
-export interface pageInfo {
-  current?: number;
-  pageSize?: number;
-  total?: number;
-  showTotal: Function;
-  showSizeChanger: boolean;
-  pageSizeOptions: string[];
-  showSizeChange: Function;
-  size: string;
-  showQuickJumper: boolean;
-  defaultPageSize: number;
-}
-
-export let pagination = ref<pageInfo>({
+export let pagination = ref<PageInfo>({
   // 数据总数
   total: 0,
   // 当前页数

@@ -44,12 +44,15 @@ public class GatewayWebSecurityConfig {
 
     @Bean
     SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-        return http.csrf().disable()
-                .formLogin().disable()
-                .httpBasic().disable()
-                .authorizeExchange()
-                .pathMatchers(whiteList).permitAll()
-                .anyExchange().authenticated()
-                .and().build();
+        return http
+                .csrf(csrf -> csrf.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .authorizeExchange(authorizeExchange -> 
+                    authorizeExchange
+                        .pathMatchers(whiteList).permitAll()
+                        .anyExchange().authenticated()
+                )
+                .build();
     }
 }
