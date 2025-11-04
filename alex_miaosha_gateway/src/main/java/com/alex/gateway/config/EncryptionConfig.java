@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @createDate 2024/12/19
  * @version 1.0.0
  */
-@ConfigurationProperties(prefix = "gateway.encryption")
+@ConfigurationProperties(prefix = "alex.encryption")
 @Component
 @Data
 public class EncryptionConfig {
@@ -19,25 +19,25 @@ public class EncryptionConfig {
     /**
      * AES密钥
      */
-    private String key = "20230610HelloDog";
+    private String key;
 
     /**
      * AES向量
      */
-    private String iv = "1234567890123456";
+    private String iv;
 
     /**
      * AES填充模式
      */
-    private String padding = "PKCS5Padding";
+    private String padding;
 
     /**
      * 是否启用加密
      */
-    private boolean enabled = true;
+    private boolean enabled;
 
     /**
      * 字符编码
      */
-    private String charset = "UTF-8";
+    private String charset;
 } 

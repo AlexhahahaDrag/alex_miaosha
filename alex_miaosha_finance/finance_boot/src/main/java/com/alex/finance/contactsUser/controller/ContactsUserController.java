@@ -3,6 +3,7 @@ package com.alex.finance.contactsUser.controller;
 import com.alex.api.finance.contactsUser.vo.ContactsUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.finance.contactsUser.service.ContactsUserService;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * description:  联系人信息表restApi
@@ -33,6 +36,7 @@ public class ContactsUserController {
 
 	private final ContactsUserService contactsUserService;
 
+	@LogRestRequest(apiName = "获取联系人分页")
 	@ApiOperationSupport(order = 10, author = "alex")
 	@ApiOperation(value = "获取联系人信息表分页", notes = "获取联系人信息表分页", response = Result.class)
 	@PostMapping(value = "/page")
@@ -42,11 +46,12 @@ public class ContactsUserController {
 			@ApiImplicitParam(value = "查询条件", name = "contactsUserVo", dataTypeClass = ContactsUserVo.class)}
 	)
 	public Result<Page<ContactsUserVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-											   @RequestParam(value = "pageSize", required = false) Long pageSize,
-											   @RequestBody(required = false) ContactsUserVo contactsUserVo) {
+											    @RequestParam(value = "pageSize", required = false) Long pageSize,
+											    @RequestBody(required = false) ContactsUserVo contactsUserVo) {
 		return Result.success(contactsUserService.getPage(pageNum, pageSize, contactsUserVo));
 	}
 
+	@LogRestRequest(apiName = "获取联系人详情")
 	@ApiOperationSupport(order = 20, author = "alex")
 	@ApiOperation(value = "获取联系人信息表详情", notes = "获取联系人信息表详情", response = Result.class)
 	@GetMapping
@@ -55,6 +60,7 @@ public class ContactsUserController {
 	}
 
 	@AvoidRepeatableCommit
+	@LogRestRequest(apiName = "新增联系人")
 	@ApiOperationSupport(order = 30, author = "alex")
 	@ApiOperation(value = "新增联系人信息表", notes = "新增联系人信息表", response = Result.class)
 	@PostMapping
@@ -62,6 +68,7 @@ public class ContactsUserController {
 		return Result.success(contactsUserService.addContactsUser(contactsUserVo));
 	}
 
+	@LogRestRequest(apiName = "修改联系人")
 	@ApiOperationSupport(order = 40, author = "alex")
 	@ApiOperation(value = "修改联系人信息表", notes = "修改联系人信息表", response = Result.class)
 	@PutMapping
@@ -69,6 +76,7 @@ public class ContactsUserController {
 		return Result.success(contactsUserService.updateContactsUser(contactsUserVo));
 	}
 
+	@LogRestRequest(apiName = "删除联系人")
 	@ApiOperationSupport(order = 50, author = "alex")
 	@ApiOperation(value = "删除联系人信息表", notes = "删除联系人信息表", response = Result.class)
 	@DeleteMapping
@@ -76,11 +84,20 @@ public class ContactsUserController {
 		return Result.success(contactsUserService.deleteContactsUser(ids));
 	}
 
+	@LogRestRequest(apiName = "导入联系人")
 	@ApiOperationSupport(order = 60, author = "alex")
 	@ApiOperation(value = "导入联系人信息", notes = "导入联系人信息", response = Result.class)
 	@PostMapping(value = "/import")
 	public Result<Boolean> importContactsUser(@RequestPart("file") MultipartFile file) throws Exception {
 		return Result.success(contactsUserService.importContactsUser(file));
+	}
+
+	@LogRestRequest(apiName = "下载联系人模版")
+	@ApiOperationSupport(order = 70, author = "alex")
+	@ApiOperation(value = "下载联系人模版", notes = "下载联系人模版", response = Result.class)
+	@GetMapping(value = "/template")
+	public void downloadTemplate(HttpServletResponse response) throws Exception {
+		contactsUserService.downloadTemplate(response);
 	}
 
 }

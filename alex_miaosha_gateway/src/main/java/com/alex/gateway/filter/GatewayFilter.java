@@ -59,6 +59,43 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
 
+    // AI Agent: 需要跳过加密的文件类型集合
+    private static final java.util.Set<String> FILE_CONTENT_TYPES = java.util.Set.of(
+            // Excel文件
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/msexcel",
+            // PDF文件
+            "application/pdf",
+            // 图片文件
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            // Word文档
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            // PowerPoint
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            // 通用二进制文件
+            "application/octet-stream"
+    );
+
+    // AI Agent: 需要跳过加密的URL路径模式（文件下载、导出等接口）
+    private static final java.util.Set<String> FILE_DOWNLOAD_PATHS = java.util.Set.of(
+            "**/download/**",
+            "**/template",
+            "**/export/**",
+            "**/file/**",
+            "**/*.xlsx",
+            "**/*.xls",
+            "**/*.pdf",
+            "**/*.doc",
+            "**/*.docx"
+    );
+
     @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -119,6 +156,40 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return -2;
     }
 
+    /**
+     * AI Agent: 判断响应是否为文件
+     * 通过Content-Type和URL路径双重判断
+     * @param response 响应对象
+     * @param path 请求路径
+     * @return true表示是文件，需要跳过加密
+     */
+    private boolean isFileResponse(ServerHttpResponse response, String path) {
+        // 方式1：通过Content-Type判断
+        String contentType = response.getHeaders().getContentType() != null ?
+                response.getHeaders().getContentType().toString().toLowerCase() : "";
+        
+        // AI Agent: 检查Content-Type是否属于文件类型
+        if (!contentType.isEmpty()) {
+            for (String fileType : FILE_CONTENT_TYPES) {
+                if (contentType.contains(fileType.toLowerCase())) {
+                    log.info("检测到文件响应，Content-Type: {}", contentType);
+                    return true;
+                }
+            }
+        }
+        
+        // 方式2：通过URL路径判断（备用方案）
+        // 如果Content-Type判断不出，则通过路径判断
+        for (String pattern : FILE_DOWNLOAD_PATHS) {
+            if (antPathMatcher.match(pattern, path)) {
+                log.info("检测到文件下载路径: {}", path);
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private Mono<Void> out(ServerHttpResponse response) throws Exception {
         JsonObject message = new JsonObject();
         message.addProperty("success", false);
@@ -135,10 +206,19 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     private Mono<Void> secretOut(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpResponse originalResponse = exchange.getResponse();
         DataBufferFactory bufferFactory = originalResponse.bufferFactory();
+        String path = exchange.getRequest().getPath().toString();
+        
         ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
             @NotNull
             @Override
             public Mono<Void> writeWith(@NotNull Publisher<? extends DataBuffer> body) {
+                // AI Agent: 检查是否为文件响应，如果是文件则直接返回，不进行加密处理
+                if (isFileResponse(getDelegate(), path)) {
+                    log.info("文件响应，跳过加密处理：{}", path);
+                    return super.writeWith(body);
+                }
+                
+                // AI Agent: 非文件响应，进行加密处理
                 if (body instanceof Flux<? extends DataBuffer> fluxBody) {
                     return super.writeWith(fluxBody.buffer().handle((dataBuffer, sink) -> {
                         DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();

@@ -65,4 +65,12 @@ public interface ContactsUserService extends IService<ContactsUser> {
 	 * @throws Exception 异常
 	 */
 	Boolean importContactsUser(MultipartFile file) throws Exception;
+
+	/**
+	 * 下载联系人模版
+	 *
+	 * @param response HTTP响应对象
+	 * @throws Exception 异常
+	 */
+	void downloadTemplate(javax.servlet.http.HttpServletResponse response) throws Exception;
 }

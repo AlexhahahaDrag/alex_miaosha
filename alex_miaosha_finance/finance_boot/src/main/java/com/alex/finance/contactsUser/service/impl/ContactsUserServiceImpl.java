@@ -3,19 +3,20 @@ package com.alex.finance.contactsUser.service.impl;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
-
 import com.alex.api.finance.contactsUser.vo.CheckContactsVo;
+import com.alex.api.finance.contactsUser.vo.ContactsUserImportVo;
 import com.alex.api.finance.contactsUser.vo.ContactsUserVo;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.alex.finance.contactsUser.entity.ContactsUser;
 import com.alex.finance.contactsUser.mapper.ContactsUserMapper;
 import com.alex.finance.contactsUser.service.ContactsUserService;
+import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -143,7 +144,8 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 			return false;
 		}
 
-		List<ContactsUserVo> excelInfo = getExcelInfo(file);
+		// AI Agent: 使用 ContactsUserImportVo 解析中文列名的 Excel
+		List<ContactsUserImportVo> excelInfo = getExcelInfo(file);
 		if (excelInfo == null || excelInfo.isEmpty()) {
 			log.warn("Excel文件内容为空");
 			return true;
@@ -151,10 +153,11 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 
 		log.info("Excel读取数据成功: 共{}条记录", excelInfo.size());
 
-		// 验证Excel数据
+		// 转换为 ContactsUserVo 并验证
 		List<ContactsUserVo> validData = excelInfo.stream()
+				.map(this::convertImportVoToVo)
 				.filter(this::validateContactsUser)
-				.collect(Collectors.toList());
+				.toList();
 
 		if (validData.size() < excelInfo.size()) {
 			log.warn("部分数据验证失败: 有效{}条, 无效{}条", validData.size(), excelInfo.size() - validData.size());
@@ -177,6 +180,51 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 
 		log.info("导入联系人成功: 导入{}条记录", contactsUserList.size());
 		return true;
+	}
+
+	@Override
+	public void downloadTemplate(javax.servlet.http.HttpServletResponse response) throws Exception {
+		log.info("下载联系人模版");
+		String templatePath = "templates/contacts_user_template.xlsx";
+		ClassPathResource resource = new ClassPathResource(templatePath);
+		
+		if (!resource.exists()) {
+			log.warn("模版文件不存在: path={}", templatePath);
+			response.setStatus(404);
+			response.setContentType("application/json");
+			response.getWriter().write("{\"code\":\"404\",\"message\":\"模版文件不存在\"}");
+			return;
+		}
+
+		try {
+			// AI Agent: 添加 CORS 响应头
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+			response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+			
+			// 设置响应头
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			response.setHeader("Content-Disposition", "attachment;filename=contacts_user_template.xlsx");
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
+			
+			// 读取文件并写入响应流
+			try (java.io.InputStream inputStream = resource.getInputStream();
+				 java.io.OutputStream outputStream = response.getOutputStream()) {
+				byte[] buffer = new byte[1024];
+				int len;
+				while ((len = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, len);
+				}
+				outputStream.flush();
+				log.info("下载联系人模版成功");
+			}
+		} catch (Exception e) {
+			log.error("下载模版文件失败", e);
+			response.setStatus(500);
+			response.setContentType("application/json");
+			response.getWriter().write("{\"code\":\"500\",\"message\":\"下载模版失败\"}");
+		}
 	}
 
 	/**
@@ -306,8 +354,8 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 	 * @return Excel 中的数据列表
 	 * @throws Exception 异常
 	 */
-	private List<ContactsUserVo> getExcelInfo(MultipartFile file) throws Exception {
-		ExcelImportResult<ContactsUserVo> result;
+	private List<ContactsUserImportVo> getExcelInfo(MultipartFile file) throws Exception {
+		ExcelImportResult<ContactsUserImportVo> result;
 		ImportParams importParams = new ImportParams();
 		// 设置导入位置
 		importParams.setHeadRows(1);
@@ -321,12 +369,24 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 		importParams.setDictHandler(iExcelDictHandler);
 
 		try {
-			result = ExcelImportUtil.importExcelMore(file.getInputStream(), ContactsUserVo.class, importParams);
+			result = ExcelImportUtil.importExcelMore(file.getInputStream(), ContactsUserImportVo.class, importParams);
 			log.info("Excel解析成功: 共{}条数据", result.getList().size());
 			return result.getList();
 		} catch (Exception e) {
 			log.error("Excel解析失败", e);
 			throw new RuntimeException("Excel文件解析失败: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * 将 ContactsUserImportVo 转换为 ContactsUserVo
+	 *
+	 * @param importVo 导入的联系人信息
+	 * @return 转换后的联系人信息
+	 */
+	private ContactsUserVo convertImportVoToVo(ContactsUserImportVo importVo) {
+		ContactsUserVo contactsUserVo = new ContactsUserVo();
+		BeanUtils.copyProperties(importVo, contactsUserVo);
+		return contactsUserVo;
 	}
 }
