@@ -18,9 +18,9 @@ def generate_template():
     # 创建新工作簿
     wb = Workbook()
     ws = wb.active
-    ws.title = "联系人"  # AI Agent: 将工作表名改为中文
+    ws.title = "联系人"  # 将工作表名改为中文
 
-    # AI Agent: 设置中文表头
+    # 设置中文表头
     headers = ["姓名", "电话", "关系", "邮箱", "地址", "备注"]
     ws.append(headers)
 

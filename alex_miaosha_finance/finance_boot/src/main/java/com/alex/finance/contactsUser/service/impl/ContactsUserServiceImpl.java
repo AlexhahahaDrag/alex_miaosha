@@ -144,7 +144,7 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 			return false;
 		}
 
-		// AI Agent: 使用 ContactsUserImportVo 解析中文列名的 Excel
+		// 使用 ContactsUserImportVo 解析中文列名的 Excel
 		List<ContactsUserImportVo> excelInfo = getExcelInfo(file);
 		if (excelInfo == null || excelInfo.isEmpty()) {
 			log.warn("Excel文件内容为空");
@@ -197,7 +197,7 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 		}
 
 		try {
-			// AI Agent: 添加 CORS 响应头
+			// 添加 CORS 响应头
 			response.setHeader("Access-Control-Allow-Origin", "*");
 			response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
 			response.setHeader("Access-Control-Allow-Headers", "Content-Type");

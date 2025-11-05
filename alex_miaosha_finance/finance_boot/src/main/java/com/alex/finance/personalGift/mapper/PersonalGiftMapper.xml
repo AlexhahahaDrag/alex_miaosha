@@ -33,7 +33,10 @@
         t_personal_gift.delete_time,
         t_personal_gift.operator,
         t_personal_gift.operate_time,
-        t_personal_gift.event_name, t_personal_gift.amount, t_personal_gift.other_person, t_personal_gift.event_time, t_personal_gift.remarks, t_personal_gift.`action`, t_personal_gift.notice_num
+        t_personal_gift.event_name, t_personal_gift.amount, 
+        t_personal_gift.other_person, t_personal_gift.event_time, 
+        t_personal_gift.remarks, t_personal_gift.`action`, 
+        t_personal_gift.notice_num
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftVo">
@@ -78,6 +81,159 @@
           <if test = "personalGiftVo.keyword != null">
             and (t_personal_gift.event_name like concat('%', #{personalGiftVo.keyword}, '%') or t_personal_gift.other_person like concat('%', #{personalGiftVo.keyword}, '%') or t_personal_gift.remarks like concat('%', #{personalGiftVo.keyword}, '%'))
           </if>
+          <if test = "personalGiftVo.contactsUserId != null">
+            and t_personal_gift.contacts_user_id = #{personalGiftVo.contactsUserId}
+          </if>
         </if>
      </sql>
+
+     <!-- 获取联系人随礼记录列表（包含统计数据） -->
+     <select id="getContactsGiftRecordList" resultType="com.alex.api.finance.personalGift.vo.ContactsGiftRecordVo">
+         SELECT
+             t_contacts.id as contactsUserId,
+             t_contacts.name as contactsUserName,
+             t_contacts.relationship,
+             MAX(t_gift.event_time) as lastContactTime,
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as giftOutAmount,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' THEN t_gift.amount ELSE 0 END), 0) as giftInAmount,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' THEN t_gift.amount ELSE 0 END), 0) -
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as netAmount,
+             COUNT(CASE WHEN t_gift.action = '1' THEN 1 END) as giftOutCount,
+             COUNT(CASE WHEN t_gift.action = '2' THEN 1 END) as giftInCount
+         FROM t_contacts_user t_contacts
+         LEFT JOIN t_personal_gift t_gift ON t_contacts.id = t_gift.contacts_user_id AND t_gift.is_delete = 0
+         WHERE t_contacts.is_delete = 0
+         GROUP BY t_contacts.id, t_contacts.name, t_contacts.relationship
+         ORDER BY lastContactTime DESC
+     </select>
+
+     <!-- AI Agent: 获取个人随礼统计概览（包含本月、年度、环比、同比、联系人统计） -->
+     <select id="getPersonalGiftStatistic" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftStatisticVo">
+         SELECT
+             -- 本月数据
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as monthGiftOutAmount,
+             COALESCE(ROUND((SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) THEN t_gift.amount ELSE 0 END) - 
+                     SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END)) / 
+                     NULLIF(SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END), 0) * 100, 2), 0) as monthGiftOutMoM,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as monthGiftInAmount,
+             COALESCE(ROUND((SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) THEN t_gift.amount ELSE 0 END) - 
+                     SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END)) / 
+                     NULLIF(SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END), 0) * 100, 2), 0) as monthGiftInMoM,
+             -- 本月净差额和次数
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) -
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as monthNetAmount,
+             COUNT(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN 1 END) as monthGiftOutCount,
+             COUNT(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(NOW()) AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN 1 END) as monthGiftInCount,
+             -- 上月数据
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END), 0) as lastMonthGiftOutAmount,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND MONTH(t_gift.event_time) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND YEAR(t_gift.event_time) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN t_gift.amount ELSE 0 END), 0) as lastMonthGiftInAmount,
+             -- 年度数据
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as yearGiftOutAmount,
+             COALESCE(ROUND((SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) THEN t_gift.amount ELSE 0 END) - 
+                     SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END)) / 
+                     NULLIF(SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END), 0) * 100, 2), 0) as yearGiftOutYoY,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as yearGiftInAmount,
+             COALESCE(ROUND((SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) THEN t_gift.amount ELSE 0 END) - 
+                     SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END)) / 
+                     NULLIF(SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END), 0) * 100, 2), 0) as yearGiftInYoY,
+             -- 年度净差额和次数
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) -
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN t_gift.amount ELSE 0 END), 0) as yearNetAmount,
+             COUNT(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN 1 END) as yearGiftOutCount,
+             COUNT(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) 
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+                 THEN 1 END) as yearGiftInCount,
+             -- 去年数据
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END), 0) as lastYearGiftOutAmount,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' AND YEAR(t_gift.event_time) = YEAR(NOW()) - 1 THEN t_gift.amount ELSE 0 END), 0) as lastYearGiftInAmount,
+             -- 联系人统计
+             (SELECT COUNT(1) FROM t_contacts_user WHERE is_delete = 0) as totalContacts,
+             (SELECT COUNT(1) FROM t_contacts_user WHERE is_delete = 0 AND MONTH(create_time) = MONTH(NOW()) AND YEAR(create_time) = YEAR(NOW())) as monthNewContacts,
+             (SELECT COUNT(1) FROM t_contacts_user WHERE is_delete = 0 AND YEAR(create_time) = YEAR(NOW())) as yearNewContacts
+         FROM t_personal_gift t_gift
+         WHERE t_gift.is_delete = 0
+         LIMIT 1
+     </select>
+
+     <!-- 获取个人随礼趋势数据 -->
+     <select id="getPersonalGiftTrend" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftTrendVo">
+         SELECT
+             DATE_FORMAT(t_gift.event_time, '%Y-%m') as month,
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as giftOutAmount,
+             COALESCE(SUM(CASE WHEN t_gift.action = '2' THEN t_gift.amount ELSE 0 END), 0) as giftInAmount,
+             COUNT(CASE WHEN t_gift.action = '1' THEN 1 END) as giftOutCount,
+             COUNT(CASE WHEN t_gift.action = '2' THEN 1 END) as giftInCount
+         FROM t_personal_gift t_gift
+         WHERE t_gift.is_delete = 0
+         AND t_gift.event_time >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+         GROUP BY DATE_FORMAT(t_gift.event_time, '%Y-%m')
+         ORDER BY month ASC
+     </select>
+
+     <!-- 获取个人随礼场合分布 -->
+     <select id="getPersonalGiftOccasionDistribution" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftOccasionDistributionVo">
+         SELECT
+             t_gift.event_name as occasion,
+             COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as amount,
+             COUNT(1) as count,
+             ROUND(COUNT(1) / (SELECT COUNT(1) FROM t_personal_gift WHERE is_delete = 0
+                 <if test="startTime != null and endTime != null">
+                     AND DATE(event_time) BETWEEN #{startTime} AND #{endTime}
+                 </if>
+             ) * 100, 2) as percentage,
+             COALESCE(SUM(t_gift.amount), 0) as totalAmount
+         FROM t_personal_gift t_gift
+         WHERE t_gift.is_delete = 0
+         <if test="startTime != null and endTime != null">
+             AND DATE(t_gift.event_time) BETWEEN #{startTime} AND #{endTime}
+         </if>
+         GROUP BY t_gift.event_name
+         ORDER BY count DESC
+     </select>
 </mapper>

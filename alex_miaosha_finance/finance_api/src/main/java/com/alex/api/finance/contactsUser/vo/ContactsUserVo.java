@@ -40,6 +40,9 @@ public class ContactsUserVo extends BaseVo<ContactsUserVo> {
 	@ApiModelProperty(value = "是否是常用联系人")
 	private Integer isFavorite;
 
+	@ApiModelProperty(value = "事件类型，如：生日、婚礼、养老等")
+	private String eventType;
+
 	@ApiModelProperty(value = "关键字（用于模糊搜索）")
 	private String keyword;
 

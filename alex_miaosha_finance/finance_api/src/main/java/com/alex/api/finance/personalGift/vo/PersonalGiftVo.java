@@ -1,6 +1,8 @@
 package com.alex.api.finance.personalGift.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -30,6 +32,10 @@ public class PersonalGiftVo extends BaseVo<PersonalGiftVo>{
 
     @ApiModelProperty(value = "人员")
     private String otherPerson;
+
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "联系人ID，关联t_contacts_user表")
+    private Long contactsUserId;
 
     @ApiModelProperty(value = "随礼时间")
     private LocalDateTime eventTime;

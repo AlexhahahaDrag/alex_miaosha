@@ -50,4 +50,8 @@ public class ContactsUser extends BaseEntity<ContactsUser> {
 	@TableField("is_favorite")
 	private Integer isFavorite;
 
+	@ApiModelProperty(value = "事件类型，字典(gift_event)，如：生日、婚礼、养老等")
+	@TableField("event_type")
+	private String eventType;
+
 }

@@ -37,6 +37,10 @@ public class PersonalGift extends BaseEntity<PersonalGift>{
     @TableField("other_person")
     private String otherPerson;
 
+    @ApiModelProperty(value = "联系人ID，关联t_contacts_user表")
+    @TableField("contacts_user_id")
+    private Long contactsUserId;
+
     @ApiModelProperty(value = "随礼时间")
     @TableField("event_time")
     private LocalDateTime eventTime;

@@ -59,7 +59,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
 
-    // AI Agent: 需要跳过加密的文件类型集合
+    // 需要跳过加密的文件类型集合
     private static final java.util.Set<String> FILE_CONTENT_TYPES = java.util.Set.of(
             // Excel文件
             "application/vnd.ms-excel",
@@ -83,7 +83,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             "application/octet-stream"
     );
 
-    // AI Agent: 需要跳过加密的URL路径模式（文件下载、导出等接口）
+    // 需要跳过加密的URL路径模式（文件下载、导出等接口）
     private static final java.util.Set<String> FILE_DOWNLOAD_PATHS = java.util.Set.of(
             "**/download/**",
             "**/template",
@@ -157,7 +157,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * AI Agent: 判断响应是否为文件
+     * 判断响应是否为文件
      * 通过Content-Type和URL路径双重判断
      * @param response 响应对象
      * @param path 请求路径
@@ -168,7 +168,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         String contentType = response.getHeaders().getContentType() != null ?
                 response.getHeaders().getContentType().toString().toLowerCase() : "";
         
-        // AI Agent: 检查Content-Type是否属于文件类型
+        // 检查Content-Type是否属于文件类型
         if (!contentType.isEmpty()) {
             for (String fileType : FILE_CONTENT_TYPES) {
                 if (contentType.contains(fileType.toLowerCase())) {
@@ -212,13 +212,13 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             @NotNull
             @Override
             public Mono<Void> writeWith(@NotNull Publisher<? extends DataBuffer> body) {
-                // AI Agent: 检查是否为文件响应，如果是文件则直接返回，不进行加密处理
+                // 检查是否为文件响应，如果是文件则直接返回，不进行加密处理
                 if (isFileResponse(getDelegate(), path)) {
                     log.info("文件响应，跳过加密处理：{}", path);
                     return super.writeWith(body);
                 }
                 
-                // AI Agent: 非文件响应，进行加密处理
+                // 非文件响应，进行加密处理
                 if (body instanceof Flux<? extends DataBuffer> fluxBody) {
                     return super.writeWith(fluxBody.buffer().handle((dataBuffer, sink) -> {
                         DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();

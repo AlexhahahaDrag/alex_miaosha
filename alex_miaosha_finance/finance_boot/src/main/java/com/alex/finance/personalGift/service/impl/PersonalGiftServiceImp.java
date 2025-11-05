@@ -3,7 +3,11 @@ package com.alex.finance.personalGift.service.impl;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
+import com.alex.api.finance.personalGift.vo.ContactsGiftRecordVo;
 import com.alex.api.finance.personalGift.vo.ImportPersonalGiftInfoVo;
+import com.alex.api.finance.personalGift.vo.PersonalGiftOccasionDistributionVo;
+import com.alex.api.finance.personalGift.vo.PersonalGiftStatisticVo;
+import com.alex.api.finance.personalGift.vo.PersonalGiftTrendVo;
 import com.alex.api.finance.personalGift.vo.PersonalGiftVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
@@ -115,5 +119,30 @@ public class PersonalGiftServiceImp extends ServiceImpl<PersonalGiftMapper, Pers
         importParams.setDictHandler(iExcelDictHandler);
         result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportPersonalGiftInfoVo.class, importParams);
         return result.getList();
+    }
+
+    @Override
+    public Page<ContactsGiftRecordVo> getContactsGiftRecordList(Long pageNum, Long pageSize, ContactsGiftRecordVo queryCondition) {
+        Page<ContactsGiftRecordVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        // AI Agent: 调用 Mapper 方法获取联系人随礼记录列表及其统计数据
+        return personalGiftMapper.getContactsGiftRecordList(page, queryCondition);
+    }
+
+    @Override
+    public PersonalGiftStatisticVo getPersonalGiftStatistic(String startTime, String endTime) {
+        // AI Agent: 调用 Mapper 方法获取个人随礼统计概览数据（支持时间范围过滤）
+        return personalGiftMapper.getPersonalGiftStatistic(startTime, endTime);
+    }
+
+    @Override
+    public List<PersonalGiftTrendVo> getPersonalGiftTrend(String startTime, String endTime) {
+        // AI Agent: 调用 Mapper 方法获取个人随礼趋势数据
+        return personalGiftMapper.getPersonalGiftTrend(startTime, endTime);
+    }
+
+    @Override
+    public List<PersonalGiftOccasionDistributionVo> getPersonalGiftOccasionDistribution(String startTime, String endTime) {
+        // AI Agent: 调用 Mapper 方法获取个人随礼场合分布数据
+        return personalGiftMapper.getPersonalGiftOccasionDistribution(startTime, endTime);
     }
 }
