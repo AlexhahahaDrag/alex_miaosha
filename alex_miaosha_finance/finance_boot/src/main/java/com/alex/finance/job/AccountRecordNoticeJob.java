@@ -1,6 +1,6 @@
 package com.alex.finance.job;
 
-import com.alex.finance.service.accountRecordInfo.AccountRecordInfoService;
+import com.alex.finance.accountRecordInfo.service.AccountRecordInfoService;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

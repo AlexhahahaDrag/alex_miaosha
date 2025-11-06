@@ -1,8 +1,8 @@
 package com.alex.finance.handler;
 
 import cn.afterturn.easypoi.handler.inter.IExcelDictHandler;
-import com.alex.finance.entity.dict.DictInfo;
-import com.alex.finance.service.dict.DictInfoService;
+import com.alex.finance.dict.entity.DictInfo;
+import com.alex.finance.dict.service.DictInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
