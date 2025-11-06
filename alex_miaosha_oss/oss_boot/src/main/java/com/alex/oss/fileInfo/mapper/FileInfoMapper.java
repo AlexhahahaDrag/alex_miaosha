@@ -1,8 +1,8 @@
-package com.alex.oss.mapper.fileInfo;
+package com.alex.oss.fileInfo.mapper;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.api.user.annotation.DataPermission;
-import com.alex.oss.entity.fileInfo.FileInfo;
+import com.alex.oss.fileInfo.entity.FileInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;

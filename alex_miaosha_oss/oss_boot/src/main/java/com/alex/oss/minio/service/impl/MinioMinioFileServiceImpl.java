@@ -1,4 +1,4 @@
-package com.alex.oss.service.minio.impl;
+package com.alex.oss.minio.service.impl;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.constants.SysConf;
@@ -7,7 +7,7 @@ import com.alex.common.enums.FileSystemTypeEnum;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.config.minio.MinioTemplate;
-import com.alex.oss.service.minio.MinioFileService;
+import com.alex.oss.minio.service.MinioFileService;
 import io.minio.errors.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

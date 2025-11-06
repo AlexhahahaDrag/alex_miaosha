@@ -1,7 +1,7 @@
-package com.alex.oss.service.fileInfo;
+package com.alex.oss.fileInfo.service;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
-import com.alex.oss.entity.fileInfo.FileInfo;
+import com.alex.oss.fileInfo.entity.FileInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;

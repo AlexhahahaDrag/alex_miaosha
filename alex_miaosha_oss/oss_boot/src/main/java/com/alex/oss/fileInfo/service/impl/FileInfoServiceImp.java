@@ -1,13 +1,13 @@
-package com.alex.oss.service.fileInfo.impl;
+package com.alex.oss.fileInfo.service.impl;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FileException;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.oss.entity.fileInfo.FileInfo;
-import com.alex.oss.mapper.fileInfo.FileInfoMapper;
-import com.alex.oss.service.fileInfo.FileInfoService;
-import com.alex.oss.service.minio.MinioFileService;
+import com.alex.oss.fileInfo.entity.FileInfo;
+import com.alex.oss.fileInfo.mapper.FileInfoMapper;
+import com.alex.oss.fileInfo.service.FileInfoService;
+import com.alex.oss.minio.service.MinioFileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

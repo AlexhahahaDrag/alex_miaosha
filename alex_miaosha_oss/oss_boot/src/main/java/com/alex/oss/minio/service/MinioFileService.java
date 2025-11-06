@@ -1,4 +1,4 @@
-package com.alex.oss.service.minio;
+package com.alex.oss.minio.service;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import io.minio.errors.*;

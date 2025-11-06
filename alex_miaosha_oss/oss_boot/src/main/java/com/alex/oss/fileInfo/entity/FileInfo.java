@@ -1,4 +1,4 @@
-package com.alex.oss.entity.fileInfo;
+package com.alex.oss.fileInfo.entity;
 
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;

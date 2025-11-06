@@ -1,4 +1,4 @@
-package com.alex.oss.vo;
+package com.alex.oss.minio.vo;
 
 import lombok.Data;
 

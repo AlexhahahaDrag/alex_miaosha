@@ -1,7 +1,7 @@
 package com.alex.oss.config.minio;
 
 import com.alex.common.utils.string.StringUtils;
-import com.alex.oss.vo.ObjectItem;
+import com.alex.oss.minio.vo.ObjectItem;
 import com.alibaba.fastjson.JSONObject;
 import io.minio.*;
 import io.minio.errors.*;
