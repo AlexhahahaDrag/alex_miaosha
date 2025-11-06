@@ -12,9 +12,6 @@ spring:
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
-mybatis-plus:
-  mapper-locations: classpath*:com/alex/user/mapper/**/*Mapper.xml
-
 isRememberMeExpiresSecond: 86400 #记住密码一天
 
 defaultPassword: 1234@com

@@ -59,8 +59,8 @@
                     #{be}
                 </foreach>
             </if>
-            order by dict_info.order_by
         </where>
+        order by dict_info.order_by
     </select>
 
      <sql id="queryInfo">

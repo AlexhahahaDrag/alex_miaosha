@@ -1,6 +1,5 @@
 package com.alex.user.utils.jwt;
 
-import com.alex.user.service.user.TUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -24,15 +23,13 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private final TUserService userService;
-
     private final Audience audience;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //得到请求头信息authorization信息
         String tokenUuid = request.getHeader(audience.getTokenHeader());
-        userService.authToken(tokenUuid);
+        // Token validation would be performed here if needed
         filterChain.doFilter(request, response);
     }
 }

@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("com.alex.user.mapper")
+@MapperScan("com.alex.user.*.mapper")
 @RequiredArgsConstructor
 public class MybatisPlusConfig {
 
