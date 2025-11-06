@@ -11,7 +11,7 @@
         <result column="update_time" property="updateTime" />
         <result column="deleter" property="deleter" />
         <result column="delete_time" property="deleteTime" />
-        <result column="is_delete" property="delete" />
+        <result column="is_delete" property="isDelete" />
         <result column="operator" property="operator" />
         <result column="operate_time" property="operateTime" />
         <result column="org_code" property="orgCode" />

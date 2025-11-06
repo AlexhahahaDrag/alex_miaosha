@@ -19,7 +19,6 @@
         <result column="file_type" property="fileType" />
         <result column="bucket_name" property="bucketName" />
         <result column="file_system" property="fileSystem" />
-        <result column="bucket_file_name" property="bucketFileName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -34,7 +33,8 @@
         file_info.delete_time,
         file_info.operator,
         file_info.operate_time,
-        file_info.file_name, file_info.file_size, file_info.file_type, file_info.bucket_name, file_info.file_system, file_info.url
+        file_info.file_name, file_info.file_size, file_info.file_type,
+        file_info.bucket_name, file_info.file_system, file_info.url
     </sql>
 
     <select id="getPage" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">

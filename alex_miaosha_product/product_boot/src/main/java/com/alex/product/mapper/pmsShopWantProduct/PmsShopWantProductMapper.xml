@@ -11,7 +11,7 @@
         <result column="update_time" property="updateTime" />
         <result column="deleter" property="deleter" />
         <result column="delete_time" property="deleteTime" />
-        <result column="is_delete" property="delete" />
+        <result column="is_delete" property="isDelete" />
         <result column="operator" property="operator" />
         <result column="operate_time" property="operateTime" />
         <result column="name" property="name" />
@@ -33,7 +33,8 @@
         pms_shop_want_product.is_delete,
         pms_shop_want_product.operator,
         pms_shop_want_product.operate_time,
-        pms_shop_want_product.`name`, pms_shop_want_product.shop, pms_shop_want_product.icons, pms_shop_want_product.`source`,
+        pms_shop_want_product.`name`, pms_shop_want_product.shop,
+        pms_shop_want_product.icons, pms_shop_want_product.`source`,
         pms_shop_want_product.status
     </sql>
 
