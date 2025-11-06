@@ -1,7 +1,7 @@
 package com.alex.finance.job;
 
 import com.alex.common.utils.date.DateUtils;
-import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
+import com.alex.finance.shopFinanceAnalysis.service.ShopFinanceAnalysisService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;

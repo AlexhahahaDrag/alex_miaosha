@@ -2,7 +2,7 @@ package com.alex.finance.analysis.controller;
 
 import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
 import com.alex.base.common.Result;
-import com.alex.finance.service.analysis.FinanceAnalysisService;
+import com.alex.finance.analysis.service.FinanceAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;

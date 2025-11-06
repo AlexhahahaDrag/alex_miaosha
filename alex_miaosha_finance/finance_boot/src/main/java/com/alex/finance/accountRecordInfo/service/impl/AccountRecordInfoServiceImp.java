@@ -7,7 +7,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.accountRecordInfo.entity.AccountRecordInfo;
 import com.alex.finance.accountRecordInfo.mapper.AccountRecordInfoMapper;
 import com.alex.finance.accountRecordInfo.service.AccountRecordInfoService;
-import com.alex.finance.service.weixin.WeiXinService;
+import com.alex.finance.wechat.service.WeChatService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     @Value("${accountNotice.difDay}")
     private Integer difDay;
 
-    private final WeiXinService weiXinService;
+    private final WeChatService weChatService;
 
     @Override
     public Page<AccountRecordInfoVo> getPage(Long pageNum, Long pageSize, AccountRecordInfoVo accountRecordInfoVo) {
@@ -84,7 +84,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
         }
         //发送微信消息提醒
         for(AccountCountInfoVo cur : list) {
-            weiXinService.sentMessage(cur.getAccountName(), cur.getNum());
+            weChatService.sentMessage(cur.getAccountName(), cur.getNum());
         }
         return list;
     }

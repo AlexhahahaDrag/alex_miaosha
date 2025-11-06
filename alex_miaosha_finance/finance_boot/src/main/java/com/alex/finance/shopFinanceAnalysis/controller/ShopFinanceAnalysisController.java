@@ -3,7 +3,7 @@ package com.alex.finance.shopFinanceAnalysis.controller;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.base.common.Result;
-import com.alex.finance.service.shopFinanceAnalysis.ShopFinanceAnalysisService;
+import com.alex.finance.shopFinanceAnalysis.service.ShopFinanceAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
