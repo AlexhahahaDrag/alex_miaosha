@@ -56,13 +56,12 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
                 .collect(Collectors.toList());
     }
 
-    /**
-     * @param pId
-     * @param menuMap
-     * description: 拼接菜单子列表
-     * author:      majf
-     * return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
-    */
+    /**ma
+     *
+     * param pId
+     * param menuMap
+     * return
+     */
     public List<MenuInfoVo> getChildren(Long pId, Map<Long, List<MenuInfoVo>> menuMap) {
         if (pId == null || menuMap == null || menuMap.get(pId) == null || menuMap.get(pId).isEmpty()) {
             return null;

@@ -28,8 +28,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //得到请求头信息authorization信息
-        String tokenUuid = request.getHeader(audience.getTokenHeader());
-        // Token validation would be performed here if needed
         filterChain.doFilter(request, response);
     }
 }
