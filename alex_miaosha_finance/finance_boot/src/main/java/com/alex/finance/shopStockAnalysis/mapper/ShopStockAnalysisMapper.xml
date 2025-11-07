@@ -43,7 +43,7 @@
           dict_info.belong_to = 'shop_pay_way'
           and t_shop_finance.is_delete = '0'
           and t_shop_finance.is_valid = '1'
-          <include refid="com.alex.finance.mapper.shopFinance.ShopFinanceMapper.roleInfo"/>
+          <include refid="roleInfo"/>
         group by
           dict_info.type_code,
           dict_info.type_name
@@ -79,6 +79,6 @@
           dict_info.belong_to = 'shop_pay_way'
           and t_shop_finance.is_delete = '0'
           and t_shop_finance.is_valid = '1'
-          <include refid="com.alex.finance.mapper.shopFinance.ShopFinanceMapper.roleInfo"/>
+          <include refid="roleInfo"/>
     </select>
 </mapper>

@@ -185,45 +185,56 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 	@Override
 	public void downloadTemplate(javax.servlet.http.HttpServletResponse response) throws Exception {
 		log.info("下载联系人模版");
-		String templatePath = "templates/contacts_user_template.xlsx";
-		ClassPathResource resource = new ClassPathResource(templatePath);
-		
-		if (!resource.exists()) {
-			log.warn("模版文件不存在: path={}", templatePath);
-			response.setStatus(404);
-			response.setContentType("application/json");
-			response.getWriter().write("{\"code\":\"404\",\"message\":\"模版文件不存在\"}");
-			return;
-		}
-
 		try {
-			// 添加 CORS 响应头
+			// AI Agent: 直接下载预设的模版文件
+			String templatePath = "templates/contacts_user_template.xlsx";
+			ClassPathResource resource = new ClassPathResource(templatePath);
+			
+			if (!resource.exists()) {
+				log.warn("模版文件不存在: path={}", templatePath);
+				response.setStatus(404);
+				response.setContentType("application/json");
+				response.getWriter().write("{\"code\":\"404\",\"message\":\"模版文件不存在\"}");
+				return;
+			}
+
+			// 设置响应头 - 必须在写入数据前设置
 			response.setHeader("Access-Control-Allow-Origin", "*");
 			response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
 			response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-			
-			// 设置响应头
 			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			response.setHeader("Content-Disposition", "attachment;filename=contacts_user_template.xlsx");
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");
+			// AI Agent: 设置文件长度，防止 Excel 文件打开报错
+			response.setContentLength((int) resource.getFile().length());
 			
 			// 读取文件并写入响应流
-			try (java.io.InputStream inputStream = resource.getInputStream();
-				 java.io.OutputStream outputStream = response.getOutputStream()) {
-				byte[] buffer = new byte[1024];
+			// 注意：不能在 try-with-resources 中关闭 response.getOutputStream()
+			java.io.InputStream inputStream = resource.getInputStream();
+			try {
+				java.io.OutputStream outputStream = response.getOutputStream();
+				byte[] buffer = new byte[4096];
 				int len;
 				while ((len = inputStream.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, len);
 				}
 				outputStream.flush();
 				log.info("下载联系人模版成功");
+			} finally {
+				if (inputStream != null) {
+					inputStream.close();
+				}
 			}
 		} catch (Exception e) {
-			log.error("下载模版文件失败", e);
-			response.setStatus(500);
-			response.setContentType("application/json");
-			response.getWriter().write("{\"code\":\"500\",\"message\":\"下载模版失败\"}");
+			log.error("下载联系人模版失败", e);
+			try {
+				response.setStatus(500);
+				response.setContentType("application/json");
+				response.getWriter().write("{\"code\":\"500\",\"message\":\"下载模版失败: " + e.getMessage() + "\"}");
+			} catch (Exception ex) {
+				log.error("写入错误响应失败", ex);
+			}
 		}
 	}
 

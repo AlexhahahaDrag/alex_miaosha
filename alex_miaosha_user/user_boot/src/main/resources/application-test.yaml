@@ -25,3 +25,8 @@ management:
       exposure:
         include: '*'
     #   在访问/actuator/health时显示完整信息
+
+mybatis-plus:
+  mapper-locations:
+    - classpath:com/alex/user/**/mapper/*Mapper.xml
+    - classpath*:com/alex/user/**/mapper/*Mapper.xml

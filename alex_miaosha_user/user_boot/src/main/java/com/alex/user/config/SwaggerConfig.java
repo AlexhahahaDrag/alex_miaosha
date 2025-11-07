@@ -46,7 +46,7 @@ public class SwaggerConfig {
                 .pathMapping("/am-user")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.alex.user.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.alex.user"))
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-user")

@@ -22,8 +22,8 @@ public interface FinanceAnalysisMapper {
     List<AnalysisVo> getBalance(@Param("belongTo") Long belongTo, @Param("searchDate") String searchDate);
 
     /**
-     * @param belongTo
-     * @param searchDate
+     * param belongTo
+     * param searchDate
      * @param type
      * description: 获取账户月消费支出
      * author: alex
@@ -34,7 +34,7 @@ public interface FinanceAnalysisMapper {
                                          @Param("type") String type);
 
     /**
-     * @param belongTo
+     * param belongTo
      * @param searchDate
      * description: 获取天消费明细
      * author:      alex
@@ -44,7 +44,8 @@ public interface FinanceAnalysisMapper {
                                    @Param("searchDate") String searchDate);
 
     /**
-     * @param belongTo
+     *
+     * param belongTo
      * @param searchDate
      * description: 获取月消费明细
      * author:      alex

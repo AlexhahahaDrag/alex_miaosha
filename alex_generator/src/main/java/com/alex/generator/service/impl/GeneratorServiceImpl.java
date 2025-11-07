@@ -117,8 +117,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     /**
-     * @param menuInfoList
-     * @param menuName     description: 根据菜单名称查询菜单信息
+     * param menuInfoList
+     * param menuName     description: 根据菜单名称查询菜单信息
      *                     author:      majf
      *                     return:      com.alex.generator.vo.MenuSearchInfo
      */

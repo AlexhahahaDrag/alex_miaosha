@@ -59,6 +59,13 @@ spring:
 #      loadBalancers:
 #        random:
 #          type: RANDOM
+mybatis-plus:
+  # AI Agent: 修复 MyBatis mapper-locations 配置
+  # 原问题：XML 文件在 src/main/java 目录下，但配置只从 classpath 查找，导致找不到 SQL 语句
+  # 解决：配置支持从 classpath 和 java 目录下的编译输出中查找
+  mapper-locations: 
+    - classpath:com/alex/finance/**/mapper/*Mapper.xml
+    - classpath*:com/alex/finance/**/mapper/*Mapper.xml
 
 logging:
   level:

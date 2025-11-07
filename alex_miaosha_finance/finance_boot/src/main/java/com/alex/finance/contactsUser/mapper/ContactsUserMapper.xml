@@ -39,12 +39,15 @@
 
 	<!-- 通用查询列 -->
 	<sql id="Base_Column_List">
-		id, name, phone, relationship, email, `address`, remarks, is_favorite, creator, create_time, updater, update_time, operator, operate_time, deleter, delete_time, is_delete
+		id, name, phone, relationship, email, `address`, remarks,
+		is_favorite, creator, create_time, updater, update_time,
+		operator, operate_time, deleter, delete_time, is_delete
 	</sql>
 
 	<!-- 查询Vo列 -->
 	<sql id="Vo_Column_List">
-		id, name, phone, relationship, email, `address`, remarks, is_favorite, create_time, update_time
+		id, name, phone, relationship, email, `address`, remarks,
+		is_favorite, create_time, update_time
 	</sql>
 
 	<!-- 查询分页列表 -->
