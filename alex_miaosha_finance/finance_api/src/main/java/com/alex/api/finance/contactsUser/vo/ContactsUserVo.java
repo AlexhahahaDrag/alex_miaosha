@@ -1,6 +1,8 @@
 package com.alex.api.finance.contactsUser.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -25,8 +27,12 @@ public class ContactsUserVo extends BaseVo<ContactsUserVo> {
 	@ApiModelProperty(value = "联系电话")
 	private String phone;
 
-	@ApiModelProperty(value = "关系类型")
-	private String relationship;
+	@JsonSerialize(using = Long2StringSerializer.class)
+	@ApiModelProperty(value = "关系分类ID，关联 contacts_user_relation_info_t 表")
+	private Long relationship;
+
+	@ApiModelProperty(value = "关系分类名称（联动返回）")
+	private String relationshipTag;
 
 	@ApiModelProperty(value = "电子邮箱")
 	private String email;

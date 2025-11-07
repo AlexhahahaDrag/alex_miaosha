@@ -30,9 +30,9 @@ public class ContactsUser extends BaseEntity<ContactsUser> {
 	@TableField("phone")
 	private String phone;
 
-	@ApiModelProperty(value = "关系类型，字典(contacts_relationship)")
+	@ApiModelProperty(value = "关系分类ID，关联 contacts_user_relation_info_t 表")
 	@TableField("relationship")
-	private String relationship;
+	private Long relationship;
 
 	@ApiModelProperty(value = "电子邮箱")
 	@TableField("email")

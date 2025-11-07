@@ -1,0 +1,47 @@
+# Cursor IDE 忽略文件列表
+
+# 构建输出
+target/
+build/
+dist/
+*.class
+*.jar
+*.war
+
+# 依赖
+node_modules/
+.venv/
+venv/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.c9/
+
+# 日志文件
+logs/
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Maven
+.m2/
+
+
