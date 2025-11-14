@@ -54,8 +54,10 @@
 		<include refid="Vo_Column_List"/>
 		FROM contacts_user_relation_info_t
 		WHERE is_delete = 0
-		<if test="userId != null">
-			AND (user_id IS NULL OR user_id = #{userId})
+		<if test="'super_super' != roleCode">
+			and (user_id in (<include refid="com.alex.finance.common.mapper.CommonMapper.familyGroup"/>)
+				or user_id is null
+			)
 		</if>
 		<if test="vo.relationshipTag != null and vo.relationshipTag != ''">
 			AND relationship_tag LIKE CONCAT('%', #{vo.relationshipTag}, '%')
@@ -107,4 +109,3 @@
 	</select>
 
 </mapper>
-

@@ -22,11 +22,10 @@ public interface ContactsUserRelationService extends IService<ContactsUserRelati
 	 *
 	 * @param pageNum 页码
 	 * @param pageSize 每页大小
-	 * @param userId 用户ID（可为空）
 	 * @param vo 查询条件
 	 * @return 分页结果
 	 */
-	Page<ContactsUserRelationVo> getPage(Long pageNum, Long pageSize, Long userId, ContactsUserRelationVo vo);
+	Page<ContactsUserRelationVo> getPage(Long pageNum, Long pageSize, ContactsUserRelationVo vo);
 
 	/**
 	 * 获取关系分类详情

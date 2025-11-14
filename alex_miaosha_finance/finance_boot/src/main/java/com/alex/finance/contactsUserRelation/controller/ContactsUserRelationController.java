@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * description:  联系人关系分类字典restApi
  * author:       alex
@@ -47,9 +49,8 @@ public class ContactsUserRelationController {
 	public Result<Page<ContactsUserRelationVo>> getPage(
 			@RequestParam(value = "pageNum", required = false) Long pageNum,
 			@RequestParam(value = "pageSize", required = false) Long pageSize,
-			@RequestParam(value = "userId", required = false) Long userId,
 			@RequestBody(required = false) ContactsUserRelationVo vo) {
-		return Result.success(contactsUserRelationService.getPage(pageNum, pageSize, userId, vo));
+		return Result.success(contactsUserRelationService.getPage(pageNum, pageSize, vo));
 	}
 
 	@LogRestRequest(apiName = "获取关系分类详情")
@@ -89,7 +90,7 @@ public class ContactsUserRelationController {
 	@ApiOperationSupport(order = 60, author = "alex")
 	@ApiOperation(value = "查询启用的公共关系分类", notes = "查询所有启用的公共关系分类，用于下拉选择", response = Result.class)
 	@GetMapping(value = "/public-enabled")
-	public Result<java.util.List<ContactsUserRelationVo>> queryEnabledPublicRelations() {
+	public Result<List<ContactsUserRelationVo>> queryEnabledPublicRelations() {
 		return Result.success(contactsUserRelationService.queryEnabledPublicRelations());
 	}
 
@@ -97,7 +98,7 @@ public class ContactsUserRelationController {
 	@ApiOperationSupport(order = 70, author = "alex")
 	@ApiOperation(value = "查询用户的启用关系分类", notes = "查询用户的所有启用关系分类（公共+私有）", response = Result.class)
 	@GetMapping(value = "/user-enabled")
-	public Result<java.util.List<ContactsUserRelationVo>> queryEnabledRelationsByUser(@RequestParam(value = "userId") Long userId) {
+	public Result<List<ContactsUserRelationVo>> queryEnabledRelationsByUser(@RequestParam(value = "userId") Long userId) {
 		return Result.success(contactsUserRelationService.queryEnabledRelationsByUser(userId));
 	}
 

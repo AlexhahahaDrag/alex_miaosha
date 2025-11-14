@@ -1,6 +1,8 @@
 package com.alex.api.finance.contactsUserRelation.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -20,6 +22,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "ContactsUserRelationVo", description = "联系人关系分类字典Vo")
 public class ContactsUserRelationVo extends BaseVo<ContactsUserRelationVo> {
 
+    @JsonSerialize(using = Long2StringSerializer.class)
 	@ApiModelProperty(value = "用户ID，为空表示公共字典，有值表示用户自定义分类")
 	private Long userId;
 
