@@ -62,6 +62,7 @@ public interface ContactsUserRelationMapper extends BaseMapper<ContactsUserRelat
      * @param userId 用户ID
      * @return 分类列表
      */
-    List<ContactsUserRelationVo> queryEnabledRelationsByUser(@Param("userId") Long userId);
+    List<ContactsUserRelationVo> queryEnabledRelationsByUser(@Param("userId") Long userId,
+                                                             @Param("roleCode") String roleCode);
 }
 

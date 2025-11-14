@@ -6,10 +6,16 @@ import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import com.alex.api.finance.contactsUser.vo.CheckContactsVo;
 import com.alex.api.finance.contactsUser.vo.ContactsUserImportVo;
 import com.alex.api.finance.contactsUser.vo.ContactsUserVo;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.api.finance.contactsUserRelation.vo.ContactsUserRelationVo;
+import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.vo.user.TUserVo;
 import com.alex.finance.contactsUser.entity.ContactsUser;
 import com.alex.finance.contactsUser.mapper.ContactsUserMapper;
 import com.alex.finance.contactsUser.service.ContactsUserService;
+import com.alex.finance.contactsUserRelation.service.ContactsUserRelationService;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -41,28 +48,26 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 
 	private final IExcelDictHandlerImpl iExcelDictHandler;
 
+	private final ContactsUserRelationService contactsUserRelationService;
+
+	private final UserUtils userUtils;
+
 	/** 电话号码正则表达式 */
 	private static final Pattern PHONE_PATTERN = Pattern.compile("^1[3-9]\\d{9}$");
 
 	/** 邮箱正则表达式 */
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
-	/** 有效的关系类型 */
-	private static final List<String> VALID_RELATIONSHIPS = Arrays.asList("friend", "family", "colleague", "other");
-
 	@Override
 	public Page<ContactsUserVo> getPage(Long pageNum, Long pageSize, ContactsUserVo contactsUserVo) {
-		log.debug("获取联系人分页列表: pageNum={}, pageSize={}", pageNum, pageSize);
 		Page<ContactsUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
 		return contactsUserMapper.getPage(page, contactsUserVo);
 	}
 
 	@Override
 	public ContactsUserVo queryContactsUser(Long id) {
-		log.debug("查询联系人详情: id={}", id);
 		if (id == null || id <= 0) {
-			log.warn("查询联系人ID无效: id={}", id);
-			return null;
+			throw new SystemException(ResultEnum.PARAM_ERROR, "查询联系人ID无效!");
 		}
 		return contactsUserMapper.queryContactsUser(id);
 	}
@@ -70,48 +75,34 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public Boolean addContactsUser(ContactsUserVo contactsUserVo) {
-		log.info("新增联系人: name={}, phone={}", contactsUserVo.getName(), contactsUserVo.getPhone());
-
 		// 参数验证
 		if (!validateContactsUser(contactsUserVo)) {
-			log.warn("联系人信息验证失败: {}", contactsUserVo);
-			return false;
+			throw new SystemException(ResultEnum.PARAM_ERROR, "联系人信息验证失败!");
 		}
-
 		// 校验名称和电话不能重复
 		validateContactsUserDuplicate(contactsUserVo, null);
-
 		ContactsUser contactsUser = new ContactsUser();
 		BeanUtils.copyProperties(contactsUserVo, contactsUser);
 		contactsUserMapper.insert(contactsUser);
-
-		log.info("新增联系人成功: id={}, name={}", contactsUser.getId(), contactsUser.getName());
 		return true;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public Boolean updateContactsUser(ContactsUserVo contactsUserVo) {
-		log.info("修改联系人: id={}, name={}", contactsUserVo.getId(), contactsUserVo.getName());
-
 		// 参数验证
 		if (contactsUserVo.getId() == null || contactsUserVo.getId() <= 0) {
-			log.warn("修改联系人ID无效: id={}", contactsUserVo.getId());
-			return false;
+			throw new SystemException(ResultEnum.PARAM_ERROR, "修改联系人ID无效!");
 		}
 
 		if (!validateContactsUser(contactsUserVo)) {
-			log.warn("联系人信息验证失败: {}", contactsUserVo);
-			return false;
+			throw new SystemException(ResultEnum.PARAM_ERROR, "联系人信息验证失败!");
 		}
-
 		// 校验名称和电话不能重复（排除当前ID）
 		validateContactsUserDuplicate(contactsUserVo, contactsUserVo.getId());
-
 		ContactsUser contactsUser = new ContactsUser();
 		BeanUtils.copyProperties(contactsUserVo, contactsUser);
 		contactsUserMapper.updateById(contactsUser);
-
 		log.info("修改联系人成功: id={}, name={}", contactsUser.getId(), contactsUser.getName());
 		return true;
 	}
@@ -119,8 +110,6 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public Boolean deleteContactsUser(String ids) {
-		log.info("删除联系人: ids={}", ids);
-
 		if (StringUtils.isEmpty(ids)) {
 			log.warn("删除联系人ID为空");
 			return true;
@@ -152,32 +141,47 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 		}
 
 		log.info("Excel读取数据成功: 共{}条记录", excelInfo.size());
-
 		// 转换为 ContactsUserVo 并验证
 		List<ContactsUserVo> validData = excelInfo.stream()
 				.map(this::convertImportVoToVo)
 				.filter(this::validateContactsUser)
 				.toList();
-
 		if (validData.size() < excelInfo.size()) {
 			log.warn("部分数据验证失败: 有效{}条, 无效{}条", validData.size(), excelInfo.size() - validData.size());
 		}
-
 		if (validData.isEmpty()) {
 			log.warn("没有有效的导入数据");
 			return false;
 		}
-
+		// 查询当前人的联系人关系，并转换成名称为key的map
+		TUserVo loginUser = userUtils.getLoginUser();
+		Long userId = loginUser != null ? loginUser.getId() : null;
+		List<ContactsUserRelationVo> relationList = contactsUserRelationService.queryEnabledRelationsByUser(userId);
+		Map<String, ContactsUserRelationVo> relationshipMap = relationList.stream()
+				.collect(Collectors.toMap(
+						ContactsUserRelationVo::getRelationshipTag,
+						relation -> relation,
+						(existing, replacement) -> existing // 如果有重复的key，保留第一个
+				));
+		log.info("查询到关系分类数量: {}, 转换后的Map大小: {}", relationList.size(), relationshipMap.size());
+		StringBuilder errorMessage = new StringBuilder();
 		// 将导入文件转化为bean
 		List<ContactsUser> contactsUserList = validData.parallelStream()
 				.map(item -> {
 					ContactsUser contactsUser = new ContactsUser();
 					BeanUtils.copyProperties(item, contactsUser);
+					ContactsUserRelationVo relationship = relationshipMap.get(item.getRelationshipTag());
+					if (relationship != null) {
+						contactsUser.setRelationship(relationship.getId());
+					} else {
+						errorMessage.append("未找到对应的关系分类:").append(item.getRelationshipTag()).append(";");
+					}
 					return contactsUser;
 				}).collect(Collectors.toList());
-
+		if (errorMessage.length() > 0) {
+			throw new SystemException(ResultEnum.PARAM_ERROR, errorMessage.toString());
+		}
 		this.saveBatch(contactsUserList);
-
 		log.info("导入联系人成功: 导入{}条记录", contactsUserList.size());
 		return true;
 	}
@@ -280,55 +284,40 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 			log.warn("联系人对象为空");
 			return false;
 		}
-
 		if (StringUtils.isEmpty(contactsUserVo.getName())) {
 			log.warn("联系人姓名为空");
 			return false;
 		}
-
 		if (StringUtils.isEmpty(contactsUserVo.getPhone())) {
 			log.warn("联系电话为空");
 			return false;
 		}
-
 		// 验证姓名长度
 		if (contactsUserVo.getName().length() > 100) {
 			log.warn("联系人姓名过长: name={}", contactsUserVo.getName());
 			return false;
 		}
-
 		// 验证电话格式
 		if (!PHONE_PATTERN.matcher(contactsUserVo.getPhone()).matches()) {
 			log.warn("电话格式不正确: phone={}", contactsUserVo.getPhone());
 			return false;
 		}
-
-		// 验证关系类型
-		if (contactsUserVo.getRelationship() != null &&
-				!VALID_RELATIONSHIPS.contains(contactsUserVo.getRelationship())) {
-			log.warn("关系类型不合法: relationship={}", contactsUserVo.getRelationship());
-			return false;
-		}
-
 		// 验证邮箱格式（非必填）
 		if (!StringUtils.isEmpty(contactsUserVo.getEmail()) &&
 				!EMAIL_PATTERN.matcher(contactsUserVo.getEmail()).matches()) {
 			log.warn("邮箱格式不正确: email={}", contactsUserVo.getEmail());
 			return false;
 		}
-
 		// 验证地址长度
 		if (contactsUserVo.getAddress() != null && contactsUserVo.getAddress().length() > 500) {
 			log.warn("地址过长: address={}", contactsUserVo.getAddress());
 			return false;
 		}
-
 		// 验证备注长度
 		if (contactsUserVo.getRemarks() != null && contactsUserVo.getRemarks().length() > 1000) {
 			log.warn("备注过长: remarks={}", contactsUserVo.getRemarks());
 			return false;
 		}
-
 		return true;
 	}
 
@@ -344,16 +333,16 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 			contactsUserVo.getPhone(),
 			currentId
 		);
-
 		if (checkContactsVo != null) {
+			StringBuilder errorMessage = new StringBuilder();
 			if (checkContactsVo.getNameCount() > 0) {
-				log.warn("联系人名称已存在: name={}", contactsUserVo.getName());
-				throw new RuntimeException("联系人名称已存在!");
+				errorMessage.append("联系人名称已存在: name=").append(contactsUserVo.getName()).append(";");
 			}
-
 			if (checkContactsVo.getPhoneCount() > 0) {
-				log.warn("联系人电话已存在: phone={}", contactsUserVo.getPhone());
-				throw new RuntimeException("联系人电话已存在!");
+				errorMessage.append("联系人电话已存在: phone=").append(contactsUserVo.getPhone()).append(";");
+			}
+			if (errorMessage.length() > 0) {
+				throw new SystemException(ResultEnum.PARAM_ERROR, errorMessage.toString());
 			}
 		}
 	}
@@ -378,7 +367,6 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 		importParams.setNeedVerify(false);
 		// 告诉 easypoi 我们自定义的验证器
 		importParams.setDictHandler(iExcelDictHandler);
-
 		try {
 			result = ExcelImportUtil.importExcelMore(file.getInputStream(), ContactsUserImportVo.class, importParams);
 			log.info("Excel解析成功: 共{}条数据", result.getList().size());

@@ -104,7 +104,12 @@
 		SELECT
 		<include refid="Vo_Column_List"/>
 		FROM contacts_user_relation_info_t
-		WHERE is_delete = 0 AND is_enabled = 1 AND (user_id IS NULL OR user_id = #{userId})
+		WHERE is_delete = 0 AND is_enabled = 1
+		<if test="'super_super' != roleCode">
+			and (user_id in (<include refid="com.alex.finance.common.mapper.CommonMapper.familyGroup"/>)
+				or user_id is null
+			)
+		</if>
 		ORDER BY importance DESC, operate_time DESC
 	</select>
 
