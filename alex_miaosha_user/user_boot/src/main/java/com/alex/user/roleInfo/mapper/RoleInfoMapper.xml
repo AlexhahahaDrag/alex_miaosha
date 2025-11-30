@@ -3,7 +3,7 @@
 <mapper namespace="com.alex.user.roleInfo.mapper.RoleInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.alex.user.roleInfo.entity.RoleInfo">
+    <resultMap id="RoleInfoBaseResultMap" type="com.alex.user.roleInfo.entity.RoleInfo">
         <result column="id" property="id" />
         <result column="creator" property="creator" />
         <result column="create_time" property="createTime" />

@@ -28,5 +28,4 @@ management:
 
 mybatis-plus:
   mapper-locations:
-    - classpath:com/alex/user/**/mapper/*Mapper.xml
     - classpath*:com/alex/user/**/mapper/*Mapper.xml
