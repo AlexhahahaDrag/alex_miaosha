@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "相关接口", tags = {"相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//account-record-info")
+@RequestMapping("/api/v1/account-record-info")
 public class AccountRecordInfoController {
 
     private final AccountRecordInfoService accountRecordInfoService;
@@ -45,8 +45,8 @@ public class AccountRecordInfoController {
             @ApiImplicitParam(value = "查询条件", name = "accountRecordInfoVo", dataTypeClass = AccountRecordInfoVo.class)}
     )
     public Result<Page<AccountRecordInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                 @RequestBody(required = false) AccountRecordInfoVo accountRecordInfoVo) {
+                                                     @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                     @RequestBody(required = false) AccountRecordInfoVo accountRecordInfoVo) {
         return Result.success(accountRecordInfoService.getPage(pageNum, pageSize, accountRecordInfoVo));
     }
 
