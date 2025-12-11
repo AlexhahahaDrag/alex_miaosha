@@ -28,8 +28,8 @@
         <a-button key='back' @click='handleCancel'>取消</a-button>
         <a-button key='submit' type='primary' :loading='loading' @click='handleOk'>保存</a-button>
       </template>
-      <a-form ref='formRef' name='${entity}Form' class='ant-advanced-search-form' :model='formState' @finish='onFinish'
-        @finishFailed='onFinishFailed' :rules='rulesRef' :label-col='labelCol' :wrapper-col='wrapperCol'>
+      <a-form ref='formRef' name='${entity}Form' class='ant-advanced-search-form' :model='formState'
+         :rules='rulesRef' :label-col='labelCol' :wrapper-col='wrapperCol'>
 <% var num = 0; %>
 <% var pre = 0; %>
 <% for(field in table.fields){
@@ -218,40 +218,30 @@ const save${entity}Manager = (): void => {
     });
 }
 
-const onFinish = (values: any): void => {
-  console.log('Success:', values);
-};
-
-const onFinishFailed = (errorInfo: any): void => {
-  console.log('Failed:', errorInfo);
-};
-
 const init = (): void => {
 <% if(hasDict) { %>
   getDictInfoList();
 <% } %>
-  if (props.modelInfo) {
-    if (props.modelInfo.${id}) {
-      get${entity}Detail(props.modelInfo.${id})
-        .then((res) => {
-          if (res.code == '200') {
-            formState.value = res.data;
-            modelConfig.confirmLoading = false;
-          } else {
-            message.error((res && res.message) || '查询失败！');
-          }
-        })
-        .catch((error: any) => {
-          let data = error?.response?.data;
-          if (data) {
-            message.error((data?.message) || '查询失败！');
-          }
-        });
-    } else {
-      modelConfig.confirmLoading = false;
-      formState.value = {
-      };
-    }
+  if (props.modelInfo.${id}) {
+    get${entity}Detail(props.modelInfo.${id})
+      .then((res) => {
+        if (res.code == '200') {
+          formState.value = res.data;
+          modelConfig.confirmLoading = false;
+        } else {
+          message.error((res && res.message) || '查询失败！');
+        }
+      })
+      .catch((error: any) => {
+        let data = error?.response?.data;
+        if (data) {
+          message.error((data?.message) || '查询失败！');
+        }
+      });
+  } else {
+    modelConfig.confirmLoading = false;
+    formState.value = {
+    };
   }
 }
 

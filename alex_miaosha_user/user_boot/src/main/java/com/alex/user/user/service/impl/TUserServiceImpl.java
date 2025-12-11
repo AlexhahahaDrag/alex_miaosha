@@ -570,7 +570,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                //以后可以security中取得SecurityUser信息
+                // 以后可以security中取得SecurityUser信息
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

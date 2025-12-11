@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +46,6 @@ public class TokenRefreshService {
 
             // 获取token过期时间
             Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             // 计算剩余存活时间（秒）
             long survivalSecond = calculateSurvivalTime(expirationDate);
@@ -84,7 +82,7 @@ public class TokenRefreshService {
     }
 
     /**
-     * 内部刷新token方法
+     * @description: 内部刷新token方法
      *
      * @param token JWT token
      * @param base64Secret 密钥
@@ -120,41 +118,6 @@ public class TokenRefreshService {
 
         } catch (Exception e) {
             log.error("刷新token失败，uuidToken: {}, 错误: {}", uuidToken, e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 检查token是否需要刷新
-     *
-     * @param token JWT token
-     * @param base64Secret 密钥
-     * @return 是否需要刷新
-     */
-    public boolean needsRefresh(String token, String base64Secret) {
-        try {
-            Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
-            long survivalSecond = calculateSurvivalTime(expirationDate);
-            return survivalSecond < audience.getRefreshSecond();
-        } catch (Exception e) {
-            log.error("检查token是否需要刷新失败: {}", e.getMessage(), e);
-            return false;
-        }
-    }
-
-    /**
-     * 获取token剩余存活时间
-     *
-     * @param token JWT token
-     * @param base64Secret 密钥
-     * @return 剩余秒数
-     */
-    public long getTokenSurvivalTime(String token, String base64Secret) {
-        try {
-            Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
-            return calculateSurvivalTime(expirationDate);
-        } catch (Exception e) {
-            log.error("获取token剩余存活时间失败: {}", e.getMessage(), e);
-            return 0;
         }
     }
 }
