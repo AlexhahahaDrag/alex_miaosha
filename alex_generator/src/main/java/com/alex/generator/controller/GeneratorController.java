@@ -39,12 +39,16 @@ public class GeneratorController {
             @ApiImplicitParam(value = "表格列表", name = "tableNames", defaultValue = "t_user"),
             @ApiImplicitParam(value = "表格列表名称", name = "tableNameInfo", defaultValue = "用户管理"),
             @ApiImplicitParam(value = "作者", name = "author", defaultValue = "alex")})
-    public Result<Boolean> generate(@RequestParam(value = "moduleName") String moduleName,
-                                    @RequestParam(value = "javaPathName") String javaPathName,
-                                    @RequestParam(value = "javaPath") String javaPath,
-                                    @RequestParam(value = "tableNames") String[] tableNames,
-                                    @RequestParam(value = "tableNameInfo") String[] tableNameInfo,
-                                    @RequestParam(value = "author", required = false) String author) throws Exception {
+    public Result<Boolean> generate(
+            // AI Agent: 将默认值放到 @RequestParam(defaultValue=...)，便于 doc.html 默认回填展示
+            @RequestParam(value = "moduleName", required = false, defaultValue = "alex_miaosha_finance") String moduleName,
+            @RequestParam(value = "javaPathName", required = false, defaultValue = "财务管理") String javaPathName,
+            @RequestParam(value = "javaPath", required = false, defaultValue = "finance") String javaPath,
+            // AI Agent: Spring 对数组参数支持逗号分隔，默认值写成单值/逗号分隔皆可
+            @RequestParam(value = "tableNames", required = false, defaultValue = "t_user") String[] tableNames,
+            @RequestParam(value = "tableNameInfo", required = false, defaultValue = "用户管理") String[] tableNameInfo,
+            @RequestParam(value = "author", required = false, defaultValue = "alex") String author
+    ) throws Exception {
         return Result.success(generatorService.generator(moduleName, javaPathName, javaPath, tableNames, tableNameInfo, author));
     }
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import ${package.Vo}.${table.voName};
 
 /**
- * @description:  ${table.comment!}controller
+ * @description:  ${table.comment!}控制器 api
  * @author:       ${author}
  * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
  * @version:      1.0.0

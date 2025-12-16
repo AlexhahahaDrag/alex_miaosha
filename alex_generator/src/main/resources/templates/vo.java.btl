@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 <% } %>
 
 /**
- * @description:  ${table.comment!}Vo
+ * @description:  ${table.comment!}视图
  * @author:       ${author}
  * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
  * @version:      1.0.0

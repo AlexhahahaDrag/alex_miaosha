@@ -69,13 +69,24 @@ public class GeneratorServiceImpl implements GeneratorService {
         String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
         String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
-        String fileName = StringUtils.camel(tableName.startsWith("t_") ? tableName.substring(2) : tableName);
+        // 表名规范化：去掉前缀 t_ 以及后缀 _t，再转为驼峰（用于生成目录/文件名）
+        String normalizedTableName = tableName;
+        if (StringUtils.isNotBlank(generatorConfig.getTablePrefix()) &&
+                normalizedTableName.startsWith(generatorConfig.getTablePrefix())) {
+            normalizedTableName = normalizedTableName.substring(generatorConfig.getTablePrefix().length());
+        }
+        if (StringUtils.isNotBlank(generatorConfig.getTableSuffix()) &&
+                normalizedTableName.endsWith(generatorConfig.getTableSuffix())) {
+            normalizedTableName = normalizedTableName.substring(0, normalizedTableName.length() - generatorConfig.getTableSuffix().length());
+        }
+        String fileName = StringUtils.camel(normalizedTableName);
         String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
         List<IFill> list = Lists.newArrayList();
         DataSourceConfig.Builder dataSourceConfig = dataSourceConfig(databaseConfig);
-        Map<OutputFile, String> pathMap = pathMap(fileName, separator, javaPath, projectPath, clientPathProject);
+        Map<OutputFile, String> pathMap = pathMap(fileName, normalizedTableName,
+                separator, javaPath, projectPath, clientPathProject);
         FastAutoGenerator fastAutoGenerator = fastAutoGenerator(dataSourceConfig, projectPath, author, boot, fileName, api, pathMap, tableName, javaPath, list);
         fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
         // 插入菜单数据到菜单表中
@@ -119,8 +130,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     /**
      * param menuInfoList
      * param menuName     description: 根据菜单名称查询菜单信息
-     *                     author:      majf
-     *                     return:      com.alex.generator.vo.MenuSearchInfo
+     * author:      majf
+     * return:      com.alex.generator.vo.MenuSearchInfo
      */
     private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {
         MenuSearchInfo menuSearchInfo = new MenuSearchInfo();
@@ -242,22 +253,51 @@ public class GeneratorServiceImpl implements GeneratorService {
         return menuInfoVoResult.getData();
     }
 
-    private Map<OutputFile, String> pathMap(String fileName, String separator, String javaPath, String projectPath, String clientPathProject) {
+    private Map<OutputFile, String> pathMap(String fileName,
+                                            String fileOriginalName,
+                                            String separator,
+                                            String javaPath,
+                                            String projectPath,
+                                            String clientPathProject) {
+        // AI Agent: 统一“先算 basePath，再派生子目录”的写法，减少重复字符串拼接，便于后续维护扩展
         String bootDir = "/java/com/alex" + separator + javaPath;
         String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
-        String controllerPath = projectPath + bootDir + separator + fileName + separator + "controller";
-        String entityPath = projectPath + bootDir + separator + fileName + separator + "entity";
-        String mapperPath = projectPath + bootDir + separator + fileName + separator + "mapper";
-        String servicePath = projectPath + bootDir + separator + fileName + separator + "service";
-        String voPath = clientPathProject + apiDir + separator + fileName + separator + "vo";
-        String clientPath = clientPathProject + apiDir + separator + fileName + separator + "api";
-        String vuePath = StringUtils.isNotEmpty(
-                generatorConfig.getVuePath()) ? generatorConfig.getVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-        String tsPath = StringUtils.isNotEmpty(generatorConfig.getTsPath()) ? generatorConfig.getTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-        String mobileTsTsPath = StringUtils.isNotEmpty(generatorConfig.getMobileTsPath()) ?
-                generatorConfig.getMobileTsPath() + separator + javaPath : projectPath + bootDir + separator + "vue";
-        String mobileVuePath = StringUtils.isNotEmpty(
-                generatorConfig.getMobileVuePath()) ? generatorConfig.getMobileVuePath() + separator + javaPath : projectPath + bootDir + separator + "vue";
+
+        // AI Agent: 目录命名规范：将下划线改为中划线（_ -> -），用于前端目录（更贴近 kebab-case）
+        // 例如：user_role -> user-role
+        String fileOriginalNameKebab = StringUtils.isBlank(fileOriginalName)
+                ? fileOriginalName
+                : fileOriginalName.replace("_", "-");
+        // Boot 项目输出根目录（controller/entity/mapper/service）
+        String bootModuleRoot = projectPath + bootDir + separator + fileName;
+        String controllerPath = bootModuleRoot + separator + "controller";
+        String entityPath = bootModuleRoot + separator + "entity";
+        String mapperPath = bootModuleRoot + separator + "mapper";
+        String servicePath = bootModuleRoot + separator + "service";
+
+        // Client 项目输出根目录（vo/client）
+        String apiModuleRoot = clientPathProject + apiDir + separator + fileName;
+        String voPath = apiModuleRoot + separator + "vo";
+        String clientPath = apiModuleRoot + separator + "api";
+
+        // Vue/TS 输出根目录
+        String vueRoot = StringUtils.isNotEmpty(generatorConfig.getVuePath())
+                ? generatorConfig.getVuePath() + separator + javaPath
+                : projectPath + bootDir + separator + "vue";
+
+        // Mobile 输出根目录
+        String mobileTsTsRoot = StringUtils.isNotEmpty(generatorConfig.getMobileTsPath())
+                ? generatorConfig.getMobileTsPath() + separator + javaPath
+                : projectPath + bootDir + separator + "vue";
+        String mobileVueRoot = StringUtils.isNotEmpty(generatorConfig.getMobileVuePath())
+                ? generatorConfig.getMobileVuePath() + separator + javaPath
+                : projectPath + bootDir + separator + "vue";
+
+        // 具体业务模块目录（vueRoot/fileName）
+        String vueModuleRoot = vueRoot + separator + fileOriginalNameKebab;
+        String tsModuleApiRoot = vueModuleRoot + separator + "api";
+        String mobileModuleRoot = mobileTsTsRoot + separator + fileOriginalNameKebab;
+        String mobileDetailRoot = mobileVueRoot + separator + fileOriginalNameKebab + separator + fileOriginalNameKebab + "-detail";
         Map<OutputFile, String> pathMap = new HashMap<>();
         pathMap.put(OutputFile.mapperXml, mapperPath + separator);
         pathMap.put(OutputFile.service, servicePath + separator);
@@ -267,13 +307,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.vo, voPath + separator);
         pathMap.put(OutputFile.client, clientPath + separator);
         pathMap.put(OutputFile.controller, controllerPath + separator);
-        pathMap.put(OutputFile.detail, vuePath + separator + fileName + separator + fileName + "Detail");
-        pathMap.put(OutputFile.list, vuePath + separator + fileName);
-        // TODO (majf) 2025/6/6 11:18 测试ts的路径
-        pathMap.put(OutputFile.ts, tsPath + separator + fileName + separator + "api");
-        pathMap.put(OutputFile.mobileTsTs, mobileTsTsPath + separator + fileName);
-        pathMap.put(OutputFile.mobileDetail, mobileVuePath + separator + fileName + separator + fileName + "Detail");
-        pathMap.put(OutputFile.mobileVue, mobileVuePath + separator + fileName);
+        pathMap.put(OutputFile.detail, vueModuleRoot + separator + fileOriginalNameKebab + "-detail");
+        pathMap.put(OutputFile.list, vueModuleRoot);
+        pathMap.put(OutputFile.ts, tsModuleApiRoot);
+        pathMap.put(OutputFile.mobileTsTs, mobileModuleRoot);
+        pathMap.put(OutputFile.mobileDetail, mobileDetailRoot);
+        pathMap.put(OutputFile.mobileVue, mobileVueRoot + separator + fileOriginalNameKebab);
         return pathMap;
     }
 
@@ -337,6 +376,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         fastAutoGenerator.strategyConfig(builder -> {
             builder.addInclude(tableName)
                     .addTablePrefix(generatorConfig.getTablePrefix())
+                    .addTableSuffix(generatorConfig.getTableSuffix())
                     .entityBuilder()
                     .superClass(BaseEntity.class)
                     .disableSerialVersionUID()
@@ -381,13 +421,13 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .addIgnoreColumns("") //设置忽略字段
                     .addTableFills(list)
                     .enableActiveRecord()
-                    //配置client
+                    //配置 client
                     .clientBuilder()
                     .formatClientFileName("%sApi")
                     .enableRestStyle()
-                    //配置ts
+                    //配置 ts
                     .tsTsBuilder()
-                    .formatTsTsFileName("%sTs")
+                    .formatTsTsFileName("index")
                     .listVueBuilder()
                     .formatListVueFileName("index")
                     .detailVueBuilder()
@@ -410,7 +450,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             builder.beforeOutputFile((tableInfo, objectMap) -> {
 //                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
 //                                //配置other模板及类名
-            }).customMap(Collections.singletonMap("javaPath", javaPath)).build();
+            }).customMap(Collections.singletonMap("javaPath", javaPath));
         });
         fastAutoGenerator.templateEngine(new BeetlTemplateEngine());
         return fastAutoGenerator;

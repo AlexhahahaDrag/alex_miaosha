@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 <% } %>
 import com.alex.api.user.annotation.DataPermission;
+import java.util.List;
 
 /**
  * @description:  ${table.comment!} mapper
