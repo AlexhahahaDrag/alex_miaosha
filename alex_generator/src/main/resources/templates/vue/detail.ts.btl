@@ -1,18 +1,23 @@
-<% for(field in table.fields){
- if(field.propertyType == 'BigDecimal'){ %>
-import { Dayjs } from 'dayjs';
-<%  break;}
- } %>
+import type { Rule } from 'ant-design-vue/es/form/interface';
 
-export interface ${entity}Detail {
-  id?: number,
-<% for(field in table.fields){ %>
-    <% if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
-${field.propertyName}?: number;
-    <% } else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'LocalDate' || field.propertyType == 'ZonedDateTime') { %>
-${field.propertyName}?: Dayjs | string;
-    <% } else { %>
-${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-    <% } %>
+export const rulesRef: Record<string, Rule[]> = {
+<% for(field in table.fields){
+       if(field.keyFlag) {
+            continue;
+       }
+  %>
+	${field.propertyName}: [
+		{
+			required: true,
+  <% if (strutil.contain(field.comment, '字典')) { %>
+			message: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}不能为空！',
+  <% } else { %>
+			message: '${field.comment}不能为空！',
+  <% } %>
+		},
+	],
 <% } %>
-}
+};
+
+export const labelCol = ref<{ span: number }>({ span: 5 });
+export const wrapperCol = ref<{ span: number }>({ span: 19 });

@@ -214,10 +214,11 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     /**
-     * @param permissionInfoList
-     * @param permissionCode     description: 根据菜单名称查询菜单信息
-     *                           author:      majf
-     *                           return:      com.alex.generator.vo.MenuSearchInfo
+     * param permissionInfoList
+     * param permissionCode
+     * description: 根据菜单名称查询菜单信息
+     * author:      majf
+     * return:      com.alex.generator.vo.MenuSearchInfo
      */
     private PermissionSearchInfo findPermissionInfo(List<PermissionInfoVo> permissionInfoList, String permissionCode) {
         PermissionSearchInfo permissionSearchInfo = new PermissionSearchInfo();
@@ -371,7 +372,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .mobileTs(boot + "vue" + file)
                     .mobileVue(boot + "vue" + file)
                     .mobileTsTs(boot + "vue" + file)
-                    .pathInfo(pathMap); // 设置mapperXml生成路径
+                    .pathInfo(pathMap); // 设置 mapperXml 生成路径
         });
         fastAutoGenerator.strategyConfig(builder -> {
             builder.addInclude(tableName)
@@ -417,7 +418,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .disableSerialVersionUID()
                     .enableTableFieldAnnotation()
                     .columnNaming(NamingStrategy.underline_to_camel)
-                    .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())//设置super类字段
+                    .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())//设置 super 类字段
                     .addIgnoreColumns("") //设置忽略字段
                     .addTableFills(list)
                     .enableActiveRecord()
@@ -448,8 +449,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         });
         fastAutoGenerator.injectionConfig(builder -> {
             builder.beforeOutputFile((tableInfo, objectMap) -> {
-//                                ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
-//                                //配置other模板及类名
+            // ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
+            //配置other模板及类名
             }).customMap(Collections.singletonMap("javaPath", javaPath));
         });
         fastAutoGenerator.templateEngine(new BeetlTemplateEngine());

@@ -83,13 +83,9 @@ public class TemplateConfig {
     }
 
     public TemplateConfig disable(@NotNull TemplateType... templateTypes) {
-        if (templateTypes != null && templateTypes.length > 0) {
-            TemplateType[] var2 = templateTypes;
-            int var3 = templateTypes.length;
-
-            for(int var4 = 0; var4 < var3; ++var4) {
-                TemplateType templateType = var2[var4];
-                switch(templateType) {
+        if (templateTypes.length > 0) {
+            for (TemplateType templateType : templateTypes) {
+                switch (templateType) {
                     case ENTITY:
                         this.entity = null;
                         this.entityKt = null;

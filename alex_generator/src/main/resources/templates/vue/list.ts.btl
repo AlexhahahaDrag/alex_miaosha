@@ -1,24 +1,10 @@
 import type { TableColumnsType } from 'ant-design-vue';
 
-<% for(field in table.fields){
+<% for(field in table.fields) {
  if(field.propertyType == 'LocalDateTime' || field.propertyType == 'LocalDate'){ %>
-import { Dayjs } from 'dayjs';
+import type {  Dayjs } from 'dayjs';
 <%  break;}
  } %>
-export interface SearchInfo {
-<% for(field in table.fields){
-    if(field.keyFlag) {
-        continue;
-    }
-if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
-  ${field.propertyName}?: number;
-  <% } else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'LocalDate') { %>
-  ${field.propertyName}?: Dayjs | string;
-<% } else { %>
-  ${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-<% } %>
-<% } %>
-}
 
 export const columns = ref<TableColumnsType>([
 <% for(field in table.fields){
@@ -45,30 +31,27 @@ export const columns = ref<TableColumnsType>([
 ]);
 
 export interface ${entity}Data {
-<% for(field in table.fields){ %>
-    <% if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
-  ${field.propertyName}: number;
+    id?: number;
+<% for(field in table.fields){
+    if(field.propertyType == 'Long' || field.propertyType == 'Integer' || field.propertyType == 'BigDecimal'){ %>
+	${field.propertyName}?: number;
     <% } else if (field.propertyType == 'LocalDateTime') { %>
-  ${field.propertyName}?: Dayjs | string;
+	${field.propertyName}?: Dayjs | string;
     <% } else { %>
-  ${field.propertyName}: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
-    <% } %>
-<% } %>
+	${field.propertyName}?: ${strutil.toLowerCase(strutil.subStringTo(field.propertyType, 0, 1)) + strutil.subString (field.propertyType, 1)};
+    <% }
+} %>
 }
 
 export const labelCol = ref({ span: 5 });
 export const wrapperCol = ref({ span: 19 });
 
-export const labelMap = ref<any>({
-<% for(field in table.fields){
-      if(field.keyFlag) {
-           continue;
-      }
- %>
-    <% if (strutil.contain(field.comment, '字典')) { %>
-	${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
-    <% } else { %>
-	${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
-    <% } %>
-<% } %>
+export const labelMap = ref<Record<string, { name: string; label: string }>>({
+    <% for(field in table.fields){
+        if (strutil.contain(field.comment, '字典')) { %>
+	${field.propertyName}: { name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
+        <% } else { %>
+	${field.propertyName}: { name: '${field.propertyName}', label: '${field.comment}'},
+        <% }
+} %>
 });

@@ -159,7 +159,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getDetailTsName()) && StringUtils.isNotBlank(detailTsPath)) {
             this.getTemplateFilePath(TemplateConfig::getDetailTs).ifPresent((detailTs) -> {
                 String detailTsName = tableInfo.getDetailTsName();
-                String detailTsFile = String.format(detailTsPath + File.separator + tableInfo.getDetailTsName() + TS, detailTsName);
+                String detailTsFile = String.format(detailTsPath + File.separator + "config" + File.separator + tableInfo.getDetailTsName() + TS, detailTsName);
                 this.outputFile(new File(detailTsFile), objectMap, detailTs);
             });
         }
@@ -181,7 +181,7 @@ public abstract class AbstractTemplateEngine {
         if (StringUtils.isNotBlank(tableInfo.getListTsName()) && StringUtils.isNotBlank(tsPath)) {
             this.getTemplateFilePath(TemplateConfig::getListTs).ifPresent((listTs) -> {
                 String clientName = tableInfo.getClientName();
-                String tsTsFile = String.format(tsPath + File.separator + tableInfo.getListTsName() + TS, clientName);
+                String tsTsFile = String.format(tsPath + File.separator + "config" + File.separator + tableInfo.getListTsName() + TS, clientName);
                 this.outputFile(new File(tsTsFile), objectMap, listTs);
             });
         }

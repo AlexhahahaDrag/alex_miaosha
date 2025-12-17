@@ -54,7 +54,7 @@ public class Service implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
+        Map<String, Object> data = new HashMap<>();
         data.put("superServiceClassPackage", this.superServiceClass);
         data.put("superServiceClass", ClassUtils.getSimpleName(this.superServiceClass));
         data.put("superServiceImplClassPackage", this.superServiceImplClass);

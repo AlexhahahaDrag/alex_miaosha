@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class PathInfoHandler {
-    private final Map<OutputFile, String> pathInfo = new HashMap();
+    private final Map<OutputFile, String> pathInfo = new HashMap<>();
     private final String outputDir;
     private final PackageConfig packageConfig;
 

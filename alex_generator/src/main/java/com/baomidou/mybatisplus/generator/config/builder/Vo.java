@@ -52,10 +52,10 @@ public class Vo implements ITemplate {
     private ConverterFileName converterFileName;
 
     private Vo() {
-        this.superVoColumns = new HashSet();
-        this.ignoreColumns = new HashSet();
+        this.superVoColumns = new HashSet<>();
+        this.ignoreColumns = new HashSet<>();
         this.serialVersionUID = true;
-        this.tableFillList = new ArrayList();
+        this.tableFillList = new ArrayList<>();
         this.naming = NamingStrategy.underline_to_camel;
         this.columnNaming = null;
         this.converterFileName = (voName) -> {
@@ -323,9 +323,8 @@ public class Vo implements ITemplate {
         public Vo get() {
             String superVoClass = this.vo.superVoClass;
             if (StringUtils.isNotBlank(superVoClass)) {
-                Optional var10000 = this.tryLoadClass(superVoClass);
-                Vo var10001 = this.vo;
-                var10000.ifPresent(var10001::convertSuperVoColumns);
+                Optional<Class<?>> var10000 = this.tryLoadClass(superVoClass);
+                var10000.ifPresent(this.vo::convertSuperVoColumns);
             } else if (!this.vo.superVoColumns.isEmpty()) {
                 Vo.LOGGER.warn("Forgot to set Vo supper class ?");
             }

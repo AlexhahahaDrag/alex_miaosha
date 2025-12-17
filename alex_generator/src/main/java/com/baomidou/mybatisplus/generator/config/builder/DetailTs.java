@@ -20,7 +20,7 @@ public class DetailTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private DetailTs() {
-        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "DetailTs";
+        this.converterFileName = (entityName) -> "index";
     }
 
     @NotNull
@@ -30,7 +30,7 @@ public class DetailTs implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
+        Map<String, Object> data = new HashMap<>();
         data.put("controllerMappingHyphen", StringUtils.camelToHyphen(tableInfo.getEntityPath()));
         return data;
     }

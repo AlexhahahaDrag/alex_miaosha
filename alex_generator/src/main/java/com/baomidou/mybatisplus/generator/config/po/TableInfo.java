@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 public class TableInfo {
     private final StrategyConfig strategyConfig;
     private final GlobalConfig globalConfig;
-    private final Set<String> importPackages = new TreeSet();
-    private final Set<String> importVoPackages = new TreeSet();
+    private final Set<String> importPackages = new TreeSet<>();
+    private final Set<String> importVoPackages = new TreeSet<>();
     private boolean convert;
     private String name;
     private String comment;
@@ -32,9 +32,9 @@ public class TableInfo {
     private String serviceName;
     private String serviceImplName;
     private String controllerName;
-    private final List<TableField> fields = new ArrayList();
+    private final List<TableField> fields = new ArrayList<>();
     private boolean havePrimaryKey;
-    private final List<TableField> commonFields = new ArrayList();
+    private final List<TableField> commonFields = new ArrayList<>();
     private String fieldNames;
     private String voName;
     private String clientName;

@@ -319,12 +319,12 @@ public class StrategyConfig {
     public boolean startsWithTablePrefix(@NotNull String tableName) {
         Stream<String> var10000 = this.tablePrefix.stream();
         tableName.getClass();
-        return var10000.anyMatch(t -> tableName.startsWith(t));
+        return var10000.anyMatch(tableName::startsWith);
     }
 
     public void validate() {
-        boolean isInclude = this.getInclude().size() > 0;
-        boolean isExclude = this.getExclude().size() > 0;
+        boolean isInclude = !this.getInclude().isEmpty();
+        boolean isExclude = !this.getExclude().isEmpty();
         if (isInclude && isExclude) {
             throw new IllegalArgumentException("<strategy> 标签中 <include> 与 <exclude> 只能配置一项！");
         } else if (this.getNotLikeTable() != null && this.getLikeTable() != null) {

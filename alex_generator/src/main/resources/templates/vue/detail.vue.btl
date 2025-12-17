@@ -5,6 +5,24 @@
            hasDate = true;
         }
     }
+    // 将实体名转换为 kebab-case（把大写转为 - 小写），用于前端目录
+    // 例：CouponInfo -> coupon-info
+    var entityCamel = strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString(entity, 1);
+    var entityKebab = "";
+    // Beetl: for 循环变量需先声明，否则会出现 VAR_NOT_DEFINED
+    var i = 0;
+    for(; i < strutil.length(entityCamel); i++){
+        var ch = strutil.subStringTo(entityCamel, i, i + 1);
+        // 判断是否为大写字母：toUpperCase == 自己 且 toLowerCase != 自己
+        if(ch == strutil.toUpperCase(ch) && ch != strutil.toLowerCase(ch)){
+            entityKebab += "-" + strutil.toLowerCase(ch);
+        } else {
+            entityKebab += ch;
+        }
+    }
+    if(strutil.length(entityKebab) > 0 && strutil.subStringTo(entityKebab, 0, 1) == "-"){
+        entityKebab = strutil.subStringTo(entityKebab, 1, strutil.length(entityKebab));
+    }
     var hasDict = false;
     var dictType = '';
     for(field in table.fields){
@@ -18,18 +36,37 @@
     }
 %>
 <template>
-  <div>
-    <a-modal :open='props.open'
-            :width="props.modelInfo && props.modelInfo.width ? props.modelInfo.width : '1000px'"
-            :title="props.modelInfo && props.modelInfo.title ? props.modelInfo.title : 'Basic Modal'"
-            @ok='handleOk' okText='保存' :confirmLoading='modelConfig.confirmLoading'
-            :destroyOnClose='modelConfig.destroyOnClose' @cancel='handleCancel'>
-      <template #footer>
-        <a-button key='back' @click='handleCancel'>取消</a-button>
-        <a-button key='submit' type='primary' :loading='loading' @click='handleOk'>保存</a-button>
-      </template>
-      <a-form ref='formRef' name='${entity}Form' class='ant-advanced-search-form' :model='formState'
-         :rules='rulesRef' :label-col='labelCol' :wrapper-col='wrapperCol'>
+	<div>
+		<a-modal
+			:open="props.open"
+			:width="props.modelInfo?.width || '1000px'"
+			:title="props.modelInfo?.title || 'Basic Modal'"
+			@ok="handleOk"
+			okText="保存"
+			:confirmLoading="loading"
+			:destroyOnClose="true"
+			@cancel="handleCancel"
+		>
+			<template #footer>
+				<a-button key="back" @click="handleCancel">取消</a-button>
+				<a-button
+					key="submit"
+					type="primary"
+					:loading="loading"
+					@click="handleOk"
+				>
+					保存
+				</a-button>
+			</template>
+			<a-form
+				ref="formRef"
+				name="CouponInfoForm"
+				class="ant-advanced-search-form"
+				:model="formState"
+				:rules="rulesRef"
+				:label-col="labelCol"
+				:wrapper-col="wrapperCol"
+			>
 <% var num = 0; %>
 <% var pre = 0; %>
 <% for(field in table.fields){
@@ -41,7 +78,10 @@
         <a-row :gutter='24'>
   <% } %>
           <a-col :span='12'>
-            <a-form-item :name="labelMap['${field.propertyName}'].name" :label="labelMap['${field.propertyName}'].label">
+            <a-form-item
+                :name="labelMap['${field.propertyName}'].name"
+                :label="labelMap['${field.propertyName}'].label"
+            >
               <% if (strutil.contain(field.comment, '字典')) { %>
               <a-select ref="select" v-model:value="formState.${field.propertyName}"
                 :placeholder="'请选择' + labelMap['${field.propertyName}'].label"
@@ -50,10 +90,17 @@
                 :allowClear="true">
               </a-select>
               <% } else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'Date') { %>
-              <a-date-picker v-model:value="formState.${field.propertyName}" :format="'YYYY-MM-DD'"
-                              :getPopupContainer="(triggerNode: any) => { return triggerNode.parentNode }" />
+              <a-date-picker
+                v-model:value="formState.${field.propertyName}"
+                :format="'YYYY-MM-DD'"
+                :getPopupContainer="(triggerNode: any) => { return triggerNode.parentNode }"
+              />
               <% } else { %>
-              <a-input v-model:value='formState.${field.propertyName}' :placeholder="'请填写' + labelMap['${field.propertyName}'].label"></a-input>
+              <a-input
+                v-model:value='formState.${field.propertyName}'
+                :placeholder="'请填写' + labelMap['${field.propertyName}'].label"
+              >
+              </a-input>
               <% } %>
             </a-form-item>
           </a-col>
@@ -70,196 +117,138 @@
   </div>
 </template>
 <script lang='ts' setup>
-import { ${entity}Detail } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}DetailTs';
+import { message, type FormInstance } from 'ant-design-vue';
 import {
-  get${entity}Detail,
-  addOrEdit${entity},
-} from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
-import { message, FormInstance } from 'ant-design-vue';
+	get${entity}Detail,
+	add${entity},
+	edit${entity},
+} from '@/views/${javaPath}/${entityKebab}/api/index';
+import type { ModelInfo } from '@/views/common/config';
+import type { ${entity}Data } from '../config';
+import { labelMap } from '../config';
+import { rulesRef, labelCol, wrapperCol } from './config';
 <% if(hasDict) { %>
-import { dictInfo } from "@/views/finance/dict/dict";
-import { getDictList } from "@/api/finance/dict/dictManager";
+import { useDictInfo } from '@/composables/useDictInfo';
 <% } %>
-import { ModelInfo } from '../${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}ListTs';
+<% if (hasDict) { %>
 
-const labelCol = ref({ span: 5 });
-const wrapperCol = ref({ span: 19 });
+<% } %>
+<% if (hasDict) {
+    var dict = '';
+    for(field in table.fields){
+        if(field.keyFlag) {
+             continue;
+        }
+        if (strutil.contain(field.comment, '字典')) { %>
+        dict += ${field.propertyName} + ',';
+    } %>
+const { getDictByType } = useDictInfo('${dict}');
+<% } %>
+<% if (hasDict) { %>
+
+<% } %>
+<% if (hasDict) { %>
+    for(field in table.fields){
+        if(field.keyFlag) {
+             continue;
+        }
+        if (strutil.contain(field.comment, '字典')) { %>
+const ${field.propertyName}List = computed(() => getDictByType('${field.propertyName}'));
+        <% }
+    }
+} %>
 
 let loading = ref<boolean>(false);
 
 const formRef = ref<FormInstance>();
 
-const labelMap = ref<any>(
-{
-<% for(field in table.fields){
-      if(field.keyFlag) {
-           continue;
-      }
- %>
-    <% if (strutil.contain(field.comment, '字典')) { %>
-    ${field.propertyName}: {name: '${field.propertyName}', label: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}'},
-    <% } else { %>
-    ${field.propertyName}: {name: '${field.propertyName}', label: '${field.comment}'},
-    <% } %>
-<% } %>
-});
-
-const rulesRef = reactive({
-<% for(field in table.fields){
-       if(field.keyFlag) {
-            continue;
-       }
-  %>
-  ${field.propertyName}: [
-    {
-      required: true,
-  <% if (strutil.contain(field.comment, '字典')) { %>
-      message: '${strutil.subStringTo(field.comment, 0, strutil.index(field.comment, '字典') - 1)}不能为空！',
-  <% } else { %>
-      message: '${field.comment}不能为空！',
-  <% } %>
-    },
-  ],
-<% } %>
-});
-
 const modelConfig = {
-  confirmLoading: true,
-  destroyOnClose: true,
+	confirmLoading: true,
+	destroyOnClose: true,
 };
 
 interface Props {
-  open?: boolean;
-  modelInfo?: ModelInfo;
+	open?: boolean;
+	modelInfo?: ModelInfo;
 }
 const props = defineProps<Props>();
 
-let formState = ref<${entity}Detail>({});
+let formState = ref<${entity}Data>({});
 
-<% if (hasDict) { %>
-<% for(field in table.fields){
-    if(field.keyFlag) {
-         continue;
-    }
-%>
-  <% if (strutil.contain(field.comment, '字典')) { %>
-let ${field.propertyName}List = ref<dictInfo[]>([]);
-  <% } %>
-<% } %>
-
-const getDictInfoList = () => {
-  getDictList("${dictType}").then((res) => {
-    if (res.code == "200") {
-<% for(field in table.fields){
-    if(field.keyFlag) {
-         continue;
-    }
-%>
-  <% if (strutil.contain(field.comment, '字典')) { %>
-      ${field.propertyName}List.value = res.data.filter(
-        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
-      );
-  <% } %>
-<% } %>
-    } else {
-      message.error((res && res.message) || "查询列表失败！");
-    }
-  });
-}
-<% } %>
-
-const emit = defineEmits(['handleOk', 'handleCancel']);
-
-const handleOk = (): void => {
-  loading.value = true;
-  if (formRef.value) {
-    formRef.value.validateFields().then(
-      () => save${entity}Manager()).catch(() => {
-        loading.value = false;
-      });
-  }
+const handleOk = () => {
+	loading.value = true;
+	if (formRef.value) {
+		formRef.value
+			.validateFields()
+			.then(() => save${entity}())
+			.catch(() => (loading.value = false));
+	}
 };
-
-const handleCancel = (): void => {
-  emit('handleCancel', false);
+const handleCancel = () => {
+	emit('handleCancel', false);
 };
 
 //保存${table.comment!}信息
-const save${entity}Manager = (): void => {
-  let method = '';
-  <% var id = 'id';
-   for(field in table.fields){
-       if(field.keyFlag){
-           id = field.propertyName;
-       }
-  } %>
-  if (formState.value.${id}) {
-    method = 'put';
-  } else {
-    method = 'post';
-  }
-  addOrEdit${entity}(method, formState.value)
-    .then((res) => {
-      if (res.code == '200') {
-        message.success((res && res.message) || '保存成功！');
-        emit('handleOk', false);
-      } else {
-        message.error((res && res.message) || '保存失败！');
-      }
-      formState.value = {};
-    })
-    .catch((error: any) => {
-      let data = error?.response?.data;
-      if (data) {
-        message.error((data?.message) || '保存失败！');
-      }
-    }).finally(() => {
-      loading.value = false;
-    });
-}
+const save${entity} = async () => {
+	let api = add${entity};
+	if (formState.value.id) {
+		api = edit${entity};
+	}
+	loading.value = true;
+	const { code, message: messageInfo } = await api(formState.value)
+		.catch((error: any) => {
+			return error;
+		})
+		.finally(() => {
+			loading.value = false;
+		});
+	if (code == '200') {
+		message.success(messageInfo || '保存成功！');
+		formState.value = {};
+	} else {
+		message.error(messageInfo || '保存失败！');
+	}
+};
 
-const init = (): void => {
-<% if(hasDict) { %>
-  getDictInfoList();
-<% } %>
-  if (props.modelInfo.${id}) {
-    get${entity}Detail(props.modelInfo.${id})
-      .then((res) => {
-        if (res.code == '200') {
-          formState.value = res.data;
-          modelConfig.confirmLoading = false;
-        } else {
-          message.error((res && res.message) || '查询失败！');
-        }
-      })
-      .catch((error: any) => {
-        let data = error?.response?.data;
-        if (data) {
-          message.error((data?.message) || '查询失败！');
-        }
-      });
-  } else {
-    modelConfig.confirmLoading = false;
-    formState.value = {
-    };
-  }
-}
+const initDetail = async (modalData: ModelInfo | undefined) => {
+	if (modalData?.id) {
+		const {
+			code,
+			data,
+			message: messageInfo,
+		} = await get${entity}Detail(modalData.id);
+		if (code == '200') {
+			formState.value = data || {};
+			modelConfig.confirmLoading = false;
+		} else {
+			message.error(messageInfo || '查询失败！');
+		}
+	} else {
+		modelConfig.confirmLoading = false;
+		formState.value = {};
+	}
+};
 
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      init();
-    }
-  },
-  {
-    immediate: true,
-    deep: true,
-  }
-);
+const init = async () => {
+	//初始化数据
+	initDetail(props.modelInfo);
+};
+
+const emit = defineEmits(['handleOk', 'handleCancel']);
 
 defineExpose({ handleOk, handleCancel });
+
+watch(
+	() => props.open,
+	(newVal) => {
+		if (newVal) {
+			init();
+		}
+	},
+	{
+		immediate: true,
+		deep: true,
+	},
+);
 </script>
-<style lang='scss' scoped>
-@import '@/style/index.scss';
-</style>
+<style lang='scss' scoped></style>

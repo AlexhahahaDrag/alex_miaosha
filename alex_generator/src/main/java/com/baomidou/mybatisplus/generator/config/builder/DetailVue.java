@@ -19,7 +19,7 @@ public class DetailVue implements ITemplate {
     private ConverterFileName converterFileName;
 
     private DetailVue() {
-        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "Detail";
+        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "-detail";
     }
 
     @NotNull
@@ -29,8 +29,7 @@ public class DetailVue implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
-        return data;
+        return new HashMap<>();
     }
 
     public static class Builder extends BaseBuilder {

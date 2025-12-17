@@ -41,7 +41,8 @@
             <a-col :span="8">
               <a-form-item
                 :name="labelMap['${field.propertyName}'].name"
-                :label="labelMap['${field.propertyName}'].label">
+                :label="labelMap['${field.propertyName}'].label"
+              >
     <% if (strutil.contain(field.comment, '字典')) { %>
                 <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label"
                   :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
@@ -63,7 +64,7 @@
           </a-row>
   <% } %>
             <a-row :gutter="24">
-                <a-col :span="20" style="text-align: right; margin-bottom: 20px;">
+                <a-col :span="20" style="text-align: right; margin-bottom: 20px">
                   <a-space>
                     <a-button type="primary" @click="query"> 查找</a-button>
                     <a-button type="primary" @click="cancelQuery">清空</a-button>
@@ -73,58 +74,96 @@
         </a-form>
       </div>
     </div>
-    <div class="button" style="margin-left: 10px;">
-      <a-space>
-        <a-button type="primary" @click="edit${entity}('add')">新增</a-button>
-        <a-button type="primary" danger @click="batchDel${entity}">
+		<div class="button" style="margin-left: 10px;">
+			<a-space>
+				<a-button type="primary" @click="edit${entity}('add')">新增</a-button>
+				<a-button type="primary" danger @click="batchDel${entity}">
 					删除
-		</a-button>
-      </a-space>
-    </div>
-    <div class="content">
-      <a-table
-        :dataSource="dataSource"
-        :columns="columns"
-        :loading="loading"
-        :row-key="(record) => record.${id}"
-        :pagination="pagination"
-        @change="handleTableChange"
-        :scroll="{ x: 'max-content' }"
-        :row-selection="rowSelection"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'operation'">
-            <a-space>
-              <a-button type="primary" size="small" @click="edit${entity}('update', record.${id})">编辑</a-button>
-              <a-popconfirm title="确认删除?" ok-text="确认" cancel-text="取消" @confirm="del${entity}(record.${id})"
-                @cancel="cancel">
-                <a-button type="primary" size="small" danger>删除</a-button>
-              </a-popconfirm>
-            </a-space>
-          </template>
-        </template>
-      </a-table>
-      <${entity}Detail
-        ref="editInfo"
-        :open="visible"
-        :modelInfo="modelInfo"
-        @handleOk="handleOk"
-        @handleCancel="handleCancel">
-      </${entity}Detail>
-    </div>
-  </div>
+				</a-button>
+			</a-space>
+		</div>
+		<div class="content">
+			<a-table
+				:dataSource="dataSource"
+				:columns="columns"
+				:loading="loading"
+				:row-key="(record: ${entity}Data) => record.${id} || 0"
+				:pagination="pagination"
+				@change="handleTableChange"
+				:scroll="{ x: 'max-content' }"
+				:row-selection="rowSelection"
+			>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.key === 'operation'">
+                        <a-space>
+							<a-button
+								type="primary"
+								size="small"
+								@click="edit${entity}('update', record.${id})"
+							>
+								编辑
+							</a-button>
+							<a-popconfirm
+								title="确认删除?"
+								ok-text="确认"
+								cancel-text="取消"
+								@confirm="del${entity}(record.${id})"
+								@cancel="cancel"
+							>
+								<a-button type="primary" size="small" danger>删除</a-button>
+							</a-popconfirm>
+						</a-space>
+					</template>
+				</template>
+			</a-table>
+			<${entity}Detail
+				ref="editInfo"
+				:open="visible"
+				:modelInfo="modelInfo"
+				@handleOk="handleOk"
+				@handleCancel="handleCancel"
+			>
+			</${entity}Detail>
+		</div>
+	</div>
 </template>
 <script setup lang="ts">
-import { get${entity}Page, delete${entity} } from "./api/index";
-import { message } from "ant-design-vue";
+import { message } from 'ant-design-vue';
+import { get${entity}Page, delete${entity} } from './api/index';
 import type { ModelInfo } from '@/views/common/config';
 import type { ${entity}Data } from './config';
-import { columns, labelMap, labelCol, wrapperCol } from "./config";
+import { columns, labelMap, labelCol, wrapperCol } from './config';
 <% if(hasDict){ %>
-import { getDictList } from "@/api/finance/dict/dictManager";
-import { dictInfo } from "@/views/finance/dict/dict";
+import { useDictInfo } from '@/composables/useDictInfo';
 <% } %>
 import { usePagination, type PageInfo } from '@/composables/usePagination';
+<% if (hasDict) { %>
+
+<% } %>
+<% if (hasDict) {
+    var dict = '';
+    for(field in table.fields){
+        if(field.keyFlag) {
+             continue;
+        }
+        if (strutil.contain(field.comment, '字典')) { %>
+        dict += ${field.propertyName} + ',';
+    } %>
+const { getDictByType } = useDictInfo('${dict}');
+<% } %>
+<% if (hasDict) { %>
+
+<% } %>
+<% if (hasDict) { %>
+    for(field in table.fields){
+        if(field.keyFlag) {
+             continue;
+        }
+        if (strutil.contain(field.comment, '字典')) { %>
+const ${field.propertyName}List = computed(() => getDictByType('${field.propertyName}'));
+        <% }
+    }
+} %>
 
 // 使用分页组合式函数
 const {
@@ -147,48 +186,28 @@ let searchInfo = ref<${entity}Data>({});
 
 const rowSelection = ref({
 	checkStrictly: false,
-	onChange: (selectedRowKeys: (string | number)[], _selectedRows: ${entity}Data[]) => {
+	onChange: (
+		selectedRowKeys: (string | number)[],
+		_selectedRows: CouponInfoData[],
+	) => {
+		console.log(_selectedRows);
 		rowIds = selectedRowKeys;
 	},
-	onSelect: (record: ${entity}Data, selected: boolean, selectedRows: ${entity}Data[]) => {
+	onSelect: (
+		record: CouponInfoData,
+		selected: boolean,
+		selectedRows: CouponInfoData[],
+	) => {
 		console.log(record, selected, selectedRows);
 	},
-	onSelectAll: (selected: boolean, selectedRows: ${entity}Data[], changeRows: ${entity}Data[]) => {
+	onSelectAll: (
+		selected: boolean,
+		selectedRows: CouponInfoData[],
+		changeRows: CouponInfoData[],
+	) => {
 		console.log(selected, selectedRows, changeRows);
 	},
 });
-
-<% if (hasDict) { %>
-<% for(field in table.fields){
-    if(field.keyFlag) {
-         continue;
-    }
-%>
-  <% if (strutil.contain(field.comment, '字典')) { %>
-let ${field.propertyName}List = ref<dictInfo[]>([]);
-  <% } %>
-<% } %>
-
-const getDictInfoList = (): void => {
-	getDictList("${dictType}").then((res) => {
-    if (res.code == "200") {
-<% for(field in table.fields){
-    if(field.keyFlag) {
-         continue;
-    }
-%>
-  <% if (strutil.contain(field.comment, '字典')) { %>
-      ${field.propertyName}List.value = res.data.filter(
-        (item: { belongTo: string }) => item.belongTo == "${strutil.subStringTo(field.comment, strutil.index(field.comment, '字典(') + 3, strutil.index(field.comment, ')'))}"
-      );
-  <% } %>
-<% } %>
-    } else {
-      message.error((res && res.message) || '查询列表失败！');
-    }
-  });
-}
-<% } %>
 
 const cancelQuery = (): void => {
 	searchInfo.value = {};
@@ -234,11 +253,9 @@ const get${entity}ListPage = async (
 		code,
 		data,
 		message: messageInfo,
-	} = await get${entity}Page(param, cur.current, cur.pageSize).finally(
-		() => {
+	} = await get${entity}Page(param, cur.current, cur.pageSize).finally(() => {
 			loading.value = false;
-		},
-	);
+		});
 	if (code == '200') {
 		let curData = data;
 		dataSource.value = curData?.records || [];

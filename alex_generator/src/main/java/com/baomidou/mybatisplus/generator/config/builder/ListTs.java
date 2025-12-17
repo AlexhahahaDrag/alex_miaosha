@@ -19,7 +19,7 @@ public class ListTs implements ITemplate {
     private ConverterFileName converterFileName;
 
     private ListTs() {
-        this.converterFileName = (entityName) -> Character.toLowerCase(entityName.charAt(0)) + entityName.substring(1) + "ListTs";
+        this.converterFileName = (entityName) -> "index";
     }
 
     @NotNull
@@ -29,8 +29,7 @@ public class ListTs implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
-        return data;
+        return new HashMap<>();
     }
 
     public static class Builder extends BaseBuilder {
