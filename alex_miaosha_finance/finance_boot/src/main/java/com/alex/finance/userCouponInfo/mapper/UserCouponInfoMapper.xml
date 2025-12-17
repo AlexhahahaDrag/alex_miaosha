@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.userCouponInfo.mapper.UserCouponInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.userCouponInfo.entity.UserCouponInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="user_id" property="userId" />
+        <result column="coupon_id" property="couponId" />
+        <result column="status" property="status" />
+        <result column="receive_time" property="receiveTime" />
+        <result column="expire_time" property="expireTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_coupon_info_t.id,
+        user_coupon_info_t.creator,
+        user_coupon_info_t.create_time,
+        user_coupon_info_t.updater,
+        user_coupon_info_t.update_time,
+        user_coupon_info_t.operator,
+        user_coupon_info_t.operate_time,
+        user_coupon_info_t.deleter,
+        user_coupon_info_t.delete_time,
+        user_coupon_info_t.is_delete,
+        user_coupon_info_t.user_id,
+        user_coupon_info_t.coupon_id,
+        user_coupon_info_t.status,
+        user_coupon_info_t.receive_time,
+        user_coupon_info_t.expire_time,
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.userCouponInfo.vo.UserCouponInfoVo">
+        select <include refid="Base_Column_List"/>from user_coupon_info_t
+        <where>
+            user_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and user_coupon_info_t.is_delete = 0
+        </where>
+        order by user_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.userCouponInfo.vo.UserCouponInfoVo">
+        select <include refid="Base_Column_List"/>from user_coupon_info_t
+        <where>
+            user_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and user_coupon_info_t.is_delete = 0
+        </where>
+        order by user_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="queryUserCouponInfo" resultType="com.alex.api.finance.userCouponInfo.vo.UserCouponInfoVo">
+        select <include refid="Base_Column_List"/> from user_coupon_info_t
+        <where>
+            user_coupon_info_t.id = #{id}
+            and user_coupon_info_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "userCouponInfoVo != null">
+          <if test = "userCouponInfoVo.userId != null">
+            and user_coupon_info_t.user_id = #{userCouponInfoVo.userId}
+          </if>
+          <if test = "userCouponInfoVo.couponId != null">
+            and user_coupon_info_t.coupon_id = #{userCouponInfoVo.couponId}
+          </if>
+          <if test = "userCouponInfoVo.status != null">
+            and user_coupon_info_t.status like concat('%', #{userCouponInfoVo.status}, '%')
+          </if>
+          <if test = "userCouponInfoVo.receiveTime != null">
+            and user_coupon_info_t.receive_time = #{userCouponInfoVo.receiveTime}
+          </if>
+          <if test = "userCouponInfoVo.expireTime != null">
+            and user_coupon_info_t.expire_time = #{userCouponInfoVo.expireTime}
+          </if>
+        </if>
+     </sql>
+</mapper>

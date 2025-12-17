@@ -3,20 +3,19 @@ package com.alex.finance.couponInfo.entity;
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.alex.common.config.Long2StringSerializer;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description:  消费券信息表类
  * @author:       alex
- * @createDate: 2025-12-17 11:43:14
+ * @createDate: 2025-12-17 11:56:28
  * @version:      1.0.0
  */
 @Getter
@@ -27,7 +26,7 @@ import com.alex.common.config.Long2StringSerializer;
 public class CouponInfo extends BaseEntity<CouponInfo>{
 
     @ApiModelProperty(value = "消费券名称")
-    @TableField("coupon_name")
+    @TableField(value = "coupon_name")
     private String couponName;
 
     @ApiModelProperty(value = "消费券总发行数量")

@@ -24,12 +24,8 @@ public class Service implements ITemplate {
     private Service() {
         this.superServiceClass = "com.baomidou.mybatisplus.extension.service.IService";
         this.superServiceImplClass = "com.baomidou.mybatisplus.extension.service.impl.ServiceImpl";
-        this.converterServiceFileName = (entityName) -> {
-            return "I" + entityName + "Service";
-        };
-        this.converterServiceImplFileName = (entityName) -> {
-            return entityName + "ServiceImpl";
-        };
+        this.converterServiceFileName = (entityName) -> "I" + entityName + "Service";
+        this.converterServiceImplFileName = (entityName) -> entityName + "ServiceImpl";
     }
 
     @NotNull

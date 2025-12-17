@@ -83,53 +83,51 @@ public class TemplateConfig {
     }
 
     public TemplateConfig disable(@NotNull TemplateType... templateTypes) {
-        if (templateTypes.length > 0) {
-            for (TemplateType templateType : templateTypes) {
-                switch (templateType) {
-                    case ENTITY:
-                        this.entity = null;
-                        this.entityKt = null;
-                        this.disableEntity = true;
-                        break;
-                    case CONTROLLER:
-                        this.controller = null;
-                        break;
-                    case MAPPER:
-                        this.mapper = null;
-                        break;
-                    case XML:
-                        this.xml = null;
-                        break;
-                    case SERVICE:
-                        this.service = null;
-                        break;
-                    case SERVICEIMPL:
-                        this.serviceImpl = null;
-                    case VO:
-                        this.vo = null;
-                    case CLIENT:
-                        this.client = null;
-                    case DETAILVUE:
-                        this.detailVue = null;
-                    case DETAILTS:
-                        this.detailTs = null;
-                    case LISTVUE:
-                        this.listVue = null;
-                    case LISTTS:
-                        this.listTs = null;
-                    case TSTS:
-                        this.tsTs = null;
-                    case MOBILETS:
-                        this.mobileTs = null;
-                    case MOBILEVUE:
-                        this.mobileVue = null;
-                    case MOBILEDETAILTS:
-                        this.mobileDetailTs = null;
-                    case MOBILEDETAIL:
-                        this.mobileDetail = null;
-                    case MOBILETSTS:
-                        this.mobileTsTs = null;
-                }
+        for (TemplateType templateType : templateTypes) {
+            switch (templateType) {
+                case ENTITY:
+                    this.entity = null;
+                    this.entityKt = null;
+                    this.disableEntity = true;
+                    break;
+                case CONTROLLER:
+                    this.controller = null;
+                    break;
+                case MAPPER:
+                    this.mapper = null;
+                    break;
+                case XML:
+                    this.xml = null;
+                    break;
+                case SERVICE:
+                    this.service = null;
+                    break;
+                case SERVICEIMPL:
+                    this.serviceImpl = null;
+                case VO:
+                    this.vo = null;
+                case CLIENT:
+                    this.client = null;
+                case DETAILVUE:
+                    this.detailVue = null;
+                case DETAILTS:
+                    this.detailTs = null;
+                case LISTVUE:
+                    this.listVue = null;
+                case LISTTS:
+                    this.listTs = null;
+                case TSTS:
+                    this.tsTs = null;
+                case MOBILETS:
+                    this.mobileTs = null;
+                case MOBILEVUE:
+                    this.mobileVue = null;
+                case MOBILEDETAILTS:
+                    this.mobileDetailTs = null;
+                case MOBILEDETAIL:
+                    this.mobileDetail = null;
+                case MOBILETSTS:
+                    this.mobileTsTs = null;
             }
         }
         return this;

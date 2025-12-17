@@ -8,11 +8,9 @@ import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
-import ${package.Entity}.${entity};
 <% if(swagger){ %>
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,8 +79,8 @@ public class ${table.controllerName} {
     )
     <% } %>
     public Result<Page<${table.voName}>> getPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Long pageNum,
-                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Long pageSize,
-                                                 @RequestBody(required = false) ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
+                                                  @RequestParam(value = "pageSize", required = false, defaultValue = "10") Long pageSize,
+                                                  @RequestBody(required = false) ${table.voName} ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.getPage(pageNum, pageSize, ${strutil.toLowerCase(strutil.subStringTo(table.voName, 0, 1)) + strutil.subString (table.voName, 1)}));
     }
 
@@ -145,7 +143,7 @@ public class ${table.controllerName} {
     <% if(swagger){ %>
     @ApiImplicitParam(value = "主键ID列表，多个ID用逗号分隔", name = "ids", required = true, dataTypeClass = String.class, example = "1,2,3")
     <% } %>
-    public Result<Boolean> delete(@RequestParam("ids") String ids) {
+    public Result<Boolean> delete(@RequestParam String ids) {
         return Result.success(${strutil.toLowerCase(strutil.subStringTo(table.serviceName, 0, 1)) + strutil.subString (table.serviceName, 1)}.delete${entity}(ids));
     }
 }

@@ -14,6 +14,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 <% } %>
 <% } %>
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @description:  ${table.comment!}视图

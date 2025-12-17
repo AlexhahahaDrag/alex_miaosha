@@ -52,6 +52,27 @@
         order by coupon_info_t.operate_time desc
     </select>
 
+    <select id="getPageWithRemain" resultType="com.alex.api.finance.couponInfo.vo.CouponInfoVo">
+        select
+            <include refid="Base_Column_List"/>
+            IFNULL(SUM(redemption_record_info_t.redemption_quantity), 0) as consumed_quantity,
+            (coupon_info_t.total_quantity - IFNULL(SUM(redemption_record_info_t.redemption_quantity), 0)) as remaining_quantity
+        from coupon_info_t
+        left join user_coupon_info_t
+            on user_coupon_info_t.coupon_id = coupon_info_t.id
+            and user_coupon_info_t.is_delete = 0
+        left join redemption_record_info_t
+            on redemption_record_info_t.user_coupon_id = user_coupon_info_t.id
+            and redemption_record_info_t.is_delete = 0
+        <where>
+            coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and coupon_info_t.is_delete = 0
+        </where>
+        group by coupon_info_t.id
+        order by coupon_info_t.operate_time desc
+    </select>
+
     <select id="getList" resultType="com.alex.api.finance.couponInfo.vo.CouponInfoVo">
         select <include refid="Base_Column_List"/>from coupon_info_t
         <where>

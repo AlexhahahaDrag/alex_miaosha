@@ -8,11 +8,9 @@ import com.alex.common.annotations.LogRestRequest;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.util.List;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import org.springframework.validation.annotation.Validated;
-import com.alex.finance.couponInfo.entity.CouponInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 消费券信息表 控制器
  * 
  * @author alex
- * @since 2025-12-17 11:43:14
+ * @since 2025-12-17 11:56:28
  * @version 1.0.0
  */
 @ApiSort(105)
@@ -65,17 +63,38 @@ public class CouponInfoController {
     }
 
     /**
-     * 根据ID查询消费券信息表详情
+     * AI Agent
+     * 分页查询消费券信息表（带剩余数量）
+     * - 关联 user_coupon_info_t + redemption_record_info_t 汇总核销数量
+     * - remainingQuantity = totalQuantity - sum(redemption_quantity)
+     */
+    @LogRestRequest(apiName = "获取消费券信息表分页(剩余数量)")
+    @ApiOperationSupport(order = 11, author = "alex")
+    @ApiOperation(value = "获取消费券信息表分页(剩余数量)", notes = "分页查询消费券信息表列表(返回已消耗/剩余数量)", response = Result.class)
+    @PostMapping(value = "/page-with-remain")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class, example = "1"),
+            @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class, example = "10"),
+            @ApiImplicitParam(value = "查询条件", name = "couponInfoVo", dataTypeClass = CouponInfoVo.class)}
+    )
+    public Result<Page<CouponInfoVo>> getPageWithRemain(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Long pageNum,
+                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Long pageSize,
+                                                        @RequestBody(required = false) CouponInfoVo couponInfoVo) {
+        return Result.success(couponInfoService.getPageWithRemain(pageNum, pageSize, couponInfoVo));
+    }
+
+    /**
+     * 根据 ID 查询消费券信息表详情
      * 
-     * @param id 主键ID
+     * @param id 主键 ID
      * @return 消费券信息表详情
      */
     @LogRestRequest(apiName = "获取消费券信息表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取消费券信息表详情", notes = "根据ID查询消费券信息表详细信息", response = Result.class)
     @GetMapping(value = "/{id}")
-    @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
-    public Result<CouponInfoVo> getById(@PathVariable("id") Long id) {
+    @ApiImplicitParam(value = "主键 ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
+    public Result<CouponInfoVo> getById(@PathVariable Long id) {
         return Result.success(couponInfoService.queryCouponInfo(id));
     }
 

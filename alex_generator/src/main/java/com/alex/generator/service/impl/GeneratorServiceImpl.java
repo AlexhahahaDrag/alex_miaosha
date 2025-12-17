@@ -63,7 +63,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private void executeGenerate(String tableName, String moduleName, String javaPathName,
-                                 String author, String javaPath, String fileNameInfo) throws Exception {
+                                 String author, String javaPath, String fileNameInfo) {
         String separator = FileSystems.getDefault().getSeparator();
         String base = "/src/main/";
         String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
@@ -318,11 +318,10 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private DataSourceConfig.Builder dataSourceConfig(DatabaseConfig databaseConfig) {
-        DataSourceConfig.Builder dataSourceConfig = new DataSourceConfig.Builder(databaseConfig.getUrl(), databaseConfig.getUsername(), databaseConfig.getPassword())
+        return new DataSourceConfig.Builder(databaseConfig.getUrl(), databaseConfig.getUsername(), databaseConfig.getPassword())
                 .dbQuery(new MySqlQuery())
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
-        return dataSourceConfig;
     }
 
     private String getFileName(String fileName, String defaultFileName) {

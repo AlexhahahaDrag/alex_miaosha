@@ -17,7 +17,7 @@ import com.alex.common.utils.string.StringUtils;
  * <p>
  * @description:  消费券信息表服务实现类
  * @author:       alex
- * @createDate:   2025-12-17 11:43:14
+ * @createDate:   2025-12-17 11:56:28
  * @version:      1.0.0
  */
 @Service
@@ -30,6 +30,12 @@ public class CouponInfoServiceImp extends ServiceImpl<CouponInfoMapper, CouponIn
     public Page<CouponInfoVo> getPage(Long pageNum, Long pageSize, CouponInfoVo couponInfoVo) {
         Page<CouponInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         return couponInfoMapper.getPage(page, couponInfoVo);
+    }
+
+    @Override
+    public Page<CouponInfoVo> getPageWithRemain(Long pageNum, Long pageSize, CouponInfoVo couponInfoVo) {
+        Page<CouponInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        return couponInfoMapper.getPageWithRemain(page, couponInfoVo);
     }
 
     @Override

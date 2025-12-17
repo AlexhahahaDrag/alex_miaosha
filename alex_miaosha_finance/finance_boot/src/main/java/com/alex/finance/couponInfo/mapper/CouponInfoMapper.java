@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @description:  消费券信息表 mapper
  * @author:       alex
- * @createDate:   2025-12-17 11:43:14
+ * @createDate:   2025-12-17 11:56:28
  * @version:      1.0.0
  */
 @Mapper
@@ -20,6 +20,12 @@ public interface CouponInfoMapper extends BaseMapper<CouponInfo> {
 
     @DataPermission(table = "coupon_info_t")
     Page<CouponInfoVo> getPage(Page<CouponInfoVo> page, @Param("couponInfoVo") CouponInfoVo couponInfoVo);
+
+    /**
+     * AI Agent: 分页查询消费券，并关联用户券实例 + 核销记录，计算已消耗/剩余数量
+     */
+    @DataPermission(table = "coupon_info_t")
+    Page<CouponInfoVo> getPageWithRemain(Page<CouponInfoVo> page, @Param("couponInfoVo") CouponInfoVo couponInfoVo);
 
     List<CouponInfoVo> getList(@Param("couponInfoVo") CouponInfoVo couponInfoVo);
 

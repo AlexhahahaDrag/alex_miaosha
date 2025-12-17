@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @description:  消费券信息表视图
  * @author:       alex
- * @createDate:   2025-12-17 11:43:14
+ * @createDate:   2025-12-17 11:56:28
  * @version:      1.0.0
  */
 @Getter
@@ -21,6 +21,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ApiModel(value = "CouponInfoVo", description = "消费券信息表Vo")
 public class CouponInfoVo extends BaseVo<CouponInfoVo>{
+
+    @ApiModelProperty(value = "已消耗数量（核销数量汇总）")
+    private Integer consumedQuantity;
+
+    @ApiModelProperty(value = "剩余数量（totalQuantity - consumedQuantity）")
+    private Integer remainingQuantity;
 
     @ApiModelProperty(value = "消费券名称")
     private String couponName;
