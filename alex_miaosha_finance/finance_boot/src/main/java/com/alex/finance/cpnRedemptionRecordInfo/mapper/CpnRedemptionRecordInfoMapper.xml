@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.cpnRedemptionRecordInfo.mapper.CpnRedemptionRecordInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.cpnRedemptionRecordInfo.entity.CpnRedemptionRecordInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="user_coupon_id" property="userCouponId" />
+        <result column="user_id" property="userId" />
+        <result column="order_id" property="orderId" />
+        <result column="redemption_quantity" property="redemptionQuantity" />
+        <result column="redemption_value" property="redemptionValue" />
+        <result column="redemption_time" property="redemptionTime" />
+        <result column="merchant_id" property="merchantId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cpn_redemption_record_info_t.id,
+        cpn_redemption_record_info_t.creator,
+        cpn_redemption_record_info_t.create_time,
+        cpn_redemption_record_info_t.updater,
+        cpn_redemption_record_info_t.update_time,
+        cpn_redemption_record_info_t.operator,
+        cpn_redemption_record_info_t.operate_time,
+        cpn_redemption_record_info_t.deleter,
+        cpn_redemption_record_info_t.delete_time,
+        cpn_redemption_record_info_t.is_delete,
+        cpn_redemption_record_info_t.user_coupon_id,
+        cpn_redemption_record_info_t.user_id,
+        cpn_redemption_record_info_t.order_id,
+        cpn_redemption_record_info_t.redemption_quantity,
+        cpn_redemption_record_info_t.redemption_value,
+        cpn_redemption_record_info_t.redemption_time,
+        cpn_redemption_record_info_t.merchant_id,
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_redemption_record_info_t
+        <where>
+            cpn_redemption_record_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_redemption_record_info_t.is_delete = 0
+        </where>
+        order by cpn_redemption_record_info_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_redemption_record_info_t
+        <where>
+            cpn_redemption_record_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_redemption_record_info_t.is_delete = 0
+        </where>
+        order by cpn_redemption_record_info_t.operate_time desc
+    </select>
+
+    <select id="queryCpnRedemptionRecordInfo" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
+        select <include refid="Base_Column_List"/> from cpn_redemption_record_info_t
+        <where>
+            cpn_redemption_record_info_t.id = #{id}
+            and cpn_redemption_record_info_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "cpnRedemptionRecordInfoVo != null">
+          <if test = "cpnRedemptionRecordInfoVo.userCouponId != null">
+            and cpn_redemption_record_info_t.user_coupon_id = #{cpnRedemptionRecordInfoVo.userCouponId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.userId != null">
+            and cpn_redemption_record_info_t.user_id = #{cpnRedemptionRecordInfoVo.userId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.orderId != null">
+            and cpn_redemption_record_info_t.order_id = #{cpnRedemptionRecordInfoVo.orderId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionQuantity != null">
+            and cpn_redemption_record_info_t.redemption_quantity = #{cpnRedemptionRecordInfoVo.redemptionQuantity}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionValue != null">
+            and cpn_redemption_record_info_t.redemption_value = #{cpnRedemptionRecordInfoVo.redemptionValue}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionTime != null">
+            and cpn_redemption_record_info_t.redemption_time = #{cpnRedemptionRecordInfoVo.redemptionTime}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.merchantId != null">
+            and cpn_redemption_record_info_t.merchant_id = #{cpnRedemptionRecordInfoVo.merchantId}
+          </if>
+        </if>
+     </sql>
+</mapper>

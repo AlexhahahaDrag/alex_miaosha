@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.cpnUserCouponInfo.mapper.CpnUserCouponInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.cpnUserCouponInfo.entity.CpnUserCouponInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="user_id" property="userId" />
+        <result column="coupon_id" property="couponId" />
+        <result column="status" property="status" />
+        <result column="receive_time" property="receiveTime" />
+        <result column="expire_time" property="expireTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cpn_user_coupon_info_t.id,
+        cpn_user_coupon_info_t.creator,
+        cpn_user_coupon_info_t.create_time,
+        cpn_user_coupon_info_t.updater,
+        cpn_user_coupon_info_t.update_time,
+        cpn_user_coupon_info_t.operator,
+        cpn_user_coupon_info_t.operate_time,
+        cpn_user_coupon_info_t.deleter,
+        cpn_user_coupon_info_t.delete_time,
+        cpn_user_coupon_info_t.is_delete,
+        cpn_user_coupon_info_t.user_id,
+        cpn_user_coupon_info_t.coupon_id,
+        cpn_user_coupon_info_t.status,
+        cpn_user_coupon_info_t.receive_time,
+        cpn_user_coupon_info_t.expire_time,
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_user_coupon_info_t
+        <where>
+            cpn_user_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_user_coupon_info_t.is_delete = 0
+        </where>
+        order by cpn_user_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_user_coupon_info_t
+        <where>
+            cpn_user_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_user_coupon_info_t.is_delete = 0
+        </where>
+        order by cpn_user_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="queryCpnUserCouponInfo" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
+        select <include refid="Base_Column_List"/> from cpn_user_coupon_info_t
+        <where>
+            cpn_user_coupon_info_t.id = #{id}
+            and cpn_user_coupon_info_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "cpnUserCouponInfoVo != null">
+          <if test = "cpnUserCouponInfoVo.userId != null">
+            and cpn_user_coupon_info_t.user_id = #{cpnUserCouponInfoVo.userId}
+          </if>
+          <if test = "cpnUserCouponInfoVo.couponId != null">
+            and cpn_user_coupon_info_t.coupon_id = #{cpnUserCouponInfoVo.couponId}
+          </if>
+          <if test = "cpnUserCouponInfoVo.status != null">
+            and cpn_user_coupon_info_t.status like concat('%', #{cpnUserCouponInfoVo.status}, '%')
+          </if>
+          <if test = "cpnUserCouponInfoVo.receiveTime != null">
+            and cpn_user_coupon_info_t.receive_time = #{cpnUserCouponInfoVo.receiveTime}
+          </if>
+          <if test = "cpnUserCouponInfoVo.expireTime != null">
+            and cpn_user_coupon_info_t.expire_time = #{cpnUserCouponInfoVo.expireTime}
+          </if>
+        </if>
+     </sql>
+</mapper>

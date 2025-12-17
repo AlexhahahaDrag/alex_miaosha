@@ -129,7 +129,7 @@
 </template>
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
-import { get${entity}Page, delete${entity} } from './api/index';
+import { get${entity}Page, delete${entity} } from './api';
 import type { ModelInfo } from '@/views/common/config';
 import type { ${entity}Data } from './config';
 import { columns, labelMap, labelCol, wrapperCol } from './config';
@@ -188,22 +188,22 @@ const rowSelection = ref({
 	checkStrictly: false,
 	onChange: (
 		selectedRowKeys: (string | number)[],
-		_selectedRows: CouponInfoData[],
+		_selectedRows: ${entity}Data[],
 	) => {
 		console.log(_selectedRows);
 		rowIds = selectedRowKeys;
 	},
 	onSelect: (
-		record: CouponInfoData,
+		record: ${entity}Data,
 		selected: boolean,
-		selectedRows: CouponInfoData[],
+		selectedRows: ${entity}Data[],
 	) => {
 		console.log(record, selected, selectedRows);
 	},
 	onSelectAll: (
 		selected: boolean,
-		selectedRows: CouponInfoData[],
-		changeRows: CouponInfoData[],
+		selectedRows: ${entity}Data[],
+		changeRows: ${entity}Data[],
 	) => {
 		console.log(selected, selectedRows, changeRows);
 	},

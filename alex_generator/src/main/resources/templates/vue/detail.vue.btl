@@ -122,7 +122,7 @@ import {
 	get${entity}Detail,
 	add${entity},
 	edit${entity},
-} from '@/views/${javaPath}/${entityKebab}/api/index';
+} from '@/views/${javaPath}/${entityKebab}/api';
 import type { ModelInfo } from '@/views/common/config';
 import type { ${entity}Data } from '../config';
 import { labelMap } from '../config';

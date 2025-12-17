@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.cpnCouponInfo.mapper.CpnCouponInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.alex.finance.cpnCouponInfo.entity.CpnCouponInfo">
+        <result column="id" property="id" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="operate_time" property="operateTime" />
+        <result column="deleter" property="deleter" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="coupon_name" property="couponName" />
+        <result column="total_quantity" property="totalQuantity" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="unit_value" property="unitValue" />
+        <result column="min_spend" property="minSpend" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cpn_coupon_info_t.id,
+        cpn_coupon_info_t.creator,
+        cpn_coupon_info_t.create_time,
+        cpn_coupon_info_t.updater,
+        cpn_coupon_info_t.update_time,
+        cpn_coupon_info_t.operator,
+        cpn_coupon_info_t.operate_time,
+        cpn_coupon_info_t.deleter,
+        cpn_coupon_info_t.delete_time,
+        cpn_coupon_info_t.is_delete,
+        cpn_coupon_info_t.coupon_name,
+        cpn_coupon_info_t.total_quantity,
+        cpn_coupon_info_t.start_date,
+        cpn_coupon_info_t.end_date,
+        cpn_coupon_info_t.unit_value,
+        cpn_coupon_info_t.min_spend,
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_coupon_info_t
+        <where>
+            cpn_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_coupon_info_t.is_delete = 0
+        </where>
+        order by cpn_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
+        select <include refid="Base_Column_List"/>from cpn_coupon_info_t
+        <where>
+            cpn_coupon_info_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and cpn_coupon_info_t.is_delete = 0
+        </where>
+        order by cpn_coupon_info_t.operate_time desc
+    </select>
+
+    <select id="queryCpnCouponInfo" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
+        select <include refid="Base_Column_List"/> from cpn_coupon_info_t
+        <where>
+            cpn_coupon_info_t.id = #{id}
+            and cpn_coupon_info_t.is_delete = 0
+        </where>
+    </select>
+
+     <sql id="queryInfo">
+        <if test = "cpnCouponInfoVo != null">
+          <if test = "cpnCouponInfoVo.couponName != null">
+            and cpn_coupon_info_t.coupon_name like concat('%', #{cpnCouponInfoVo.couponName}, '%')
+          </if>
+          <if test = "cpnCouponInfoVo.totalQuantity != null">
+            and cpn_coupon_info_t.total_quantity = #{cpnCouponInfoVo.totalQuantity}
+          </if>
+          <if test = "cpnCouponInfoVo.startDate != null">
+            and cpn_coupon_info_t.start_date = #{cpnCouponInfoVo.startDate}
+          </if>
+          <if test = "cpnCouponInfoVo.endDate != null">
+            and cpn_coupon_info_t.end_date = #{cpnCouponInfoVo.endDate}
+          </if>
+          <if test = "cpnCouponInfoVo.unitValue != null">
+            and cpn_coupon_info_t.unit_value = #{cpnCouponInfoVo.unitValue}
+          </if>
+          <if test = "cpnCouponInfoVo.minSpend != null">
+            and cpn_coupon_info_t.min_spend = #{cpnCouponInfoVo.minSpend}
+          </if>
+        </if>
+     </sql>
+</mapper>
