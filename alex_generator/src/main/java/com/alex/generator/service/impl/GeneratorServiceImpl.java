@@ -92,7 +92,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         // 插入菜单数据到菜单表中
         addMenu(javaPath, javaPathName, fileName, fileNameInfo);
         // 插入数据权限到权限表中
-        addPermission(javaPath, javaPathName, fileName, fileNameInfo);
+        addPermission(javaPath, fileName, fileNameInfo);
     }
 
     private void addMenu(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
@@ -183,7 +183,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         return menuInfoVoResult.getData();
     }
 
-    private void addPermission(String javaPath, String javaPathName, String fileName, String fileNameInfo) {
+    private void addPermission(String javaPath, String fileName, String fileNameInfo) {
         // 查询主菜单是否存在
         PermissionInfoVo query = new PermissionInfoVo();
         query.setStatus(YES_INFO);

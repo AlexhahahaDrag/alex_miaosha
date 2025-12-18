@@ -128,7 +128,7 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean importContactsUser(MultipartFile file) throws Exception {
+    public Boolean importContactsUser(MultipartFile file) {
         log.info("导入联系人: fileName={}, fileSize={}", file.getOriginalFilename(), file.getSize());
 
         // 文件验证

@@ -1,6 +1,7 @@
 package com.alex.user.utils.security;
 
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +22,7 @@ public class SecurityUser implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Getter
     private final Long id;
 
     private final String username;
@@ -78,7 +80,4 @@ public class SecurityUser implements UserDetails {
         return enabled;
     }
 
-    public Long getId() {
-        return id;
-    }
 }
