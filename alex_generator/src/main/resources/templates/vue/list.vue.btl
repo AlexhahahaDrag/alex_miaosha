@@ -47,6 +47,14 @@
                 <a-select ref="select" v-model:value="searchInfo.${field.propertyName}" :placeholder="'请选择' + labelMap['${field.propertyName}'].label"
                   :field-names="{ label: 'typeName', value: 'typeCode' }" :options="${field.propertyName}List" :allowClear="true">
                 </a-select>
+    <% } else if (field.propertyType == 'LocalDateTime' || field.propertyType == 'Date') { %>
+                <a-date-picker
+                    v-model:value="searchInfo.${field.propertyName}"
+                    show-time
+                    format="YYYY-MM-DD HH:mm:ss"
+                    :placeholder="'请输入' + labelMap['${field.propertyName}'].label"
+                    allow-clear
+                />
     <% } else { %>
                 <a-input
                     v-model:value="searchInfo.${field.propertyName}"
@@ -66,7 +74,7 @@
             <a-row :gutter="24">
                 <a-col :span="20" style="text-align: right; margin-bottom: 20px">
                   <a-space>
-                    <a-button type="primary" @click="query"> 查找</a-button>
+                    <a-button type="primary" @click="query">查找</a-button>
                     <a-button type="primary" @click="cancelQuery">清空</a-button>
                   </a-space>
                 </a-col>
@@ -76,7 +84,9 @@
     </div>
 		<div class="button" style="margin-left: 10px;">
 			<a-space>
-				<a-button type="primary" @click="edit${entity}('add')">新增</a-button>
+				<a-button type="primary" @click="edit${entity}('add')">
+					新增
+				</a-button>
 				<a-button type="primary" danger @click="batchDel${entity}">
 					删除
 				</a-button>
