@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.io.Serial;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @ApiModel(value = "CheckContactsVo", description = "联系人校验Vo")
 public class CheckContactsVo implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Integer nameCount;

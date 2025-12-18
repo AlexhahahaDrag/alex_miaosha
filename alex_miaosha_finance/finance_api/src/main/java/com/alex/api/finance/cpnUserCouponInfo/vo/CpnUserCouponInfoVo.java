@@ -1,7 +1,9 @@
 package com.alex.api.finance.cpnUserCouponInfo.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -22,10 +24,12 @@ import java.time.LocalDateTime;
 @ApiModel(value = "CpnUserCouponInfoVo", description = "用户消费券库存表 (按数量核销)Vo")
 public class CpnUserCouponInfoVo extends BaseVo<CpnUserCouponInfoVo>{
 
+    @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "领取用户ID")
     // 统一 userId 为 Long，避免前后端/DB bigint 对齐问题
     private Long userId;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "对应的消费券ID (外键关联 cpn_coupon_info_t.id)")
     private Long couponId;
 

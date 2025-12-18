@@ -16,6 +16,7 @@ import lombok.experimental.Accessors;
 <% } %>
 import com.alex.common.config.Long2StringSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.io.Serial;
 
 /**
  * @description:  ${table.comment!}视图
@@ -43,7 +44,7 @@ public class ${table.voName} implements Serializable {
 public class ${table.voName} {
 <% } %>
 <% if(voSerialVersionUID){ %>
-
+    @Serial
     private static final long serialVersionUID = 1L;
 <% } %>
 <% /** -----------BEGIN 字段循环遍历----------- **/ %>

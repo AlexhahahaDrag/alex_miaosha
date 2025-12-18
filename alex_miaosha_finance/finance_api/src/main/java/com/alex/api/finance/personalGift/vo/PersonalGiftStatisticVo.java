@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -22,7 +23,8 @@ import java.math.BigDecimal;
 @ApiModel(value = "PersonalGiftStatisticVo", description = "个人随礼统计概览Vo")
 public class PersonalGiftStatisticVo implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	@Serial
+    private static final long serialVersionUID = 1L;
 
 	// ===== 本月数据 =====
 

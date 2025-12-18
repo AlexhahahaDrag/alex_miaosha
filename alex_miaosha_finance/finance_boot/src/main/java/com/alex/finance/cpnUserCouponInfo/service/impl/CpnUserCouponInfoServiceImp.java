@@ -46,13 +46,6 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
 
     private final Executor taskExecutor;
 
-    /**
-     * 状态值集中管理，避免散落魔法字符串
-     */
-    private static final String STATUS_UNUSED = "UNUSED";
-    private static final String STATUS_USED = "USED";
-    private static final String STATUS_CANCELLED = "CANCELLED";
-
     @Override
     public Page<CpnUserCouponInfoVo> getPage(Long pageNum, Long pageSize, CpnUserCouponInfoVo cpnUserCouponInfoVo) {
         Page<CpnUserCouponInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
@@ -128,7 +121,6 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         CpnUserCouponInfoVo updateVo = new CpnUserCouponInfoVo()
                 .setUserId(req.getUserId())
                 .setCouponId(req.getCouponId())
-                .setStatus(STATUS_USED)
                 .setReceiveTime(now)
                 .setRedemptionQuantity(req.getRedemptionQuantity());
         boolean saved = addCpnUserCouponInfo(updateVo);

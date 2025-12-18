@@ -98,7 +98,7 @@ public class MinioTemplate implements InitializingBean {
     }
 
     /**
-     * 删除存储bucket
+     * 删除存储 bucket
      *
      * @param bucketName 存储bucket名称
      *                   return Boolean

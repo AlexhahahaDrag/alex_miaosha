@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ import java.util.List;
 @ApiModel(value = "PersonalGiftOccasionDistributionVo", description = "个人随礼场合分布Vo")
 public class PersonalGiftOccasionDistributionVo implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "场合列表")

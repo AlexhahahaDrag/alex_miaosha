@@ -203,17 +203,16 @@
 
      <!-- 获取个人随礼趋势数据 -->
      <select id="getPersonalGiftTrend" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftTrendVo">
-         SELECT
-             DATE_FORMAT(t_gift.event_time, '%Y-%m') as month,
-             COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as giftOutAmount,
-             COALESCE(SUM(CASE WHEN t_gift.action = '2' THEN t_gift.amount ELSE 0 END), 0) as giftInAmount,
-             COUNT(CASE WHEN t_gift.action = '1' THEN 1 END) as giftOutCount,
-             COUNT(CASE WHEN t_gift.action = '2' THEN 1 END) as giftInCount
+         SELECT DATE_FORMAT(t_gift.event_time, '%Y-%m')                                       as month,
+                COALESCE(SUM(CASE WHEN t_gift.action = '1' THEN t_gift.amount ELSE 0 END), 0) as giftOutAmount,
+                COALESCE(SUM(CASE WHEN t_gift.action = '2' THEN t_gift.amount ELSE 0 END), 0) as giftInAmount,
+                COUNT(CASE WHEN t_gift.action = '1' THEN 1 END)                               as giftOutCount,
+                COUNT(CASE WHEN t_gift.action = '2' THEN 1 END)                               as giftInCount
          FROM t_personal_gift t_gift
          WHERE t_gift.is_delete = 0
-         AND t_gift.event_time >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+           AND t_gift.event_time >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
          GROUP BY DATE_FORMAT(t_gift.event_time, '%Y-%m')
-         ORDER BY month ASC
+         ORDER BY month
      </select>
 
      <!-- 获取个人随礼场合分布 -->

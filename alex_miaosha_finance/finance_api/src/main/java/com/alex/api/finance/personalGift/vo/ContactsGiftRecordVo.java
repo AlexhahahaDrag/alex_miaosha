@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.io.Serial;
 
 /**
  * description:  联系人随礼记录Vo
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 @ApiModel(value = "ContactsGiftRecordVo", description = "联系人随礼记录信息Vo")
 public class ContactsGiftRecordVo implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@JsonSerialize(using = Long2StringSerializer.class)

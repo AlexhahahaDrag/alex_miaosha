@@ -14,6 +14,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 <% } %>
 <% } %>
+import java.io.Serial;
 
 /**
  * @description:  ${table.comment!}类
@@ -44,7 +45,7 @@ public class ${entity} implements Serializable {
 public class ${entity} {
 <% } %>
 <% if(entitySerialVersionUID){ %>
-
+    @Serial
     private static final long serialVersionUID = 1L;
 <% } %>
 <% /** -----------BEGIN 字段循环遍历----------- **/ %>

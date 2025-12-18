@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.io.Serial;
 
 /**
  *description:  springSecurity中的用户实体类
@@ -17,6 +18,7 @@ public class SecurityUser implements UserDetails {
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final Long id;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -22,7 +23,8 @@ import java.math.BigDecimal;
 @ApiModel(value = "PersonalGiftTrendVo", description = "个人随礼趋势数据Vo")
 public class PersonalGiftTrendVo implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	@Serial
+    private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "月份（格式：YYYY-MM）")
 	private String month;

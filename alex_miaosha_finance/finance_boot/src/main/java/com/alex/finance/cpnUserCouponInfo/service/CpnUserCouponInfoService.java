@@ -30,7 +30,7 @@ public interface CpnUserCouponInfoService extends IService<CpnUserCouponInfo> {
 
     /**
      * 消费券核销（按数量核销）
-     *
+     * <p>
      * 业务逻辑必须放在 ServiceImpl，Controller 只做参数接收与转发
      */
     Boolean redeem(CpnUserCouponRedeemReq req);
