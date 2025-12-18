@@ -25,7 +25,6 @@ import java.util.List;
  * author:       alex
  * createDate:   2025-11-07 10:00:00
  * version:      1.0.0
- * AI Agent
  */
 @ApiSort(107)
 @Api(value = "联系人关系分类字典相关接口", tags = {"联系人关系分类字典相关接口"})

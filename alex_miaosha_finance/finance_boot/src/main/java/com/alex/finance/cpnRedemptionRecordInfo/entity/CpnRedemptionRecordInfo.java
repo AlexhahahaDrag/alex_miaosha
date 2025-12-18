@@ -30,7 +30,8 @@ public class CpnRedemptionRecordInfo extends BaseEntity<CpnRedemptionRecordInfo>
 
     @ApiModelProperty(value = "核销用户ID")
     @TableField("user_id")
-    private Integer userId;
+    // 统一 userId 为 Long，避免前后端/DB bigint 对齐问题
+    private Long userId;
 
     @ApiModelProperty(value = "关联的订单ID")
     @TableField("order_id")
@@ -51,5 +52,9 @@ public class CpnRedemptionRecordInfo extends BaseEntity<CpnRedemptionRecordInfo>
     @ApiModelProperty(value = "核销商家ID")
     @TableField("merchant_id")
     private Integer merchantId;
+
+    @ApiModelProperty(value = "备注")
+    @TableField("remarks")
+    private String remarks;
 
 }

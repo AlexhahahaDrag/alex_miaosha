@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * description:  个人随礼场合分布Vo
- * author:       AI Agent
+ * author:       alex
  * createDate:   2025-11-05
  * version:      1.0.0
  * 用于前端展示随礼场合分布饼图数据

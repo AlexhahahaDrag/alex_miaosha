@@ -96,7 +96,7 @@ public class PersonalGiftController {
         return Result.success(personalGiftService.importPersonalGift(file));
     }
 
-    @ApiOperationSupport(order = 80, author = "AI Agent")
+    @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "获取联系人随礼记录列表", notes = "获取联系人随礼记录列表，包括每个联系人的随礼总额、收礼总额、净差额等统计信息。用于前端展示联系人记录页面", response = Result.class)
     @PostMapping(value = "/contacts-gift-record-list")
     @ApiImplicitParams({
@@ -110,7 +110,7 @@ public class PersonalGiftController {
         return Result.success(personalGiftService.getContactsGiftRecordList(pageNum, pageSize, queryCondition));
     }
 
-    @ApiOperationSupport(order = 90, author = "AI Agent")
+    @ApiOperationSupport(order = 90, author = "alex")
     @ApiOperation(value = "获取个人随礼统计概览", notes = "获取统计概览页面的数据，包括本月、年度的随礼收礼数据、环比、同比、联系人统计等。支持按时间范围过滤统计数据", response = Result.class)
     @GetMapping(value = "/statistic")
     @ApiImplicitParams({
@@ -122,7 +122,7 @@ public class PersonalGiftController {
         return Result.success(personalGiftService.getPersonalGiftStatistic(startTime, endTime));
     }
 
-    @ApiOperationSupport(order = 100, author = "AI Agent")
+    @ApiOperationSupport(order = 100, author = "alex")
     @ApiOperation(value = "获取个人随礼近12个月趋势", notes = "获取近12个月的随礼收礼趋势数据，用于前端展示趋势图表", response = Result.class)
     @GetMapping(value = "/trend")
     @ApiImplicitParams({
@@ -134,7 +134,7 @@ public class PersonalGiftController {
         return Result.success(personalGiftService.getPersonalGiftTrend(startTime, endTime));
     }
 
-    @ApiOperationSupport(order = 110, author = "AI Agent")
+    @ApiOperationSupport(order = 110, author = "alex")
     @ApiOperation(value = "获取个人随礼场合分布", notes = "获取不同场合的随礼收礼分布数据，用于前端展示饼图", response = Result.class)
     @GetMapping(value = "/occasion-distribution")
     @ApiImplicitParams({

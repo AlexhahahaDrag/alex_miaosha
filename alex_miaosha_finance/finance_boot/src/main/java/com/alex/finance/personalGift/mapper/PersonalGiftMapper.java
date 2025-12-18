@@ -39,7 +39,7 @@ public interface PersonalGiftMapper extends BaseMapper<PersonalGift> {
     Page<ContactsGiftRecordVo> getContactsGiftRecordList(Page<ContactsGiftRecordVo> page, @Param("queryCondition") ContactsGiftRecordVo queryCondition);
 
     /**
-     * AI Agent: 获取个人随礼统计概览
+     * 获取个人随礼统计概览
      * 用于前端展示统计概览页面，包含本月、年度的随礼收礼数据、环比、同比、联系人统计等
      *
      * @param startTime 开始日期（格式：yyyy-MM-dd），不提供则使用系统当前月份开始日期
@@ -49,7 +49,7 @@ public interface PersonalGiftMapper extends BaseMapper<PersonalGift> {
     PersonalGiftStatisticVo getPersonalGiftStatistic(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
-     * AI Agent: 获取个人随礼近12个月趋势
+     * 获取个人随礼近12个月趋势
      * 用于前端展示"个人随礼趋势"页面，显示近12个月的随礼收礼数据
      *
      * @param startTime 开始日期（格式：yyyy-MM-dd），不提供则使用系统近12个月开始日期
@@ -59,7 +59,7 @@ public interface PersonalGiftMapper extends BaseMapper<PersonalGift> {
     List<PersonalGiftTrendVo> getPersonalGiftTrend(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
-     * AI Agent: 获取个人随礼场合分布
+     * 获取个人随礼场合分布
      * 用于前端展示"个人随礼场合分布"页面，显示不同场合的随礼收礼数据
      *
      * @param startTime 开始日期（格式：yyyy-MM-dd），不提供则使用系统当前月份开始日期

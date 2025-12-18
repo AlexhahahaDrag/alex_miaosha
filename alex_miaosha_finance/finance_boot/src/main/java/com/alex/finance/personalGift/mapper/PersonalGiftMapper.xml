@@ -107,7 +107,7 @@
          ORDER BY lastContactTime DESC
      </select>
 
-     <!-- AI Agent: 获取个人随礼统计概览（包含本月、年度、环比、同比、联系人统计） -->
+     <!-- 获取个人随礼统计概览（包含本月、年度、环比、同比、联系人统计） -->
      <select id="getPersonalGiftStatistic" resultType="com.alex.api.finance.personalGift.vo.PersonalGiftStatisticVo">
          SELECT
              -- 本月数据

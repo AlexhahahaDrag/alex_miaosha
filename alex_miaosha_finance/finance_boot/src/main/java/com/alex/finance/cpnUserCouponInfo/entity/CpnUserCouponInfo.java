@@ -25,7 +25,8 @@ public class CpnUserCouponInfo extends BaseEntity<CpnUserCouponInfo>{
 
     @ApiModelProperty(value = "领取用户ID")
     @TableField("user_id")
-    private Integer userId;
+    // 统一 userId 为 Long，避免前后端/DB bigint 对齐问题
+    private Long userId;
 
     @ApiModelProperty(value = "对应的消费券ID (外键关联 cpn_coupon_info_t.id)")
     @TableField("coupon_id")

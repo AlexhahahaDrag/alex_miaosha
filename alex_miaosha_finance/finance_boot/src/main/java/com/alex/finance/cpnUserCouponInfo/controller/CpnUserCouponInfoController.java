@@ -1,24 +1,23 @@
 package com.alex.finance.cpnUserCouponInfo.controller;
 
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponRedeemReq;
+import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
-import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import org.springframework.validation.annotation.Validated;
+import com.alex.finance.cpnUserCouponInfo.service.CpnUserCouponInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import com.alex.base.common.Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.alex.finance.cpnUserCouponInfo.service.CpnUserCouponInfoService;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户消费券库存表 (按数量核销) 控制器
@@ -90,6 +89,40 @@ public class CpnUserCouponInfoController {
     @PostMapping
     public Result<Boolean> add(@Validated({Insert.class}) @RequestBody CpnUserCouponInfoVo cpnUserCouponInfoVo) {
         return Result.success(cpnUserCouponInfoService.addCpnUserCouponInfo(cpnUserCouponInfoVo));
+    }
+
+    /**
+     * 消费券核销数量（按数量核销）
+     * <p>
+     * 这里只做参数接收与转发，所有业务逻辑在 ServiceImpl 内完成（含事务与历史记录写入）。
+     *
+     * @param req 核销请求
+     * @return 操作结果
+     */
+    @LogRestRequest(apiName = "消费券核销数量（按数量核销）")
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 35, author = "alex")
+    @ApiOperation(value = "消费券核销数量（按数量核销）", notes = "按 userId + couponId 进行数量核销，同时写入核销历史记录", response = Result.class)
+    @PostMapping("/redeem")
+    public Result<Boolean> redeem(@Validated @RequestBody CpnUserCouponRedeemReq req) {
+        return Result.success(cpnUserCouponInfoService.redeem(req));
+    }
+
+    /**
+     * 取消核销
+     * <p>
+     * 这里只做参数接收与转发，所有业务逻辑在 ServiceImpl 内完成（含事务与历史记录写入）。
+     *
+     * @param req 取消核销请求
+     * @return 操作结果
+     */
+    @LogRestRequest(apiName = "取消核销（按数量核销）")
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 36, author = "alex")
+    @ApiOperation(value = "取消核销（按数量核销）", notes = "根据 userCouponId 取消核销，同时写入取消核销历史记录", response = Result.class)
+    @PostMapping("/redeem/cancel")
+    public Result<Boolean> cancelRedeem(@Validated @RequestBody CpnUserCouponRedeemReq req) {
+        return Result.success(cpnUserCouponInfoService.cancelRedeem(req));
     }
 
     /**

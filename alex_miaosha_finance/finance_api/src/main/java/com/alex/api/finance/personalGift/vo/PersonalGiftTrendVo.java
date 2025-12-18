@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 /**
  * description:  个人随礼趋势Vo
- * author:       AI Agent
+ * author:       alex
  * createDate:   2025-11-05
  * version:      1.0.0
  * 用于前端展示近12个月的随礼收礼趋势数据

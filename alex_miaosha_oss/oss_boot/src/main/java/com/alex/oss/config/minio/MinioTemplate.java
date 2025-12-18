@@ -80,7 +80,6 @@ public class MinioTemplate implements InitializingBean {
                 makeBucket(name);
             }
         } catch (Exception e) {
-            // AI Agent: 使用SLF4J logger替代printStackTrace
             log.error("检查bucket是否存在异常：", e);
         }
     }
@@ -94,7 +93,6 @@ public class MinioTemplate implements InitializingBean {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
         } catch (Exception e) {
-            // AI Agent: 使用SLF4J logger替代printStackTrace
             log.error("创建bucket异常：", e);
         }
     }
@@ -111,7 +109,6 @@ public class MinioTemplate implements InitializingBean {
                     .bucket(bucketName)
                     .build());
         } catch (Exception e) {
-            // AI Agent: 使用SLF4J logger替代printStackTrace
             log.error("删除bucket异常：", e);
             return false;
         }
@@ -184,7 +181,7 @@ public class MinioTemplate implements InitializingBean {
                 OutputStream ps = response.getOutputStream();
                 ps.write(data.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                // AI Agent: 使用SLF4J logger替代printStackTrace
+                // 使用SLF4J logger替代printStackTrace
                 log.error("文件下载异常 - 向响应写入错误信息失败：", e);
             }
         } finally {
@@ -196,7 +193,7 @@ public class MinioTemplate implements InitializingBean {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                // AI Agent: 使用SLF4J logger替代printStackTrace
+                // 使用SLF4J logger替代printStackTrace
                 log.error("关闭文件流异常：", e);
             }
         }
@@ -227,7 +224,7 @@ public class MinioTemplate implements InitializingBean {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                // AI Agent: 使用SLF4J logger替代printStackTrace
+                // 使用SLF4J logger替代printStackTrace
                 log.error("关闭文件流异常：", e);
             }
         }
@@ -252,7 +249,7 @@ public class MinioTemplate implements InitializingBean {
                 objectItems.add(objectItem);
             }
         } catch (Exception e) {
-            // AI Agent: 使用SLF4J logger替代printStackTrace
+            // 使用SLF4J logger替代printStackTrace
             log.error("查看文件对象异常：", e);
             return null;
         }

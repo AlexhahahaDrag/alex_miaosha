@@ -1,6 +1,7 @@
 package com.alex.finance.cpnUserCouponInfo.service;
 
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo;
+import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponRedeemReq;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.finance.cpnUserCouponInfo.entity.CpnUserCouponInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,4 +27,16 @@ public interface CpnUserCouponInfoService extends IService<CpnUserCouponInfo> {
     Boolean updateCpnUserCouponInfo(CpnUserCouponInfoVo cpnUserCouponInfoVo);
 
     Boolean deleteCpnUserCouponInfo(String ids);
+
+    /**
+     * 消费券核销（按数量核销）
+     *
+     * 业务逻辑必须放在 ServiceImpl，Controller 只做参数接收与转发
+     */
+    Boolean redeem(CpnUserCouponRedeemReq req);
+
+    /**
+     * 取消核销
+     */
+    Boolean cancelRedeem(CpnUserCouponRedeemReq req);
 }

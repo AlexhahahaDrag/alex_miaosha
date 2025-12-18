@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * description:  联系人随礼记录Vo
- * author:       AI Agent
+ * author:       alex
  * createDate:   2025-11-05
  * version:      1.0.0
  * 用于前端展示联系人记录页面，显示每个联系人的随礼、收礼、净差额等统计信息

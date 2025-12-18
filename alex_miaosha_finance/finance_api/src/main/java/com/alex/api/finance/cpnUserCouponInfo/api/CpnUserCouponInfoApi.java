@@ -1,16 +1,15 @@
 package com.alex.api.finance.cpnUserCouponInfo.api;
 
 import com.alex.base.common.Result;
-import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo;
+import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponRedeemReq;
 
 /**
  * @description:  用户消费券库存表 (按数量核销)控制器 api
@@ -24,7 +23,7 @@ public interface CpnUserCouponInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取用户消费券库存表 (按数量核销)分页", notes = "获取用户消费券库存表 (按数量核销)分页", response = Result.class)
-    @PostMapping(value = "/api/v1//cpn-user-coupon-info/page")
+    @PostMapping(value = "/api/v1/cpn-user-coupon-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,17 +35,27 @@ public interface CpnUserCouponInfoApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取用户消费券库存表 (按数量核销)详情", notes = "获取用户消费券库存表 (按数量核销)详情", response = Result.class)
-    @GetMapping(value = "/api/v1//cpn-user-coupon-info")
+    @GetMapping(value = "/api/v1/cpn-user-coupon-info")
     Result<CpnUserCouponInfoVo> queryCpnUserCouponInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增用户消费券库存表 (按数量核销)", notes = "新增用户消费券库存表 (按数量核销)", response = Result.class)
-    @PostMapping("/api/v1//cpn-user-coupon-info")
+    @PostMapping("/api/v1/cpn-user-coupon-info")
     Result<Boolean> addCpnUserCouponInfo(@RequestBody CpnUserCouponInfoVo cpnUserCouponInfoVo);
+
+    @ApiOperationSupport(order = 35, author = "alex")
+    @ApiOperation(value = "消费券核销数量（按数量核销）", notes = "按 userId + couponId 进行数量核销，同时写入核销历史记录", response = Result.class)
+    @PostMapping("/api/v1/cpn-user-coupon-info/redeem")
+    Result<Boolean> redeem(@RequestBody CpnUserCouponRedeemReq req);
+
+    @ApiOperationSupport(order = 36, author = "alex")
+    @ApiOperation(value = "取消核销（按数量核销）", notes = "根据 userCouponId 取消核销，同时写入取消核销历史记录", response = Result.class)
+    @PostMapping("/api/v1/cpn-user-coupon-info/redeem/cancel")
+    Result<Boolean> cancelRedeem(@RequestBody CpnUserCouponRedeemReq req);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改用户消费券库存表 (按数量核销)", notes = "修改用户消费券库存表 (按数量核销)", response = Result.class)
-    @PutMapping("/api/v1//cpn-user-coupon-info")
+    @PutMapping("/api/v1/cpn-user-coupon-info")
     Result<Boolean> updateCpnUserCouponInfo(@RequestBody CpnUserCouponInfoVo cpnUserCouponInfoVo);
 
     @ApiOperationSupport(order = 50, author = "alex")

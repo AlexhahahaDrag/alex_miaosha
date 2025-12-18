@@ -190,7 +190,7 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 	public void downloadTemplate(javax.servlet.http.HttpServletResponse response) throws Exception {
 		log.info("下载联系人模版");
 		try {
-			// AI Agent: 直接下载预设的模版文件
+			// 直接下载预设的模版文件
 			String templatePath = "templates/contacts_user_template.xlsx";
 			ClassPathResource resource = new ClassPathResource(templatePath);
 			
@@ -210,7 +210,7 @@ public class ContactsUserServiceImpl extends ServiceImpl<ContactsUserMapper, Con
 			response.setHeader("Content-Disposition", "attachment;filename=contacts_user_template.xlsx");
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");
-			// AI Agent: 设置文件长度，防止 Excel 文件打开报错
+			// 设置文件长度，防止 Excel 文件打开报错
 			response.setContentLength((int) resource.getFile().length());
 			
 			// 读取文件并写入响应流

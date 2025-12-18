@@ -2,15 +2,14 @@ package com.alex.api.finance.cpnCouponInfo.vo;
 
 import com.alex.common.common.BaseVo;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.alex.common.config.Long2StringSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @description:  消费券信息表视图
@@ -23,6 +22,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Accessors(chain = true)
 @ApiModel(value = "CpnCouponInfoVo", description = "消费券信息表Vo")
 public class CpnCouponInfoVo extends BaseVo<CpnCouponInfoVo>{
+
+    @ApiModelProperty(value = "已核销数量（cpn_user_coupon_info_t.status = USED 汇总）")
+    private Integer consumedQuantity;
+
+    @ApiModelProperty(value = "未核销数量（remainingQuantity = totalQuantity - consumedQuantity）")
+    private Integer remainingQuantity;
 
     @ApiModelProperty(value = "消费券名称")
     private String couponName;
@@ -41,5 +46,13 @@ public class CpnCouponInfoVo extends BaseVo<CpnCouponInfoVo>{
 
     @ApiModelProperty(value = "最低消费门槛")
     private BigDecimal minSpend;
+
+    @ApiModelProperty(value = "过期状态（展示用：离过期还有三天/离过期还有一天/离过期还有X小时/离过期还有X分钟/过期）")
+    @TableField(exist = false)
+    private String expireStatus;
+
+    @ApiModelProperty(value = "过期区间状态（数字：0已过期，1<1天，2=1-3天，3>3天）")
+    @TableField(exist = false)
+    private Integer expireRangeStatus;
 
 }

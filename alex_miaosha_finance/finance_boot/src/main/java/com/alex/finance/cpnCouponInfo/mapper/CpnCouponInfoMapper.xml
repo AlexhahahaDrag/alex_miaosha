@@ -39,11 +39,23 @@
         cpn_coupon_info_t.start_date,
         cpn_coupon_info_t.end_date,
         cpn_coupon_info_t.unit_value,
-        cpn_coupon_info_t.min_spend,
+        cpn_coupon_info_t.min_spend
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
-        select <include refid="Base_Column_List"/>from cpn_coupon_info_t
+        select
+        <include refid="Base_Column_List"/>,
+        ifnull(uci_stat.consumedQuantity, 0) as consumedQuantity,
+        greatest(cpn_coupon_info_t.total_quantity - ifnull(uci_stat.consumedQuantity, 0), 0) as remainingQuantity
+        from cpn_coupon_info_t
+        left join (
+            select
+                coupon_id,
+                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+            from cpn_user_coupon_info_t
+            where is_delete = 0
+            group by coupon_id
+        ) uci_stat on uci_stat.coupon_id = cpn_coupon_info_t.id
         <where>
             cpn_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
@@ -53,7 +65,19 @@
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
-        select <include refid="Base_Column_List"/>from cpn_coupon_info_t
+        select
+        <include refid="Base_Column_List"/>,
+        ifnull(uci_stat.consumedQuantity, 0) as consumedQuantity,
+        greatest(cpn_coupon_info_t.total_quantity - ifnull(uci_stat.consumedQuantity, 0), 0) as remainingQuantity
+        from cpn_coupon_info_t
+        left join (
+            select
+                coupon_id,
+                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+            from cpn_user_coupon_info_t
+            where is_delete = 0
+            group by coupon_id
+        ) uci_stat on uci_stat.coupon_id = cpn_coupon_info_t.id
         <where>
             cpn_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
@@ -63,7 +87,19 @@
     </select>
 
     <select id="queryCpnCouponInfo" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
-        select <include refid="Base_Column_List"/> from cpn_coupon_info_t
+        select
+        <include refid="Base_Column_List"/>,
+        ifnull(uci_stat.consumedQuantity, 0) as consumedQuantity,
+        greatest(cpn_coupon_info_t.total_quantity - ifnull(uci_stat.consumedQuantity, 0), 0) as remainingQuantity
+        from cpn_coupon_info_t
+        left join (
+            select
+                coupon_id,
+                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+            from cpn_user_coupon_info_t
+            where is_delete = 0
+            group by coupon_id
+        ) uci_stat on uci_stat.coupon_id = cpn_coupon_info_t.id
         <where>
             cpn_coupon_info_t.id = #{id}
             and cpn_coupon_info_t.is_delete = 0
@@ -72,6 +108,9 @@
 
      <sql id="queryInfo">
         <if test = "cpnCouponInfoVo != null">
+          <if test = "cpnCouponInfoVo.id != null">
+            and cpn_coupon_info_t.id = #{cpnCouponInfoVo.id}
+          </if>
           <if test = "cpnCouponInfoVo.couponName != null">
             and cpn_coupon_info_t.coupon_name like concat('%', #{cpnCouponInfoVo.couponName}, '%')
           </if>

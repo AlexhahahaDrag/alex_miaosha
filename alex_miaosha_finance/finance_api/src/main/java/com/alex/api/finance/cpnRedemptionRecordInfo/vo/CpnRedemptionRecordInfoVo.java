@@ -28,7 +28,8 @@ public class CpnRedemptionRecordInfoVo extends BaseVo<CpnRedemptionRecordInfoVo>
     private Long userCouponId;
 
     @ApiModelProperty(value = "核销用户ID")
-    private Integer userId;
+    // 统一 userId 为 Long，避免前后端/DB bigint 对齐问题
+    private Long userId;
 
     @ApiModelProperty(value = "关联的订单ID")
     private Long orderId;
@@ -44,5 +45,8 @@ public class CpnRedemptionRecordInfoVo extends BaseVo<CpnRedemptionRecordInfoVo>
 
     @ApiModelProperty(value = "核销商家ID")
     private Integer merchantId;
+
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 
 }

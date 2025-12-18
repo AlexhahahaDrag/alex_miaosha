@@ -109,7 +109,7 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
-            <!-- AI Agent: 二进制文件 - 禁用 filtering，防止文件被损坏 -->
+            <!-- 二进制文件 - 禁用 filtering，防止文件被损坏 -->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -123,7 +123,7 @@
                 </includes>
                 <filtering>false</filtering>
             </resource>
-            <!-- AI Agent: Java 源目录中的资源文件 -->
+            <!-- Java 源目录中的资源文件 -->
             <resource>
                 <directory>src/main/java</directory>
                 <includes>

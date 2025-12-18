@@ -5,7 +5,6 @@
         description: 根据用户ID查询用户所在公司下的所有用户ID
         author: alex
         createDate: 2025-01-XX
-        AI Agent
     -->
     <sql id="familyGroup">
         SELECT

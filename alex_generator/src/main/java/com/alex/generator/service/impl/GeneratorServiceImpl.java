@@ -260,11 +260,11 @@ public class GeneratorServiceImpl implements GeneratorService {
                                             String javaPath,
                                             String projectPath,
                                             String clientPathProject) {
-        // AI Agent: 统一“先算 basePath，再派生子目录”的写法，减少重复字符串拼接，便于后续维护扩展
+        // 统一“先算 basePath，再派生子目录”的写法，减少重复字符串拼接，便于后续维护扩展
         String bootDir = "/java/com/alex" + separator + javaPath;
         String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
 
-        // AI Agent: 目录命名规范：将下划线改为中划线（_ -> -），用于前端目录（更贴近 kebab-case）
+        // 目录命名规范：将下划线改为中划线（_ -> -），用于前端目录（更贴近 kebab-case）
         // 例如：user_role -> user-role
         String fileOriginalNameKebab = StringUtils.isBlank(fileOriginalName)
                 ? fileOriginalName

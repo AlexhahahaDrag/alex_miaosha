@@ -21,6 +21,7 @@
         <result column="redemption_value" property="redemptionValue" />
         <result column="redemption_time" property="redemptionTime" />
         <result column="merchant_id" property="merchantId" />
+        <result column="remarks" property="remarks" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -42,6 +43,7 @@
         cpn_redemption_record_info_t.redemption_value,
         cpn_redemption_record_info_t.redemption_time,
         cpn_redemption_record_info_t.merchant_id,
+        cpn_redemption_record_info_t.remarks
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
