@@ -32,3 +32,4 @@ logs
 */jasypt.yaml
 */.gradle
 */drone-att.txt
+qodana.yaml

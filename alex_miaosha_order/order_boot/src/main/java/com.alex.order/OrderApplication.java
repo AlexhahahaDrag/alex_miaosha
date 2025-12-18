@@ -1,4 +1,4 @@
-package com.alex.user;
+package com.alex.order;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.alex.order", "com.alex.common", "com.alex.utils", "com.alex.api.order"})
+@ComponentScan(basePackages = {"com.alex.order", "com.alex.common", "com.alex.utils", "com.alex.api"})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class OrderApplication {

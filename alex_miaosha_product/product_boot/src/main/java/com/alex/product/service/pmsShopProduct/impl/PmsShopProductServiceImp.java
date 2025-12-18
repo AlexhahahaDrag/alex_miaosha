@@ -97,12 +97,16 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
         List<PmsShopProduct> list = this.list(query);
         if (list != null && !list.isEmpty()) {
             list.forEach(item -> item.setIsCompare(false));
+        } else {
+            return false;
         }
         PmsShopProduct pmsShopProduct = PmsShopProduct.builder().skuId(skuId).build();
         pmsShopProduct.setId(chooseId);
         List<PmsShopProduct> res = Lists.newArrayList(pmsShopProduct);
-        res.addAll(list);
-        this.updateBatchById(res);
+        if (!res.isEmpty()) {
+            res.addAll(list);
+            updateBatchById(res);
+        }
         return true;
     }
 }

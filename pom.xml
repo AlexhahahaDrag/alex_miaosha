@@ -34,6 +34,9 @@
 
     <properties>
         <spring-boot.version>2.7.2</spring-boot.version>
+        <!-- AI Agent：安全补丁覆盖：统一提升 Spring Framework 5.3.x 版本，修复 spring-context 等传递依赖的已知漏洞告警 -->
+        <!-- 说明：保持 Spring Boot 2.7.x 不变，仅覆盖 Spring Framework BOM 版本（同一大版本线内通常兼容性风险较低） -->
+        <spring-framework.version>5.3.39</spring-framework.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!--项目编码规则-->
