@@ -2,10 +2,12 @@ package com.alex.finance.wechat.service.impl;
 
 import com.alex.finance.config.WechatAccountConfig;
 import com.alex.finance.wechat.service.WeChatService;
+import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpCurrentAutoReplyInfo;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
@@ -50,14 +52,15 @@ public class WeChatServiceImpl implements WeChatService {
                 wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
             }
         }
-        wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
+        WxMpCurrentAutoReplyInfo.KeywordAutoReplyInfo keywordAutoReplyInfo = wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
+        log.info("发送猫超卡结果：{}", JSONObject.toJSONString(keywordAutoReplyInfo));
     }
 
     @Override
     public void sentShopFinanceMessage(String infoDate, BigDecimal saleAmount, BigDecimal saleNum) throws WxErrorException {
         String token = getToken();
         List<WxMpTemplateData> dataList = Lists.newArrayList();
-        dataList.add(new WxMpTemplateData("infoDate", infoDate.toString(), "#00FF00"));
+        dataList.add(new WxMpTemplateData("infoDate", infoDate, "#00FF00"));
         dataList.add(new WxMpTemplateData("saleAmount", saleAmount.toString(), "#00FF00"));
         dataList.add(new WxMpTemplateData("saleNum", saleNum.toString(), "#00FF00"));
         WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
@@ -76,7 +79,8 @@ public class WeChatServiceImpl implements WeChatService {
                 wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
             }
         }
-        wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
+        WxMpCurrentAutoReplyInfo.KeywordAutoReplyInfo keywordAutoReplyInfo = wxMpService.getCurrentAutoReplyInfo().getKeywordAutoReplyInfo();
+        log.info("发送产品结果：{}", JSONObject.toJSONString(keywordAutoReplyInfo));
     }
 }
 

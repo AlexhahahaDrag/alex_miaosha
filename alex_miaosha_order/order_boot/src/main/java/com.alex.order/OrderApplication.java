@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.alex.order", "com.alex.common", "com.alex.utils", "com.alex.api"})
+@ComponentScan(basePackages = {"com.alex", "com.alex.common", "com.alex.utils", "com.alex.api"})
 @EnableEncryptableProperties
 @EnableFeignClients(basePackages = {"com.alex.api.user"})
 public class OrderApplication {

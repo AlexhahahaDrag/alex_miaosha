@@ -73,7 +73,7 @@ public class CpnCouponInfoController {
     @ApiOperation(value = "获取消费券信息表详情", notes = "根据ID查询消费券信息表详细信息", response = Result.class)
     @GetMapping(value = "/{id}")
     @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
-    public Result<CpnCouponInfoVo> getById(@PathVariable("id") Long id) {
+    public Result<CpnCouponInfoVo> getById(@PathVariable Long id) {
         return Result.success(cpnCouponInfoService.queryCpnCouponInfo(id));
     }
 

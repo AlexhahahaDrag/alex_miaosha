@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -90,6 +91,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateCompareInfo(String skuId, Long chooseId) {
         LambdaQueryWrapper<PmsShopProduct> query = Wrappers.<PmsShopProduct>lambdaQuery()
                 .eq(PmsShopProduct::getSkuId, skuId)

@@ -50,7 +50,7 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-apidoc")
-//                .globalRequestParameters(globalRequestParameters)
+                .globalRequestParameters(globalRequestParameters)
                 ;//注意这里
     }
 

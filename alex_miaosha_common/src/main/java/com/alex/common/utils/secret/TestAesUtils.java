@@ -1,9 +1,5 @@
 package com.alex.common.utils.secret;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.util.Base64Utils;
-
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +68,7 @@ public class TestAesUtils {
                 //返回base64字符串
                 return Base64Utils.encodeToString(encrypted);
             } catch (Exception e) {
-                LOGGER.info("AES encrypt exception:" + e.getMessage());
+                LOGGER.info("AES encrypt exception:{}", e.getMessage());
                 throw new RuntimeException(e);
             }
 
@@ -114,7 +110,7 @@ public class TestAesUtils {
                 //将字节数组转成字符串
                 return new String(decrypted, ENCODING);
             } catch (Exception e) {
-                LOGGER.info("AES decrypt exception:" + e.getMessage());
+                LOGGER.info("AES decrypt exception:{}", e.getMessage());
                 throw new RuntimeException(e);
             }
 
@@ -154,7 +150,7 @@ public class TestAesUtils {
                 //返回base64字符串
                 return Base64Utils.encodeToString(encrypted);
             } catch (Exception e) {
-                LOGGER.info("AES_CBC encrypt exception:" + e.getMessage());
+                LOGGER.info("AES_CBC encrypt exception:{}", e.getMessage());
                 throw new RuntimeException(e);
             }
 
@@ -198,7 +194,7 @@ public class TestAesUtils {
                 //将字节数组转成字符串
                 return new String(decrypted, ENCODING);
             } catch (Exception e) {
-                LOGGER.info("AES_CBC decrypt exception:" + e.getMessage());
+                LOGGER.info("AES_CBC decrypt exception:{}", e.getMessage());
                 throw new RuntimeException(e);
             }
 
@@ -211,8 +207,8 @@ public class TestAesUtils {
     public static void main(String[] args) {
         // AES支持三种长度的密钥：128位、192位、256位。
         // 代码中这种就是128位的加密密钥，16字节 * 8位/字节 = 128位。
-        String random = RandomStringUtils.random(16, "abcdefghijklmnopqrstuvwxyz1234567890");
-        random = "1234567890123456";
+//        String random = RandomStringUtils.random(16, "abcdefghijklmnopqrstuvwxyz1234567890");
+        String random = "1234567890123456";
         System.out.println("随机key:" + random);
         System.out.println();
 

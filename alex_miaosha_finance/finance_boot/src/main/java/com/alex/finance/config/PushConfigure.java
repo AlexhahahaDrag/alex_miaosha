@@ -27,7 +27,6 @@ public class PushConfigure {
 
     @Bean
     public WxMpConfigStorage wxMpConfigStorage() {
-//        WxMpInMemoryConfigStorage wxMpConfigStorage = new WxMpInMemoryConfigStorage();
         WxMpDefaultConfigImpl wxMpConfigStorage = new WxMpDefaultConfigImpl();
         wxMpConfigStorage.setAppId(accountConfig.getAppId());
         wxMpConfigStorage.setSecret(accountConfig.getSecret());

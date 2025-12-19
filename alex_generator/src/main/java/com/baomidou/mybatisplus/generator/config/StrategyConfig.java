@@ -318,7 +318,6 @@ public class StrategyConfig {
 
     public boolean startsWithTablePrefix(@NotNull String tableName) {
         Stream<String> var10000 = this.tablePrefix.stream();
-        tableName.getClass();
         return var10000.anyMatch(tableName::startsWith);
     }
 

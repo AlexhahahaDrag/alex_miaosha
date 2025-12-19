@@ -181,8 +181,8 @@ public class GoodsServiceImpl implements GoodsService {
         Integer stockCount = Integer.parseInt(redisUtils.get(SeckillGoodsKey.seckillCount, goodsId + ""));
 //        long startTime = Timestamp.valueOf(goods.getStartTime()).getTime();
 //        long endTime = Timestamp.valueOf(goods.getEndTime()).getTime();
-        long startTime = 0l;
-        long endTime = 0l;
+        long startTime = 0L;
+        long endTime = 0L;
         long now = System.currentTimeMillis();
         int remainSeconds;
         if (now < startTime) {

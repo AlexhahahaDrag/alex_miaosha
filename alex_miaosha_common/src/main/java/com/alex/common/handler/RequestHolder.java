@@ -4,8 +4,6 @@ import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -126,6 +124,9 @@ public class RequestHolder {
      */
     public static Long getAdminId() {
         HttpServletRequest request = getRequest();
+        if (request == null) {
+            return null;
+        }
         return (Long) request.getAttribute(SysConf.ADMIN_ID);
     }
 
@@ -136,6 +137,9 @@ public class RequestHolder {
      */
     public static String getAdminToken() {
         HttpServletRequest request = getRequest();
+        if (request == null) {
+            return null;
+        }
         return (String) request.getAttribute(SysConf.TOKEN);
     }
 

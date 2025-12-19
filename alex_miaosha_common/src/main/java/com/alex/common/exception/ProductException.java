@@ -24,6 +24,6 @@ public class ProductException extends RuntimeException {
         super();
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
-        log.info("商品异常");
+        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
     }
 }

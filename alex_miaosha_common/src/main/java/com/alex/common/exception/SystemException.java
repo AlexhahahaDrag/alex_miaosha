@@ -21,8 +21,8 @@ public class SystemException extends RuntimeException{
     private String msg;
 
     public SystemException(ResultEnum resultEnum, String system) {
-        log.error(resultEnum.getCode() + ":" + resultEnum.getValue());
         this.code = resultEnum.getCode();
         this.msg = system + resultEnum.getValue();
+        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
     }
 }

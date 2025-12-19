@@ -21,7 +21,7 @@ public class FileException extends RuntimeException{
     private String msg;
 
     public FileException(ResultEnum resultEnum) {
-        log.error(resultEnum.getCode() + ":" + resultEnum.getValue());
+        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
     }

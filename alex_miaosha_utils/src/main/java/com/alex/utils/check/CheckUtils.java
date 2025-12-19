@@ -45,14 +45,12 @@ public class CheckUtils {
      * return:       boolean
     */
     public static boolean check(String info, String regex) {
-        boolean res = false;
         try {
             Pattern compile = Pattern.compile(regex);
-            res = compile.matcher(info).matches();
+            return compile.matcher(info).matches();
         } catch (Exception e) {
             log.error("校验邮箱失败，{}", e.getMessage());
             return false;
         }
-        return res;
     }
 }

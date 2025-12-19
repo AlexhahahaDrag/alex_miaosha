@@ -136,13 +136,14 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             e.getStackTrace();
             return Result.error("403", "认证失败");
         });
-        Boolean result = Optional.of(completableFuture).map(item -> {
-            try {
-                return item.get().getData();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }).get();
+        // AI Agent：移除不必要的 Optional，直接处理 CompletableFuture 结果，使用 orElse 提供默认值避免空指针
+        Boolean result;
+        try {
+            result = Optional.ofNullable(completableFuture.get().getData()).orElse(false);
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("获取认证结果失败", e);
+            throw new RuntimeException(e);
+        }
         return result ? secretOut(exchange, chain) : out(response);
     }
 

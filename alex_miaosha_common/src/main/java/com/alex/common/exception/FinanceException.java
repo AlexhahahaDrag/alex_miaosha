@@ -28,7 +28,7 @@ public class FinanceException extends RuntimeException{
 
     public FinanceException(String code, String message) {
         super(message);
-        log.error(code + ":" + message);
+        log.error("编码：{}，信息：{}", code, message);
         this.code = code;
         this.msg = message;
     }

@@ -1,9 +1,7 @@
 package com.alex.mission.controller;
 
 import com.alex.base.common.Result;
-import com.alex.base.enums.ResultEnum;
 import com.alex.common.annotations.SeckillLimit;
-import com.alex.mission.manager.AccessLimitService;
 import com.alex.mission.service.SeckillService;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
@@ -32,18 +30,12 @@ public class SeckillController {
 
     private final SeckillService seckillService;
 
-    private final AccessLimitService accessLimitService;
-
-    // TODO: 2022/8/19 减库存 多久同步一回到数据库 
+    // TODO: 2022/8/19 减库存 多久同步一回到数据库
     // TODO: 2022/8/19 校验同一用户不能连续秒杀多次 
     @GetMapping
     @ApiOperation(value = "执行秒杀", notes = "执行秒杀")
     public Result<Integer> doSeckill(@ApiParam(value = "商品id", name = "goodsId", required = true) @RequestParam(value = "goodsId") Long goodsId,
                                      @ApiParam(value = "路径", name = "path", required = true) @RequestParam(value = "path")String path, HttpServletRequest request){
-        // TODO: 2022/7/15 校验及设置限流
-        if (!accessLimitService.tryAcquireToken()) {
-            Result.error(ResultEnum.ACCESS_TOO_MANY.getCode(), ResultEnum.ACCESS_TOO_MANY.getValue());
-        }
         return seckillService.doSeckill(goodsId, path, request);
     }
 

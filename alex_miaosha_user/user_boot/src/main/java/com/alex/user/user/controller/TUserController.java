@@ -111,7 +111,7 @@ public class TUserController {
 
     @LogRestRequest(apiName = "第三方登录渲染")
     @GetMapping("/third/{appName}")
-    public void renderAuth(@PathVariable(value = "appName") String appName, HttpServletResponse response) throws IOException {
+    public void renderAuth(@PathVariable String appName, HttpServletResponse response) throws IOException {
         AuthRequest authRequest = tUserService.getAuthRequest(appName);
         response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }

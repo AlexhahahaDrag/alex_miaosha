@@ -72,7 +72,7 @@ public class CpnUserCouponInfoController {
     @ApiOperation(value = "获取用户消费券库存表 (按数量核销)详情", notes = "根据ID查询用户消费券库存表 (按数量核销)详细信息", response = Result.class)
     @GetMapping(value = "/{id}")
     @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
-    public Result<CpnUserCouponInfoVo> getById(@PathVariable("id") Long id) {
+    public Result<CpnUserCouponInfoVo> getById(@PathVariable Long id) {
         return Result.success(cpnUserCouponInfoService.queryCpnUserCouponInfo(id));
     }
 

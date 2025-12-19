@@ -168,7 +168,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
                 RequestContextHolder.setRequestAttributes(attributes);
                 saveFinanceInfo(shopOrderVo);
             } catch (Exception e) {
-                log.error("更新库存信息失败：{}", e.getMessage());
+                log.error("更新销售信息失败：{}", e.getMessage());
             }
         });
         List<Long> shopCartIds = shopOrderDetailVoList.parallelStream()

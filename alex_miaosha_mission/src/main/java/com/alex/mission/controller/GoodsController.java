@@ -36,7 +36,7 @@ public class GoodsController {
     @ApiImplicitParams(
             @ApiImplicitParam(value = "货物id", name = "goodsId", required = true, type = "Long.class")
     )
-    public Result<GoodsDetailVo> getDetail(@PathVariable(value = "goodsId") Long goodsId) {
+    public Result<GoodsDetailVo> getDetail(@PathVariable Long goodsId) {
         return goodsService.getDetail(goodsId);
     }
 }

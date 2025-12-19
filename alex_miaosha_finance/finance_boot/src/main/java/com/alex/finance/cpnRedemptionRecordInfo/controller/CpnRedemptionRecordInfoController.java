@@ -73,7 +73,7 @@ public class CpnRedemptionRecordInfoController {
     @ApiOperation(value = "获取消费券核销记录表 (按数量核销)详情", notes = "根据ID查询消费券核销记录表 (按数量核销)详细信息", response = Result.class)
     @GetMapping(value = "/{id}")
     @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
-    public Result<CpnRedemptionRecordInfoVo> getById(@PathVariable("id") Long id) {
+    public Result<CpnRedemptionRecordInfoVo> getById(@PathVariable Long id) {
         return Result.success(cpnRedemptionRecordInfoService.queryCpnRedemptionRecordInfo(id));
     }
 

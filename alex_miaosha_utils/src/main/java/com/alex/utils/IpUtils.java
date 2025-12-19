@@ -74,7 +74,7 @@ public class IpUtils {
         if (checkNotIp(ipAddress)) {
             ipAddress = request.getRemoteAddr();
             if ("127.0.0.1".equals(ipAddress) || "0:0:0:0:0:0:0:1".equals(ipAddress)) {
-                InetAddress inet = null;
+                InetAddress inet;
                 try {
                     inet = InetAddress.getLocalHost();
                     ipAddress = inet.getHostAddress();
@@ -123,7 +123,7 @@ public class IpUtils {
     public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("User-Agent");
         String user = userAgent.toLowerCase();
-        String os = "";
+        String os;
         String browser = "";
 
         //os info

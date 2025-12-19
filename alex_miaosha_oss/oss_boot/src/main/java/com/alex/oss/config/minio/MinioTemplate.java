@@ -203,8 +203,8 @@ public class MinioTemplate implements InitializingBean {
      * param bucketName
      * param fileName
      * param delete     description: 下载文件流
-     *                   author: alex
-     *                   return: java.io.InputStream
+     * author: alex
+     * return: java.io.InputStream
      */
     public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
         InputStream inputStream = null;
@@ -317,7 +317,7 @@ public class MinioTemplate implements InitializingBean {
                         .build()
         );
 
-        log.info("上传文件结果：{}", JSONObject.toJSONString(objectWriteResponse));
+        log.info("上传缩略图结果：{}", JSONObject.toJSONString(objectWriteResponse));
 
         // 返回生成的缩略图地址
         Map<String, String> resultMap = new HashMap<>();

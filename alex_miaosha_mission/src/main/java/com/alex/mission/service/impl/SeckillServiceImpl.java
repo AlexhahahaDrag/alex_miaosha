@@ -82,7 +82,7 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     @Transactional
     public Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request) {
-        Long userId = 0l;
+        long userId = 0L;
         // TODO: 2022/8/30 验证重复秒杀 
         //验证path
 //        checkPath(goodsId, path, userId);
@@ -113,7 +113,7 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public Result<Long> seckillResult(Long goodsId, HttpServletRequest request) {
-        Long userId = 0l;
+        Long userId = 0L;
         //秒杀结果： orderId：成功， 0：排队中， -1：秒杀失败
         long result = 0;
         //查询订单数据
@@ -141,7 +141,7 @@ public class SeckillServiceImpl implements SeckillService {
     */
     @Override
     public Result<String> getSeckillPath(Long goodsId, HttpServletRequest request) {
-        Long userId = 0l;
+        Long userId = 0L;
         return Result.success(ResultEnum.SUCCESS.getValue(), createSeckillPath(userId, goodsId));
     }
 
@@ -254,7 +254,7 @@ public class SeckillServiceImpl implements SeckillService {
 //        String str = SM3Utils.sm3(UUID.randomUUID() + "123456");
         String str = "123456";
         redisUtils.set(SeckillKey.getSeckillPath, userId + "_" + goodsId, str, RedisCacheTimeEnum.GOODS_LIST_EXTIME.getValue());
-        log.info("库存数量:" + stock);
+        log.info("库存数量:{}", stock);
         return str;
     }
 }
