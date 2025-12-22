@@ -43,7 +43,7 @@ public class GatewayWebSecurityConfig {
     }
 
     @Bean
-    SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+    SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

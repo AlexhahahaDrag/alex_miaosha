@@ -29,7 +29,7 @@ public class WebSecurityConfig {
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     //白名单
-    private static String[] whiteList;
+    private static final String[] whiteList;
 
     static {
         whiteList = new String[]{

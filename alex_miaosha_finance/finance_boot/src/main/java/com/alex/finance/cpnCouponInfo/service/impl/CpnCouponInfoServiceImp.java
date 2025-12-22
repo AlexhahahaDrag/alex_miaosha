@@ -3,29 +3,30 @@ package com.alex.finance.cpnCouponInfo.service.impl;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
-import com.alex.finance.cpnCouponInfo.entity.CpnCouponInfo;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoImportVo;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
+import com.alex.common.utils.string.StringUtils;
+import com.alex.finance.cpnCouponInfo.entity.CpnCouponInfo;
 import com.alex.finance.cpnCouponInfo.mapper.CpnCouponInfoMapper;
 import com.alex.finance.cpnCouponInfo.service.CpnCouponInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import com.alex.common.utils.string.StringUtils;
 
 /**
  * <p>
@@ -175,11 +176,10 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
      * 
      * @param file 上传的Excel文件
      * @return 是否成功
-     * @throws Exception 异常
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean importCpnCouponInfo(MultipartFile file) throws Exception {
+    public Boolean importCpnCouponInfo(MultipartFile file) {
         log.info("开始导入消费券信息表");
         
         // 验证文件
@@ -206,7 +206,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         // 转换为实体并保存
         List<CpnCouponInfo> cpnCouponInfoList = excelInfo.stream()
                 .map(this::convertImportVoToEntity)
-                .filter(entity -> entity != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         
         if (cpnCouponInfoList.isEmpty()) {
@@ -225,10 +225,9 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
      * AI Agent：下载消费券信息表导入模版
      * 
      * @param response HTTP响应对象
-     * @throws Exception 异常
      */
     @Override
-    public void downloadTemplate(HttpServletResponse response) throws Exception {
+    public void downloadTemplate(HttpServletResponse response) {
         log.info("下载消费券信息表导入模版");
         try {
             // 直接下载预设的模版文件
