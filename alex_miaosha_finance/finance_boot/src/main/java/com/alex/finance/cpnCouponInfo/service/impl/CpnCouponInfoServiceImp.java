@@ -1,18 +1,29 @@
 package com.alex.finance.cpnCouponInfo.service.impl;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import com.alex.finance.cpnCouponInfo.entity.CpnCouponInfo;
+import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoImportVo;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
 import com.alex.finance.cpnCouponInfo.mapper.CpnCouponInfoMapper;
 import com.alex.finance.cpnCouponInfo.service.CpnCouponInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import com.alex.common.utils.string.StringUtils;
 
@@ -23,6 +34,7 @@ import com.alex.common.utils.string.StringUtils;
  * @createDate:   2025-12-17 17:54:42
  * @version:      1.0.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, CpnCouponInfo> implements CpnCouponInfoService {
@@ -156,5 +168,181 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
             return 2;
         }
         return 3;
+    }
+
+    /**
+     * AI Agent：导入消费券信息表
+     * 
+     * @param file 上传的Excel文件
+     * @return 是否成功
+     * @throws Exception 异常
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean importCpnCouponInfo(MultipartFile file) throws Exception {
+        log.info("开始导入消费券信息表");
+        
+        // 验证文件
+        if (file == null || file.isEmpty()) {
+            log.warn("上传的文件为空");
+            throw new RuntimeException("上传的文件不能为空");
+        }
+        
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || (!fileName.endsWith(".xlsx") && !fileName.endsWith(".xls"))) {
+            log.warn("文件格式不正确: {}", fileName);
+            throw new RuntimeException("只支持 .xlsx 或 .xls 格式的Excel文件");
+        }
+        
+        // 解析Excel文件
+        List<CpnCouponInfoImportVo> excelInfo = getExcelInfo(file);
+        if (excelInfo == null || excelInfo.isEmpty()) {
+            log.warn("Excel文件内容为空");
+            return true;
+        }
+        
+        log.info("Excel读取数据成功: 共{}条记录", excelInfo.size());
+        
+        // 转换为实体并保存
+        List<CpnCouponInfo> cpnCouponInfoList = excelInfo.stream()
+                .map(this::convertImportVoToEntity)
+                .filter(entity -> entity != null)
+                .collect(Collectors.toList());
+        
+        if (cpnCouponInfoList.isEmpty()) {
+            log.warn("没有有效的导入数据");
+            return false;
+        }
+        
+        // 批量保存
+        this.saveBatch(cpnCouponInfoList);
+        log.info("导入消费券信息表成功: 导入{}条记录", cpnCouponInfoList.size());
+        
+        return true;
+    }
+
+    /**
+     * AI Agent：下载消费券信息表导入模版
+     * 
+     * @param response HTTP响应对象
+     * @throws Exception 异常
+     */
+    @Override
+    public void downloadTemplate(HttpServletResponse response) throws Exception {
+        log.info("下载消费券信息表导入模版");
+        try {
+            // 直接下载预设的模版文件
+            String templatePath = "templates/cpn_coupon_info_template.xlsx";
+            ClassPathResource resource = new ClassPathResource(templatePath);
+            
+            if (!resource.exists()) {
+                log.warn("模版文件不存在: path={}", templatePath);
+                response.setStatus(404);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"code\":\"404\",\"message\":\"模版文件不存在\"}");
+                return;
+            }
+            
+            // 设置响应头 - 必须在写入数据前设置
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment;filename=cpn_coupon_info_template.xlsx");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            // 设置文件长度，防止 Excel 文件打开报错
+            response.setContentLength((int) resource.getFile().length());
+            
+            // 读取文件并写入响应流
+            // 注意：不能在 try-with-resources 中关闭 response.getOutputStream()
+            try (java.io.InputStream inputStream = resource.getInputStream()) {
+                java.io.OutputStream outputStream = response.getOutputStream();
+                byte[] buffer = new byte[4096];
+                int len;
+                while ((len = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, len);
+                }
+                outputStream.flush();
+                log.info("下载消费券信息表导入模版成功");
+            }
+        } catch (Exception e) {
+            log.error("下载消费券信息表导入模版失败", e);
+            try {
+                response.setStatus(500);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"code\":\"500\",\"message\":\"下载模版失败: " + e.getMessage() + "\"}");
+            } catch (Exception ex) {
+                log.error("写入错误响应失败", ex);
+            }
+        }
+    }
+
+    /**
+     * AI Agent：解析 Excel 文件
+     * 
+     * @param file 上传的文件
+     * @return Excel 中的数据列表
+     */
+    private List<CpnCouponInfoImportVo> getExcelInfo(MultipartFile file) {
+        ExcelImportResult<CpnCouponInfoImportVo> result;
+        ImportParams importParams = new ImportParams();
+        // 设置导入位置
+        importParams.setHeadRows(1);
+        // 设置首行
+        importParams.setTitleRows(0);
+        importParams.setStartRows(0);
+        importParams.setStartSheetIndex(0);
+        // 是否需要校验上传的 Excel
+        importParams.setNeedVerify(false);
+        try {
+            result = ExcelImportUtil.importExcelMore(file.getInputStream(), CpnCouponInfoImportVo.class, importParams);
+            log.info("Excel解析成功: 共{}条数据", result.getList().size());
+            return result.getList();
+        } catch (Exception e) {
+            log.error("Excel解析失败", e);
+            throw new RuntimeException("Excel文件解析失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * AI Agent：将 CpnCouponInfoImportVo 转换为 CpnCouponInfo 实体
+     * 
+     * @param importVo 导入VO
+     * @return 实体对象
+     */
+    private CpnCouponInfo convertImportVoToEntity(CpnCouponInfoImportVo importVo) {
+        if (importVo == null) {
+            return null;
+        }
+        
+        CpnCouponInfo entity = new CpnCouponInfo();
+        entity.setCouponName(importVo.getCouponName());
+        entity.setTotalQuantity(importVo.getTotalQuantity());
+        entity.setUnitValue(importVo.getUnitValue());
+        entity.setMinSpend(importVo.getMinSpend());
+        
+        // 解析日期时间字符串
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        try {
+            // AI Agent：有效期开始时间不填写时，默认为当前时间
+            if (StringUtils.isNotEmpty(importVo.getStartDate())) {
+                entity.setStartDate(LocalDateTime.parse(importVo.getStartDate(), formatter));
+            } else {
+                entity.setStartDate(LocalDateTime.now());
+            }
+            if (StringUtils.isNotEmpty(importVo.getEndDate())) {
+                entity.setEndDate(LocalDateTime.parse(importVo.getEndDate(), formatter));
+            }
+        } catch (Exception e) {
+            log.warn("日期解析失败: startDate={}, endDate={}, error={}", 
+                    importVo.getStartDate(), importVo.getEndDate(), e.getMessage());
+            // 日期解析失败时，如果开始时间为空，设置为当前时间
+            if (entity.getStartDate() == null) {
+                entity.setStartDate(LocalDateTime.now());
+            }
+        }
+        
+        return entity;
     }
 }

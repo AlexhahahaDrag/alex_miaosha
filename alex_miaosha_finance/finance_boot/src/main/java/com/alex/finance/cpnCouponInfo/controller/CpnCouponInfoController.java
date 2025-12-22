@@ -19,6 +19,9 @@ import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.alex.finance.cpnCouponInfo.service.CpnCouponInfoService;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 消费券信息表 控制器
@@ -119,5 +122,35 @@ public class CpnCouponInfoController {
     @ApiImplicitParam(value = "主键ID列表，多个ID用逗号分隔", name = "ids", required = true, dataTypeClass = String.class, example = "1,2,3")
     public Result<Boolean> delete(@RequestParam String ids) {
         return Result.success(cpnCouponInfoService.deleteCpnCouponInfo(ids));
+    }
+
+    /**
+     * 导入消费券信息表
+     * 
+     * @param file 上传的Excel文件
+     * @return 操作结果
+     * @throws Exception 异常
+     */
+    @LogRestRequest(apiName = "导入消费券信息表")
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "导入消费券信息表", notes = "通过Excel文件导入消费券信息表", response = Result.class)
+    @PostMapping(value = "/import")
+    @ApiImplicitParam(value = "Excel文件", name = "file", required = true, dataTypeClass = MultipartFile.class)
+    public Result<Boolean> importCpnCouponInfo(@RequestPart("file") MultipartFile file) throws Exception {
+        return Result.success(cpnCouponInfoService.importCpnCouponInfo(file));
+    }
+
+    /**
+     * 下载消费券信息表导入模版
+     * 
+     * @param response HTTP响应对象
+     * @throws Exception 异常
+     */
+    @LogRestRequest(apiName = "下载消费券信息表导入模版")
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "下载消费券信息表导入模版", notes = "下载消费券信息表Excel导入模版文件", response = Result.class)
+    @GetMapping(value = "/template")
+    public void downloadTemplate(HttpServletResponse response) throws Exception {
+        cpnCouponInfoService.downloadTemplate(response);
     }
 }

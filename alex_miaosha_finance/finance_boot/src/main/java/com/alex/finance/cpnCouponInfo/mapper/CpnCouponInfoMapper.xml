@@ -61,7 +61,7 @@
             <include refid="queryInfo"/>
             and cpn_coupon_info_t.is_delete = 0
         </where>
-        order by cpn_coupon_info_t.operate_time desc
+        order by cpn_coupon_info_t.end_date desc
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
@@ -83,7 +83,7 @@
             <include refid="queryInfo"/>
             and cpn_coupon_info_t.is_delete = 0
         </where>
-        order by cpn_coupon_info_t.operate_time desc
+        order by cpn_coupon_info_t.end_date desc
     </select>
 
     <select id="queryCpnCouponInfo" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">

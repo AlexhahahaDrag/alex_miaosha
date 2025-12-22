@@ -158,7 +158,7 @@
                 <version>${alex_miaosha_utils.version}</version>
             </dependency>
 
-            <!-- 引入lombok -->
+            <!-- 引入 lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -185,14 +185,14 @@
                 <version>${gson.version}</version>
             </dependency>
 
-            <!--整合Rabbit-->
+            <!--整合 Rabbit-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-amqp</artifactId>
                 <version>${rabbit-mq.version}</version>
             </dependency>
 
-            <!--国密sm-->
+            <!--国密 sm-->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15to18</artifactId>
@@ -368,14 +368,14 @@
                 <version>${ip2region.version}</version>
             </dependency>
 
-            <!--actuator依赖提供指标-->
+            <!--actuator 依赖提供指标-->
             <dependency>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-starter-actuator</artifactId>
               <version>${spring-boot.version}</version>
             </dependency>
 
-            <!--将指标转换成prometheus可使用的格式-->
+            <!--将指标转换成 prometheus可使用的格式-->
             <dependency>
               <groupId>io.micrometer</groupId>
               <artifactId>micrometer-registry-prometheus</artifactId>
@@ -394,7 +394,7 @@
                 <version>${minio.version}</version>
             </dependency>
 
-            <!--微信模版消息推送三方sdk-->
+            <!--微信模版消息推送三方 sdk-->
             <dependency>
                 <groupId>com.github.binarywang</groupId>
                 <artifactId>weixin-java-mp</artifactId>
@@ -431,7 +431,7 @@
                 <version>${alex_miaosha_product_api.version}</version>
             </dependency>
 
-            <!--fastjson依赖-->
+            <!--fastjson 依赖-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>

@@ -9,6 +9,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.contactsUserRelation.entity.ContactsUserRelation;
 import com.alex.finance.contactsUserRelation.mapper.ContactsUserRelationMapper;
 import com.alex.finance.contactsUserRelation.service.ContactsUserRelationService;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class ContactsUserRelationServiceImpl extends ServiceImpl<ContactsUserRel
     public Boolean addContactsUserRelation(ContactsUserRelationVo vo) {
         // 参数校验
         if (!validateContactsUserRelation(vo)) {
-            log.warn("关系分类信息验证失败: {}", vo);
+            log.warn("关系分类信息验证失败,参数: {}", JSONObject.toJSONString(vo));
             return false;
         }
         // 检查是否已存在相同的标签（同一用户或公共标签）
@@ -89,7 +90,7 @@ public class ContactsUserRelationServiceImpl extends ServiceImpl<ContactsUserRel
         }
 
         if (!validateContactsUserRelation(vo)) {
-            log.warn("关系分类信息验证失败: {}", vo);
+            log.warn("更新关系分类信息验证失败: {}", JSONObject.toJSONString(vo));
             return false;
         }
         ContactsUserRelation relation = new ContactsUserRelation();

@@ -23,12 +23,12 @@ public class UserException extends RuntimeException{
     public UserException(ResultEnum resultEnum) {
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getValue();
-        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
+        log.error("用户异常resultEnum，编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
     }
 
     public UserException(String code, String message) {
         this.code = code;
         this.msg = message;
-        log.error("编码：{}，信息：{}", code, message);
+        log.error("用户异常，编码：{}，信息：{}", code, message);
     }
 }

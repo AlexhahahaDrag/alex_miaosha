@@ -123,7 +123,7 @@ public class RedisUtils {
      *                 author:      majf
      *                 return:      boolean
      */
-    public boolean setEx(String key, String value, int exTime, TimeUnit timeUnit) {
+    public void setEx(String key, String value, int exTime, TimeUnit timeUnit) {
         try {
             if (exTime == 0) {
                 //不设置过期时间
@@ -131,10 +131,8 @@ public class RedisUtils {
             } else {
                 redisTemplate.opsForValue().set(key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
             }
-            return true;
         } catch (Exception e) {
-            log.error("设置对象失败，key为{}，异常为{}", key, e.getMessage());
-            return false;
+            log.error("设置对象失败，key为{}，value:{}, 异常为{}", key, value, e.getMessage());
         }
     }
 
@@ -198,33 +196,17 @@ public class RedisUtils {
 
     /**
      * @param prefix
-     * @param key    description: key值增加1
-     *               author: majf
-     *               createDate: 2022/7/12 9:57
-     *               return: java.lang.Long
+     * @param key
+     * description: key值增加1
+     * author: majf
+     * createDate: 2022/7/12 9:57
+     * return: java.lang.Long
      */
     public void increase(KeyPrefix prefix, String key) {
         try {
             redisTemplate.opsForValue().increment(prefix.getPrefix() + SEGMENT + key, 1);
         } catch (Exception e) {
-            log.error("key增加值1失败，key为{}，异常为{}", key, e.getMessage());
-        }
-    }
-
-    /**
-     * @param prefix
-     * @param key
-     * @param num    description: key值增加num
-     *               author: majf
-     *               createDate: 2022/7/12 9:58
-     *               return: java.lang.Long
-     */
-    public Long increase(KeyPrefix prefix, String key, Long num) {
-        try {
-            return redisTemplate.opsForValue().increment(prefix.getPrefix() + SEGMENT + key, num);
-        } catch (Exception e) {
-            log.error("key增加值1失败，key为{}，异常为{}", key, e.getMessage());
-            return null;
+            log.error("key增加值1失败，前缀：{}， key为{}，异常为{}", prefix.getPrefix(), key, e.getMessage());
         }
     }
 
@@ -238,23 +220,6 @@ public class RedisUtils {
     public Long decrease(KeyPrefix prefix, String key) {
         try {
             return redisTemplate.opsForValue().decrement(prefix.getPrefix() + SEGMENT + key, 1);
-        } catch (Exception e) {
-            log.error("key增加值1失败，key为{}，异常为{}", key, e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * @param prefix
-     * @param key
-     * @param num    description: key值减少num
-     *               author: majf
-     *               createDate: 2022/7/12 9:58
-     *               return: java.lang.Long
-     */
-    public Long decrease(KeyPrefix prefix, String key, Long num) {
-        try {
-            return redisTemplate.opsForValue().decrement(prefix.getPrefix() + SEGMENT + key, num);
         } catch (Exception e) {
             log.error("key增加值1失败，key为{}，异常为{}", key, e.getMessage());
             return null;
@@ -303,7 +268,7 @@ public class RedisUtils {
                 return list.stream();
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("根据前缀模糊查询key失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
+            log.error("根据前缀模糊查询keysList失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
             return null;
         }
     }

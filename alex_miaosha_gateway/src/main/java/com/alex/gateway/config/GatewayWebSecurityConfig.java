@@ -45,11 +45,14 @@ public class GatewayWebSecurityConfig {
     @Bean
     SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
-                .formLogin(formLogin -> formLogin.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(authorizeExchange -> 
                     authorizeExchange
+                        // AI Agent：安全加固：显式拒绝 /null/** 路径，防止 CVE-2025-22235 风险
+                        // 说明：当 EndpointRequest.to() 引用的端点被禁用时，可能创建 null/** 匹配器，需要显式拒绝
+                        .pathMatchers("/null/**").denyAll()
                         .pathMatchers(whiteList).permitAll()
                         .anyExchange().authenticated()
                 )
