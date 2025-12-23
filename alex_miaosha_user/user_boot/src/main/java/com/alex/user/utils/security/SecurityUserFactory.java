@@ -27,14 +27,13 @@ public final class SecurityUserFactory {
      * return
      */
     public static SecurityUser create(TUserVo tUserVo) {
-        SecurityUser result = Optional.ofNullable(tUserVo).map(item -> new SecurityUser(
+        return Optional.ofNullable(tUserVo).map(item -> new SecurityUser(
                 tUserVo.getId(),
                 tUserVo.getUsername(),
                 tUserVo.getPassword(),
                 EStatus.ENABLE.getCode().toString().equals(tUserVo.getStatus()),
                 mapToGrantedAuthorities(null)
         )).orElse(null);
-        return result;
     }
 
     private static List<GrantedAuthority> mapToGrantedAuthorities(List<String> authorities) {

@@ -87,7 +87,7 @@ public class ${entity} {
     @TableField(fill = FieldFill.${field.fill})
         <% } %>
     <% }else if(field.convert){ %>
-    @TableField("${field.annotationColumnName}")
+    @TableField(value = "${field.annotationColumnName}", property = "${field.comment}")
     <% } %>
     <%
     /*乐观锁注解*/

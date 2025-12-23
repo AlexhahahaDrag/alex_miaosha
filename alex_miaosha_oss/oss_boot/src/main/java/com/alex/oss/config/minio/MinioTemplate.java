@@ -213,7 +213,7 @@ public class MinioTemplate implements InitializingBean {
      * author: alex
      * return: java.io.InputStream
      */
-    public InputStream fileDownload(String bucketName, String fileName, Boolean delete) {
+    public InputStream fileDownload(String bucketName, String fileName) {
         InputStream inputStream = null;
         try {
             if (StringUtils.isBlank(fileName)) {

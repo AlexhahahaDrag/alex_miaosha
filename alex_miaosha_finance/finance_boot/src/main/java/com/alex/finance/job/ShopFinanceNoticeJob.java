@@ -45,7 +45,7 @@ public class ShopFinanceNoticeJob {
     }
 
     @XxlJob("demoJobHandler")
-    public void demoJobHandler() throws Exception {
+    public void demoJobHandler() {
         XxlJobHelper.log("demoJobHandler");
         XxlJobHelper.log("demoJobHandler:", XxlJobHelper.getJobParam());
         log.info("===============demoJobHandler===================耗时");

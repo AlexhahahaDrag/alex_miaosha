@@ -3,6 +3,7 @@ package com.alex.gateway.handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,19 +22,20 @@ import java.util.Optional;
 @RequestMapping(value = "/swagger-resources")
 public class SwaggerHandler {
 
+    private final SwaggerResourcesProvider swaggerResources;
+
+    @Nullable
     private final SecurityConfiguration securityConfiguration;
 
+    @Nullable
     private final UiConfiguration uiConfiguration;
-
-    private final SwaggerResourcesProvider swaggerResources;
 
     // AI Agent：使用构造函数注入替代字段注入，提高代码可测试性和安全性
     // 说明：构造函数注入可以确保依赖明确，并且便于单元测试
-    // 注意：SecurityConfiguration 和 UiConfiguration 是可选的（required = false），允许为 null
-    @Autowired(required = false)
+    // 注意：SecurityConfiguration 和 UiConfiguration 是可选的，使用 @Nullable 标记，Spring 会允许它们为 null
     public SwaggerHandler(SwaggerResourcesProvider swaggerResources,
-                         SecurityConfiguration securityConfiguration,
-                         UiConfiguration uiConfiguration) {
+                         @Nullable SecurityConfiguration securityConfiguration,
+                         @Nullable UiConfiguration uiConfiguration) {
         this.swaggerResources = swaggerResources;
         this.securityConfiguration = securityConfiguration;
         this.uiConfiguration = uiConfiguration;

@@ -23,11 +23,11 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("finance_info")
-@ApiModel(value = "FinanceInfo对象", description = "财务信息表")
+@ApiModel(value = "FinanceInfo 对象", description = "财务信息表")
 public class FinanceInfo extends BaseEntity<FinanceInfo>{
 
     @ApiModelProperty(value = "名称")
-    @TableField("`name`")
+    @TableField(value = "`name`", property = "名称")
     private String name;
 
     @ApiModelProperty(value = "类别编码")

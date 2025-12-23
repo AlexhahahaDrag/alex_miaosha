@@ -75,7 +75,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
 
     @Override
     public InputStream fileDownload(FileInfoVo fileInfo) {
-        return minioTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl(), fileInfo.getIsDelete() != 0);
+        return minioTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl());
     }
 
     /**

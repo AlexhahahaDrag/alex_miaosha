@@ -13,7 +13,7 @@ public class MemoryDayUtil {
     private static final ThreadLocal<SimpleDateFormat> THREAD_LOCAL = new ThreadLocal<>();
 
     /**
-     * 获取SimpleDateFormat
+     * 获取 SimpleDateFormat
      */
     private static SimpleDateFormat get() {
         SimpleDateFormat sdf = THREAD_LOCAL.get();

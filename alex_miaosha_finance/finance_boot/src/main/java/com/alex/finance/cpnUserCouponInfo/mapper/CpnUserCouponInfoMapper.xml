@@ -37,7 +37,7 @@
         cpn_user_coupon_info_t.coupon_id,
         cpn_user_coupon_info_t.status,
         cpn_user_coupon_info_t.receive_time,
-        cpn_user_coupon_info_t.expire_time,
+        cpn_user_coupon_info_t.expire_time
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
@@ -45,7 +45,6 @@
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
-            and cpn_user_coupon_info_t.is_delete = 0
         </where>
         order by cpn_user_coupon_info_t.operate_time desc
     </select>

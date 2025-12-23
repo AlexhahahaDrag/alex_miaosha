@@ -32,7 +32,7 @@ public class SwaggerResourceConfig implements SwaggerResourcesProvider {
     public List<SwaggerResource> get() {
         List<SwaggerResource> resources = new ArrayList<>();
         List<String> routes = new ArrayList<>();
-        //获取所有路由的ID
+        //获取所有路由的 ID
         routeLocator.getRoutes().subscribe(route -> routes.add(route.getId()));
         //过滤出配置文件中定义的路由->过滤出Path Route Predicate->根据路径拼接成api-docs路径->生成SwaggerResource
         gatewayProperties.getRoutes().stream().filter(routeDefinition -> routes.contains(routeDefinition.getId())).forEach(route -> {

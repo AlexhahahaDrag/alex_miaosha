@@ -66,17 +66,17 @@ public class CpnCouponInfoController {
     }
 
     /**
-     * 根据ID查询消费券信息表详情
+     * 根据 ID查询消费券信息表详情
      * 
-     * @param id 主键ID
+     * @param id 主键 ID
      * @return 消费券信息表详情
      */
     @LogRestRequest(apiName = "获取消费券信息表详情")
     @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "获取消费券信息表详情", notes = "根据ID查询消费券信息表详细信息", response = Result.class)
-    @GetMapping(value = "/{id}")
-    @ApiImplicitParam(value = "主键ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "path")
-    public Result<CpnCouponInfoVo> getById(@PathVariable Long id) {
+    @ApiOperation(value = "获取消费券信息表详情", notes = "根据ID 查询消费券信息表详细信息", response = Result.class)
+    @GetMapping
+    @ApiImplicitParam(value = "主键 ID", name = "id", required = true, dataTypeClass = Long.class, paramType = "query")
+    public Result<CpnCouponInfoVo> query(@RequestParam Long id) {
         return Result.success(cpnCouponInfoService.queryCpnCouponInfo(id));
     }
 
@@ -117,7 +117,7 @@ public class CpnCouponInfoController {
      */
     @LogRestRequest(apiName = "删除消费券信息表")
     @ApiOperationSupport(order = 50, author = "alex")
-    @ApiOperation(value = "删除消费券信息表", notes = "根据ID列表批量删除消费券信息表", response = Result.class)
+    @ApiOperation(value = "删除消费券信息表", notes = "根据ID 列表批量删除消费券信息表", response = Result.class)
     @DeleteMapping
     @ApiImplicitParam(value = "主键ID列表，多个ID用逗号分隔", name = "ids", required = true, dataTypeClass = String.class, example = "1,2,3")
     public Result<Boolean> delete(@RequestParam String ids) {
@@ -127,15 +127,15 @@ public class CpnCouponInfoController {
     /**
      * 导入消费券信息表
      * 
-     * @param file 上传的Excel文件
+     * @param file 上传的 Excel文件
      * @return 操作结果
      * @throws Exception 异常
      */
     @LogRestRequest(apiName = "导入消费券信息表")
     @ApiOperationSupport(order = 60, author = "alex")
-    @ApiOperation(value = "导入消费券信息表", notes = "通过Excel文件导入消费券信息表", response = Result.class)
+    @ApiOperation(value = "导入消费券信息表", notes = "通过Excel 文件导入消费券信息表", response = Result.class)
     @PostMapping(value = "/import")
-    @ApiImplicitParam(value = "Excel文件", name = "file", required = true, dataTypeClass = MultipartFile.class)
+    @ApiImplicitParam(value = "Excel 文件", name = "file", required = true, dataTypeClass = MultipartFile.class)
     public Result<Boolean> importCpnCouponInfo(@RequestPart("file") MultipartFile file) throws Exception {
         return Result.success(cpnCouponInfoService.importCpnCouponInfo(file));
     }
@@ -143,12 +143,12 @@ public class CpnCouponInfoController {
     /**
      * 下载消费券信息表导入模版
      * 
-     * @param response HTTP响应对象
+     * @param response HTTP 响应对象
      * @throws Exception 异常
      */
     @LogRestRequest(apiName = "下载消费券信息表导入模版")
     @ApiOperationSupport(order = 70, author = "alex")
-    @ApiOperation(value = "下载消费券信息表导入模版", notes = "下载消费券信息表Excel导入模版文件", response = Result.class)
+    @ApiOperation(value = "下载消费券信息表导入模版", notes = "下载消费券信息表Excel 导入模版文件", response = Result.class)
     @GetMapping(value = "/template")
     public void downloadTemplate(HttpServletResponse response) throws Exception {
         cpnCouponInfoService.downloadTemplate(response);
