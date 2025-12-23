@@ -10,10 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * SpringSecurity用户工厂类
+ * SpringSecurity 用户工厂类
  *
- * @author 陌溪
- * @date 2020年9月19日20:03:25
+ * @author majf
+ * date 2020年9月19日20:03:25
  */
 public final class SecurityUserFactory {
 
