@@ -1,10 +1,7 @@
 package com.alex.mission.config;
 
-import com.alex.api.user.handler.DataPermissionHandlerImpl;
-import com.alex.api.user.user.UserUtils;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.DataPermissionInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.annotation.MapperScan;

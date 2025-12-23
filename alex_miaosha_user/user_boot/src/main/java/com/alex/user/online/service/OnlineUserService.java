@@ -93,7 +93,7 @@ public class OnlineUserService {
             String jsonResult = redisUtils.get(LoginKey.loginIpSource, loginIp);
             if (StringUtils.isEmpty(jsonResult)) {
                 // 如果Redis中没有，则调用IP地址查询服务
-                String addresses = IpUtils.getAddresses("ip=" + loginIp, "UTF-8");
+                String addresses = IpUtils.getAddresses("ip=" + loginIp);
                 if (StringUtils.isNotEmpty(addresses)) {
                     onlineAdmin.setLoginLocation(addresses);
                     // 缓存IP地址信息，过期时间设置为24小时

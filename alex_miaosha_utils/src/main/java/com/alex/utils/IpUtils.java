@@ -12,8 +12,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * description:  ip工具类
@@ -108,7 +106,7 @@ public class IpUtils {
      *                author: alex
      *                return: java.util.Map<java.lang.String, java.lang.String>
      */
-    public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) throws Exception {
+    public static Map<String, String> getOsAndBrowserInfo(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String user = userAgent.toLowerCase();
         String os;
@@ -175,24 +173,9 @@ public class IpUtils {
     }
 
     /**
-     * 判断是否是内网IP
-     *
-     * @param ip return
-     */
-    public static boolean isInner(String ip) {
-        String reg = "(10|172|192)\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})\\.([0-1][0-9]{0,2}|[2][0-5]{0,2}|[3-9][0-9]{0,1})";
-        Pattern p = Pattern.compile(reg);
-        Matcher matcher = p.matcher(ip);
-        return matcher.find();
-    }
-
-    /**
      * param content
-     * @param encodingString description: 根据ip地址获取城市信息
-     *                       author: alex
-     *                       return: java.lang.String
      */
-    public static String getAddresses(String content, String encodingString) throws Exception {
+    public static String getAddresses(String content) throws Exception {
         String ip = content.substring(3);
         String cityInfo = getCityInfo(ip);
         log.info("根据ip返回城市信息：{}", cityInfo);
@@ -215,34 +198,6 @@ public class IpUtils {
             return null;
         }
         return searcher.search(ip);
-    }
-
-    /**
-     * description: 获取主机ip
-     * author: alex
-     * return: java.lang.String
-     */
-    public static String getHostIp() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            log.error(e.getMessage());
-        }
-        return "127.0.0.1";
-    }
-
-    /**
-     * description: 获取主机名称
-     * author: alex
-     * return: java.lang.String
-     */
-    public static String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return "未知";
     }
 
     public static void main(String[] args) throws Exception {

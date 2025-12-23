@@ -464,10 +464,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .username(userLogin.getUsername())
                 .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.MICROS)))
                 .build();
-        //从Redis中获取IP来源
+        //从 Redis中获取IP来源
         String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLoginIp());
         if (StringUtils.isEmpty(jsonResult)) {
-            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp(), "UTF-8");
+            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp());
             if (StringUtils.isNotEmpty(addresses)) {
                 onlineAdmin.setLoginLocation(addresses);
                 redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24, TimeUnit.MICROSECONDS);
