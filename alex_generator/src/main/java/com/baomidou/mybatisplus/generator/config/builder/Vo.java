@@ -59,9 +59,7 @@ public class Vo implements ITemplate, Serializable {
         this.tableFillList = new ArrayList<>();
         this.naming = NamingStrategy.underline_to_camel;
         this.columnNaming = null;
-        this.converterFileName = (voName) -> {
-            return voName;
-        };
+        this.converterFileName = (voName) -> voName;
     }
 
     public void convertSuperVoColumns(Object clazz) {
@@ -84,24 +82,15 @@ public class Vo implements ITemplate, Serializable {
 
     @NotNull
     public NamingStrategy getColumnNaming() {
-        return (NamingStrategy)Optional.ofNullable(this.columnNaming).orElse(this.naming);
+        return Optional.ofNullable(this.columnNaming).orElse(this.naming);
     }
 
     public boolean matchSuperVoColumns(String fieldName) {
-        return this.superVoColumns.stream().anyMatch((e) -> {
-            return e.equalsIgnoreCase(fieldName);
-        });
+        return this.superVoColumns.stream().anyMatch((e) -> e.equalsIgnoreCase(fieldName));
     }
 
     public boolean matchIgnoreColumns(String fieldName) {
-        return this.ignoreColumns.stream().anyMatch((e) -> {
-            return e.equalsIgnoreCase(fieldName);
-        });
-    }
-
-    @NotNull
-    public INameConvert getNameConvert() {
-        return this.nameConvert;
+        return this.ignoreColumns.stream().anyMatch((e) -> e.equalsIgnoreCase(fieldName));
     }
 
     @Nullable
@@ -109,71 +98,8 @@ public class Vo implements ITemplate, Serializable {
         return this.superVoClass;
     }
 
-    public Set<String> getSuperVoColumns() {
-        return this.superVoColumns;
-    }
-
-    public boolean isSerialVersionUID() {
-        return this.serialVersionUID;
-    }
-
-    public boolean isColumnConstant() {
-        return this.columnConstant;
-    }
-
-    public boolean isChain() {
-        return this.chain;
-    }
-
     public boolean isLombok() {
         return this.lombok;
-    }
-
-    public boolean isBooleanColumnRemoveIsPrefix() {
-        return this.booleanColumnRemoveIsPrefix;
-    }
-
-    public boolean isTableFieldAnnotationEnable() {
-        return this.tableFieldAnnotationEnable;
-    }
-
-    @Nullable
-    public String getVersionColumnName() {
-        return this.versionColumnName;
-    }
-
-    @Nullable
-    public String getVersionPropertyName() {
-        return this.versionPropertyName;
-    }
-
-    @Nullable
-    public String getLogicDeleteColumnName() {
-        return this.logicDeleteColumnName;
-    }
-
-    @Nullable
-    public String getLogicDeletePropertyName() {
-        return this.logicDeletePropertyName;
-    }
-
-    @NotNull
-    public List<IFill> getTableFillList() {
-        return this.tableFillList;
-    }
-
-    @NotNull
-    public NamingStrategy getNaming() {
-        return this.naming;
-    }
-
-    public boolean isActiveRecord() {
-        return this.activeRecord;
-    }
-
-    @Nullable
-    public IdType getIdType() {
-        return this.idType;
     }
 
     @NotNull
@@ -183,7 +109,7 @@ public class Vo implements ITemplate, Serializable {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
+        Map<String, Object> data = new HashMap<>();
         data.put("idType", this.idType == null ? null : this.idType.toString());
         data.put("logicDeleteFieldName", this.logicDeleteColumnName);
         data.put("versionFieldName", this.versionColumnName);
@@ -316,9 +242,7 @@ public class Vo implements ITemplate, Serializable {
         }
 
         public Builder formatVoFileName(String format) {
-            return this.convertFileName((voName) -> {
-                return String.format(format, voName);
-            });
+            return this.convertFileName((voName) -> String.format(format, voName));
         }
 
         public Vo get() {

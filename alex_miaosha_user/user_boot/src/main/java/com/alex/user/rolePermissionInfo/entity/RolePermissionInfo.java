@@ -19,10 +19,10 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 @TableName("t_role_permission_info")
-@ApiModel(value = "RolePermissionInfo对象", description = "角色权限信息表")
+@ApiModel(value = "RolePermissionInfo 对象", description = "角色权限信息表")
 public class RolePermissionInfo extends BaseEntity<RolePermissionInfo>{
 
-    @ApiModelProperty(value = "角色id")
+    @ApiModelProperty(value = "角色 id")
     @TableField("role_id")
     private String roleId;
 

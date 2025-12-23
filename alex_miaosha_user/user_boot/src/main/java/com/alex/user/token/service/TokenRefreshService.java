@@ -32,19 +32,19 @@ public class TokenRefreshService {
     private final Audience audience;
 
     /**
-     * 异步刷新token
+     * 异步刷新 token
      *
      * @param token JWT token
      * @param base64Secret 密钥
      * @param uuidToken UUID token
-     * @param barToken 完整token
+     * @param barToken 完整 token
      */
     @Async("tokenRefreshExecutor")
     public void refreshTokenAsync(String token, String base64Secret, String uuidToken, String barToken) {
         try {
             log.debug("开始异步刷新token，uuidToken: {}", uuidToken);
 
-            // 获取token过期时间
+            // 获取 token过期时间
             Date expirationDate = jwtTokenUtils.getExpiration(token, base64Secret);
 
             // 计算剩余存活时间（秒）
@@ -65,7 +65,7 @@ public class TokenRefreshService {
     }
 
     /**
-     * 计算token剩余存活时间
+     * 计算 token剩余存活时间
      *
      * @param expirationDate 过期时间
      * @return 剩余秒数
@@ -82,21 +82,21 @@ public class TokenRefreshService {
     }
 
     /**
-     * @description: 内部刷新token方法
+     * @description: 内部刷新 token方法
      *
      * @param token JWT token
      * @param base64Secret 密钥
      * @param uuidToken UUID token
-     * @param barToken 完整token
+     * @param barToken 完整 token
      */
     private void refreshTokenInternal(String token, String base64Secret, String uuidToken, String barToken) {
         try {
             log.info("开始刷新token，uuidToken: {}", uuidToken);
 
-            // 生成新token
+            // 生成新 token
             String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
 
-            // 更新Redis中的token映射
+            // 更新 Redis中的token映射
             redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
 
             // 获取并更新用户信息
@@ -105,10 +105,10 @@ public class TokenRefreshService {
                 TUserVo onlineAdmin = JSONObject.parseObject(onlineAdminStr, TUserVo.class);
                 onlineAdmin.setToken(newToken);
 
-                // 更新Redis中的用户信息
+                // 更新 Redis中的用户信息
                 redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
 
-                // 删除旧的token映射
+                // 删除旧的 token映射
                 redisUtils.delete(LoginKey.loginToken, barToken);
 
                 log.info("Token刷新成功，uuidToken: {}, 新token: {}", uuidToken, newToken);

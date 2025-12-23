@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class IpUtils {
 
-    private static String dbPath = "city/ip2region.xdb";
+    private static final String dbPath = "city/ip2region.xdb";
 
     public static Searcher searcher;
 
@@ -94,18 +94,6 @@ public class IpUtils {
     }
 
     /**
-     * @param request description: 获取真实ip
-     *                author: alex
-     *                return: java.lang.String
-     */
-    public static String getRealIp(HttpServletRequest request) {
-        String ip;
-        return checkNotIp(ip = request.getHeader("x-forwarded-for")) ?
-                (checkNotIp(ip = request.getHeader("Proxy-Client-IP")) ?
-                        (checkNotIp(ip = request.getHeader("WL-Proxy-Client-IP")) ? request.getRemoteAddr() : ip) : ip) : ip;
-    }
-
-    /**
      * @param ip description: 校验ip
      *           author: alex
      *           return: boolean
@@ -165,21 +153,20 @@ public class IpUtils {
                             + "-" + (split2[0]).split("/")[1];
                 } else if (user.contains("opr") || user.contains("opera")) {
                     if (user.contains("opera")) {
-                        String[] split = split2;
                         browser = (userAgent.substring(userAgent.indexOf("Opera")).split(" ")[0]).split("/")[0]
-                                + "-" + (split[0]).split("/")[1];
+                                + "-" + (split2[0]).split("/")[1];
                     } else if (user.contains("opr")) {
                         browser = ((userAgent.substring(userAgent.indexOf("OPR")).split(" ")[0]).replace("/", "-"))
                                 .replace("OPR", "Opera");
                     }
                 } else {
-                    browser = "UnKnown";
+                    browser = "Unknown";
                 }
             }
         } catch (Exception e) {
             log.error("获取浏览器版本失败");
             log.error(e.getMessage());
-            browser = "UnKnown";
+            browser = "Unknown";
         }
         Map<String, String> result = new HashMap<>(2);
         result.put("OS", os);
@@ -200,7 +187,7 @@ public class IpUtils {
     }
 
     /**
-     * @param content
+     * param content
      * @param encodingString description: 根据ip地址获取城市信息
      *                       author: alex
      *                       return: java.lang.String
@@ -258,7 +245,7 @@ public class IpUtils {
         return "未知";
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         String ip = "175.164.89.163";
         String cityIpString = getCityInfo(ip);
         System.out.println(cityIpString);

@@ -3,11 +3,12 @@ package com.alex.user.tUserLogin.entity;
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * description:  用户登录表类
@@ -22,10 +23,10 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ApiModel(value = "TUserLogin对象", description = "用户登录表")
+@ApiModel(value = "TUserLogin 对象", description = "用户登录表")
 public class TUserLogin extends BaseEntity<TUserLogin>{
 
-    @ApiModelProperty(value = "用户id")
+    @ApiModelProperty(value = "用户 id")
     @TableField("user_id")
     private Long userId;
 

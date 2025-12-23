@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("t_user")
-@ApiModel(value = "TUser对象", description = "管理员表")
+@ApiModel(value = "TUser 对象", description = "管理员表")
 public class TUser extends BaseEntity<TUser>{
 
     @ApiModelProperty(value = "用户名")

@@ -240,14 +240,14 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         String headers = request.getHeader(audience.getTokenHeader());
         if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
-            // 更新token过期时间
+            // 更新 token过期时间
             long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
 
-            // 重新设置Redis中相关key的值和过期时间
+            // 重新设置 Redis中相关key的值和过期时间
             redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
             redisUtils.setEx(LoginKey.loginToken, headers, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
 
-            // 获取token对应的uuid并更新过期时间
+            // 获取 token对应的uuid并更新过期时间
             String tokenId = redisUtils.get(LoginKey.loginUuid, headers, String.class);
             if (StringUtils.isNotBlank(tokenId)) {
                 redisUtils.setEx(LoginKey.loginUuid, tokenId, headers, expiration, TimeUnit.SECONDS);
@@ -564,13 +564,13 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         String username = jwtTokenUtils.getUsername(token, base64Secret);
         SecurityContextHolder.getContext().getAuthentication();
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // 通过用户名加载SpringSecurity用户
+            // 通过用户名加载 SpringSecurity用户
             UserDetails userDetails = SecurityUserFactory.create(getUserByUsername(username));
-            // 校验Token的有效性
+            // 校验 Token的有效性
             if (jwtTokenUtils.validateToken(token, userDetails, base64Secret)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                // 以后可以security中取得SecurityUser信息
+                // 以后可以 security中取得SecurityUser信息
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
@@ -580,31 +580,27 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
 
     public AuthRequest getAuthRequest(String appName) {
-        AuthRequest authRequest = null;
-        switch (appName) {
-            case "wechat_mp":
-                authRequest = new AuthWeChatMpRequest(AuthConfig.builder()
-                        .clientId("wxec93a0ddb72c8cff")
-                        .clientSecret("1240434ae0be6dc4b0ba979d7c1f9b7a")
-                        .redirectUri("https://mjzp.xyz/login")
-                        .build());
-                break;
-            case "baidu":
-                authRequest = new AuthBaiduRequest(AuthConfig.builder()
-                        .clientId("w7kcpHna8w8irDiMA4tdnnnQ")
-                        .clientSecret("8LTOzDkpVv5LkzPR9yyptsq7MMENyCVS")
-                        .redirectUri("https://mjzp.xyz/login")
-                        .scopes(Arrays.asList(
-                                AuthBaiduScope.BASIC.getScope(),
-                                AuthBaiduScope.SUPER_MSG.getScope(),
-                                AuthBaiduScope.NETDISK.getScope()
-                        ))
+        return switch (appName) {
+            case "wechat_mp" -> new AuthWeChatMpRequest(AuthConfig.builder()
+                    .clientId("wxec93a0ddb72c8cff")
+                    .clientSecret("1240434ae0be6dc4b0ba979d7c1f9b7a")
+                    .redirectUri("https://mjzp.xyz/login")
+                    .build());
+            case "baidu" -> new AuthBaiduRequest(AuthConfig.builder()
+                    .clientId("w7kcpHna8w8irDiMA4tdnnnQ")
+                    .clientSecret("8LTOzDkpVv5LkzPR9yyptsq7MMENyCVS")
+                    .redirectUri("https://mjzp.xyz/login")
+                    .scopes(Arrays.asList(
+                            AuthBaiduScope.BASIC.getScope(),
+                            AuthBaiduScope.SUPER_MSG.getScope(),
+                            AuthBaiduScope.NETDISK.getScope()
+                    ))
 //                        .clientId("")
 //                        .clientSecret("")
 //                        .redirectUri("http://localhost:9001/oauth/baidu/callback")
-                        .build());
-        }
-        return authRequest;
+                    .build());
+            default -> null;
+        };
     }
 }
 

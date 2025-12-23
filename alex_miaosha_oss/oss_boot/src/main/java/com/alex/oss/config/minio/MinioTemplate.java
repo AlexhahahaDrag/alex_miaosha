@@ -47,10 +47,17 @@ import java.util.stream.Collectors;
 @Data
 public class MinioTemplate implements InitializingBean {
 
-    @Autowired
-    private MinioProperties minioProperties;
+    private final MinioProperties minioProperties;
 
     private MinioClient minioClient;
+
+    // AI Agent：使用构造函数注入替代字段注入，提高代码可测试性和安全性
+    // 说明：构造函数注入可以确保依赖不为空，并且便于单元测试
+    @Autowired
+    public MinioTemplate(MinioProperties minioProperties) {
+        Assert.notNull(minioProperties, "MinioProperties must not be null!");
+        this.minioProperties = minioProperties;
+    }
 
     @Override
     public void afterPropertiesSet() {

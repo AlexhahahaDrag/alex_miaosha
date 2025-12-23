@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "nacos.namespace",
+      "type": "java.lang.String",
+      "description": "Description for nacos.namaspace."
+    },
+    {
+      "name": "nacos.knife4j",
+      "type": "java.lang.String",
+      "description": "Description for nacos.nacos."
+    },    {
+      "name": "nacos.nacos",
+      "type": "java.lang.String",
+      "description": "Description for nacos.nacos."
+    },
+    {
+      "name": "nacos.redis",
+      "type": "java.lang.String",
+      "description": "Description for nacos.redis."
+    }
+  ] }

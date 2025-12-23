@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "management.endpoints.logfile.external-file",
+      "type": "java.lang.String",
+      "description": "Description for management.endpoints.logfile.external-file."
+  }
+] }

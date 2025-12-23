@@ -21,16 +21,22 @@ import java.util.Optional;
 @RequestMapping(value = "/swagger-resources")
 public class SwaggerHandler {
 
-    @Autowired(required = false)
-    private SecurityConfiguration securityConfiguration;
+    private final SecurityConfiguration securityConfiguration;
 
-    @Autowired(required = false)
-    private UiConfiguration uiConfiguration;
+    private final UiConfiguration uiConfiguration;
 
     private final SwaggerResourcesProvider swaggerResources;
 
-    public SwaggerHandler(SwaggerResourcesProvider swaggerResources) {
+    // AI Agent：使用构造函数注入替代字段注入，提高代码可测试性和安全性
+    // 说明：构造函数注入可以确保依赖明确，并且便于单元测试
+    // 注意：SecurityConfiguration 和 UiConfiguration 是可选的（required = false），允许为 null
+    @Autowired(required = false)
+    public SwaggerHandler(SwaggerResourcesProvider swaggerResources,
+                         SecurityConfiguration securityConfiguration,
+                         UiConfiguration uiConfiguration) {
         this.swaggerResources = swaggerResources;
+        this.securityConfiguration = securityConfiguration;
+        this.uiConfiguration = uiConfiguration;
     }
 
     /**
