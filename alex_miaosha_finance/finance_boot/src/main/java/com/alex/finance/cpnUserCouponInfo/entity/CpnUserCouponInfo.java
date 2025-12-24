@@ -44,4 +44,13 @@ public class CpnUserCouponInfo extends BaseEntity<CpnUserCouponInfo>{
     @TableField("expire_time")
     private LocalDateTime expireTime;
 
+    /**
+     * 核销数量（按数量核销场景）
+     * - 当 status = USED 时，代表本次核销消耗的数量
+     * - 用于按数量统计已核销数量/剩余数量
+     */
+    @ApiModelProperty(value = "核销数量（按数量核销）")
+    @TableField("redemption_quantity")
+    private Integer redemptionQuantity;
+
 }

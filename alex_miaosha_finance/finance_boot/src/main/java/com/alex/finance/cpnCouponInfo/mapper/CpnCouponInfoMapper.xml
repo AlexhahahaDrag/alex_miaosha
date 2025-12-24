@@ -51,7 +51,8 @@
         left join (
             select
                 coupon_id,
-                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+                <!-- 按数量核销：优先累加 redemption_quantity；为空时按 1 兜底兼容历史数据 -->
+                sum(case when `status` = 'USED' then ifnull(redemption_quantity, 1) else 0 end) as consumedQuantity
             from cpn_user_coupon_info_t
             where is_delete = 0
             group by coupon_id
@@ -73,7 +74,8 @@
         left join (
             select
                 coupon_id,
-                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+                <!-- 按数量核销：优先累加 redemption_quantity；为空时按 1 兜底兼容历史数据 -->
+                sum(case when `status` = 'USED' then ifnull(redemption_quantity, 1) else 0 end) as consumedQuantity
             from cpn_user_coupon_info_t
             where is_delete = 0
             group by coupon_id
@@ -95,7 +97,8 @@
         left join (
             select
                 coupon_id,
-                sum(case when `status` = 'USED' then 1 else 0 end) as consumedQuantity
+                <!-- 按数量核销：优先累加 redemption_quantity；为空时按 1 兜底兼容历史数据 -->
+                sum(case when `status` = 'USED' then ifnull(redemption_quantity, 1) else 0 end) as consumedQuantity
             from cpn_user_coupon_info_t
             where is_delete = 0
             group by coupon_id

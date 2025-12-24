@@ -120,6 +120,8 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         // 说明：此模式下 cpn_user_coupon_info_t 更偏“核销明细/流水”，不再对既有记录做状态更新。
         CpnUserCouponInfoVo updateVo = new CpnUserCouponInfoVo()
                 .setUserId(req.getUserId())
+                .setStatus("USED")
+                .setRedemptionQuantity(req.getRedemptionQuantity())
                 .setCouponId(req.getCouponId())
                 .setReceiveTime(now)
                 .setRedemptionQuantity(req.getRedemptionQuantity());

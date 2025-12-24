@@ -19,6 +19,7 @@
         <result column="status" property="status" />
         <result column="receive_time" property="receiveTime" />
         <result column="expire_time" property="expireTime" />
+        <result column="redemption_quantity" property="redemptionQuantity" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -37,11 +38,22 @@
         cpn_user_coupon_info_t.coupon_id,
         cpn_user_coupon_info_t.status,
         cpn_user_coupon_info_t.receive_time,
-        cpn_user_coupon_info_t.expire_time
+        cpn_user_coupon_info_t.expire_time,
+        cpn_user_coupon_info_t.redemption_quantity
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
-        select <include refid="Base_Column_List"/>from cpn_user_coupon_info_t
+        select
+        <include refid="Base_Column_List"/>,
+        ifnull(tu.nick_name, tu.username) as user_name,
+        cci.coupon_name as coupon_name
+        from cpn_user_coupon_info_t
+        left join alex_user.t_user tu
+            on tu.id = cpn_user_coupon_info_t.user_id
+            and tu.is_delete = 0
+        left join cpn_coupon_info_t cci
+            on cci.id = cpn_user_coupon_info_t.coupon_id
+            and cci.is_delete = 0
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
