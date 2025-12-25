@@ -47,11 +47,21 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
-        select <include refid="Base_Column_List"/>from cpn_redemption_record_info_t
+        select
+        <include refid="Base_Column_List"/>,
+        ifnull(tu.nick_name, tu.username) as user_name,
+        cci.coupon_name as coupon_name
+        from cpn_redemption_record_info_t
+        <!-- AI Agent：关联用户、关联消费券（用于分页列表展示用户名/消费券名） -->
+        left join alex_user.t_user tu
+            on tu.id = cpn_redemption_record_info_t.user_id
+            and tu.is_delete = 0
+        left join cpn_coupon_info_t cci
+            on cci.id = cpn_redemption_record_info_t.order_id
+            and cci.is_delete = 0
         <where>
             cpn_redemption_record_info_t.is_delete = 0
             <include refid="queryInfo"/>
-            and cpn_redemption_record_info_t.is_delete = 0
         </where>
         order by cpn_redemption_record_info_t.operate_time desc
     </select>
@@ -61,7 +71,6 @@
         <where>
             cpn_redemption_record_info_t.is_delete = 0
             <include refid="queryInfo"/>
-            and cpn_redemption_record_info_t.is_delete = 0
         </where>
         order by cpn_redemption_record_info_t.operate_time desc
     </select>

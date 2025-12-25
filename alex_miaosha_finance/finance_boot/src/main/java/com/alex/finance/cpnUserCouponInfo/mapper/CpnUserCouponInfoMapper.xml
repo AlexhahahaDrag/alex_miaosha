@@ -57,6 +57,16 @@
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
+            <!-- AI Agent: 追加“用户名 / 消费券名”模糊查询（仅 getPage 有 join，避免影响 getList） -->
+            <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.userName != null and cpnUserCouponInfoVo.userName != ''">
+                and (
+                    tu.username like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
+                    or tu.nick_name like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
+                )
+            </if>
+            <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.couponName != null and cpnUserCouponInfoVo.couponName != ''">
+                and cci.coupon_name like concat('%', #{cpnUserCouponInfoVo.couponName}, '%')
+            </if>
         </where>
         order by cpn_user_coupon_info_t.operate_time desc
     </select>
@@ -66,7 +76,6 @@
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
-            and cpn_user_coupon_info_t.is_delete = 0
         </where>
         order by cpn_user_coupon_info_t.operate_time desc
     </select>

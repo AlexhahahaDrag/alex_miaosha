@@ -33,11 +33,25 @@ public class CpnRedemptionRecordInfoVo extends BaseVo<CpnRedemptionRecordInfoVo>
     // 统一 userId 为 Long，避免前后端/DB bigint 对齐问题
     private Long userId;
 
+    /**
+     * AI Agent：关联用户表返回（t_user.username / t_user.nick_name）
+     * 用于列表展示与按用户名模糊检索（如需）。
+     */
+    @ApiModelProperty(value = "核销用户名称（关联用户表）")
+    private String userName;
+
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "关联的订单ID")
     private Long orderId;
 
-    @ApiModelProperty(value = "本次核销数量 (固定为1)")
+    /**
+     * AI Agent：关联消费券表返回（cpn_coupon_info_t.coupon_name）
+     * 说明：当前业务里 orderId 实际承载的是 couponId（见核销写入逻辑），这里新增 couponName 仅用于展示。
+     */
+    @ApiModelProperty(value = "消费券名称（关联消费券表）")
+    private String couponName;
+
+    @ApiModelProperty(value = "本次核销数量")
     private Integer redemptionQuantity;
 
     @ApiModelProperty(value = "核销券的面值（参考）")
