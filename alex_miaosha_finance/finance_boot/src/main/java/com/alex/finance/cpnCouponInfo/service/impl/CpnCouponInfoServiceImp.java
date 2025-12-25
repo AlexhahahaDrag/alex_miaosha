@@ -299,7 +299,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
             log.info("Excel解析成功: 共{}条数据", result.getList().size());
             return result.getList();
         } catch (Exception e) {
-            log.error("Excel解析失败", e);
+            log.error("Excel 解析失败", e);
             throw new RuntimeException("Excel文件解析失败: " + e.getMessage());
         }
     }
@@ -317,7 +317,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         
         CpnCouponInfo entity = new CpnCouponInfo();
         entity.setCouponName(importVo.getCouponName());
-        entity.setTotalQuantity(importVo.getTotalQuantity());
+        entity.setTotalQuantity(importVo.getTotalQuantity() == null ? 1 : importVo.getTotalQuantity());
         entity.setUnitValue(importVo.getUnitValue());
         entity.setMinSpend(importVo.getMinSpend());
         
