@@ -59,7 +59,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
     private Long belongTo;
 
     @ApiModelProperty(name = "infoDate", value = "业务日期")
-    @JsonFormat(timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")
     private LocalDateTime infoDate;
 
     @ApiModelProperty(name = "isValid", value = "是否有效")

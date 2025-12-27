@@ -25,19 +25,19 @@ const ${entity}Endpoints = {
 /**
  * 获取${entity}分页数据
  * @param params 查询参数
- * @param pageNo 页码，默认为1
+ * @param pageNum 页码，默认为1
  * @param pageSize 每页大小，默认为10
  * @returns Promise<ApiResponse>
  */
 export async function get${entity}Page(
 	params: ${entity}Data,
-	pageNo?: number | null,
+	pageNum?: number | null,
 	pageSize?: number | null,
 ): Promise<ResponseBody<CommonPageResult<${entity}Data>>> {
 	const url = baseService.${javaPath} + base${entity} + ${entity}Endpoints.page;
 	return postData(url, params, {
-		pageNo: pageNo ? pageNo : 1,
-		pageSize: pageSize ? pageSize : 10,
+		pageNum: pageNum ?? 1,
+		pageSize: pageSize ?? 10,
 	});
 }
 
