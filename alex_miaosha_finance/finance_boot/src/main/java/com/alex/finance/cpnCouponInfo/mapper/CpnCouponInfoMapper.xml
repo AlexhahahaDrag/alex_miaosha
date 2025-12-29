@@ -20,6 +20,8 @@
         <result column="end_date" property="endDate" />
         <result column="unit_value" property="unitValue" />
         <result column="min_spend" property="minSpend" />
+        <!-- AI Agent：支付状态（1：已支付，0：未支付） -->
+        <result column="payment_status" property="paymentStatus" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -39,7 +41,8 @@
         cpn_coupon_info_t.start_date,
         cpn_coupon_info_t.end_date,
         cpn_coupon_info_t.unit_value,
-        cpn_coupon_info_t.min_spend
+        cpn_coupon_info_t.min_spend,
+        cpn_coupon_info_t.payment_status
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
@@ -130,6 +133,19 @@
       </if>
       <if test = "cpnCouponInfoVo.minSpend != null">
         and cpn_coupon_info_t.min_spend = #{cpnCouponInfoVo.minSpend}
+      </if>
+      <!-- AI Agent：支付状态查询条件（1：已支付，0：未支付） -->
+      <if test = "cpnCouponInfoVo.paymentStatus != null">
+        and cpn_coupon_info_t.payment_status = #{cpnCouponInfoVo.paymentStatus}
+      </if>
+      <!-- AI Agent：仅查询有效的、未核销完成的数据（还有剩余数量 + 未过期） -->
+      <if test = "cpnCouponInfoVo.onlyValidAndNotFullyRedeemed != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed == true">
+        and cpn_coupon_info_t.total_quantity > (
+          select ifnull(sum(case when uci.`status` = 'USED' then ifnull(uci.redemption_quantity, 1) else 0 end), 0)
+          from cpn_user_coupon_info_t uci
+          where uci.coupon_id = cpn_coupon_info_t.id and uci.is_delete = 0
+        )
+        and cpn_coupon_info_t.end_date > now()
       </if>
     </if>
   </sql>

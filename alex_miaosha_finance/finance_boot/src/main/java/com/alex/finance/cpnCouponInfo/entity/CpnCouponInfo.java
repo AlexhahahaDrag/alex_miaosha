@@ -48,4 +48,13 @@ public class CpnCouponInfo extends BaseEntity<CpnCouponInfo>{
     @TableField("min_spend")
     private BigDecimal minSpend;
 
+    /**
+     * AI Agent：支付状态
+     * - 1：已支付
+     * - 0：未支付
+     */
+    @ApiModelProperty(value = "支付状态（1：已支付，0：未支付）")
+    @TableField("payment_status")
+    private Integer paymentStatus;
+
 }

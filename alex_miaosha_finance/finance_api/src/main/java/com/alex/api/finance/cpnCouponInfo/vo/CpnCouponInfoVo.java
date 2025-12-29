@@ -55,4 +55,20 @@ public class CpnCouponInfoVo extends BaseVo<CpnCouponInfoVo>{
     @TableField(exist = false)
     private Integer expireRangeStatus;
 
+    /**
+     * AI Agent：支付状态
+     * - 1：已支付
+     * - 0：未支付
+     */
+    @ApiModelProperty(value = "支付状态（1：已支付，0：未支付）")
+    private Integer paymentStatus;
+
+    /**
+     * AI Agent：仅查询有效的、未核销完成的数据
+     * - true：只查询 remainingQuantity > 0（还有剩余数量）且未过期的数据
+     * - false/null：不限制
+     */
+    @ApiModelProperty(value = "仅查询有效的、未核销完成的数据（true：还有剩余数量且未过期）")
+    private Boolean onlyValidAndNotFullyRedeemed;
+
 }
