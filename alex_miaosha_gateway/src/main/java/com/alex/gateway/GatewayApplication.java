@@ -18,7 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex.gateway", "com.alex.common", "com.alex.api.user"})
-@EnableFeignClients(basePackages = {"com.alex.api.user"})
+// AI Agent：增加 AI 服务 Feign 扫描包（便于网关侧按需调用 AI 服务做统一分析/审计）
+@EnableFeignClients(basePackages = {"com.alex.api.user", "com.alex.api.ai"})
 public class GatewayApplication {
 
     public static void main(String[] args) {

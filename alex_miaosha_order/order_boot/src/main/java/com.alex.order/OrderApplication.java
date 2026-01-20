@@ -15,7 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.alex", "com.alex.common", "com.alex.utils", "com.alex.api"})
 @EnableEncryptableProperties
-@EnableFeignClients(basePackages = {"com.alex.api.user"})
+// AI Agent：增加 AI 服务 Feign 扫描包，后续 order 模块可直接注入 AiAnalyzeApi 调用 AI 分析
+@EnableFeignClients(basePackages = {"com.alex.api.user", "com.alex.api.ai"})
 public class OrderApplication {
 
     public static void main(String[] args) {

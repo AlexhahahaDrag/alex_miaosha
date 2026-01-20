@@ -1,0 +1,18 @@
+server:
+  port: 31010
+
+spring:
+  application:
+    name: alex-ai-${spring.profiles.active}
+
+# AI Agent：AI 引擎配置（测试环境建议通过环境变量注入 Key）
+ai:
+  engine: deepseek
+  deepseek:
+    base-url: https://api.deepseek.com
+    chat-completions-path: /v1/chat/completions
+    api-key: ${AI_DEEPSEEK_API_KEY:}
+    model: deepseek-chat
+    temperature: 0.2
+    max-tokens: 1024
+    timeout-ms: 15000

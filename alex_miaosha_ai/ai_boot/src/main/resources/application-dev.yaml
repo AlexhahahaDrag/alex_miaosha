@@ -1,0 +1,24 @@
+server:
+  port: 30010
+
+spring:
+  application:
+    name: alex-ai-${spring.profiles.active}
+
+logging:
+  level:
+    com.alex.ai: debug
+
+# AI Agent：AI 引擎配置
+# - 默认不填 apiKey 时，会自动回退到 rule-based（保证服务可用）
+ai:
+  engine: deepseek
+  deepseek:
+    base-url: https://api.deepseek.com
+    chat-completions-path: /v1/chat/completions
+    # 建议通过环境变量注入：AI_DEEPSEEK_API_KEY
+    api-key: ${AI_DEEPSEEK_API_KEY:}
+    model: deepseek-chat
+    temperature: 0.2
+    max-tokens: 1024
+    timeout-ms: 15000

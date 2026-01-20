@@ -19,7 +19,8 @@ import org.springframework.context.annotation.FilterType;
 @EnableEncryptableProperties
 @ComponentScan(basePackages = {"com.alex.generator", "com.alex.common", "com.alex.api.user"},
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE)})
-@EnableFeignClients(basePackages = {"com.alex.api.user"})
+// AI Agent：增加 AI 服务 Feign 扫描包（生成器侧可按需调用 AI 做代码注释/规则分析等扩展）
+@EnableFeignClients(basePackages = {"com.alex.api.user", "com.alex.api.ai"})
 public class GeneratorApplication {
 
     public static void main(String[] args) {

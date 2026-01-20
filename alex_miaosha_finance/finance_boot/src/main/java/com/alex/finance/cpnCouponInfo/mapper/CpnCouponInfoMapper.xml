@@ -65,7 +65,16 @@
             <include refid="queryInfo"/>
             and cpn_coupon_info_t.is_delete = 0
         </where>
-        order by cpn_coupon_info_t.end_date desc
+        <choose>
+            <!-- 当查询有效的、未核销完成的数据时，按截止时间排序 -->
+            <when test="cpnCouponInfoVo != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed == true">
+                order by cpn_coupon_info_t.end_date asc
+            </when>
+            <!-- 其他情况（查询所有时），按操作时间排序 -->
+            <otherwise>
+                order by cpn_coupon_info_t.operate_time desc
+            </otherwise>
+        </choose>
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
@@ -87,7 +96,16 @@
             cpn_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
         </where>
-        order by cpn_coupon_info_t.end_date desc
+        <choose>
+            <!-- 当查询有效的、未核销完成的数据时，按截止时间排序 -->
+            <when test="cpnCouponInfoVo != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed == true">
+                order by cpn_coupon_info_t.end_date asc
+            </when>
+            <!-- 其他情况（查询所有时），按操作时间排序 -->
+            <otherwise>
+                order by cpn_coupon_info_t.operate_time desc
+            </otherwise>
+        </choose>
     </select>
 
     <select id="queryCpnCouponInfo" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">

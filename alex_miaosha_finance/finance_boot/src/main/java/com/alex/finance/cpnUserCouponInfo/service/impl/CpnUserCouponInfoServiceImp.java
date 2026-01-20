@@ -3,6 +3,7 @@ package com.alex.finance.cpnUserCouponInfo.service.impl;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo;
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponRedeemReq;
+import com.alex.common.enums.CpnUserCouponStatusEnum;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.string.StringUtils;
@@ -120,11 +121,10 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         // 说明：此模式下 cpn_user_coupon_info_t 更偏“核销明细/流水”，不再对既有记录做状态更新。
         CpnUserCouponInfoVo updateVo = new CpnUserCouponInfoVo()
                 .setUserId(req.getUserId())
-                .setStatus("USED")
+                .setStatus(CpnUserCouponStatusEnum.USED.getCode())
                 .setRedemptionQuantity(req.getRedemptionQuantity())
                 .setCouponId(req.getCouponId())
-                .setReceiveTime(now)
-                .setRedemptionQuantity(req.getRedemptionQuantity());
+                .setReceiveTime(now);
         boolean saved = addCpnUserCouponInfo(updateVo);
         if (!saved) {
             throw new FinanceException(ResultEnum.SYSTEM_ERROR);
@@ -158,9 +158,10 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         if (req == null || req.getCouponId() == null) {
             throw new FinanceException(ResultEnum.PARAM_ERROR);
         }
-
-        // 删除券明细记录
-        deleteCpnUserCouponInfo(req.getUserCouponId() + "");
+        CpnUserCouponInfoVo cpnUserCouponInfoVo = new CpnUserCouponInfoVo();
+        cpnUserCouponInfoVo.setStatus(CpnUserCouponStatusEnum.UNUSED.getCode());
+        // 更新券明细记录
+        updateCpnUserCouponInfo(cpnUserCouponInfoVo);
 
         CpnRedemptionRecordInfo record = new CpnRedemptionRecordInfo();
         record.setUserCouponId(req.getUserCouponId());
