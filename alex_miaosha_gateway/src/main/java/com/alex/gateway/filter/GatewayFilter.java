@@ -191,14 +191,13 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return false;
     }
 
-    private Mono<Void> out(ServerHttpResponse response) throws Exception {
+    private Mono<Void> out(ServerHttpResponse response) {
         JsonObject message = new JsonObject();
         message.addProperty("success", false);
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
         byte[] bits = encryptionUtils.encrypt(JSONObject.toJSONString(message.toString()));
         DataBuffer buffer = response.bufferFactory().wrap(bits);
-        //response.setStatusCode(HttpStatus.UNAUTHORIZED);
         //指定编码，否则在浏览器中会中文乱码
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));

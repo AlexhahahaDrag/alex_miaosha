@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -59,7 +58,6 @@ public class JwtTokenUtils {
                             String audience, String issuer, long TTLMillis, String base64Security) {
         //HS256是一种对称算法，双方之间仅共享一个密钥
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        LocalDateTime now = LocalDateTime.now();
         //生成签名密钥
         byte[] base64Binary = DatatypeConverter.parseBase64Binary(base64Security);
         Key signKey = new SecretKeySpec(base64Binary, signatureAlgorithm.getJcaName());
@@ -113,7 +111,7 @@ public class JwtTokenUtils {
     }
 
     /**
-     * @param token
+     * param token
      * @param base64Security
      * description: 获取用户名
      * author: alex
@@ -125,7 +123,7 @@ public class JwtTokenUtils {
 
     /**
      * 从token 中获取过期时间
-     *
+     * <p>
      * param token
      * @param base64Security
      * return
@@ -135,19 +133,8 @@ public class JwtTokenUtils {
     }
 
     /**
-     * @param token
-     * @param base64Security
-     * description: 获取用户id
-     * author: alex
-     * return: java.lang.String
-     */
-    public Long getUserId(String token, String base64Security) {
-        return parseJwt(token, base64Security).get(SysConf.ADMIN_ID, Long.class);
-    }
-
-    /**
      * param token
-     * @param base64Security
+     * param base64Security
      * @param TTLMillis
      * description: 刷新token
      * author: alex
