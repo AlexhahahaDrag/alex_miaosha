@@ -97,7 +97,7 @@
             and cpn_user_coupon_info_t.coupon_id = #{cpnUserCouponInfoVo.couponId}
           </if>
           <if test = "cpnUserCouponInfoVo.status != null">
-            and cpn_user_coupon_info_t.status like concat('%', #{cpnUserCouponInfoVo.status}, '%')
+            and cpn_user_coupon_info_t.status = #{cpnUserCouponInfoVo.status}
           </if>
           <if test = "cpnUserCouponInfoVo.receiveTime != null">
             and cpn_user_coupon_info_t.receive_time = #{cpnUserCouponInfoVo.receiveTime}

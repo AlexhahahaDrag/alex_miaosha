@@ -153,9 +153,9 @@ public class TUserController {
         return tUserService.getUserByUsername(username);
     }
 
-    @LogRestRequest(apiName = "根据token校验用户权限")
+    @LogRestRequest(apiName = "根据token 校验用户权限")
     @ApiOperationSupport(order = 90, author = "alex")
-    @ApiOperation(value = "根据token校验用户权限", notes = "根据token校验用户权限", response = Result.class)
+    @ApiOperation(value = "根据token 校验用户权限", notes = "根据token 校验用户权限", response = Result.class)
     @GetMapping(value = "/authToken")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "token", name = "token", dataTypeClass = String.class)}

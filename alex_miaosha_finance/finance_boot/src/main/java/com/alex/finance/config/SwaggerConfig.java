@@ -27,12 +27,12 @@ import java.util.List;
  */
 @Configuration
 @EnableOpenApi
-@Profile({"test", "dev"})
+@Profile({"test", "dev", "prod"})
 public class SwaggerConfig {
 
     @Bean(value = "financeApi")
     public Docket buildDocket() {
-        //添加head参数配置start
+        //添加head 参数配置start
         List<RequestParameter> globalRequestParameters = new ArrayList<>();
         RequestParameter requestParameter = new RequestParameterBuilder()
                 .name("Authorization")

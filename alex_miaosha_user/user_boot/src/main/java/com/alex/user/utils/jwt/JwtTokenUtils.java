@@ -28,7 +28,7 @@ public class JwtTokenUtils {
 
 
     /**
-     * @param token
+     * param token
      * @param base64Security
      * description: 解析jwt
      * author: alex
@@ -63,7 +63,7 @@ public class JwtTokenUtils {
         //生成签名密钥
         byte[] base64Binary = DatatypeConverter.parseBase64Binary(base64Security);
         Key signKey = new SecretKeySpec(base64Binary, signatureAlgorithm.getJcaName());
-        //添加构成jwt参数
+        //添加构成jwt 参数
         JwtBuilder builder = Jwts.builder().setHeaderParam("type", "JWT")
                 .claim(SysConf.ADMIN_ID, adminId)
                 .claim(SysConf.ROLE, roleName)
@@ -82,7 +82,8 @@ public class JwtTokenUtils {
     }
 
     /**
-     * @param token
+     *
+     * param token
      * @param base64Security
      * description: 判断token是否过期
      * author: alex
@@ -98,8 +99,8 @@ public class JwtTokenUtils {
     }
 
     /**
-     * @param token
-     * @param userDetails
+     * param token
+     * param userDetails
      * @param base64Security
      * description: 校验token是否有效
      * author: alex
@@ -123,9 +124,9 @@ public class JwtTokenUtils {
     }
 
     /**
-     * 从token中获取过期时间
+     * 从token 中获取过期时间
      *
-     * @param token
+     * param token
      * @param base64Security
      * return
      */
@@ -145,7 +146,7 @@ public class JwtTokenUtils {
     }
 
     /**
-     * @param token
+     * param token
      * @param base64Security
      * @param TTLMillis
      * description: 刷新token

@@ -554,7 +554,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 私钥
         String base64Secret = audience.getBase64Secret();
         String token = barToken.substring(audience.getTokenHead().length());
-        //校验token
+        //校验 token
         if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
             return false;
         }

@@ -20,7 +20,6 @@ public interface CpnUserCouponInfoMapper extends BaseMapper<CpnUserCouponInfo> {
 
     @DataPermission(table = "cpn_user_coupon_info_t")
     /**
-     * AI Agent:
      * 分页查询（支持按用户名、消费券名模糊查询）
      * - 用户名：对应 VO.userName，同时匹配用户表的 username / nick_name
      * - 消费券名：对应 VO.couponName，匹配消费券表 coupon_name

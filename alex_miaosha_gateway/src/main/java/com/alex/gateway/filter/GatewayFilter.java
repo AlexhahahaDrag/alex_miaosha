@@ -100,7 +100,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().toString();
-        // doc直接返回
+        // doc 直接返回
         if (audience.getDocWhiteList() != null && !audience.getDocWhiteList().isEmpty()) {
             for (String white : audience.getDocWhiteList()) {
                 if (antPathMatcher.match(white, path)) {
@@ -119,7 +119,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         log.info("当前请求地址：{}", path);
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
-        // 得到请求头信息authorization信息
+        // 得到请求头信息authorization 信息
         String token = Optional.of(request)
                 .map(HttpMessage::getHeaders)
                 .map(header -> header.getFirst(audience.getTokenHeader()))

@@ -160,6 +160,8 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         }
         CpnUserCouponInfoVo cpnUserCouponInfoVo = new CpnUserCouponInfoVo();
         cpnUserCouponInfoVo.setStatus(CpnUserCouponStatusEnum.UNUSED.getCode());
+        cpnUserCouponInfoVo.setId(req.getUserCouponId());
+        cpnUserCouponInfoVo.setCouponId(req.getCouponId());
         // 更新券明细记录
         updateCpnUserCouponInfo(cpnUserCouponInfoVo);
 
