@@ -43,4 +43,10 @@ public class AnalysisVo {
 
     @ApiModelProperty(name = "username", value = "用户名")
     private String username;
+
+    @ApiModelProperty(name = "yoyTrend", value = "同比")
+    private String yoyTrend;
+
+    @ApiModelProperty(name = "momTrend", value = "环比")
+    private String momTrend;
 }

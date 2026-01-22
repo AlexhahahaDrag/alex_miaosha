@@ -39,8 +39,8 @@ public class FinanceAnalysisController {
             @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
             @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", dataTypeClass = String.class)}
     )
-    public Result<List<AnalysisVo>> getTypeCodeSum(@RequestParam(value = "belongTo", required = false) Long belongTo,
-                                                   @RequestParam(value = "searchDate", required = false) String searchDate) {
+    public Result<Object> getTypeCodeSum(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                                         @RequestParam(value = "searchDate", required = false) String searchDate) {
         return Result.success(financeAnalysisService.getBalance(belongTo, searchDate));
     }
 

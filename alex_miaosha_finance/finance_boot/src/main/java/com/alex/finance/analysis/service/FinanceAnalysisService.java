@@ -16,17 +16,17 @@ import java.util.List;
 public interface FinanceAnalysisService {
 
     /**
-     * @param belongTo
-     * @param searchDate
+     * param belongTo
+     * param searchDate
      * description:
      * author: alex
-     * return: java.util.List<com.alex.finance.vo.financeAnalysis.AnalysisVo>
+     * return: com.alex.finance.vo.financeAnalysis.AnalysisVo
      */
-    List<AnalysisVo> getBalance(Long belongTo, String searchDate);
+    Object getBalance(Long belongTo, String searchDate);
 
     /**
-     * @param belongTo
-     * @param searchDate
+     * param belongTo
+     * param searchDate
      * @param type
      * description:
      * author: alex
@@ -35,7 +35,7 @@ public interface FinanceAnalysisService {
     List<AnalysisVo> getIncomeAndExpense(Long belongTo, String searchDate, String type);
 
     /**
-     * @param belongTo
+     * param belongTo
      * @param searchDate
      * description: 获取天明细
      * author:      alex
@@ -44,7 +44,7 @@ public interface FinanceAnalysisService {
     List<AnalysisVo> getDayExpense(Long belongTo, String searchDate);
 
     /**
-     * @param belongTo
+     * param belongTo
      * @param searchDate
      * description: 获取月明细数据
      * author:      alex
