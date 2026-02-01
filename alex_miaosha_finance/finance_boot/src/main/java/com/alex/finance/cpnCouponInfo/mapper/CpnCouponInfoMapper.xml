@@ -134,7 +134,7 @@
       <if test = "cpnCouponInfoVo.id != null">
         and cpn_coupon_info_t.id = #{cpnCouponInfoVo.id}
       </if>
-      <if test = "cpnCouponInfoVo.couponName != null">
+      <if test = "cpnCouponInfoVo.couponName != null and cpnCouponInfoVo.couponName != ''">
         and cpn_coupon_info_t.coupon_name like concat('%', #{cpnCouponInfoVo.couponName}, '%')
       </if>
       <if test = "cpnCouponInfoVo.totalQuantity != null">
