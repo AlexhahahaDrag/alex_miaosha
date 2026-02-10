@@ -1,4 +1,4 @@
-package com.alex.product.controller.pmsShopWantProduct;
+﻿package com.alex.product.controller.pmsShopWantProduct;
 
 import com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "商品想买网上商品信息相关接口", tags = {"商品想买网上商品信息相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/pms-shop-want-product")
+@RequestMapping("${api.version:/api/v1}/pms-shop-want-product")
 public class PmsShopWantProductController {
 
     private final PmsShopWantProductService pmsShopWantProductService;

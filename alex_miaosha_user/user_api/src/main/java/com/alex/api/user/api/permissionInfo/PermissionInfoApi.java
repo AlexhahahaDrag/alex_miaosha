@@ -1,4 +1,4 @@
-package com.alex.api.user.api.permissionInfo;
+﻿package com.alex.api.user.api.permissionInfo;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -24,7 +24,7 @@ public interface PermissionInfoApi {
 
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取权限信息表分页", notes = "获取权限信息表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//permission-info/page")
+    @PostMapping(value = "${api.version:/api/v1}/permission-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,17 +36,17 @@ public interface PermissionInfoApi {
 
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取权限信息表详情", notes = "获取权限信息表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//permission-info")
+    @GetMapping(value = "${api.version:/api/v1}/permission-info")
     Result<PermissionInfoVo> queryPermissionInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增权限信息表", notes = "新增权限信息表", response = Result.class)
-    @PostMapping("/api/v1//permission-info")
+    @PostMapping("${api.version:/api/v1}/permission-info")
     Result<Boolean> addPermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改权限信息表", notes = "修改权限信息表", response = Result.class)
-    @PutMapping("/api/v1//permission-info")
+    @PutMapping("${api.version:/api/v1}/permission-info")
     Result<Boolean> updatePermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
     @ApiOperationSupport(order = 50, author = "majf")

@@ -1,4 +1,4 @@
-package com.alex.api.ai.api;
+﻿package com.alex.api.ai.api;
 
 import com.alex.api.ai.api.fallback.AiAnalyzeFallbackFactory;
 import com.alex.api.ai.vo.AiAnalyzeReq;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface AiAnalyzeApi {
 
-    @PostMapping("/api/v1/ai/analyze")
+    @PostMapping("${api.version:/api/v1}/ai/analyze")
     Result<AiAnalyzeResp> analyze(@RequestBody AiAnalyzeReq req);
 }
 

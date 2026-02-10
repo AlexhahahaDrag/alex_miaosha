@@ -1,4 +1,4 @@
-package com.alex.user.config;
+﻿package com.alex.user.config;
 
 import com.alex.user.utils.jwt.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
@@ -38,16 +38,16 @@ public class WebSecurityConfig {
                 "/webjars/**",
                 "/actuator/**",
                 "/favicon.ico",
-                "/api/v1/user/login",
-                "/api/v1/menu-info/list",
-                "/api/v1/menu-info",
-                "/api/v1/permission-info/list",
-                "/api/v1/permission-info",
+                "${api.version:/api/v1}/user/login",
+                "${api.version:/api/v1}/menu-info/list",
+                "${api.version:/api/v1}/menu-info",
+                "${api.version:/api/v1}/permission-info/list",
+                "${api.version:/api/v1}/permission-info",
                 "/druid/**",
-                "/api/v1/user/getUserInfo",
-                "/api/v1/user/authToken",
-                "/api/v1/user/third",
-                "/api/v1/file-info/getFileInfo",
+                "${api.version:/api/v1}/user/getUserInfo",
+                "${api.version:/api/v1}/user/authToken",
+                "${api.version:/api/v1}/user/third",
+                "${api.version:/api/v1}/file-info/getFileInfo",
                 "/v3/api-docs",
                 "/error"
         };

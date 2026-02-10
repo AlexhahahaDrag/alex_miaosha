@@ -1,4 +1,4 @@
-package com.alex.user.orgInfo.controller;
+﻿package com.alex.user.orgInfo.controller;
 
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "机构表相关接口", tags = {"机构表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/org-info")
+@RequestMapping("${api.version:/api/v1}/org-info")
 public class OrgInfoController {
 
     private final OrgInfoService orgInfoService;

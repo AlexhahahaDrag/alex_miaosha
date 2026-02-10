@@ -109,6 +109,11 @@ public class GlobalConfig {
             return this;
         }
 
+        public GlobalConfig.Builder enableFileOverride() {
+            this.globalConfig.fileOverride = true;
+            return this;
+        }
+
         public GlobalConfig.Builder disableOpenDir() {
             this.globalConfig.open = false;
             return this;

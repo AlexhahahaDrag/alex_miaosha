@@ -336,7 +336,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         fastAutoGenerator.globalConfig(builder -> {
             builder.outputDir(projectPath + "\\java")
                     .author(author)
-                    .fileOverride()
+                    .enableFileOverride()
                     .enableSwagger()
                     .disableOpenDir() // 打开目录
                     .dateType(DateType.TIME_PACK)
@@ -397,12 +397,9 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .formatFileName("%sController")
                 .enableRestStyle()
                 .serviceBuilder()
-//                            .superServiceClass(SuperService.class)
-//                            .superServiceImplClass(SuperServiceImpl.class)
                 .formatServiceFileName("%sService")
                 .formatServiceImplFileName("%sServiceImp")
                 .mapperBuilder()
-//                            .superClass(SuperMapper.class)
                 .enableMapperAnnotation()
                 .enableBaseResultMap()
                 .enableBaseColumnList()

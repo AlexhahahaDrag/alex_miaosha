@@ -1,4 +1,4 @@
-package com.alex.finance.dict.controller;
+﻿package com.alex.finance.dict.controller;
 
 import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "字典表相关接口", tags = {"字典表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/dict-info")
+@RequestMapping("${api.version:/api/v1}/dict-info")
 public class DictInfoController {
 
     private final DictInfoService dictInfoService;

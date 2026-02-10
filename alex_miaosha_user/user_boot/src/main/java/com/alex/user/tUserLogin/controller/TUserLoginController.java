@@ -1,4 +1,4 @@
-package com.alex.user.tUserLogin.controller;
+﻿package com.alex.user.tUserLogin.controller;
 
 import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "用户登录表相关接口", tags = {"用户登录表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/userLoginInfo")
+@RequestMapping("${api.version:/api/v1}/userLoginInfo")
 public class TUserLoginController {
 
     private final TUserLoginService tUserLoginService;

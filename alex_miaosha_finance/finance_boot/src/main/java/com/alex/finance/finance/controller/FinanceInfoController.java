@@ -1,4 +1,4 @@
-package com.alex.finance.finance.controller;
+﻿package com.alex.finance.finance.controller;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.base.common.Result;
@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "财务信息表相关接口", tags = {"财务信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/finance-info")
+@RequestMapping("${api.version:/api/v1}/finance-info")
 public class FinanceInfoController {
 
     private final FinanceInfoService financeInfoService;

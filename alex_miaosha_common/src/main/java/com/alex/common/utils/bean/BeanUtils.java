@@ -23,7 +23,8 @@ public class BeanUtils {
         return JSONObject.toJSONString(value);
     }
 
-    public static<T> T stringToBean(String str, Class<T> clazz) {
+    @SuppressWarnings("unchecked")
+    public static <T> T stringToBean(String str, Class<T> clazz) {
         if (str == null || str.isEmpty() || clazz == null) {
             return null;
         }
@@ -31,7 +32,7 @@ public class BeanUtils {
             return (T) Integer.valueOf(str);
         } else if (clazz == String.class) {
             return (T) str;
-        } if (clazz == Long.class || clazz == long.class) {
+        } else if (clazz == Long.class || clazz == long.class) {
             return (T) Long.valueOf(str);
         }
         return JSONObject.parseObject(str, clazz);

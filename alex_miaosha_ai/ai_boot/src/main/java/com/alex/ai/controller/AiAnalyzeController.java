@@ -1,4 +1,4 @@
-package com.alex.ai.controller;
+﻿package com.alex.ai.controller;
 
 import com.alex.ai.service.AiAnalyzeService;
 import com.alex.api.ai.vo.AiAnalyzeReq;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "AI 分析相关接口", tags = {"AI 分析相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/ai")
+@RequestMapping("${api.version:/api/v1}/ai")
 public class AiAnalyzeController {
 
     private final AiAnalyzeService aiAnalyzeService;

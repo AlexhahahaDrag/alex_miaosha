@@ -1,4 +1,4 @@
-package com.alex.user.roleUserInfo.controller;
+﻿package com.alex.user.roleUserInfo.controller;
 
 import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "用户角色信息表相关接口", tags = {"用户角色信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/role-user-info")
+@RequestMapping("${api.version:/api/v1}/role-user-info")
 public class RoleUserInfoController {
 
     private final RoleUserInfoService roleUserInfoService;

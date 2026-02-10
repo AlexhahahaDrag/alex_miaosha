@@ -1,4 +1,4 @@
-package com.alex.user.permissionInfo.controller;
+﻿package com.alex.user.permissionInfo.controller;
 
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "权限信息表相关接口", tags = {"权限信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/permission-info")
+@RequestMapping("${api.version:/api/v1}/permission-info")
 public class PermissionInfoController {
 
     private final PermissionInfoService permissionInfoService;

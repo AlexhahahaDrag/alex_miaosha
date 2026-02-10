@@ -1,4 +1,4 @@
-package com.alex.finance.shopFinance.controller;
+﻿package com.alex.finance.shopFinance.controller;
 
 import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 import com.alex.base.common.Result;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "商店财务表相关接口", tags = {"商店财务表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-finance")
+@RequestMapping("${api.version:/api/v1}/shop-finance")
 public class ShopFinanceController {
 
     private final ShopFinanceService shopFinanceService;

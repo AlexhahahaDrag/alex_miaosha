@@ -1,4 +1,4 @@
-package com.alex.product.controller.pmsShopProduct;
+﻿package com.alex.product.controller.pmsShopProduct;
 
 import com.alex.api.product.vo.pmsShopProduct.PmsShopProductVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "商品网上商品信息相关接口", tags = {"商品网上商品信息相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/pms-shop-product")
+@RequestMapping("${api.version:/api/v1}/pms-shop-product")
 public class PmsShopProductController {
 
     private final PmsShopProductService pmsShopProductService;

@@ -1,4 +1,4 @@
-package com.alex.product.controller.pmsAttr;
+﻿package com.alex.product.controller.pmsAttr;
 
 import com.alex.api.product.vo.pmsAttr.PmsAttrVo;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "商品属性相关接口", tags = {"商品属性相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/pms-attr")
+@RequestMapping("${api.version:/api/v1}/pms-attr")
 public class PmsAttrController {
 
     private final PmsAttrService pmsAttrService;

@@ -1,4 +1,4 @@
-package com.alex.finance.shopStockAttrs.controller;
+﻿package com.alex.finance.shopStockAttrs.controller;
 
 import com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "商店库存属性表相关接口", tags = {"商店库存属性表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-stock-attrs")
+@RequestMapping("${api.version:/api/v1}/shop-stock-attrs")
 public class ShopStockAttrsController {
 
     private final ShopStockAttrsService shopStockAttrsService;

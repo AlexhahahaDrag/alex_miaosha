@@ -1,4 +1,4 @@
-package com.alex.finance.prepaidConsumeRecordT.controller;
+﻿package com.alex.finance.prepaidConsumeRecordT.controller;
 
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.alex.finance.prepaidConsumeRecordT.service.PrepaidConsumeRecordTService;
@@ -32,7 +32,7 @@ import java.util.Map;
 @Api(value = "消费卡交易记录表相关接口", tags = {"消费卡交易记录表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/prepaid-consume-record-t")
+@RequestMapping("${api.version:/api/v1}/prepaid-consume-record-t")
 public class PrepaidConsumeRecordTController {
 
     private final PrepaidConsumeRecordTService prepaidConsumeRecordTService;

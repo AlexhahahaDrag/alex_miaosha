@@ -1,4 +1,4 @@
-package com.alex.finance.shopStock.controller;
+﻿package com.alex.finance.shopStock.controller;
 
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "商店库存表相关接口", tags = {"商店库存表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-stock")
+@RequestMapping("${api.version:/api/v1}/shop-stock")
 public class ShopStockController {
 
     private final ShopStockService shopStockService;

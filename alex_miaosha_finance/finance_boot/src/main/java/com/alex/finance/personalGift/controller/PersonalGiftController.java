@@ -1,4 +1,4 @@
-package com.alex.finance.personalGift.controller;
+﻿package com.alex.finance.personalGift.controller;
 
 import com.alex.api.finance.personalGift.vo.ContactsGiftRecordVo;
 import com.alex.api.finance.personalGift.vo.PersonalGiftOccasionDistributionVo;
@@ -34,7 +34,7 @@ import java.util.List;
 @Api(value = "个人随礼信息表相关接口", tags = {"个人随礼信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/personal-gift")
+@RequestMapping("${api.version:/api/v1}/personal-gift")
 public class PersonalGiftController {
 
     private final PersonalGiftService personalGiftService;

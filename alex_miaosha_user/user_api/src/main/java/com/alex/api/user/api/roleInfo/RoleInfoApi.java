@@ -1,4 +1,4 @@
-package com.alex.api.user.api.roleInfo;
+﻿package com.alex.api.user.api.roleInfo;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -24,7 +24,7 @@ public interface RoleInfoApi {
 
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取角色信息表分页", notes = "获取角色信息表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//role-info/page")
+    @PostMapping(value = "${api.version:/api/v1}/role-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,17 +36,17 @@ public interface RoleInfoApi {
 
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取角色信息表详情", notes = "获取角色信息表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//role-info")
+    @GetMapping(value = "${api.version:/api/v1}/role-info")
     Result<RoleInfoVo> queryRoleInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色信息表", notes = "新增角色信息表", response = Result.class)
-    @PostMapping("/api/v1//role-info")
+    @PostMapping("${api.version:/api/v1}/role-info")
     Result<Boolean> addRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
 
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改角色信息表", notes = "修改角色信息表", response = Result.class)
-    @PutMapping("/api/v1//role-info")
+    @PutMapping("${api.version:/api/v1}/role-info")
     Result<Boolean> updateRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
 
     @ApiOperationSupport(order = 50, author = "majf")

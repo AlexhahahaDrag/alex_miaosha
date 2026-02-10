@@ -1,4 +1,4 @@
-package com.alex.finance.shopStockBatch.controller;
+﻿package com.alex.finance.shopStockBatch.controller;
 
 import com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo;
 import com.alex.base.common.Result;
@@ -29,7 +29,7 @@ import java.util.List;
 @Api(value = "商店库存批次表相关接口", tags = {"商店库存批次表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-stock-batch")
+@RequestMapping("${api.version:/api/v1}/shop-stock-batch")
 public class ShopStockBatchController {
 
     private final ShopStockBatchService shopStockBatchService;

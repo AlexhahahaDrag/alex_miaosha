@@ -1,4 +1,4 @@
-package com.alex.api.user.api.rolePermissionInfo;
+﻿package com.alex.api.user.api.rolePermissionInfo;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -24,7 +24,7 @@ public interface RolePermissionInfoApi {
 
     @ApiOperationSupport(order = 10, author = "majf")
     @ApiOperation(value = "获取角色权限信息表分页", notes = "获取角色权限信息表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//role-permission-info/page")
+    @PostMapping(value = "${api.version:/api/v1}/role-permission-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,17 +36,17 @@ public interface RolePermissionInfoApi {
 
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取角色权限信息表详情", notes = "获取角色权限信息表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//role-permission-info")
+    @GetMapping(value = "${api.version:/api/v1}/role-permission-info")
     Result<RolePermissionInfoVo> queryRolePermissionInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色权限信息表", notes = "新增角色权限信息表", response = Result.class)
-    @PostMapping("/api/v1//role-permission-info")
+    @PostMapping("${api.version:/api/v1}/role-permission-info")
     Result<Boolean> addRolePermissionInfo(@RequestBody RolePermissionInfoVo rolePermissionInfoVo);
 
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改角色权限信息表", notes = "修改角色权限信息表", response = Result.class)
-    @PutMapping("/api/v1//role-permission-info")
+    @PutMapping("${api.version:/api/v1}/role-permission-info")
     Result<Boolean> updateRolePermissionInfo(@RequestBody RolePermissionInfoVo rolePermissionInfoVo);
 
     @ApiOperationSupport(order = 50, author = "majf")

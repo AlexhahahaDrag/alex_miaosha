@@ -18,10 +18,6 @@ public class Result<T> {
 
     private static final String SUCCESS = ResultEnum.SUCCESS.getCode();
 
-    private static final String PARAM_ERROR_CODE = ResultEnum.PARAM_ERROR.getCode();
-
-    private static final String SYSTEM_ERROR_CODE = ResultEnum.SYSTEM_ERROR.getCode();
-
     private T data;
 
     private Result() {

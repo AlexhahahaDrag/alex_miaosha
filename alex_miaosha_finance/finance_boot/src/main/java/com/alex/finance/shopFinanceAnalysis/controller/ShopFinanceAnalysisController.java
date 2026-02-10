@@ -1,4 +1,4 @@
-package com.alex.finance.shopFinanceAnalysis.controller;
+﻿package com.alex.finance.shopFinanceAnalysis.controller;
 
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
@@ -28,7 +28,7 @@ import java.util.List;
 @Api(value = "商店财务分析相关接口", tags = {"商店财务分析相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-finance-analysis")
+@RequestMapping("${api.version:/api/v1}/shop-finance-analysis")
 public class ShopFinanceAnalysisController {
 
     private final ShopFinanceAnalysisService shopFinanceAnalysisService;

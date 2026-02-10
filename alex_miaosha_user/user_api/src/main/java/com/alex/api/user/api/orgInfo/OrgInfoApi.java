@@ -1,4 +1,4 @@
-package com.alex.api.user.api.orgInfo;
+﻿package com.alex.api.user.api.orgInfo;
 
 import com.alex.api.user.vo.orgInfo.OrgInfoVo;
 import com.alex.base.common.Result;
@@ -22,7 +22,7 @@ public interface OrgInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取机构表分页", notes = "获取机构表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//org-info/page")
+    @PostMapping(value = "${api.version:/api/v1}/org-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -34,17 +34,17 @@ public interface OrgInfoApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取机构表详情", notes = "获取机构表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//org-info")
+    @GetMapping(value = "${api.version:/api/v1}/org-info")
     Result<OrgInfoVo> queryOrgInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增机构表", notes = "新增机构表", response = Result.class)
-    @PostMapping("/api/v1//org-info")
+    @PostMapping("${api.version:/api/v1}/org-info")
     Result<Boolean> addOrgInfo(@RequestBody OrgInfoVo orgInfoVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改机构表", notes = "修改机构表", response = Result.class)
-    @PutMapping("/api/v1//org-info")
+    @PutMapping("${api.version:/api/v1}/org-info")
     Result<Boolean> updateOrgInfo(@RequestBody OrgInfoVo orgInfoVo);
 
     @ApiOperationSupport(order = 50, author = "alex")

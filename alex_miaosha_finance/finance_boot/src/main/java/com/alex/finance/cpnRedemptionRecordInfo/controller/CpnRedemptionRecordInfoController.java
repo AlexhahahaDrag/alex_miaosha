@@ -1,4 +1,4 @@
-package com.alex.finance.cpnRedemptionRecordInfo.controller;
+﻿package com.alex.finance.cpnRedemptionRecordInfo.controller;
 
 import com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "消费券核销记录表 (按数量核销)相关接口", tags = {"消费券核销记录表 (按数量核销)相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/cpn-redemption-record-info")
+@RequestMapping("${api.version:/api/v1}/cpn-redemption-record-info")
 public class CpnRedemptionRecordInfoController {
 
     /**

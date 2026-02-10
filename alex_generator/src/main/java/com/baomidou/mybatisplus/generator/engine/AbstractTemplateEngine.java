@@ -360,7 +360,7 @@ public abstract class AbstractTemplateEngine {
     public Map<String, Object> getObjectMap(@NotNull ConfigBuilder config, @NotNull TableInfo tableInfo) {
         StrategyConfig strategyConfig = config.getStrategyConfig();
         Map<String, Object> controllerData = strategyConfig.client().renderData(tableInfo);
-        Map<String, Object> objectMap = new HashMap(controllerData);
+        Map<String, Object> objectMap = new HashMap<>(controllerData);
         Map<String, Object> mapperData = strategyConfig.mapper().renderData(tableInfo);
         objectMap.putAll(mapperData);
         Map<String, Object> serviceData = strategyConfig.service().renderData(tableInfo);

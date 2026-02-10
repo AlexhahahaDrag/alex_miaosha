@@ -1,4 +1,4 @@
-package com.alex.finance.cpnCouponInfo.controller;
+﻿package com.alex.finance.cpnCouponInfo.controller;
 
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 @Api(value = "消费券信息表相关接口", tags = {"消费券信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/cpn-coupon-info")
+@RequestMapping("${api.version:/api/v1}/cpn-coupon-info")
 public class CpnCouponInfoController {
 
     /**

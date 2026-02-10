@@ -1,4 +1,4 @@
-package com.alex.user.menuInfo.controller;
+﻿package com.alex.user.menuInfo.controller;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "菜单管理表相关接口", tags = {"菜单管理表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/menu-info")
+@RequestMapping("${api.version:/api/v1}/menu-info")
 public class MenuInfoController {
 
     private final MenuInfoService menuInfoService;

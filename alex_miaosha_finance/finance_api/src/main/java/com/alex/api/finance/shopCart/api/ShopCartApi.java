@@ -1,4 +1,4 @@
-package com.alex.api.finance.shopCart.api;
+﻿package com.alex.api.finance.shopCart.api;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -19,12 +19,13 @@ import com.alex.api.finance.shopCart.vo.ShopCartVo;
  * version:      1.0.0
  */
 @Component
+@RequestMapping("${api.version:/api/v1}/shop-cart")
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
 public interface ShopCartApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取购物车表分页", notes = "获取购物车表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//shop-cart/page")
+    @PostMapping(value = "/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,21 +37,21 @@ public interface ShopCartApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取购物车表详情", notes = "获取购物车表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//shop-cart")
+    @GetMapping
     Result<ShopCartVo> queryShopCart(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增购物车表", notes = "新增购物车表", response = Result.class)
-    @PostMapping("/api/v1//shop-cart")
+    @PostMapping
     Result<Boolean> addShopCart(@RequestBody ShopCartVo shopCartVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改购物车表", notes = "修改购物车表", response = Result.class)
-    @PutMapping("/api/v1//shop-cart")
+    @PutMapping
     Result<Boolean> updateShopCart(@RequestBody ShopCartVo shopCartVo);
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除购物车表", notes = "刪除购物车表", response = Result.class)
-    @DeleteMapping("/api/v1")
+    @DeleteMapping
     Result<Boolean> deleteShopCart(@RequestParam("ids") String ids);
 }

@@ -1,4 +1,4 @@
-package com.alex.api.oss.api;
+﻿package com.alex.api.oss.api;
 
 import com.alex.api.oss.api.fallback.OssFallbackFactory;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
@@ -21,6 +21,6 @@ import java.util.List;
 @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", fallback = OssFallbackFactory.class, configuration = FeignConfig.class)
 public interface OssApi {
 
-    @GetMapping(value = "/api/v1/file-info/getFileInfo")
+    @GetMapping(value = "${api.version:/api/v1}/file-info/getFileInfo")
     Result<List<FileInfoVo>> getFileInfo(@RequestParam("fileIdList") List<Long> fileIdList);
 }

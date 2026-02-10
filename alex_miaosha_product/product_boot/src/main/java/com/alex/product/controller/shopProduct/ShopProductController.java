@@ -1,4 +1,4 @@
-package com.alex.product.controller.shopProduct;
+﻿package com.alex.product.controller.shopProduct;
 
 
 import com.alex.api.product.vo.product.jd.Content;
@@ -20,7 +20,7 @@ import java.util.List;
 @Api(value = "网上商品相关接口", tags = {"网上商品相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shopProduct")
+@RequestMapping("${api.version:/api/v1}/shopProduct")
 public class ShopProductController {
 
     private final ShopProductService shopProductService;

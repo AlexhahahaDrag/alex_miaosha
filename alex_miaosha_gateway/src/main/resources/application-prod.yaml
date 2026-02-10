@@ -10,7 +10,7 @@ spring:
           enabled: true #启动自动根据服务id生成路由
           lower-case-service-id: true #设置路由的路径为小写的服务id
           filters:
-            # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置。
+            # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置�?
             - PreserveHostHeader
       routes:
         #移除前缀
@@ -64,7 +64,7 @@ spring:
 
 management:
   endpoints:
-    #   在访问/actuator/health时显示完整信息
+    #   在访�?actuator/health时显示完整信�?
     logfile:
       external-file: log/alex-gateway/gateway.log
 
@@ -77,7 +77,7 @@ logging:
 gateway:
   audience:
     tokenHeader: Authorization
-    whiteList: /am-user/api/v1/user/login,
+    whiteList: /am-user$/user/login,
     docWhiteList: /swagger-resources/**,/doc.html,/**/v3/api-docs/**
 
 # 通用加密配置

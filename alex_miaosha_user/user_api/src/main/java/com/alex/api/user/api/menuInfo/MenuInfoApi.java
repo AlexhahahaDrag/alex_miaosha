@@ -1,4 +1,4 @@
-package com.alex.api.user.api.menuInfo;
+﻿package com.alex.api.user.api.menuInfo;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
@@ -22,7 +22,7 @@ public interface MenuInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取菜单管理表分页", notes = "获取菜单管理表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//menu-info/page")
+    @PostMapping(value = "${api.version:/api/v1}/menu-info/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -34,12 +34,12 @@ public interface MenuInfoApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取菜单管理表详情", notes = "获取菜单管理表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//menu-info")
+    @GetMapping(value = "${api.version:/api/v1}/menu-info")
     Result<MenuInfoVo> queryMenuInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改菜单管理表", notes = "修改菜单管理表", response = Result.class)
-    @PutMapping("/api/v1//menu-info")
+    @PutMapping("${api.version:/api/v1}/menu-info")
     Result<Boolean> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
     @ApiOperationSupport(order = 50, author = "alex")

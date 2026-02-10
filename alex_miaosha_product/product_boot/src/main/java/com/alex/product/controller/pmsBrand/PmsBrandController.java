@@ -1,4 +1,4 @@
-package com.alex.product.controller.pmsBrand;
+﻿package com.alex.product.controller.pmsBrand;
 
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "品牌相关接口", tags = {"品牌相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//pms-brand")
+@RequestMapping("${api.version:/api/v1}/pms-brand")
 public class PmsBrandController {
 
     private final PmsBrandService pmsBrandService;

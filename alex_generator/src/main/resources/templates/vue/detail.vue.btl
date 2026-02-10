@@ -118,15 +118,16 @@
 </template>
 <script lang='ts' setup>
 import { message, type FormInstance } from 'ant-design-vue';
+import type { ResponseBody } from '@/types/api';
+import type { ModelInfo } from '@/views/common/config';
+import type { ${entity}Data } from '../config';
+import { labelMap } from '../config';
+import { rulesRef, labelCol, wrapperCol } from './config';
 import {
 	get${entity}Detail,
 	add${entity},
 	edit${entity},
 } from '@/views/${javaPath}/${entityKebab}/api';
-import type { ModelInfo } from '@/views/common/config';
-import type { ${entity}Data } from '../config';
-import { labelMap } from '../config';
-import { rulesRef, labelCol, wrapperCol } from './config';
 <% if(hasDict) { %>
 import { useDictInfo } from '@/composables/useDictInfo';
 <% } %>
@@ -196,7 +197,7 @@ const save${entity} = async () => {
 	}
 	loading.value = true;
 	const { code, message: messageInfo } = await api(formState.value)
-		.catch((error: any) => {
+		.catch((error: ResponseBody) => {
 			return error;
 		})
 		.finally(() => {

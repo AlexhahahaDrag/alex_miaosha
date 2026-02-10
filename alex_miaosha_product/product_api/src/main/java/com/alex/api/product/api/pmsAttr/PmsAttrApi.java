@@ -1,4 +1,4 @@
-package com.alex.api.product.api.pmsAttr;
+﻿package com.alex.api.product.api.pmsAttr;
 
 import com.alex.api.product.vo.pmsAttr.PmsAttrVo;
 import com.alex.base.common.Result;
@@ -22,7 +22,7 @@ public interface PmsAttrApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品属性分页", notes = "获取商品属性分页", response = Result.class)
-    @PostMapping(value = "/api/v1//pms-attr/page")
+    @PostMapping(value = "${api.version:/api/v1}/pms-attr/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -34,17 +34,17 @@ public interface PmsAttrApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商品属性详情", notes = "获取商品属性详情", response = Result.class)
-    @GetMapping(value = "/api/v1//pms-attr")
+    @GetMapping(value = "${api.version:/api/v1}/pms-attr")
     Result<PmsAttrVo> queryPmsAttr(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商品属性", notes = "新增商品属性", response = Result.class)
-    @PostMapping("/api/v1//pms-attr")
+    @PostMapping("${api.version:/api/v1}/pms-attr")
     Result<Boolean> addPmsAttr(@RequestBody PmsAttrVo pmsAttrVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商品属性", notes = "修改商品属性", response = Result.class)
-    @PutMapping("/api/v1//pms-attr")
+    @PutMapping("${api.version:/api/v1}/pms-attr")
     Result<Boolean> updatePmsAttr(@RequestBody PmsAttrVo pmsAttrVo);
 
     @ApiOperationSupport(order = 50, author = "alex")

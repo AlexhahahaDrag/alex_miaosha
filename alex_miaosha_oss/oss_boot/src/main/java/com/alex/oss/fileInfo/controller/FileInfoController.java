@@ -1,4 +1,4 @@
-package com.alex.oss.fileInfo.controller;
+﻿package com.alex.oss.fileInfo.controller;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import java.util.List;
 @Api(value = "文件信息表相关接口", tags = {"文件信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/file-info")
+@RequestMapping("${api.version:/api/v1}/file-info")
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;

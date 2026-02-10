@@ -1,4 +1,4 @@
-package com.alex.finance.prepaidCardInfoT.controller;
+﻿package com.alex.finance.prepaidCardInfoT.controller;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
@@ -35,7 +35,7 @@ import java.util.List;
 @Api(value = "消费卡信息表相关接口", tags = {"消费卡信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/prepaid-card-info-t")
+@RequestMapping("${api.version:/api/v1}/prepaid-card-info-t")
 public class PrepaidCardInfoTController {
 
     private static final Logger log = LoggerFactory.getLogger(PrepaidCardInfoTController.class);

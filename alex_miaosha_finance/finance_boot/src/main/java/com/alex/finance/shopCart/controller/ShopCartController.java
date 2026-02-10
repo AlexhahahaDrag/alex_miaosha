@@ -1,4 +1,4 @@
-package com.alex.finance.shopCart.controller;
+﻿package com.alex.finance.shopCart.controller;
 
 import com.alex.api.finance.shopCart.vo.ShopCartVo;
 import com.alex.base.common.Result;
@@ -29,7 +29,7 @@ import java.util.List;
 @Api(value = "购物车表相关接口", tags = {"购物车表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/shop-cart")
+@RequestMapping("${api.version:/api/v1}/shop-cart")
 public class ShopCartController {
 
     private final ShopCartService shopCartService;

@@ -1,4 +1,4 @@
-package com.alex.finance.contactsUserRelation.controller;
+﻿package com.alex.finance.contactsUserRelation.controller;
 
 import com.alex.api.finance.contactsUserRelation.vo.ContactsUserRelationVo;
 import com.alex.base.common.Result;
@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "联系人关系分类字典相关接口", tags = {"联系人关系分类字典相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/contacts-user-relation")
+@RequestMapping("${api.version:/api/v1}/contacts-user-relation")
 public class ContactsUserRelationController {
 
 	private final ContactsUserRelationService contactsUserRelationService;

@@ -33,3 +33,4 @@ logs
 */.gradle
 */drone-att.txt
 qodana.yaml
+.cursor

@@ -1,4 +1,4 @@
-package com.alex.api.user.api;
+﻿package com.alex.api.user.api;
 
 import com.alex.api.user.api.fallback.UserFallbackFactory;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
@@ -23,31 +23,31 @@ import java.util.List;
 //此处读取的配置文件为引用client的配置文件
 public interface UserApi {
 
-    @PostMapping(value = "/api/v1/user/list")
+    @PostMapping(value = "${api.version:/api/v1}/user/list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
     // TODO: 2023/2/21 测试token携带未生效问题 
-    @GetMapping(value = "/api/v1/user/getUserInfo")
+    @GetMapping(value = "${api.version:/api/v1}/user/getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 
-    @GetMapping(value = "/api/v1/user/authToken")
+    @GetMapping(value = "${api.version:/api/v1}/user/authToken")
     Result<Boolean> authToken(@RequestParam("token") String token);
 
-    @PostMapping(value = "/api/v1/menu-info/list")
+    @PostMapping(value = "${api.version:/api/v1}/menu-info/list")
     Result<List<MenuInfoVo>> getMenuInfoList(@RequestBody(required = false) MenuInfoVo menuInfoVo);
 
-    @PostMapping("/api/v1/menu-info")
+    @PostMapping("${api.version:/api/v1}/menu-info")
     Result<MenuInfoVo> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
-    @PutMapping("/api/v1/menu-info")
+    @PutMapping("${api.version:/api/v1}/menu-info")
     Result<MenuInfoVo> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
-    @PostMapping("/api/v1/permission-info")
+    @PostMapping("${api.version:/api/v1}/permission-info")
     Result<PermissionInfoVo> addPermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
-    @PutMapping("/api/v1/permission-info")
+    @PutMapping("${api.version:/api/v1}/permission-info")
     Result<PermissionInfoVo> updatePermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
-    @PostMapping(value = "/api/v1/permission-info/list")
+    @PostMapping(value = "${api.version:/api/v1}/permission-info/list")
     Result<List<PermissionInfoVo>> getPermissionInfoList(@RequestBody(required = false) PermissionInfoVo permissionInfoVo);
 }

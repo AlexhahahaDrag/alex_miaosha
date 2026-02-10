@@ -1,4 +1,4 @@
-package com.alex.api.finance.shopOrder.api;
+﻿package com.alex.api.finance.shopOrder.api;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
@@ -19,12 +19,13 @@ import com.alex.api.finance.shopOrder.vo.ShopOrderVo;
  * version:      1.0.0
  */
 @Component
+@RequestMapping("${api.version:/api/v1}/shop-order")
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
 public interface ShopOrderApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商店订单表分页", notes = "获取商店订单表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//shop-order/page")
+    @PostMapping(value = "/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -36,21 +37,21 @@ public interface ShopOrderApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商店订单表详情", notes = "获取商店订单表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//shop-order")
+    @GetMapping
     Result<ShopOrderVo> queryShopOrder(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商店订单表", notes = "新增商店订单表", response = Result.class)
-    @PostMapping("/api/v1//shop-order")
+    @PostMapping
     Result<Boolean> addShopOrder(@RequestBody ShopOrderVo shopOrderVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商店订单表", notes = "修改商店订单表", response = Result.class)
-    @PutMapping("/api/v1//shop-order")
+    @PutMapping
     Result<Boolean> updateShopOrder(@RequestBody ShopOrderVo shopOrderVo);
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商店订单表", notes = "刪除商店订单表", response = Result.class)
-    @DeleteMapping("/api/v1")
+    @DeleteMapping
     Result<Boolean> deleteShopOrder(@RequestParam("ids") String ids);
 }

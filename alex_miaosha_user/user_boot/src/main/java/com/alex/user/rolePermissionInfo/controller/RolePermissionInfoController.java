@@ -1,4 +1,4 @@
-package com.alex.user.rolePermissionInfo.controller;
+﻿package com.alex.user.rolePermissionInfo.controller;
 
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
 import com.alex.base.common.Result;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "角色权限信息表相关接口", tags = {"角色权限信息表相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/role-permission-info")
+@RequestMapping("${api.version:/api/v1}/role-permission-info")
 public class RolePermissionInfoController {
 
     private final RolePermissionInfoService rolePermissionInfoService;

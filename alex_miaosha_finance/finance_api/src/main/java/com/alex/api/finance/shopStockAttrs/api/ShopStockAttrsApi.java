@@ -1,4 +1,4 @@
-package com.alex.api.finance.shopStockAttrs.api;
+﻿package com.alex.api.finance.shopStockAttrs.api;
 
 import com.alex.base.common.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,12 +17,13 @@ import com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo;
  * version:      1.0.0
  */
 @Component
+@RequestMapping("${api.version:/api/v1}/shop-stock-attrs")
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
 public interface ShopStockAttrsApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商店库存属性表分页", notes = "获取商店库存属性表分页", response = Result.class)
-    @PostMapping(value = "/api/v1//shop-stock-attrs/page")
+    @PostMapping(value = "/page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -34,21 +35,21 @@ public interface ShopStockAttrsApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取商店库存属性表详情", notes = "获取商店库存属性表详情", response = Result.class)
-    @GetMapping(value = "/api/v1//shop-stock-attrs")
+    @GetMapping
     Result<ShopStockAttrsVo> queryShopStockAttrs(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增商店库存属性表", notes = "新增商店库存属性表", response = Result.class)
-    @PostMapping("/api/v1//shop-stock-attrs")
+    @PostMapping
     Result<Boolean> addShopStockAttrs(@RequestBody ShopStockAttrsVo shopStockAttrsVo);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改商店库存属性表", notes = "修改商店库存属性表", response = Result.class)
-    @PutMapping("/api/v1//shop-stock-attrs")
+    @PutMapping
     Result<Boolean> updateShopStockAttrs(@RequestBody ShopStockAttrsVo shopStockAttrsVo);
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除商店库存属性表", notes = "刪除商店库存属性表", response = Result.class)
-    @DeleteMapping("/api/v1")
+    @DeleteMapping
     Result<Boolean> deleteShopStockAttrs(@RequestParam("ids") String ids);
 }

@@ -1,4 +1,4 @@
-package com.alex.finance.accountRecordInfo.controller;
+﻿package com.alex.finance.accountRecordInfo.controller;
 
 import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;
@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "相关接口", tags = {"相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/account-record-info")
+@RequestMapping("${api.version:/api/v1}/account-record-info")
 public class AccountRecordInfoController {
 
     private final AccountRecordInfoService accountRecordInfoService;

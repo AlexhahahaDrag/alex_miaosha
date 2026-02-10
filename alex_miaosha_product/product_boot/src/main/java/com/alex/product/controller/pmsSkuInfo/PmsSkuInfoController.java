@@ -1,4 +1,4 @@
-package com.alex.product.controller.pmsSkuInfo;
+﻿package com.alex.product.controller.pmsSkuInfo;
 
 import com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "sku信息相关接口", tags = {"sku信息相关接口"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//pms-sku-info")
+@RequestMapping("${api.version:/api/v1}/pms-sku-info")
 public class PmsSkuInfoController {
 
     private final PmsSkuInfoService pmsSkuInfoService;
