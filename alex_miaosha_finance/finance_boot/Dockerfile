@@ -2,9 +2,9 @@
 # Finance Boot 运行镜像
 # 仅做 Dockerfile 最佳实践优化（不改变端口/启动参数/镜像功能；不修改 jar 包名称）
 #
-FROM openjdk:17
+FROM eclipse-temurin:17-jre
 
-# 维护者信息（MAINTAINER 已废弃，改用 LABEL）
+# 维护者信息
 LABEL maintainer="alex <734663446@qq.com>"
 
 # 时区设置（两种方式同时保留）：
