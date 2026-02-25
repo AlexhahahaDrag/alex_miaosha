@@ -1,4 +1,4 @@
-﻿package com.alex.finance.shopStockBatch.controller;
+package com.alex.finance.shopStockBatch.controller;
 
 import com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo;
 import com.alex.base.common.Result;

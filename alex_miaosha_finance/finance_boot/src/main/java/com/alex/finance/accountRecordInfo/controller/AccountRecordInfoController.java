@@ -1,4 +1,4 @@
-﻿package com.alex.finance.accountRecordInfo.controller;
+package com.alex.finance.accountRecordInfo.controller;
 
 import com.alex.api.finance.vo.accountRecordInfo.AccountCountInfoVo;
 import com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo;

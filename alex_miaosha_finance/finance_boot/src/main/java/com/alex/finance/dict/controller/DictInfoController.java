@@ -1,4 +1,4 @@
-﻿package com.alex.finance.dict.controller;
+package com.alex.finance.dict.controller;
 
 import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.base.common.Result;

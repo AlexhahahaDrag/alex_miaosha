@@ -1,4 +1,4 @@
-﻿package com.alex.finance.shopFinance.controller;
+package com.alex.finance.shopFinance.controller;
 
 import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 import com.alex.base.common.Result;

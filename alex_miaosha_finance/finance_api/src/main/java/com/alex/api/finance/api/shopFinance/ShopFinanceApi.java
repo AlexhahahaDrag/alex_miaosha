@@ -1,4 +1,4 @@
-﻿package com.alex.api.finance.api.shopFinance;
+package com.alex.api.finance.api.shopFinance;
 
 import com.alex.base.common.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

@@ -1,4 +1,4 @@
-﻿package com.alex.finance.cpnRedemptionRecordInfo.controller;
+package com.alex.finance.cpnRedemptionRecordInfo.controller;
 
 import com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo;
 import org.springframework.web.bind.annotation.*;

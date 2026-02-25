@@ -1,6 +1,6 @@
 package com.alex.generator.service.impl;
 
-import com.alex.api.user.api.UserApi;
+import com.alex.api.user.api.user.UserApi;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.base.common.Result;

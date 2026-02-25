@@ -1,4 +1,4 @@
-﻿package com.alex.product.controller.pmsAttr;
+package com.alex.product.controller.pmsAttr;
 
 import com.alex.api.product.vo.pmsAttr.PmsAttrVo;
 import org.springframework.web.bind.annotation.*;

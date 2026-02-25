@@ -1,4 +1,4 @@
-﻿package com.alex.api.finance.prepaidConsumeRecordT.api;
+package com.alex.api.finance.prepaidConsumeRecordT.api;
 
 import com.alex.base.common.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

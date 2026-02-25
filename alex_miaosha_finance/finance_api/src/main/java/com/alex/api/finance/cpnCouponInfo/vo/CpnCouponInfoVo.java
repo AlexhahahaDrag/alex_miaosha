@@ -1,7 +1,6 @@
 package com.alex.api.finance.cpnCouponInfo.vo;
 
 import com.alex.common.common.BaseVo;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -48,11 +47,9 @@ public class CpnCouponInfoVo extends BaseVo<CpnCouponInfoVo>{
     private BigDecimal minSpend;
 
     @ApiModelProperty(value = "过期状态（展示用：离过期还有三天/离过期还有一天/离过期还有X小时/离过期还有X分钟/过期）")
-    @TableField(exist = false)
     private String expireStatus;
 
     @ApiModelProperty(value = "过期区间状态（数字：0已过期，1<1天，2=1-3天，3>3天）")
-    @TableField(exist = false)
     private Integer expireRangeStatus;
 
     /**

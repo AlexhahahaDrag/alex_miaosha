@@ -1,4 +1,4 @@
-﻿package com.alex.product.controller.pmsShopWantProduct;
+package com.alex.product.controller.pmsShopWantProduct;
 
 import com.alex.api.product.vo.pmsShopWantProduct.PmsShopWantProductVo;
 import com.alex.base.common.Result;

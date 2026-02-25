@@ -3,5 +3,5 @@ spring:
     active: dev
 
 info:
-  ip: 120.48.156.47
+  ip: 115.190.181.243
   developer: alex

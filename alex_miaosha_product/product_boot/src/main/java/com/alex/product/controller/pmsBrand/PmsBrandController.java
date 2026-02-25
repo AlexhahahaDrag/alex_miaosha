@@ -1,4 +1,4 @@
-﻿package com.alex.product.controller.pmsBrand;
+package com.alex.product.controller.pmsBrand;
 
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
 import com.alex.base.common.Result;

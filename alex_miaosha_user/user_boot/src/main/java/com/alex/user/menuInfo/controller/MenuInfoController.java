@@ -1,4 +1,4 @@
-﻿package com.alex.user.menuInfo.controller;
+package com.alex.user.menuInfo.controller;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;

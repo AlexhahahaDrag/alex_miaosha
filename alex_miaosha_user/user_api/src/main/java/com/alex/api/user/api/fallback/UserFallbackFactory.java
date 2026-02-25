@@ -1,6 +1,6 @@
 package com.alex.api.user.api.fallback;
 
-import com.alex.api.user.api.UserApi;
+import com.alex.api.user.api.user.UserApi;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;

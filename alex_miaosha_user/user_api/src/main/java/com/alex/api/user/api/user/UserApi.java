@@ -1,4 +1,4 @@
-﻿package com.alex.api.user.api;
+package com.alex.api.user.api.user;
 
 import com.alex.api.user.api.fallback.UserFallbackFactory;
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;

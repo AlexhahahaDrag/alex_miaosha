@@ -1,4 +1,4 @@
-﻿package com.alex.api.oss.api;
+package com.alex.api.oss.api;
 
 import com.alex.api.oss.api.fallback.OssFallbackFactory;
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;

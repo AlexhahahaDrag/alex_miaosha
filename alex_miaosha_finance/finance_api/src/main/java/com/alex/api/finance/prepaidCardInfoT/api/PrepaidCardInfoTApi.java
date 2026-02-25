@@ -1,4 +1,4 @@
-﻿package com.alex.api.finance.prepaidCardInfoT.api;
+package com.alex.api.finance.prepaidCardInfoT.api;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.base.common.Result;

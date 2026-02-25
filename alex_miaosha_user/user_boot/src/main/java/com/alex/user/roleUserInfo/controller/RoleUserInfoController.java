@@ -1,4 +1,4 @@
-﻿package com.alex.user.roleUserInfo.controller;
+package com.alex.user.roleUserInfo.controller;
 
 import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
 import org.springframework.web.bind.annotation.*;

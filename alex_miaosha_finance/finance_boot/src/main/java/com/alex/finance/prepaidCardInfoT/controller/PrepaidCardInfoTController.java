@@ -1,4 +1,4 @@
-﻿package com.alex.finance.prepaidCardInfoT.controller;
+package com.alex.finance.prepaidCardInfoT.controller;
 
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;

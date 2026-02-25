@@ -1,4 +1,4 @@
-﻿package com.alex.user.permissionInfo.controller;
+package com.alex.user.permissionInfo.controller;
 
 import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
 import com.alex.base.common.Result;

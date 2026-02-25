@@ -1,4 +1,4 @@
-﻿package com.alex.finance.contactsUserRelation.controller;
+package com.alex.finance.contactsUserRelation.controller;
 
 import com.alex.api.finance.contactsUserRelation.vo.ContactsUserRelationVo;
 import com.alex.base.common.Result;

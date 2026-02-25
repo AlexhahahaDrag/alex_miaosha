@@ -1,4 +1,4 @@
-﻿package com.alex.finance.shopOrderDetail.controller;
+package com.alex.finance.shopOrderDetail.controller;
 
 import com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo;
 import org.springframework.web.bind.annotation.*;

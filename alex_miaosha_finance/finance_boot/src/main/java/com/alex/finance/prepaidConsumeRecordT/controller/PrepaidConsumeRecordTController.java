@@ -1,4 +1,4 @@
-﻿package com.alex.finance.prepaidConsumeRecordT.controller;
+package com.alex.finance.prepaidConsumeRecordT.controller;
 
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.alex.finance.prepaidConsumeRecordT.service.PrepaidConsumeRecordTService;

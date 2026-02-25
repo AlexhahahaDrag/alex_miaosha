@@ -1,4 +1,4 @@
-﻿package com.alex.oss.fileInfo.controller;
+package com.alex.oss.fileInfo.controller;
 
 import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import com.alex.base.common.Result;

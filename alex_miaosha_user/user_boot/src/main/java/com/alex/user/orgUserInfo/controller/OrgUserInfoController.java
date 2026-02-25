@@ -1,4 +1,4 @@
-﻿package com.alex.user.orgUserInfo.controller;
+package com.alex.user.orgUserInfo.controller;
 
 import com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo;
 import org.springframework.web.bind.annotation.*;

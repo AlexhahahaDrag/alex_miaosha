@@ -6,7 +6,7 @@ import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
-import com.alex.api.user.api.UserApi;
+import com.alex.api.user.api.user.UserApi;
 import com.alex.api.user.vo.user.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.utils.string.StringUtils;

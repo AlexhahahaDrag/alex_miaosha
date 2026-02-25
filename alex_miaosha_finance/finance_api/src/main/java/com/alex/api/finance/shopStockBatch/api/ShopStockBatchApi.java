@@ -1,4 +1,4 @@
-﻿package com.alex.api.finance.shopStockBatch.api;
+package com.alex.api.finance.shopStockBatch.api;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;

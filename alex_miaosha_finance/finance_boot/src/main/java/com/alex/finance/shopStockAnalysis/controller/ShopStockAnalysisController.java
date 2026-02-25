@@ -1,4 +1,4 @@
-﻿package com.alex.finance.shopStockAnalysis.controller;
+package com.alex.finance.shopStockAnalysis.controller;
 
 import com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo;
 import com.alex.api.finance.shopStockAnalysis.vo.ShopStockAnalysisVo;

@@ -1,4 +1,4 @@
-﻿package com.alex.user.roleInfo.controller;
+package com.alex.user.roleInfo.controller;
 
 import com.alex.api.user.vo.roleInfo.RoleInfoVo;
 import com.alex.base.common.Result;

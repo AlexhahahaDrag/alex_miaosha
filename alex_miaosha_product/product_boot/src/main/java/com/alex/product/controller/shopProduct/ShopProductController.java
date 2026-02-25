@@ -1,4 +1,4 @@
-﻿package com.alex.product.controller.shopProduct;
+package com.alex.product.controller.shopProduct;
 
 
 import com.alex.api.product.vo.product.jd.Content;

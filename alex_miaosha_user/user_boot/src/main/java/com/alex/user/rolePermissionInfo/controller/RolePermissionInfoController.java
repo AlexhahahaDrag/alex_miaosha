@@ -1,4 +1,4 @@
-﻿package com.alex.user.rolePermissionInfo.controller;
+package com.alex.user.rolePermissionInfo.controller;
 
 import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
 import com.alex.base.common.Result;

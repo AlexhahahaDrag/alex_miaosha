@@ -1,4 +1,4 @@
-﻿package com.alex.api.finance.personalGift.api;
+package com.alex.api.finance.personalGift.api;
 
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;

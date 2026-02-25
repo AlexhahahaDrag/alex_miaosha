@@ -1,4 +1,4 @@
-﻿package com.alex.product.controller.pmsSkuInfo;
+package com.alex.product.controller.pmsSkuInfo;
 
 import com.alex.api.product.vo.pmsSkuInfo.PmsSkuInfoVo;
 import org.springframework.web.bind.annotation.*;

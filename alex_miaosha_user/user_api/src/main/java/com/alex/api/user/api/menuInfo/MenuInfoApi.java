@@ -1,4 +1,4 @@
-﻿package com.alex.api.user.api.menuInfo;
+package com.alex.api.user.api.menuInfo;
 
 import com.alex.api.user.vo.menuInfo.MenuInfoVo;
 import com.alex.base.common.Result;
@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
  */
 @Component
 // @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
+@RequestMapping(value = "${api.version:/api/v1}/menu-info")
 public interface MenuInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取菜单管理表分页", notes = "获取菜单管理表分页", response = Result.class)
-    @PostMapping(value = "${api.version:/api/v1}/menu-info/page")
+    @PostMapping(value = "page")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "页码", name = "pageNum", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
@@ -34,16 +35,16 @@ public interface MenuInfoApi {
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取菜单管理表详情", notes = "获取菜单管理表详情", response = Result.class)
-    @GetMapping(value = "${api.version:/api/v1}/menu-info")
+    @GetMapping
     Result<MenuInfoVo> queryMenuInfo(@RequestParam(value = "id") String id);
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改菜单管理表", notes = "修改菜单管理表", response = Result.class)
-    @PutMapping("${api.version:/api/v1}/menu-info")
+    @PutMapping
     Result<Boolean> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除菜单管理表", notes = "刪除菜单管理表", response = Result.class)
-    @DeleteMapping("/api/v1")
+    @DeleteMapping
     Result<Boolean> deleteMenuInfo(@RequestParam("ids") String ids);
 }

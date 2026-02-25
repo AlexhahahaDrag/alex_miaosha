@@ -1,4 +1,4 @@
-﻿package com.alex.api.ai.api;
+package com.alex.api.ai.api;
 
 import com.alex.api.ai.api.fallback.AiAnalyzeFallbackFactory;
 import com.alex.api.ai.vo.AiAnalyzeReq;

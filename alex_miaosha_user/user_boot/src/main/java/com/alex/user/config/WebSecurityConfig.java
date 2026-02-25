@@ -1,4 +1,4 @@
-﻿package com.alex.user.config;
+package com.alex.user.config;
 
 import com.alex.user.utils.jwt.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;

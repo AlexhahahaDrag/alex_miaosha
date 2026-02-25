@@ -1,4 +1,4 @@
-﻿package com.alex.finance.shopStockAttrs.controller;
+package com.alex.finance.shopStockAttrs.controller;
 
 import com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo;
 import org.springframework.web.bind.annotation.*;

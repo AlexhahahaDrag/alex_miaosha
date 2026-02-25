@@ -1,4 +1,4 @@
-﻿package com.alex.ai.controller;
+package com.alex.ai.controller;
 
 import com.alex.ai.service.AiAnalyzeService;
 import com.alex.api.ai.vo.AiAnalyzeReq;
