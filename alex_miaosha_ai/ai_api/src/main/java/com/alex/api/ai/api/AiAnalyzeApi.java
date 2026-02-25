@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * AI Agent：
  * AI 分析服务 Feign 接口（供其它模块调用）
- *
+ *<p><p/>
  * 服务名约定：alex-ai-${spring.profiles.active}
  * - 由 Nacos 注册中心按 profile 区分服务实例
  */

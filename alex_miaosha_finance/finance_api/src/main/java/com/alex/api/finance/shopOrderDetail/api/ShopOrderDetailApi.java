@@ -1,16 +1,14 @@
 package com.alex.api.finance.shopOrderDetail.api;
 
+import com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo;
 import com.alex.base.common.Result;
-import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo;
 
 /**
  * description:  商店订单明细表controller
