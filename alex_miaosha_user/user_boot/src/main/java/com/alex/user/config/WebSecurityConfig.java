@@ -2,6 +2,7 @@ package com.alex.user.config;
 
 import com.alex.user.utils.jwt.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -28,33 +29,40 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
-    //白名单
-    private static final String[] whiteList;
+    @Value("${api.version:/api/v1}")
+    private String apiVersion;
 
-    static {
-        whiteList = new String[]{
-                "/swagger-resources/**",
-                "/doc.html",
-                "/webjars/**",
-                "/actuator/**",
-                "/favicon.ico",
-                "${api.version:/api/v1}/user/login",
-                "${api.version:/api/v1}/menu-info/list",
-                "${api.version:/api/v1}/menu-info",
-                "${api.version:/api/v1}/permission-info/list",
-                "${api.version:/api/v1}/permission-info",
-                "/druid/**",
-                "${api.version:/api/v1}/user/getUserInfo",
-                "${api.version:/api/v1}/user/authToken",
-                "${api.version:/api/v1}/user/third",
-                "${api.version:/api/v1}/file-info/getFileInfo",
-                "/v3/api-docs",
-                "/error"
-        };
-    }
+    //固定白名单（无需 api.version 前缀）
+    private static final String[] STATIC_WHITE_LIST = {
+            "/swagger-resources/**",
+            "/doc.html",
+            "/webjars/**",
+            "/actuator/**",
+            "/favicon.ico",
+            "/druid/**",
+            "/v3/api-docs",
+            "/error"
+    };
 
     @Bean
     public SecurityFilterChain web(HttpSecurity http) throws Exception {
+        // 动态构建带 api 版本前缀的白名单路径
+        String[] versionedPaths = {
+                apiVersion + "/user/login",
+                apiVersion + "/menu-info/list",
+                apiVersion + "/menu-info",
+                apiVersion + "/permission-info/list",
+                apiVersion + "/permission-info",
+                apiVersion + "/user/getUserInfo",
+                apiVersion + "/user/authToken",
+                apiVersion + "/user/third",
+                apiVersion + "/file-info/getFileInfo"
+        };
+        // 合并固定白名单与带版本前缀的路径
+        String[] whiteList = java.util.stream.Stream
+                .concat(java.util.Arrays.stream(STATIC_WHITE_LIST), java.util.Arrays.stream(versionedPaths))
+                .toArray(String[]::new);
+
         return http
                 // 基于 token，不需要 csrf
                 .csrf()

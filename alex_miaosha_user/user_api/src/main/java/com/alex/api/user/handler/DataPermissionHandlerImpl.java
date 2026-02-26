@@ -91,7 +91,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         // 构建 WHERE 子句
         EqualsTo whereCondition = new EqualsTo();
         whereCondition.setLeftExpression(new Column("org_id"));
-        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId())); // 设置你想查询的机构ID
+        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId())); // 设置你想查询的机构 ID
         plainSelect.setWhere(whereCondition);
 
         // 将 PlainSelect 对象设置为 SubSelect 的 SelectBody
