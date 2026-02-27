@@ -7,8 +7,8 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true #启动自动根据服务id生成路由
-          lower-case-service-id: true #设置路由的路径为小写的服务id
+          enabled: true #启动自动根据服务id 生成路由
+          lower-case-service-id: true #设置路由的路径为小写的服务 id
           filters:
             # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置。
             - PreserveHostHeader
@@ -76,17 +76,17 @@ logging:
 gateway:
   audience:
     tokenHeader: Authorization
-    whiteList: /am-user/api/v1/user/login,
+    whiteList: /am-user/api/v1/user/login
     docWhiteList: /swagger-resources/**,/doc.html,/**/v3/api-docs/**
 
 # 通用加密配置
 alex:
   encryption:
-    # AES加密密钥
+    # AES 加密密钥
     key: "20230610HelloDog"
-    # AES加密向量
+    # AES 加密向量
     iv: "1234567890123456"
-    # AES填充模式
+    # AES 填充模式
     padding: "PKCS5Padding"
     # 是否启用加密
     enabled: true

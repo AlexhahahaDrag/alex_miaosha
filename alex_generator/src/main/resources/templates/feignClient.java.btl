@@ -19,7 +19,7 @@ import ${package.Vo}.${table.voName};
  * @version:      1.0.0
  */
 @Component
-// @FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", configuration = FeignConfig.class)
+//@FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", configuration = FeignConfig.class)
 @RequestMapping(value = "${api.version:/api/v1}/${package.ModuleName}/${controllerMappingHyphenStyle}")
 public interface ${table.clientName} {
 

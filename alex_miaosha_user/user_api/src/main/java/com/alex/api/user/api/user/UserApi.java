@@ -19,35 +19,34 @@ import java.util.List;
  * version:      1.0.0
  */
 @Component
-@FeignClient(name = "alex-user-${spring.profiles.active:dev}", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
-//此处读取的配置文件为引用client的配置文件
+@FeignClient(contextId = "userApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/user", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
 public interface UserApi {
 
-    @PostMapping(value = "${api.version:/api/v1}/user/list")
+    @PostMapping(value = "list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
     // TODO: 2023/2/21 测试token携带未生效问题 
-    @GetMapping(value = "${api.version:/api/v1}/user/getUserInfo")
+    @GetMapping(value = "getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 
-    @GetMapping(value = "${api.version:/api/v1}/user/authToken")
+    @GetMapping(value = "authToken")
     Result<Boolean> authToken(@RequestParam("token") String token);
 
-    @PostMapping(value = "${api.version:/api/v1}/menu-info/list")
+    @PostMapping(value = "menu-info/list")
     Result<List<MenuInfoVo>> getMenuInfoList(@RequestBody(required = false) MenuInfoVo menuInfoVo);
 
-    @PostMapping("${api.version:/api/v1}/menu-info")
+    @PostMapping("menu-info")
     Result<MenuInfoVo> addMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
-    @PutMapping("${api.version:/api/v1}/menu-info")
+    @PutMapping("menu-info")
     Result<MenuInfoVo> updateMenuInfo(@RequestBody MenuInfoVo menuInfoVo);
 
-    @PostMapping("${api.version:/api/v1}/permission-info")
+    @PostMapping("permission-info")
     Result<PermissionInfoVo> addPermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
-    @PutMapping("${api.version:/api/v1}/permission-info")
+    @PutMapping("permission-info")
     Result<PermissionInfoVo> updatePermissionInfo(@RequestBody PermissionInfoVo permissionInfoVo);
 
-    @PostMapping(value = "${api.version:/api/v1}/permission-info/list")
+    @PostMapping(value = "permission-info/list")
     Result<List<PermissionInfoVo>> getPermissionInfoList(@RequestBody(required = false) PermissionInfoVo permissionInfoVo);
 }

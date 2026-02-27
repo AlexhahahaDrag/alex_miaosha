@@ -1,14 +1,16 @@
 package com.alex.api.finance.api.shopFinance;
 
+import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 import com.alex.base.common.Result;
+import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
 
 /**
  * description:  商店财务表controller
@@ -18,7 +20,7 @@ import com.alex.api.finance.vo.shopFinance.ShopFinanceVo;
  */
 @Component
 @RequestMapping("${api.version:/api/v1}/shop-finance")
-// @FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
+@FeignClient(name = "alex-oss-${spring.profiles.active:dev}", configuration = FeignConfig.class)
 public interface ShopFinanceApi {
 
     @ApiOperationSupport(order = 10, author = "majf")
@@ -30,8 +32,8 @@ public interface ShopFinanceApi {
             @ApiImplicitParam(value = "查询条件", name = "shopFinanceVo")}
     )
     Result<Page<ShopFinanceVo>> getShopFinancePage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                            @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                            @RequestBody(required = false) ShopFinanceVo shopFinanceVo);
+                                                   @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                   @RequestBody(required = false) ShopFinanceVo shopFinanceVo);
 
     @ApiOperationSupport(order = 20, author = "majf")
     @ApiOperation(value = "获取商店财务表详情", notes = "获取商店财务表详情", response = Result.class)
