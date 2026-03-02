@@ -1,0 +1,24 @@
+package ${package.Client}.fallback;
+
+import ${package.Client}.${table.clientName};
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.stereotype.Component;
+
+/**
+ * @description:  ${table.comment!}控制器 api fallback
+ * @author:       ${author}
+ * @createDate:   ${strutil.formatDate(date(), 'yyyy-MM-dd HH:mm:ss')}
+ * @version:      1.0.0
+ */
+@Component
+@Slf4j
+public class ${table.clientName}FallbackFactory implements FallbackFactory<${table.clientName}> {
+
+    @Override
+    public ${table.clientName} create(Throwable cause) {
+        throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "${strutil.toLowerCase(strutil.subStringTo(table.clientName, 0, 1)) + strutil.subString (table.clientName, 1)}");
+    }
+}

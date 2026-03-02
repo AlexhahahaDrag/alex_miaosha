@@ -2,9 +2,9 @@ package com.alex.finance.contactsUserRelation.service.impl;
 
 import com.alex.api.finance.contactsUserRelation.vo.ContactsUserRelationVo;
 import com.alex.api.finance.contactsUserRelation.vo.UserRoleSetVo;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
-import com.alex.api.user.vo.roleInfo.RoleInfoVo;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.contactsUserRelation.entity.ContactsUserRelation;
 import com.alex.finance.contactsUserRelation.mapper.ContactsUserRelationMapper;

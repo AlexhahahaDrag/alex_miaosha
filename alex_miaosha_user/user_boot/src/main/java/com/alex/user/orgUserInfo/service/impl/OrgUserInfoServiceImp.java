@@ -1,7 +1,7 @@
 package com.alex.user.orgUserInfo.service.impl;
 
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
-import com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.mapper.OrgUserInfoMapper;

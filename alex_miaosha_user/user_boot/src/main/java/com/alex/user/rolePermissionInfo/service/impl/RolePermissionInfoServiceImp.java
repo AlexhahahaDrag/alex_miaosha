@@ -1,6 +1,6 @@
 package com.alex.user.rolePermissionInfo.service.impl;
 
-import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
+import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.rolePermissionInfo.entity.RolePermissionInfo;
 import com.alex.user.rolePermissionInfo.mapper.RolePermissionInfoMapper;

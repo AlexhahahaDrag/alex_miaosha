@@ -10,6 +10,4 @@ public interface GeneratorService {
 
     Boolean generator(String moduleName, String javaPathName, String javaPath,
                       String[] tableNames, String[] tableNameInfo, String author) throws Exception;
-
-    String test();
 }

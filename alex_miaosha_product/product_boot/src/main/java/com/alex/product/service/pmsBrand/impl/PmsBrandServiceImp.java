@@ -1,7 +1,7 @@
 package com.alex.product.service.pmsBrand.impl;
 
-import com.alex.api.oss.api.OssApi;
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.oss.fileInfo.api.OssApi;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.api.product.vo.pmsBrand.PmsBrandVo;
 import com.alex.base.common.Result;
 import com.alex.common.utils.string.StringUtils;

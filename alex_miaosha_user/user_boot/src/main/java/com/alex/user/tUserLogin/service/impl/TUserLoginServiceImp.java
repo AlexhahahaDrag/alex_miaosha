@@ -1,6 +1,6 @@
 package com.alex.user.tUserLogin.service.impl;
 
-import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
+import com.alex.api.user.tUserLogin.vo.TUserLoginVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.tUserLogin.mapper.TUserLoginMapper;

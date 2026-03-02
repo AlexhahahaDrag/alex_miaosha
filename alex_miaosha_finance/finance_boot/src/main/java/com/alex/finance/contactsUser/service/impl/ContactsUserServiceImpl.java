@@ -11,7 +11,7 @@ import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.api.finance.contactsUserRelation.vo.ContactsUserRelationVo;
 import com.alex.api.user.user.UserUtils;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.contactsUser.entity.ContactsUser;
 import com.alex.finance.contactsUser.mapper.ContactsUserMapper;
 import com.alex.finance.contactsUser.service.ContactsUserService;

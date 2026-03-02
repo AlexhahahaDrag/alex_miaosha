@@ -1,6 +1,6 @@
 package com.alex.user.orgInfo.controller;
 
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;

@@ -1,8 +1,8 @@
 package com.alex.generator.service.impl;
 
-import com.alex.api.user.api.user.UserApi;
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
-import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
+import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
+import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.base.common.Result;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
@@ -458,10 +458,5 @@ public class GeneratorServiceImpl implements GeneratorService {
             sb.append(separator).append(s);
         }
         return sb.toString();
-    }
-
-    @Override
-    public String test() {
-        return "test";
     }
 }

@@ -1,9 +1,9 @@
 package com.alex.api.user.handler;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
-import com.alex.api.user.vo.roleInfo.RoleInfoVo;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import lombok.RequiredArgsConstructor;

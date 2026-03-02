@@ -1,6 +1,6 @@
 package com.alex.user.user.service;
 
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.user.entity.TUser;

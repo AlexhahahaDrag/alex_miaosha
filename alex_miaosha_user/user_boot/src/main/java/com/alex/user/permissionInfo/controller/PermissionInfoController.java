@@ -1,6 +1,6 @@
 package com.alex.user.permissionInfo.controller;
 
-import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;

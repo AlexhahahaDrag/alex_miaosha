@@ -1,6 +1,6 @@
 package com.alex.user.tUserLogin.mapper;
 
-import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
+import com.alex.api.user.tUserLogin.vo.TUserLoginVo;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

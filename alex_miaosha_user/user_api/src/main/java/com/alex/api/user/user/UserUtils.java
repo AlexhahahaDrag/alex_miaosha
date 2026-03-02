@@ -1,6 +1,6 @@
 package com.alex.api.user.user;
 
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.LoginKey;

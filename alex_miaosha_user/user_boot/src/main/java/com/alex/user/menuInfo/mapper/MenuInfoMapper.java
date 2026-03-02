@@ -1,6 +1,6 @@
 package com.alex.user.menuInfo.mapper;
 
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.user.menuInfo.entity.MenuInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;

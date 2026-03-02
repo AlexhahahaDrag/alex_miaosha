@@ -1,6 +1,6 @@
 package com.alex.oss.fileInfo.controller;
 
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.oss.fileInfo.service.FileInfoService;
 import com.alex.common.annotations.AvoidRepeatableCommit;

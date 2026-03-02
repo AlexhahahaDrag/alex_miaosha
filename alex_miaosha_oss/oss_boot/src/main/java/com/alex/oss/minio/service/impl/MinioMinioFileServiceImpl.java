@@ -1,6 +1,6 @@
 package com.alex.oss.minio.service.impl;
 
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.constants.SysConf;
 import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.enums.FileSystemTypeEnum;

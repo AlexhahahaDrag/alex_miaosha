@@ -1,6 +1,6 @@
 package com.alex.user.menuInfo.controller;
 
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;

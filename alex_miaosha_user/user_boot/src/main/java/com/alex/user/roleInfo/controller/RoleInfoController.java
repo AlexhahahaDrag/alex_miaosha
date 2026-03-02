@@ -1,6 +1,6 @@
 package com.alex.user.roleInfo.controller;
 
-import com.alex.api.user.vo.roleInfo.RoleInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;

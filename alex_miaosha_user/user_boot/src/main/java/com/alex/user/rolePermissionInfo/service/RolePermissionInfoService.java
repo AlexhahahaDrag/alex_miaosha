@@ -1,6 +1,6 @@
 package com.alex.user.rolePermissionInfo.service;
 
-import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
+import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
 import com.alex.user.rolePermissionInfo.entity.RolePermissionInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

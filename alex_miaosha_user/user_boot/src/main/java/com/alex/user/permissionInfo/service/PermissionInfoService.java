@@ -1,6 +1,6 @@
 package com.alex.user.permissionInfo.service;
 
-import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.user.permissionInfo.entity.PermissionInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

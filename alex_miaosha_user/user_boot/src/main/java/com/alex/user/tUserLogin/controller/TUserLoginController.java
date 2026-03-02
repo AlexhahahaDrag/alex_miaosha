@@ -1,6 +1,6 @@
 package com.alex.user.tUserLogin.controller;
 
-import com.alex.api.user.vo.tUserLogin.TUserLoginVo;
+import com.alex.api.user.tUserLogin.vo.TUserLoginVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;

@@ -1,13 +1,13 @@
 package com.alex.user.user.service.impl;
 
-import com.alex.api.oss.api.OssApi;
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.oss.fileInfo.api.OssApi;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
-import com.alex.api.user.vo.roleInfo.RoleInfoVo;
-import com.alex.api.user.vo.user.OnlineAdmin;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.OnlineAdmin;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;

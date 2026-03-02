@@ -1,6 +1,5 @@
 package com.alex.user.orgUserInfo.controller;
 
-import com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import com.alex.common.annotations.AvoidRepeatableCommit;
@@ -15,6 +14,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+
+import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
 import com.alex.base.common.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;

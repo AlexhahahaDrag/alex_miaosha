@@ -1,6 +1,7 @@
 package com.alex.generator.vo;
 
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
+
 import lombok.Data;
 
 /**

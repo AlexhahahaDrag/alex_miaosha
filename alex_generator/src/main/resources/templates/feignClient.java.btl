@@ -1,5 +1,6 @@
 package ${package.Client};
 
+import ${package.Client}.fallback.${table.clientName}FallbackFactory;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,8 +20,7 @@ import ${package.Vo}.${table.voName};
  * @version:      1.0.0
  */
 @Component
-//@FeignClient(name = "alex-oss-\${spring.profiles.active:dev}", configuration = FeignConfig.class)
-@RequestMapping(value = "${api.version:/api/v1}/${package.ModuleName}/${controllerMappingHyphenStyle}")
+@FeignClient(contextId = "${strutil.toLowerCase(strutil.subStringTo(table.clientName, 0, 1)) + strutil.subString (table.clientName, 1)}", name = "alex-user-\${spring.profiles.active:dev}", path = "\${api.version:/api/v1}/${package.ModuleName}/${controllerMappingHyphenStyle}", configuration = FeignConfig.class, fallback = ${table.clientName}FallbackFactory.class)
 public interface ${table.clientName} {
 
     @ApiOperationSupport(order = 10, author = "${author}")

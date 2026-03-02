@@ -1,6 +1,6 @@
 package com.alex.user.menuInfo.service.impl;
 
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.menuInfo.mapper.MenuInfoMapper;
 import com.alex.user.menuInfo.entity.MenuInfo;

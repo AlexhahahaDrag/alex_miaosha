@@ -1,6 +1,6 @@
 package com.alex.gateway.filter;
 
-import com.alex.api.user.api.user.UserApi;
+import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.base.common.Result;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;

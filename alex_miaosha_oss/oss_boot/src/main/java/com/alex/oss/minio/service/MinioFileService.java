@@ -1,8 +1,9 @@
 package com.alex.oss.minio.service;
 
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
 import io.minio.errors.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 
 import java.io.IOException;
 import java.io.InputStream;

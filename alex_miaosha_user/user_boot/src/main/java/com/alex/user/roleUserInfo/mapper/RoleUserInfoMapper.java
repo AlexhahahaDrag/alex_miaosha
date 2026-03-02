@@ -1,7 +1,7 @@
 package com.alex.user.roleUserInfo.mapper;
 
-import com.alex.api.user.vo.roleInfo.RoleInfoVo;
-import com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
+import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

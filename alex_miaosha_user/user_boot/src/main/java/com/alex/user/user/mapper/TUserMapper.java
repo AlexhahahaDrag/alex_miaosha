@@ -1,7 +1,7 @@
 package com.alex.user.user.mapper;
 
 import com.alex.api.user.annotation.DataPermission;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.user.user.entity.TUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

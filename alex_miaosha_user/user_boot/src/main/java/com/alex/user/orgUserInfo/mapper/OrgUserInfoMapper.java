@@ -1,7 +1,7 @@
 package com.alex.user.orgUserInfo.mapper;
 
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
-import com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

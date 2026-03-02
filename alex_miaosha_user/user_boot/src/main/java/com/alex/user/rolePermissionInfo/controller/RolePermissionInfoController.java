@@ -1,6 +1,6 @@
 package com.alex.user.rolePermissionInfo.controller;
 
-import com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo;
+import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -43,8 +43,8 @@ public class RolePermissionInfoController {
             @ApiImplicitParam(value = "查询条件", name = "rolePermissionInfoVo", dataTypeClass = RolePermissionInfoVo.class)}
     )
     public Result<Page<RolePermissionInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                @RequestBody(required = false) RolePermissionInfoVo rolePermissionInfoVo) {
+                                                      @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                      @RequestBody(required = false) RolePermissionInfoVo rolePermissionInfoVo) {
         return Result.success(rolePermissionInfoService.getPage(pageNum, pageSize, rolePermissionInfoVo));
     }
 

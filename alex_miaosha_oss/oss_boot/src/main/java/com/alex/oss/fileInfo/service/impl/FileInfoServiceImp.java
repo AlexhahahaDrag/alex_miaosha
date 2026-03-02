@@ -1,6 +1,6 @@
 package com.alex.oss.fileInfo.service.impl;
 
-import com.alex.api.oss.vo.fileInfo.FileInfoVo;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.FileException;
 import com.alex.common.utils.string.StringUtils;

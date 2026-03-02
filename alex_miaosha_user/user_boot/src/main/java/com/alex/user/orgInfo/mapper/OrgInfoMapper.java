@@ -1,6 +1,6 @@
 package com.alex.user.orgInfo.mapper;
 
-import com.alex.api.user.vo.orgInfo.OrgInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.user.orgInfo.entity.OrgInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;

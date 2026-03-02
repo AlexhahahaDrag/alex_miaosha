@@ -1,6 +1,6 @@
 package com.alex.user.permissionInfo.service.impl;
 
-import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.entity.PermissionInfo;
 import com.alex.user.permissionInfo.mapper.PermissionInfoMapper;

@@ -1,6 +1,6 @@
 package com.alex.user.online.service;
 
-import com.alex.api.user.vo.user.OnlineAdmin;
+import com.alex.api.user.userInfo.vo.OnlineAdmin;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;

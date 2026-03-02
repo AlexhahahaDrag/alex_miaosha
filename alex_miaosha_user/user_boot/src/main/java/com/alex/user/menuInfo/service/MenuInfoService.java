@@ -1,6 +1,6 @@
 package com.alex.user.menuInfo.service;
 
-import com.alex.api.user.vo.menuInfo.MenuInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.user.menuInfo.entity.MenuInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

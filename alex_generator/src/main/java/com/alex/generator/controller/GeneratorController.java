@@ -51,11 +51,4 @@ public class GeneratorController {
     ) throws Exception {
         return Result.success(generatorService.generator(moduleName, javaPathName, javaPath, tableNames, tableNameInfo, author));
     }
-
-    @ApiOperationSupport(order = 2, author = "alex")
-    @GetMapping(value = "test")
-    @ApiOperation(value = "test", notes = "test")
-    public Result<String> test() {
-        return Result.success(generatorService.test());
-    }
 }

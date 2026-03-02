@@ -1,6 +1,7 @@
 package com.alex.generator.vo;
 
-import com.alex.api.user.vo.permissionInfo.PermissionInfoVo;
+import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
+
 import lombok.Data;
 
 /**

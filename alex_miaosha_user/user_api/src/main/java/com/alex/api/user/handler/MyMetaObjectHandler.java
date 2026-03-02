@@ -1,7 +1,7 @@
 package com.alex.api.user.handler;
 
 import com.alex.api.user.user.UserUtils;
-import com.alex.api.user.vo.user.TUserVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.common.BaseVo;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.RequiredArgsConstructor;
