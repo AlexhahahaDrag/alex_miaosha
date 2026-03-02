@@ -2,6 +2,7 @@ package com.alex.oss.fileInfo.controller;
 
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.common.Result;
+import com.alex.common.annotations.LogRestRequest;
 import com.alex.oss.fileInfo.service.FileInfoService;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -33,6 +34,7 @@ public class FileInfoController {
 
     private final FileInfoService fileInfoService;
 
+@LogRestRequest(apiName="获取文件信息表分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取文件信息表分页", notes = "获取文件信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -47,6 +49,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.getPage(pageNum, pageSize, fileInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取文件信息表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取文件信息表详情", notes = "获取文件信息表详情", response = Result.class)
     @GetMapping
@@ -55,6 +58,7 @@ public class FileInfoController {
     }
 
     // TODO: 2023/1/12 实现多附件上传
+    @LogRestRequest(apiName = "新增文件信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
@@ -64,6 +68,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.addFileInfo(type, file));
     }
 
+@LogRestRequest(apiName="批量新增文件信息")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 35, author = "alex")
     @ApiOperation(value = "批量新增文件信息", notes = "批量新增文件信息", response = Result.class)
@@ -73,6 +78,8 @@ public class FileInfoController {
         return Result.success(fileInfoService.addBatchFileInfo(type, files));
     }
 
+
+    @LogRestRequest(apiName = "修改文件信息表")
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping
@@ -82,6 +89,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.updateFileInfo(id, type, file));
     }
 
+    @LogRestRequest(apiName = "刪除文件信息表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除文件信息表", notes = "刪除文件信息表", response = Result.class)
     @DeleteMapping
@@ -89,6 +97,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.deleteFileInfo(ids));
     }
 
+    @LogRestRequest(apiName = "文件下载")
     @ApiOperationSupport(order = 60, author = "alex")
     @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
     @GetMapping("/fileDownload")
@@ -99,6 +108,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.fileDownload(id));
     }
 
+    @LogRestRequest(apiName = "获取文件信息")
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取文件信息", notes = "获取文件信息", response = Result.class)
     @GetMapping("/getFileInfo")
@@ -109,6 +119,7 @@ public class FileInfoController {
         return Result.success(fileInfoService.getFileInfo(fileIdList));
     }
 
+    @LogRestRequest(apiName = "新增缩略图文件信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)

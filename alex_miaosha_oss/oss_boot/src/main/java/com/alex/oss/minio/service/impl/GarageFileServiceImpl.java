@@ -78,6 +78,10 @@ public class GarageFileServiceImpl implements MinioFileService {
     }
 
     private String getBucket(String type) {
+        String configuredBucket = garageTemplate.getGarageProperties().getBucketName();
+        if (StringUtils.isNotBlank(configuredBucket)) {
+            return configuredBucket;
+        }
         return switch (StringUtils.isEmpty(type) ? "" : type) {
             case "user" -> BucketNameEnum.USER_BUCKET.getValue();
             case "goods" -> BucketNameEnum.GOODS_BUCKET.getValue();

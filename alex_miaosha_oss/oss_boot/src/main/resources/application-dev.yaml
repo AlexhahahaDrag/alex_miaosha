@@ -25,7 +25,7 @@ logging:
     com.alex.oss.mapper: debug
 
 oss:
-  active: minio
+  active: garage
 
 minio:
   url: 115.190.181.243
@@ -40,3 +40,4 @@ garage:
   accessKey: GK453146754fe421b2fd6664fc
   secretKey: 3f0fb8b2db7d251b79d16acf6b60a6618f89a0f745e5757af50468aa16d49010
   bucketName: alex-miaosha
+  region: garage

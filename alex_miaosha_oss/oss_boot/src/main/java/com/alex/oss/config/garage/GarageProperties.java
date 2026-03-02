@@ -24,4 +24,6 @@ public class GarageProperties {
     private String secretKey;
 
     private String bucketName;
+
+    private String region;
 }

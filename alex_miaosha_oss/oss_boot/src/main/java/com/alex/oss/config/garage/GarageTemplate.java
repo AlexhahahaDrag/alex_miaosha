@@ -63,14 +63,18 @@ public class GarageTemplate implements InitializingBean {
         Integer port = garageProperties.getPort();
         String accessKey = garageProperties.getAccessKey();
         String secretKey = garageProperties.getSecretKey();
+        String region = garageProperties.getRegion();
         Assert.notNull(url, "garage url can't be null!");
         Assert.notNull(port, "garage port can't be null!");
         Assert.notNull(accessKey, "garage accessKey can't be null!");
         Assert.notNull(secretKey, "garage secretKey can't be null!");
-        minioClient = MinioClient.builder()
+        MinioClient.Builder builder = MinioClient.builder()
                 .endpoint(url, port, false)
-                .credentials(accessKey, secretKey)
-                .build();
+                .credentials(accessKey, secretKey);
+        if (StringUtils.isNotBlank(region)) {
+            builder.region(region);
+        }
+        minioClient = builder.build();
     }
 
     public void existBucket(String name) {
@@ -78,6 +82,12 @@ public class GarageTemplate implements InitializingBean {
             boolean exist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(name).build());
             if (!exist) {
                 makeBucket(name);
+            }
+        } catch (ErrorResponseException e) {
+            if ("Forbidden".equals(e.errorResponse().code()) || e.errorResponse().code().contains("AccessDenied")) {
+                log.warn("无法检查bucket是否存在（权限受限），将尝试直接操作：bucket={}", name);
+            } else {
+                log.error("检查bucket是否存在异常：", e);
             }
         } catch (Exception e) {
             log.error("检查bucket是否存在异常：", e);
