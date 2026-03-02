@@ -38,7 +38,7 @@
         t_permission_info.parent_id
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+    <select id="getPage" resultType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
         select <include refid="Base_Column_List"/>from t_permission_info
         <where>
             t_permission_info.is_delete = 0
@@ -46,7 +46,7 @@
         </where>
     </select>
 
-    <select id="queryPermissionInfo" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+    <select id="queryPermissionInfo" resultType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
         select <include refid="Base_Column_List"/> from t_permission_info
         <where>
             t_permission_info.id = #{id}
@@ -74,7 +74,7 @@
         </if>
      </sql>
 
-    <select id="getList" resultType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+    <select id="getList" resultType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
         select <include refid="Base_Column_List"/> from t_permission_info
         <where>
             t_permission_info.is_delete = 0

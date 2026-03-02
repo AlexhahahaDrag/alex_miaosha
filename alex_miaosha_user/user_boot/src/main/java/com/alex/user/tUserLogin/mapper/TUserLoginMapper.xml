@@ -41,7 +41,7 @@
         t_user_login.login_location
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
+    <select id="getPage" resultType="com.alex.api.user.tUserLogin.vo.TUserLoginVo">
         select <include refid="Base_Column_List"/> from t_user_login
         <where>
             t_user_login.is_delete = 0 <include refid="queryInfo"/>
@@ -49,7 +49,7 @@
         order by create_time desc
     </select>
 
-    <select id="queryTUserLogin" resultType="com.alex.api.user.vo.tUserLogin.TUserLoginVo">
+    <select id="queryTUserLogin" resultType="com.alex.api.user.tUserLogin.vo.TUserLoginVo">
         select <include refid="Base_Column_List"/> from t_user_login
         <where>
             t_user_login.is_delete = 0 and id = #{id}

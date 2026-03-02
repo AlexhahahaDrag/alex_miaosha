@@ -45,7 +45,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
      * param: id
      * description: 查询角色信息
      * author:      majf
-     * return:      com.alex.api.user.vo.roleInfo.RoleInfoVo
+     * return:      com.alex.api.user.roleInfo.vo.RoleInfoVo
     */
     @Override
     public RoleInfoVo queryRoleInfo(String id) {

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +40,16 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     private final FileInfoMapper fileInfoMapper;
 
-    private final MinioFileService minioFileService;
+    private final Map<String, MinioFileService> fileServiceMap;
+
+    @Value("${oss.active:minio}")
+    private String activeFileSystem;
+
+    private MinioFileService getFileService(String fileSystem) {
+        String key = StringUtils.isBlank(fileSystem) ? activeFileSystem : fileSystem;
+        MinioFileService service = fileServiceMap.get(key + "FileService");
+        return service != null ? service : fileServiceMap.get("minioFileService");
+    }
 
     @Override
     public Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo) {
@@ -110,11 +120,11 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     @Override
     public InputStream fileDownload(Long id) {
         FileInfoVo fileInfo = fileInfoMapper.queryFileInfo(id);
-        return minioFileService.fileDownload(fileInfo);
+        return getFileService(fileInfo.getFileSystem()).fileDownload(fileInfo);
     }
 
     private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
-        return minioFileService.uploadFile(file, type);
+        return getFileService(null).uploadFile(file, type);
     }
 
     @Override
@@ -130,7 +140,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         Map<Long, String> map = new HashMap<>();
         fileInfos.forEach(item -> {
             try {
-                String url = minioFileService.preview(item.getBucketName(), item.getUrl());
+                String url = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getUrl());
                 map.put(item.getId(), Optional.ofNullable(url).orElse(""));
             } catch (Exception e) {
                 log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
@@ -149,7 +159,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
-        FileInfoVo uploadFile = minioFileService.thumbnail(file, type);
+        FileInfoVo uploadFile = getFileService(null).thumbnail(file, type);
         FileInfo fileInfo = new FileInfo();
         BeanUtils.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);

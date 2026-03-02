@@ -55,7 +55,7 @@ public class UserUtils {
     /**
      * description: 获取当前登录人信息
      * author:      alex
-     * return:      com.alex.api.user.vo.user.TUserVo
+     * return:      com.alex.api.user.user.vo.TUserVo
     */
     public TUserVo getLoginUser() {
         if (RequestContextHolder.getRequestAttributes() == null) {

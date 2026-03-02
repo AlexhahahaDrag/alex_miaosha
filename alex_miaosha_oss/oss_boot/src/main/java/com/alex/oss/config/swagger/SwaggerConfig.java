@@ -46,7 +46,7 @@ public class SwaggerConfig {
                 .pathMapping("/am-oss")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.alex.oss.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.alex.oss"))
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-oss")

@@ -371,9 +371,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .loginLocation(location)
                 .build();
         new Thread(userLogin::insert);
-        // 异步添加在线用户到redis中
+        // 异步添加在线用户到 redis中
         onlineUserService.addOnlineUserAsync(userLogin, expiration);
-        // 设置认证信息到SecurityContextHolder
+        // 设置认证信息到 SecurityContextHolder
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

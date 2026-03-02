@@ -57,6 +57,8 @@ public class PackageConfig {
 
     private String mobileTsTs;
 
+    private String clientFallbackFactory;
+
     private Map<OutputFile, String> pathInfo;
 
     private final Map<String, String> packageInfo;
@@ -83,6 +85,7 @@ public class PackageConfig {
         this.mobileDetailTs = "mobileDetailTs";
         this.mobileDetail = "mobileDetail";
         this.mobileTsTs = "mobileTsTs";
+        this.clientFallbackFactory = "client.fallback";
         this.packageInfo = new HashMap<>();
     }
 
@@ -120,6 +123,7 @@ public class PackageConfig {
             this.packageInfo.put("MobileDetailTs", this.joinPackage(this.getMobileDetailTs()));
             this.packageInfo.put("MobileDetail", this.joinPackage(this.getMobileDetail()));
             this.packageInfo.put("MobileTsTs", this.joinPackage(this.getMobileTsTs()));
+            this.packageInfo.put("ClientFallbackFactory", this.joinPackage(this.getClientFallbackFactory()));
             this.packageInfo.put("Parent", this.getParent());
         }
         return Collections.unmodifiableMap(this.packageInfo);
@@ -255,6 +259,11 @@ public class PackageConfig {
 
         public Builder mobileTsTs(@NotNull String mobileTsTs) {
             this.packageConfig.mobileTsTs = mobileTsTs;
+            return this;
+        }
+
+        public Builder clientFallbackFactory(@NotNull String clientFallbackFactory) {
+            this.packageConfig.clientFallbackFactory = clientFallbackFactory;
             return this;
         }
 

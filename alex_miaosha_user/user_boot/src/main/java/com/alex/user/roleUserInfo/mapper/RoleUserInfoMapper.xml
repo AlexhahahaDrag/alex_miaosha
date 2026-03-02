@@ -3,7 +3,7 @@
 <mapper namespace="com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+    <resultMap id="BaseResultMap" type="com.alex.api.user.roleInfo.vo.RoleInfoVo">
         <result column="id" property="id" />
         <result column="creator" property="creator" />
         <result column="create_time" property="createTime" />
@@ -18,7 +18,7 @@
         <result column="role_name" property="roleName" />
         <result column="summary" property="summary" />
         <result column="status" property="status" />
-        <collection property="permissionList" ofType="com.alex.api.user.vo.permissionInfo.PermissionInfoVo">
+        <collection property="permissionList" ofType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
             <result column="permission_id" property="id" />
             <result column="permission_creator" property="creator" />
             <result column="permission_create_time" property="createTime" />
@@ -52,7 +52,7 @@
         t_role_user_info.role_id, t_role_user_info.user_id, t_role_user_info.summary, t_role_user_info.`status`
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo">
+    <select id="getPage" resultType="com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo">
         select <include refid="Base_Column_List"/> from t_role_user_info
         <where>
             t_role_user_info.is_delete = 0
@@ -60,7 +60,7 @@
         </where>
     </select>
 
-    <select id="queryRoleUserInfo" resultType="com.alex.api.user.vo.roleUserInfo.RoleUserInfoVo">
+    <select id="queryRoleUserInfo" resultType="com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo">
         select <include refid="Base_Column_List"/> from t_role_user_info
         <where>
             t_role_user_info.id = #{id}

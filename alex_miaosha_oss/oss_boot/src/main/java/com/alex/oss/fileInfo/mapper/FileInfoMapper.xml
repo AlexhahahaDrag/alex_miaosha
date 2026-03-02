@@ -42,14 +42,14 @@
         file_info.url
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">
+    <select id="getPage" resultType="com.alex.api.oss.fileInfo.vo.FileInfoVo">
         select <include refid="Base_Column_List"/> from file_info
         <where>
             file_info.is_delete = 0 <include refid="queryInfo"/>
         </where>
     </select>
 
-    <select id="queryFileInfo" resultType="com.alex.api.oss.vo.fileInfo.FileInfoVo">
+    <select id="queryFileInfo" resultType="com.alex.api.oss.fileInfo.vo.FileInfoVo">
         select <include refid="Base_Column_List"/> from file_info
         <where>
             file_info.is_delete = 0 and id = #{id}

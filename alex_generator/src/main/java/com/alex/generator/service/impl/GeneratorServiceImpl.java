@@ -307,6 +307,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         pathMap.put(OutputFile.entity, entityPath + separator);
         pathMap.put(OutputFile.vo, voPath + separator);
         pathMap.put(OutputFile.client, clientPath + separator);
+        pathMap.put(OutputFile.clientFallbackFactory, clientPath + separator + "fallback");
         pathMap.put(OutputFile.controller, controllerPath + separator);
         pathMap.put(OutputFile.detail, vueModuleRoot + separator + fileOriginalNameKebab + "-detail");
         pathMap.put(OutputFile.list, vueModuleRoot);
@@ -371,6 +372,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                     .mobileTs(boot + "vue" + file)
                     .mobileVue(boot + "vue" + file)
                     .mobileTsTs(boot + "vue" + file)
+                    .clientFallbackFactory(api + file + "api.fallback")
                     .pathInfo(pathMap); // 设置 mapperXml 生成路径
         });
         fastAutoGenerator.strategyConfig(builder -> builder.addInclude(tableName)

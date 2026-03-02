@@ -24,6 +24,7 @@ public enum TemplateType {
     MOBILEDETAILTS,
     MOBILEDETAIL,
     MOBILETSTS,
+    CLIENT_FALLBACK_FACTORY,
     ;
 
     private TemplateType() {

@@ -53,7 +53,7 @@
         t_user.person_resume
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.user.TUserVo">
+    <select id="getPage" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/> from t_user
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"/>
@@ -61,14 +61,14 @@
         order by t_user.operate_time desc
     </select>
 
-    <select id="queryTUser" resultType="com.alex.api.user.vo.user.TUserVo">
+    <select id="queryTUser" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/> from t_user
         <where>
             t_user.is_delete = 0 and id = #{id}
         </where>
     </select>
 
-    <select id="getList" resultType="com.alex.api.user.vo.user.TUserVo">
+    <select id="getList" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/> from t_user
         <where>
             t_user.is_delete = 0
@@ -78,7 +78,7 @@
         order by t_user.id
     </select>
 
-    <select id="getUserInfo" resultType="com.alex.api.user.vo.user.TUserVo">
+    <select id="getUserInfo" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/>,password from t_user
         <where>
             t_user.is_delete = 0

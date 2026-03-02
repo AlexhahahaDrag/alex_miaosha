@@ -36,6 +36,8 @@ public class TemplateConfig {
     private String mobileTsTs;
 
     private String mobileDetail;
+
+    private String clientFallbackFactory;
     
     private boolean disableEntity;
 
@@ -61,6 +63,7 @@ public class TemplateConfig {
         this.mobileDetail = "/templates/mobile/mobile.detail";
         this.mobileDetailTs = "/templates/mobile/mobile.detail.ts";
         this.mobileTsTs = "/templates/mobile/mobile.ts.ts";
+        this.clientFallbackFactory = "/templates/feignClientFallbackFactory.java";
     }
 
     private void logger(String value, TemplateType templateType) {
@@ -128,6 +131,8 @@ public class TemplateConfig {
                     this.mobileDetail = null;
                 case MOBILETSTS:
                     this.mobileTsTs = null;
+                case CLIENT_FALLBACK_FACTORY:
+                    this.clientFallbackFactory = null;
             }
         }
         return this;
@@ -203,6 +208,10 @@ public class TemplateConfig {
 
     public String getMobileTsTs() {
         return mobileTsTs;
+    }
+
+    public String getClientFallbackFactory() {
+        return clientFallbackFactory;
     }
 
     public static class Builder implements IConfigBuilder<TemplateConfig> {
@@ -315,6 +324,11 @@ public class TemplateConfig {
 
         public Builder mobileTsTs(@NotNull String mobileTsTsTemplate) {
             this.templateConfig.mobileTsTs = mobileTsTsTemplate;
+            return this;
+        }
+
+        public Builder clientFallbackFactory(@NotNull String clientFallbackFactoryTemplate) {
+            this.templateConfig.clientFallbackFactory = clientFallbackFactoryTemplate;
             return this;
         }
 

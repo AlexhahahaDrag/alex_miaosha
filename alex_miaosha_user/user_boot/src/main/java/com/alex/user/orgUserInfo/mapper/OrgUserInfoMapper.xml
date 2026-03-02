@@ -35,7 +35,7 @@
         t_org_user_info.org_id, t_org_user_info.user_id, t_org_user_info.summary, t_org_user_info.`status`
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo">
+    <select id="getPage" resultType="com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo">
         select <include refid="Base_Column_List"/> from t_org_user_info
         <where>
             t_org_user_info.is_delete = 0
@@ -43,7 +43,7 @@
         </where>
     </select>
 
-    <select id="queryOrgUserInfo" resultType="com.alex.api.user.vo.orgUserInfo.OrgUserInfoVo">
+    <select id="queryOrgUserInfo" resultType="com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo">
         select <include refid="Base_Column_List"/> from t_org_user_info
         <where>
             t_org_user_info.id = #{id}
@@ -68,7 +68,7 @@
         </if>
      </sql>
 
-    <select id="getOrgInfoList" resultType="com.alex.api.user.vo.orgInfo.OrgInfoVo">
+    <select id="getOrgInfoList" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
         select
             t_org_info.id,
             t_org_info.creator,

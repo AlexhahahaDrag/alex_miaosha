@@ -10,7 +10,8 @@ import lombok.Getter;
  */
 @Getter
 public enum FileSystemTypeEnum {
-    MINIO("minio", "MINIO");
+    MINIO("minio", "MINIO"),
+    GARAGE("garage", "GARAGE");
 
     FileSystemTypeEnum(String code, String value) {
         this.code = code;

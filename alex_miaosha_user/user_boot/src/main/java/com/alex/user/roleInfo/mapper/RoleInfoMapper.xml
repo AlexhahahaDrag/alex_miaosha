@@ -35,7 +35,7 @@
         t_role_info.role_code, t_role_info.role_name, t_role_info.summary, t_role_info.`status`
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+    <select id="getPage" resultType="com.alex.api.user.roleInfo.vo.RoleInfoVo">
         select <include refid="Base_Column_List"/> from t_role_info
         <where>
             t_role_info.is_delete = 0
@@ -43,7 +43,7 @@
         </where>
     </select>
 
-    <select id="queryRoleInfo" resultType="com.alex.api.user.vo.roleInfo.RoleInfoVo">
+    <select id="queryRoleInfo" resultType="com.alex.api.user.roleInfo.vo.RoleInfoVo">
         select <include refid="Base_Column_List"/> from t_role_info
         <where>
             t_role_info.id = #{id}

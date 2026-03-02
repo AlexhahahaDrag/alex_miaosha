@@ -6,7 +6,7 @@ import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.enums.FileSystemTypeEnum;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.oss.config.minio.MinioTemplate;
+import com.alex.oss.config.garage.GarageTemplate;
 import com.alex.oss.minio.service.MinioFileService;
 import io.minio.errors.*;
 import lombok.AllArgsConstructor;
@@ -23,17 +23,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * description:  minio文件服务实现类
- * author:       majf
- * createDate:   2023/1/12 14:48
+ * description:  garage文件服务实现类
+ * author:       alex
+ * createDate:   2026/03/02
  * version:      1.0.0
  */
-@Service("minioFileService")
+@Service("garageFileService")
 @AllArgsConstructor
 @Slf4j
-public class MinioMinioFileServiceImpl implements MinioFileService {
+public class GarageFileServiceImpl implements MinioFileService {
 
-    private final MinioTemplate minioTemplate;
+    private final GarageTemplate garageTemplate;
 
     private static final String YYYYMMDD = "YYYY-MM-dd";
 
@@ -49,41 +49,34 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
         fileVo.setFileType(suffixStr);
         String bucketName = getBucket(type);
         fileVo.setBucketName(bucketName);
-        fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
-        // 名称为/分隔的时候，会在minio中创建目录去存储文件
+        fileVo.setFileSystem(FileSystemTypeEnum.GARAGE.getCode());
         String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
                 (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
                 SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
         InputStream inputStream = file.getInputStream();
-        Map<String, String> stringStringMap = minioTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
+        Map<String, String> stringStringMap = garageTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
         fileVo.setThumbnailUrl(stringStringMap.get("url"));
-        Map<String, String> upload = minioTemplate.upload(bucketName, filename, inputStream, file.getContentType());
+        Map<String, String> upload = garageTemplate.upload(bucketName, filename, inputStream, file.getContentType());
         fileVo.setUrl(upload.get("url"));
         stopWatch.stop();
-        log.info("耗时：{}", stopWatch.getTotalTimeMillis());
+        log.info("Garage上传耗时：{}", stopWatch.getTotalTimeMillis());
         return fileVo;
     }
 
     @Override
     public boolean deleteFile(List<String> filePath, String type) throws Exception {
         if (filePath == null || filePath.isEmpty()) {
-            throw new Exception();
+            throw new Exception("文件路径不能为空");
         }
-        Map<String, String> stringStringMap = minioTemplate.removeObjects(getBucket(type), filePath);
+        Map<String, String> stringStringMap = garageTemplate.removeObjects(getBucket(type), filePath);
         return stringStringMap.get("mes") != null;
     }
 
     @Override
     public InputStream fileDownload(FileInfoVo fileInfo) {
-        return minioTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl());
+        return garageTemplate.fileDownload(fileInfo.getBucketName(), fileInfo.getUrl());
     }
 
-    /**
-     * @param type
-     * description: 拼接bucket
-     * author: alex
-     * return: java.lang.String
-     */
     private String getBucket(String type) {
         return switch (StringUtils.isEmpty(type) ? "" : type) {
             case "user" -> BucketNameEnum.USER_BUCKET.getValue();
@@ -95,7 +88,7 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
 
     @Override
     public String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
-        return minioTemplate.preview(bucketName, objectName);
+        return garageTemplate.preview(bucketName, objectName);
     }
 
     @Override
@@ -110,16 +103,15 @@ public class MinioMinioFileServiceImpl implements MinioFileService {
         fileVo.setFileType(suffixStr);
         String bucketName = getBucket(type);
         fileVo.setBucketName(bucketName);
-        fileVo.setFileSystem(FileSystemTypeEnum.MINIO.getCode());
-        // 名称为/分隔的时候，会在minio中创建目录去存储文件
+        fileVo.setFileSystem(FileSystemTypeEnum.GARAGE.getCode());
         String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
                 (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
                 SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
         InputStream inputStream = file.getInputStream();
-        Map<String, String> stringStringMap = minioTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
+        Map<String, String> stringStringMap = garageTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
         fileVo.setThumbnailUrl(stringStringMap.get("url"));
         stopWatch.stop();
-        log.info("耗时：{}", stopWatch.getTotalTimeMillis());
+        log.info("Garage缩略图生成耗时：{}", stopWatch.getTotalTimeMillis());
         return fileVo;
     }
 }

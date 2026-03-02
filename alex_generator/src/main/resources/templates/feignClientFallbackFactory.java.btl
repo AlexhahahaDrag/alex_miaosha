@@ -1,4 +1,4 @@
-package ${package.Client}.fallback;
+package ${package.ClientFallbackFactory};
 
 import ${package.Client}.${table.clientName};
 import com.alex.base.enums.ResultEnum;

@@ -35,7 +35,7 @@
         t_role_permission_info.role_id, t_role_permission_info.permission_id, t_role_permission_info.summary, t_role_permission_info.`status`
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+    <select id="getPage" resultType="com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo">
         select <include refid="Base_Column_List"/>from t_role_permission_info
         <where>
             t_role_permission_info.is_delete = 0
@@ -43,7 +43,7 @@
         </where>
     </select>
     
-    <select id="getList" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+    <select id="getList" resultType="com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo">
         select <include refid="Base_Column_List"/>from t_role_permission_info
         <where>
             t_role_permission_info.is_delete = 0
@@ -51,7 +51,7 @@
         </where>
     </select>
 
-    <select id="queryRolePermissionInfo" resultType="com.alex.api.user.vo.rolePermissionInfo.RolePermissionInfoVo">
+    <select id="queryRolePermissionInfo" resultType="com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo">
         select <include refid="Base_Column_List"/> from t_role_permission_info
         <where>
             t_role_permission_info.id = #{id}

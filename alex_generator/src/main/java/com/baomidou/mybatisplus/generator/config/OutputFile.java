@@ -16,7 +16,8 @@ public enum OutputFile {
     mobileTsTs,
     mobileVue,
     mobileDetail,
-    feign;
+    feign,
+    clientFallbackFactory;
     OutputFile() {
     }
 }

@@ -138,6 +138,17 @@ public abstract class AbstractTemplateEngine {
 
     }
 
+    protected void outputClientFallbackFactory(@NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String clientFallbackFactoryPath = this.getPathInfo(OutputFile.clientFallbackFactory);
+        if (StringUtils.isNotBlank(tableInfo.getClientName()) && StringUtils.isNotBlank(clientFallbackFactoryPath)) {
+            this.getTemplateFilePath(TemplateConfig::getClientFallbackFactory).ifPresent((clientFallbackFactory) -> {
+                String clientName = tableInfo.getClientName();
+                String clientFallbackFactoryFile = String.format(clientFallbackFactoryPath + File.separator + tableInfo.getClientName() + "FallbackFactory" + this.suffixJavaOrKt(), clientName);
+                this.outputFile(new File(clientFallbackFactoryFile), objectMap, clientFallbackFactory);
+            });
+        }
+    }
+
     protected void outputFile(@NotNull File file, @NotNull Map<String, Object> objectMap, @NotNull String templatePath) {
         if (this.isCreate(file)) {
             try {
@@ -294,6 +305,7 @@ public abstract class AbstractTemplateEngine {
                 this.outputVo(tableInfo, objectMap);
                 if (tableInfo.getFeignGenerator()) {
                     this.outputClient(tableInfo, objectMap);
+                    this.outputClientFallbackFactory(tableInfo, objectMap);
                 }
                 //设置是否生成前端代码
                 if (tableInfo.getVueGenerator()) {

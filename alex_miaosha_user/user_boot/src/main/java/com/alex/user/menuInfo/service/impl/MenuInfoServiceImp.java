@@ -40,7 +40,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
      * @param menuInfoVo
      * description: 查询菜单列表并拼接成父子组结构
      * author:      majf
-     * return:      java.util.List<com.alex.api.user.vo.menuInfo.MenuInfoVo>
+     * return:      java.util.List<com.alex.api.user.menuInfo.vo.MenuInfoVo>
     */
     @Override
     public List<MenuInfoVo> getList(MenuInfoVo menuInfoVo) {
