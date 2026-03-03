@@ -4,9 +4,13 @@ import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.oss.fileInfo.entity.FileInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.minio.errors.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -20,13 +24,13 @@ public interface FileInfoService extends IService<FileInfo> {
 
     Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo);
 
-    FileInfoVo queryFileInfo(Long id);
+    FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException;
 
-    FileInfoVo addFileInfo(String type, MultipartFile multipartFile) throws Exception;
+    FileInfoVo addFileInfo(String type, MultipartFile multipartFile, boolean isThumbnail, boolean isNormal) throws Exception;
 
-    List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles) throws Exception;
+    List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws Exception;
 
-    FileInfoVo updateFileInfo(Long id, String type, MultipartFile file) throws Exception;
+    FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception;
 
     Boolean deleteFileInfo(String ids);
 
@@ -39,6 +43,4 @@ public interface FileInfoService extends IService<FileInfo> {
      * return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
     */
     List<FileInfoVo> getFileInfo(List<Long> fileIdList);
-
-    FileInfoVo addThumbnailFileInfo(String type, MultipartFile multipartFile) throws Exception;
 }

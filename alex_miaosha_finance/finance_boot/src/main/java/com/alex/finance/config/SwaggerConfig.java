@@ -32,17 +32,6 @@ public class SwaggerConfig {
 
     @Bean(value = "financeApi")
     public Docket buildDocket() {
-        //添加head 参数配置start
-        List<RequestParameter> globalRequestParameters = new ArrayList<>();
-        RequestParameter requestParameter = new RequestParameterBuilder()
-                .name("Authorization")
-                .description("令牌")
-                .in(ParameterType.HEADER)
-                .required(true)
-                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-                .build();
-        globalRequestParameters.add(requestParameter);
-
         return new Docket(DocumentationType.OAS_30)
                 .pathMapping("/am-finance")
                 .apiInfo(apiInfo())
@@ -51,7 +40,6 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-finance")
-                .globalRequestParameters(globalRequestParameters)
                 ;//注意这里
     }
 

@@ -32,16 +32,6 @@ public class SwaggerConfig {
 
     @Bean(value = "missionApi")
     public Docket buildDocket() {
-        //添加head参数配置start
-        List<RequestParameter> globalRequestParameters = new ArrayList<>();
-        RequestParameter requestParameter = new RequestParameterBuilder()
-                .name("Authorization")
-                .description("令牌")
-                .in(ParameterType.HEADER)
-                .required(true)
-                .query(q -> q.model(m -> m.scalarModel(ScalarType.STRING)))
-                .build();
-        globalRequestParameters.add(requestParameter);
         return new Docket(DocumentationType.OAS_30)
                 .pathMapping("am-mission")
                 .apiInfo(apiInfo())
@@ -50,7 +40,6 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .groupName("alex-mission")
-                .globalRequestParameters(globalRequestParameters)
                 ;
     }
 

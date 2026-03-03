@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
@@ -21,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,16 +62,27 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo queryFileInfo(Long id) {
-        return fileInfoMapper.queryFileInfo(id);
+    public FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        FileInfoVo fileInfoVo = fileInfoMapper.queryFileInfo(id);
+        if (fileInfoVo != null) {
+            if (StringUtils.isNotBlank(fileInfoVo.getUrl())) {
+                String url = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(), fileInfoVo.getUrl());
+                fileInfoVo.setPreUrl(url);
+            }
+            if (StringUtils.isNotBlank(fileInfoVo.getThumbnailUrl())) {
+                String thumbnailUrl = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(), fileInfoVo.getThumbnailUrl());
+                fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
+            }
+        }
+        return fileInfoVo;
     }
 
     @Override
-    public FileInfoVo addFileInfo(String type, MultipartFile file) throws Exception {
+    public FileInfoVo addFileInfo(String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
-        FileInfoVo uploadFile = uploadFile(type, file);
+        FileInfoVo uploadFile = uploadFile(type, file, isThumbnail, isNormal);
         FileInfo fileInfo = new FileInfo();
         BeanUtils.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
@@ -77,13 +92,13 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<FileInfoVo> addBatchFileInfo(String type,  List<MultipartFile> multipartFiles) throws Exception {
+    public List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws Exception {
         if (multipartFiles == null || multipartFiles.isEmpty()) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
         List<FileInfoVo> fileInfoVos = new ArrayList<>();
         for (MultipartFile file : multipartFiles) {
-            FileInfoVo uploadFile = uploadFile(type, file);
+            FileInfoVo uploadFile = uploadFile(type, file, isThumbnail, isNormal);
             FileInfo fileInfo = new FileInfo();
             BeanUtils.copyProperties(uploadFile, fileInfo);
             fileInfoMapper.insert(fileInfo);
@@ -94,11 +109,11 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file) throws Exception {
+    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
         FileInfo fileInfo = this.getById(id);
         FileInfoVo uploadFile = null;
         if (file != null) {
-            uploadFile = uploadFile(type, file);
+            uploadFile = uploadFile(type, file, isThumbnail, isNormal);
             BeanUtils.copyProperties(uploadFile, fileInfo, "id");
         }
         fileInfoMapper.updateById(fileInfo);
@@ -123,8 +138,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         return getFileService(fileInfo.getFileSystem()).fileDownload(fileInfo);
     }
 
-    private FileInfoVo uploadFile(String type, MultipartFile file) throws Exception {
-        return getFileService(null).uploadFile(file, type);
+    private FileInfoVo uploadFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
+        return getFileService(null).uploadFile(file, type, isThumbnail, isNormal);
     }
 
     @Override
@@ -137,33 +152,20 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (fileInfos == null || fileInfos.isEmpty()) {
             return null;
         }
-        Map<Long, String> map = new HashMap<>();
-        fileInfos.forEach(item -> {
-            try {
-                String url = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getUrl());
-                map.put(item.getId(), Optional.ofNullable(url).orElse(""));
-            } catch (Exception e) {
-                log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
-            }
-        });
         return fileInfos.parallelStream().map(item -> {
             FileInfoVo fileInfoVo = new FileInfoVo();
             BeanUtils.copyProperties(item, fileInfoVo);
-            fileInfoVo.setPreUrl(map.get(item.getId()));
+            try {
+                String url = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getUrl());
+                fileInfoVo.setPreUrl(url);
+                if (StringUtils.isNotBlank(item.getThumbnailUrl())) {
+                    String thumbnailUrl = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getThumbnailUrl());
+                    fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
+                }
+            } catch (Exception e) {
+                log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
+            }
             return fileInfoVo;
         }).collect(Collectors.toList());
-    }
-
-    @Override
-    public FileInfoVo addThumbnailFileInfo(String type, MultipartFile file) throws Exception {
-        if (file == null) {
-            throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
-        }
-        FileInfoVo uploadFile = getFileService(null).thumbnail(file, type);
-        FileInfo fileInfo = new FileInfo();
-        BeanUtils.copyProperties(uploadFile, fileInfo);
-        fileInfoMapper.insert(fileInfo);
-        BeanUtils.copyProperties(fileInfo, uploadFile);
-        return uploadFile;
     }
 }

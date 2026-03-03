@@ -179,7 +179,7 @@ public class GarageTemplate implements InitializingBean {
     }
 
     public InputStream fileDownload(String bucketName, String fileName) {
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             if (StringUtils.isBlank(fileName)) {
                 return null;
@@ -250,23 +250,24 @@ public class GarageTemplate implements InitializingBean {
         } else {
             throw new UnsupportedFormatException("Invalid image format.");
         }
+        String thumbnailFilename;
+        int index = filename.lastIndexOf(".");
+        if (index != -1) {
+            thumbnailFilename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
+        } else {
+            thumbnailFilename = filename + "_thumbnail";
+        }
         ObjectWriteResponse objectWriteResponse = minioClient.putObject(
                 PutObjectArgs.builder()
                         .bucket(bucketName)
-                        .object("thumbnail_" + filename)
+                        .object(thumbnailFilename)
                         .contentType(contentType)
                         .stream(new ByteArrayInputStream(thumbnailStream.toByteArray()), thumbnailStream.size(), -1)
                         .build()
         );
         log.info("上传缩略图结果：{}", JSONObject.toJSONString(objectWriteResponse));
         Map<String, String> resultMap = new HashMap<>();
-        int index = filename.lastIndexOf(".");
-        if (index != -1) {
-            filename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
-        } else {
-            filename = filename + "_thumbnail";
-        }
-        resultMap.put("url", filename);
+        resultMap.put("url", thumbnailFilename);
         return resultMap;
     }
 }

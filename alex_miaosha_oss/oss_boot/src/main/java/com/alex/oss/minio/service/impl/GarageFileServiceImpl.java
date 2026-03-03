@@ -39,6 +39,11 @@ public class GarageFileServiceImpl implements MinioFileService {
 
     @Override
     public FileInfoVo uploadFile(MultipartFile file, String type) throws Exception {
+        return uploadFile(file, type, true, true);
+    }
+
+    @Override
+    public FileInfoVo uploadFile(MultipartFile file, String type, Boolean isThumbnail, Boolean isNormal) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         FileInfoVo fileVo = new FileInfoVo();
@@ -53,11 +58,14 @@ public class GarageFileServiceImpl implements MinioFileService {
         String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
                 (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
                 SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
-        InputStream inputStream = file.getInputStream();
-        Map<String, String> stringStringMap = garageTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
-        fileVo.setThumbnailUrl(stringStringMap.get("url"));
-        Map<String, String> upload = garageTemplate.upload(bucketName, filename, inputStream, file.getContentType());
-        fileVo.setUrl(upload.get("url"));
+        if (isThumbnail) {
+            Map<String, String> stringStringMap = garageTemplate.thumbnail(bucketName, filename, file.getInputStream(), file.getContentType());
+            fileVo.setThumbnailUrl(stringStringMap.get("url"));
+        }
+        if (isNormal) {
+            Map<String, String> upload = garageTemplate.upload(bucketName, filename, file.getInputStream(), file.getContentType());
+            fileVo.setUrl(upload.get("url"));
+        }
         stopWatch.stop();
         log.info("Garage上传耗时：{}", stopWatch.getTotalTimeMillis());
         return fileVo;
@@ -79,43 +87,16 @@ public class GarageFileServiceImpl implements MinioFileService {
 
     private String getBucket(String type) {
         String configuredBucket = garageTemplate.getGarageProperties().getBucketName();
-        if (StringUtils.isNotBlank(configuredBucket)) {
-            return configuredBucket;
-        }
         return switch (StringUtils.isEmpty(type) ? "" : type) {
             case "user" -> BucketNameEnum.USER_BUCKET.getValue();
             case "goods" -> BucketNameEnum.GOODS_BUCKET.getValue();
             case "common" -> BucketNameEnum.COMMON_BUCKET.getValue();
-            default -> type + "-bucket";
+            default -> configuredBucket;
         };
     }
 
     @Override
     public String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
         return garageTemplate.preview(bucketName, objectName);
-    }
-
-    @Override
-    public FileInfoVo thumbnail(MultipartFile file, String type) throws Exception {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        FileInfoVo fileVo = new FileInfoVo();
-        String fileName = file.getOriginalFilename();
-        fileVo.setFileName(fileName);
-        fileVo.setFileSize(file.getSize());
-        String suffixStr = StringUtils.isBlank(fileName) ? null : fileName.substring(fileName.lastIndexOf('.') + 1);
-        fileVo.setFileType(suffixStr);
-        String bucketName = getBucket(type);
-        fileVo.setBucketName(bucketName);
-        fileVo.setFileSystem(FileSystemTypeEnum.GARAGE.getCode());
-        String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
-                (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
-                SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
-        InputStream inputStream = file.getInputStream();
-        Map<String, String> stringStringMap = garageTemplate.thumbnail(bucketName, filename, inputStream, file.getContentType());
-        fileVo.setThumbnailUrl(stringStringMap.get("url"));
-        stopWatch.stop();
-        log.info("Garage缩略图生成耗时：{}", stopWatch.getTotalTimeMillis());
-        return fileVo;
     }
 }

@@ -42,4 +42,7 @@ public class FileInfoVo extends BaseVo<FileInfoVo>{
 
     @ApiModelProperty(value = "缩略图url")
     private String thumbnailUrl;
+
+    @ApiModelProperty(value = "缩略图预览url")
+    private String preThumbnailUrl;
 }

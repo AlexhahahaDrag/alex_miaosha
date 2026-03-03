@@ -20,6 +20,7 @@
         <result column="bucket_name" property="bucketName" />
         <result column="file_system" property="fileSystem" />
         <result column="url" property="url" />
+        <result column="thumbnail_url" property="thumbnailUrl" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -39,7 +40,8 @@
         file_info.file_type,
         file_info.bucket_name,
         file_info.file_system,
-        file_info.url
+        file_info.url,
+        file_info.thumbnail_url
     </sql>
 
     <select id="getPage" resultType="com.alex.api.oss.fileInfo.vo.FileInfoVo">
@@ -72,9 +74,6 @@
           </if>
           <if test = "fileInfoVo.fileSystem != null">
             and file_system like concat('%', #{fileInfoVo.fileSystem}, '%')
-          </if>
-          <if test = "fileInfoVo.url != null">
-            and bucket_file_name like concat('%', #{fileInfoVo.url}, '%')
           </if>
         </if>
      </sql>

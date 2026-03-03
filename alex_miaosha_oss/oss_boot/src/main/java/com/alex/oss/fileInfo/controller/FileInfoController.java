@@ -8,6 +8,7 @@ import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
+import io.minio.errors.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,7 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -34,7 +38,7 @@ public class FileInfoController {
 
     private final FileInfoService fileInfoService;
 
-@LogRestRequest(apiName="获取文件信息表分页")
+    @LogRestRequest(apiName = "获取文件信息表分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取文件信息表分页", notes = "获取文件信息表分页", response = Result.class)
     @PostMapping(value = "/page")
@@ -53,7 +57,7 @@ public class FileInfoController {
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取文件信息表详情", notes = "获取文件信息表详情", response = Result.class)
     @GetMapping
-    public Result<FileInfoVo> query(@RequestParam(value = "id") Long id) {
+    public Result<FileInfoVo> query(@RequestParam(value = "id") Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         return Result.success(fileInfoService.queryFileInfo(id));
     }
 
@@ -64,18 +68,22 @@ public class FileInfoController {
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping
     public Result<FileInfoVo> add(@RequestParam(value = "type", required = false) String type,
-                                  @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return Result.success(fileInfoService.addFileInfo(type, file));
+                                  @RequestPart(value = "file") MultipartFile file,
+                                  @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
+                                  @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+        return Result.success(fileInfoService.addFileInfo(type, file, isThumbnail, isNormal));
     }
 
-@LogRestRequest(apiName="批量新增文件信息")
+    @LogRestRequest(apiName = "批量新增文件信息")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 35, author = "alex")
     @ApiOperation(value = "批量新增文件信息", notes = "批量新增文件信息", response = Result.class)
     @PostMapping(value = "/batch")
     public Result<List<FileInfoVo>> addBatch(@RequestParam(value = "type", required = false) String type,
-                                             @RequestPart(value = "file") List<MultipartFile> files) throws Exception {
-        return Result.success(fileInfoService.addBatchFileInfo(type, files));
+                                             @RequestPart(value = "file") List<MultipartFile> files,
+                                             @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
+                                             @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+        return Result.success(fileInfoService.addBatchFileInfo(type, files, isThumbnail, isNormal));
     }
 
 
@@ -85,8 +93,10 @@ public class FileInfoController {
     @PutMapping
     public Result<FileInfoVo> update(@RequestParam(value = "id") Long id,
                                      @RequestParam(value = "type", required = false) String type,
-                                     @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return Result.success(fileInfoService.updateFileInfo(id, type, file));
+                                     @RequestPart(value = "file") MultipartFile file,
+                                     @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
+                                     @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+        return Result.success(fileInfoService.updateFileInfo(id, type, file, isThumbnail, isNormal));
     }
 
     @LogRestRequest(apiName = "刪除文件信息表")
@@ -117,15 +127,5 @@ public class FileInfoController {
     )
     public Result<List<FileInfoVo>> getFileInfo(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
         return Result.success(fileInfoService.getFileInfo(fileIdList));
-    }
-
-    @LogRestRequest(apiName = "新增缩略图文件信息表")
-    @AvoidRepeatableCommit
-    @ApiOperationSupport(order = 80, author = "alex")
-    @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)
-    @PostMapping(value = "addThumbnail")
-    public Result<FileInfoVo> addThumbnail(@RequestParam(value = "type", required = false) String type,
-                                           @RequestPart(value = "file") MultipartFile file) throws Exception {
-        return Result.success(fileInfoService.addThumbnailFileInfo(type, file));
     }
 }

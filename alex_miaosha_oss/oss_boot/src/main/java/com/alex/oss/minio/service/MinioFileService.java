@@ -21,11 +21,11 @@ public interface MinioFileService {
 
     FileInfoVo uploadFile(MultipartFile file, String type) throws Exception;
 
+    FileInfoVo uploadFile(MultipartFile file, String type, Boolean isThumbnail, Boolean isNormal) throws Exception;
+
     boolean deleteFile(List<String> filePath, String type) throws Exception;
 
     InputStream fileDownload(FileInfoVo fileInfo);
 
     String preview(String bucketName, String objectName) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException;
-
-    FileInfoVo thumbnail(MultipartFile file, String type) throws Exception;
 }
