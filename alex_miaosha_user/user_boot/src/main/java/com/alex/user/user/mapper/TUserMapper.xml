@@ -54,7 +54,16 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.userInfo.vo.TUserVo">
-        select <include refid="Base_Column_List"/> from t_user
+        select <include refid="Base_Column_List"/>,
+               oi.org_name  as orgName,
+               oi.org_code  as orgCode,
+               ri.role_name as roleName,
+               ri.role_code as roleCode
+        from t_user
+        left join t_org_user_info oui on oui.user_id = t_user.id and oui.is_delete = 0
+        left join t_org_info oi on oi.id = oui.org_id and oi.is_delete = 0
+        left join t_role_user_info rui on rui.user_id = t_user.id and rui.is_delete = 0
+        left join t_role_info ri on ri.id = rui.role_id and ri.is_delete = 0
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"/>
         </where>

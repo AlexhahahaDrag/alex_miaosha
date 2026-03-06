@@ -59,9 +59,8 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "出生年月日")
     private LocalDateTime birthday;
 
-    // TODO: 2023/2/15 自定义添加，为空时不校验
     @ApiModelProperty(value = "手机")
-    @Pattern(regexp = "^\s{0}$|^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
+    @Pattern(regexp = "^$|^1[0-9]{10}$", message = "手机号不合法!", groups = {Insert.class, Update.class})
     private String mobile;
 
     @ApiModelProperty(value = "邮箱验证码")
@@ -108,4 +107,16 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "token信息")
     private String token;
+
+    @ApiModelProperty(value = "所属机构名称")
+    private String orgName;
+
+    @ApiModelProperty(value = "所属机构编码")
+    private String orgCode;
+
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
+    @ApiModelProperty(value = "角色编码")
+    private String roleCode;
 }
