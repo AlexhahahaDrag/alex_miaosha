@@ -133,7 +133,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 records.forEach(item -> {
                     List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
                     if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                        item.setAvatarUrl(fileInfoVos.get(0).getPreUrl());
+                        FileInfoVo fileInfoVo = fileInfoVos.get(0);
+                        item.setAvatarUrl(fileInfoVo.getPreUrl());
+                        item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
                     }
                 });
             }
@@ -146,9 +148,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Override
     public TUserVo queryTUser(String id) {
         TUserVo user = tUserMapper.queryTUser(id);
-        if (user != null && user.getAvatar() != null) {
-            user.setAvatarUrl(getFileUrl(user.getAvatar()));
-        }
+        setAvatarUrls(user);
         return user;
     }
 
@@ -287,14 +287,13 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
         // 获取机构信息
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-        CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
-            if (admin.getAvatar() == null) {
-                return null;
+        CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(() -> {
+            if (admin.getAvatar() != null) {
+                setAvatarUrls(tUserVo);
             }
-            return getFileUrl(admin.getAvatar());
         }).exceptionally(ex -> {
-            log.error("异步获取组织架构信息发生错误", ex);
-            return null; // 返回一个空列表或合适的错误处理
+            log.error("异步获取头像信息发生错误", ex);
+            return null;
         });
         CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
             RequestContextHolder.setRequestAttributes(attributes);
@@ -321,7 +320,6 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
                 List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
                 List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
-                tUserVo.setAvatarUrl(avatarFuture.get());
                 tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
                 tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
                 tUserVo.setMenuInfoVoList(menuList);
@@ -415,7 +413,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (userInfo == null || userInfo.getAvatar() == null) {
             return userInfo;
         }
-        tUserVo.setAvatarUrl(getFileUrl(userInfo.getAvatar()));
+        setAvatarUrls(userInfo);
         return userInfo;
     }
 
@@ -530,19 +528,33 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return this.count(query);
     }
 
+    private void setAvatarUrls(TUserVo userVo) {
+        if (userVo == null || userVo.getAvatar() == null) {
+            return;
+        }
+        try {
+            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(userVo.getAvatar()));
+            if (fileInfo != null && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode()) && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
+                FileInfoVo vo = fileInfo.getData().get(0);
+                userVo.setAvatarUrl(vo.getPreUrl());
+                userVo.setAvatarThumbnailUrl(vo.getPreThumbnailUrl());
+            }
+        } catch (Exception e) {
+            log.error("获取头像文件错误：{}", e.getMessage());
+        }
+    }
+
     private String getFileUrl(Long fileId) {
         if (fileId == null) {
             return null;
         }
         try {
             Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(fileId));
-            log.info("");
             return Optional.ofNullable(fileInfo).map(item -> item.getData().get(0).getPreUrl()).orElse("");
         } catch (Exception e) {
             log.error("获取头像文件错误：{}", e.getMessage());
             return null;
         }
-        //查询用户图片
     }
 
     @Override
@@ -595,9 +607,6 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                             AuthBaiduScope.SUPER_MSG.getScope(),
                             AuthBaiduScope.NETDISK.getScope()
                     ))
-//                        .clientId("")
-//                        .clientSecret("")
-//                        .redirectUri("http://localhost:9001/oauth/baidu/callback")
                     .build());
             default -> null;
         };

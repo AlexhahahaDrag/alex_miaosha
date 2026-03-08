@@ -43,7 +43,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String password;
 
     @ApiModelProperty(value = "性别(1:男2:女)")
-    private Integer gender;
+    private String gender;
 
     @ApiModelProperty(value = "个人头像id")
     @JsonSerialize(using = Long2StringSerializer.class)
@@ -51,6 +51,9 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "个人头像url")
     private String avatarUrl;
+
+    @ApiModelProperty(value = "个人头像缩略图url")
+    private String avatarThumbnailUrl;
 
     @ApiModelProperty(value = "邮箱")
 //    @Email(message = "邮箱不合法！", groups = {Insert.class, Update.class})

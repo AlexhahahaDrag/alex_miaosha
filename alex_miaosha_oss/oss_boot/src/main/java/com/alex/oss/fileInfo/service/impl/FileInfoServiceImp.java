@@ -156,8 +156,10 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             FileInfoVo fileInfoVo = new FileInfoVo();
             BeanUtils.copyProperties(item, fileInfoVo);
             try {
-                String url = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getUrl());
-                fileInfoVo.setPreUrl(url);
+                if (StringUtils.isNotBlank(item.getUrl())) {
+                    String url = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getUrl());
+                    fileInfoVo.setPreUrl(url);
+                }
                 if (StringUtils.isNotBlank(item.getThumbnailUrl())) {
                     String thumbnailUrl = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getThumbnailUrl());
                     fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
