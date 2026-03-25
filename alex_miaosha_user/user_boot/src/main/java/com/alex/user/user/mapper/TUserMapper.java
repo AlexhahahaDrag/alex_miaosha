@@ -19,12 +19,12 @@ import java.util.List;
 @Mapper
 public interface TUserMapper extends BaseMapper<TUser> {
 
-    @DataPermission()
+    @DataPermission(field = "id")
     Page<TUserVo> getPage(Page<TUserVo> page, @Param("tUserVo") TUserVo tUserVo);
 
     TUserVo queryTUser(@Param("id") String id);
 
-    @DataPermission()
+    @DataPermission(field = "id")
     List<TUserVo> getList(@Param("tUserVo") TUserVo tUserVo);
 
     TUserVo getUserInfo(@Param("tUserVo") TUserVo tUserVo);
