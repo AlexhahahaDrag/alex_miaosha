@@ -28,18 +28,16 @@ public class IpUtils {
     public static Searcher searcher;
 
     static {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(dbPath)) {
-            try {
-                assert inputStream != null;
+        try (InputStream inputStream = IpUtils.class.getClassLoader().getResourceAsStream(dbPath)) {
+            if (inputStream == null) {
+                log.error("Failed to find ip2region database at path: {}", dbPath);
+            } else {
                 byte[] cBuff = toByteArray(inputStream);
                 searcher = Searcher.newWithBuffer(cBuff);
-            } catch (Exception e) {
-                System.out.printf("failed to load content from `%s`: %s\n", dbPath, e);
-                e.getStackTrace();
+                log.info("Successfully loaded ip2region database from: {}", dbPath);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("Failed to initialize IpUtils with database `{}`: {}", dbPath, e.getMessage(), e);
         }
     }
 

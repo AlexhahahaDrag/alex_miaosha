@@ -1,6 +1,7 @@
 package com.alex.finance.analysis.controller;
 
 import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
+import com.alex.api.finance.vo.financeAnalysis.BalanceVo;
 import com.alex.base.common.Result;
 import com.alex.finance.analysis.service.FinanceAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -39,7 +40,7 @@ public class FinanceAnalysisController {
             @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
             @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", dataTypeClass = String.class)}
     )
-    public Result<Object> getTypeCodeSum(@RequestParam(value = "belongTo", required = false) Long belongTo,
+    public Result<BalanceVo> getBalance(@RequestParam(value = "belongTo", required = false) Long belongTo,
                                          @RequestParam(value = "searchDate", required = false) String searchDate) {
         return Result.success(financeAnalysisService.getBalance(belongTo, searchDate));
     }

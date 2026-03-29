@@ -2,6 +2,7 @@ package com.alex.finance.analysis.service;
 
 
 import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
+import com.alex.api.finance.vo.financeAnalysis.BalanceVo;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface FinanceAnalysisService {
      * author: alex
      * return: com.alex.finance.vo.financeAnalysis.AnalysisVo
      */
-    Object getBalance(Long belongTo, String searchDate);
+    BalanceVo getBalance(Long belongTo, String searchDate);
 
     /**
      * param belongTo

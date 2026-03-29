@@ -1,12 +1,14 @@
 package com.alex.finance.analysis.service.impl;
 
 import com.alex.api.finance.vo.financeAnalysis.AnalysisVo;
+import com.alex.api.finance.vo.financeAnalysis.BalanceVo;
 import com.alex.finance.analysis.mapper.FinanceAnalysisMapper;
 import com.alex.finance.analysis.service.FinanceAnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,10 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
     private final FinanceAnalysisMapper financeAnalysisMapper;
 
     @Override
-    public Object getBalance(Long belongTo, String searchDate) {
+    public BalanceVo getBalance(Long belongTo, String searchDate) {
         List<AnalysisVo> currentList = financeAnalysisMapper.getBalance(belongTo, searchDate);
         if (searchDate == null || currentList == null || currentList.isEmpty()) {
-            return currentList;
+            return new BalanceVo().setList(currentList);
         }
 
         // Calculate MoM and YoY dates
@@ -41,6 +43,13 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
 
         List<AnalysisVo> momList = financeAnalysisMapper.getBalance(belongTo, momDate);
         List<AnalysisVo> yoyList = financeAnalysisMapper.getBalance(belongTo, yoyDate);
+
+        List<AnalysisVo> currentIncomeExpense = financeAnalysisMapper.getIncomeAndExpense(belongTo, searchDate, null);
+        List<AnalysisVo> momIncomeExpense = financeAnalysisMapper.getIncomeAndExpense(belongTo, momDate, null);
+        List<AnalysisVo> yoyIncomeExpense = financeAnalysisMapper.getIncomeAndExpense(belongTo, yoyDate, null);
+
+        BigDecimal monthIncomeSum = getSum(currentIncomeExpense, "income");
+        BigDecimal monthExpenseSum = getSum(currentIncomeExpense, "expense");
 
         BigDecimal currentTotal = BigDecimal.ZERO;
         BigDecimal momTotal = BigDecimal.ZERO;
@@ -68,12 +77,28 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
             vo.setYoyTrend(calculateTrend(currentAmount, yoyAmount));
         }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("list", currentList);
-        result.put("momTrend", calculateTrend(currentTotal, momTotal));
-        result.put("yoyTrend", calculateTrend(currentTotal, yoyTotal));
+        BalanceVo result = new BalanceVo()
+                .setList(currentList)
+                .setMomTrend(calculateTrend(currentTotal, momTotal))
+                .setYoyTrend(calculateTrend(currentTotal, yoyTotal))
+                .setMonthIncomeSum(monthIncomeSum)
+                .setMonthExpenseSum(monthExpenseSum)
+                .setIncomeMomTrend(calculateTrend(monthIncomeSum, getSum(momIncomeExpense, "income")))
+                .setIncomeYoyTrend(calculateTrend(monthIncomeSum, getSum(yoyIncomeExpense, "income")))
+                .setExpenseMomTrend(calculateTrend(monthExpenseSum, getSum(momIncomeExpense, "expense")))
+                .setExpenseYoyTrend(calculateTrend(monthExpenseSum, getSum(yoyIncomeExpense, "expense")));
 
         return result;
+    }
+
+    private BigDecimal getSum(List<AnalysisVo> list, String type) {
+        if (list == null || list.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return list.stream()
+                .filter(vo -> type.equals(vo.getIncomeAndExpenses()))
+                .map(vo -> vo.getAmount() == null ? BigDecimal.ZERO : vo.getAmount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private String calculateTrend(BigDecimal current, BigDecimal previous) {
@@ -83,7 +108,7 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
         BigDecimal change = current.subtract(previous);
         BigDecimal trend = change.divide(previous.abs(), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         String prefix = trend.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "";
-        return prefix + trend.setScale(1, BigDecimal.ROUND_HALF_UP) + "%";
+        return prefix + trend.setScale(1, RoundingMode.HALF_UP) + "%";
     }
 
     @Override

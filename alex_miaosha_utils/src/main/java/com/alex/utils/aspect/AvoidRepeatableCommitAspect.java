@@ -1,4 +1,4 @@
-package com.alex.utils.aspact;
+package com.alex.utils.aspect;
 
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
