@@ -26,13 +26,14 @@ export function delete${entity}(ids: string) : Promise<any>{
   return deleteData(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?ids=' + ids);
 }
 
-export function addOrEdit${entity}(
-  method: string,
+export function add${entity}(
   params: any
 ): Promise<any> {
-  if ('put' == method) {
-    return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
-  } else {
-    return postData(baseService.${javaPath} + base${entity} +  ${entity}Url.url, params);
-  }
+  return postData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
+}
+
+export function edit${entity}(
+  params: any
+): Promise<any> {
+  return putData(baseService.${javaPath} + base${entity} + ${entity}Url.url, params);
 }

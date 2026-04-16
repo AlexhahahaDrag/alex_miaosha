@@ -143,7 +143,10 @@
                 and gitee like concat('%', #{tUserVo.gitee}, '%')
             </if>
             <if test = "tUserVo.roleId != null">
-                and role_id like concat('%', #{tUserVo.roleId}, '%')
+                and t_role_user_info.role_id like concat('%', #{tUserVo.roleId}, '%')
+            </if>
+            <if test = "tUserVo.orgCode != null">
+                and oi.org_code like concat('%', #{tUserVo.orgCode}, '%')
             </if>
             <if test = "tUserVo.personResume != null">
                 and person_resume like concat('%', #{tUserVo.personResume}, '%')
