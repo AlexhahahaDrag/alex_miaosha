@@ -1,107 +1,134 @@
-# **Alex 权限管理系统**
-
-<p>
-  <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license"/>
-  <img src="https://img.shields.io/badge/JDK-17%2B-green" alt="jdk"/>
-  <a href="https://github.com/AlexhahahaDrag/alex_miaosha"><img src="https://img.shields.io/badge/SpringCloud-2021.0.3-green" alt="springcloud"/></a>
-  <a href="https://github.com/AlexhahahaDrag/alex_miaosha"><img src="https://img.shields.io/badge/SpringBoot-2.7.2-green" alt="springboot"/></a>
-  <img src="https://img.shields.io/badge/knife4j-3.0.3-green" alt="knife4j"/>
-</p>
-
-## 📖 前言
-
-**Alex 管理系统** 是一个基于微服务架构的前后端分离系统，也是用于实践最新技术栈的开源学习项目。本项目在开发过程中结合了诸多前沿技术与主流中间件，旨在打造一个结构清晰、易于扩展的通用微服务后台底座。由于个人精力有限，部分功能仍在持续完善中，如有考虑不周或不妥当之处，欢迎各位大佬提 Issue 或 PR 帮忙指正。
+# **Alex 管理系统 (Alex Authority Management System)**
 
 <p align="center">
     <a href="https://github.com/AlexhahahaDrag/alex_miaosha">
-        <img src="./doc/img/favicon.ico" alt="Alex Logo" style="width:200px;height:200px">
+        <img src="./doc/img/favicon.ico" alt="Alex Logo" width="120">
     </a>
 </p>
 
-## 🚀 项目介绍
+<p align="center">
+  <img src="https://img.shields.io/badge/License-Apache--2.0-blue.svg?style=for-the-badge" alt="license"/>
+  <img src="https://img.shields.io/badge/JDK-17%2B-green.svg?style=for-the-badge" alt="jdk"/>
+  <img src="https://img.shields.io/badge/SpringCloud-2021.0.3-green.svg?style=for-the-badge" alt="springcloud"/>
+  <img src="https://img.shields.io/badge/SpringBoot-2.7.2-green.svg?style=for-the-badge" alt="springboot"/>
+  <a href="https://github.com/AlexhahahaDrag/alex_miaosha/actions/workflows/codeql.yml">
+    <img src="https://github.com/AlexhahahaDrag/alex_miaosha/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Status"/>
+  </a>
+</p>
 
-本项目采用模块化的微服务设计进行代码组织：
+---
 
-- **前端页面**：采用 Vue 3 + Ant Design Vue 3 + TypeScript 进行构建。
-- **后端服务**：基于 Spring Boot 2.7.x + Spring Cloud 2021.0.x 构建，搭配 MyBatis-Plus、Spring Security、Jasypt 加密、Knife4j 接口文档等组件进行开发。
+## 📖 前言
+
+**Alex 管理系统** 是一套基于 **微服务架构** 的现代化前后端分离系统。它不仅是一个企业级的后台底座，更是一个整合了当下主流技术栈（Spring Cloud + Vue 3 + TS）的 **开源学习实战项目**。
+
+本项目旨在探索分布式系统的最佳实践，涵盖了高并发、权限管控、自动化运维等多个维度的技术挑战。尽管部分功能仍在迭代中，但其核心架构设计严谨，具备极高的扩展性与参考价值。
+
+---
+
+## ✨ 核心特性
+
+- 🛡️ **精细权限管控**：整合 Spring Security，实现基于 RBAC 模型的功能权限与数据权限双重校验。
+- ⚡ **高性能秒杀优化**：专门的秒杀业务模块，整合 Redis 预热、RabbitMQ 削峰填谷等高并发优化手段。
+- 📦 **模块化解耦设计**：清晰的微服务边界划分，支持水平横向扩展。
+- 🛠️ **自动化代码生成**：内置 `alex_generator`，一键生成 CRUD 及其前后端代码，开发提速 80%。
+- 📊 **全方位监控体系**：集成 Spring Boot Admin、Prometheus 及 Grafana，实时掌控服务状态。
+- 🔒 **数据安全保障**：使用 Jasypt 对敏感配置文件进行加密，确保线上生产环境安全。
+
+---
+
+## 🏗️ 系统架构
+
+### 架构示意图
+
+![系统架构设计.png](./doc/img/系统架构设计.png)
+
+> _注：系统架构涵盖了由 Nacos 发现服务到网关转发，再到业务微服务的全链路流程。_
+
+---
+
+## 📦 模块划分
+
+| 模块名称             | 核心功能描述                                                     |
+| :------------------- | :--------------------------------------------------------------- |
+| **`alex_gateway`**   | **统一网关入口**：路由转发、身份鉴权、流量染色。                 |
+| **`alex_user`**      | **用户权限中心**：核心 RBAC 权限实现，包括机构、角色、资源管理。 |
+| **`alex_product`**   | **产品配置中心**：维护商品 SKU、类目及属性体系。                 |
+| **`alex_order`**     | **订单处理流水**：负责分布式环境下的订单生成与状态机流转。       |
+| **`alex_miaosha`**   | **高并发秒杀**：专注于秒杀场景下的性能压测与优化实践。           |
+| **`alex_finance`**   | **财务核算中心**：账单流水、流水统计及对账逻辑。                 |
+| **`alex_monitor`**   | **运维监控中心**：节点状态感知与实时报警监控。                   |
+| **`alex_oss`**       | **对象存储服务**：统一封装 MinIO/阿里云 OSS，管理静态资源。      |
+| **`alex_generator`** | **敏捷开发工具**：基于模板引擎，实现代码自动化产出。             |
+| **`alex_common`**    | **全局公共组件**：通用的异常处理、日志切面、VO/DTO 定义。        |
+
+---
+
+## 🛠️ 技术选型
+
+### 后端核心
+
+| 技术                 | 选型原因                                        |
+| :------------------- | :---------------------------------------------- |
+| **SpringBoot 2.7**   | 生态完善，生产级的 Java 应用框架。              |
+| **SpringCloud 2021** | 统一的服务治理与微服务通信标准的选型。          |
+| **MyBatis-Plus**     | 极简持久层开发，支持 Lambda 表达式。            |
+| **Nacos**            | 同时具备服务注册与分布式配置管理能力。          |
+| **Redis & RabbitMQ** | 缓存性能与异步流量削峰的核心基石。              |
+| **Knife4j**          | 基于 Swagger 的交互式文档，极致的后端调试体验。 |
+
+### 前端核心
+
+| 技术                        | 选型原因                               |
+| :-------------------------- | :------------------------------------- |
+| **Vue 3 (Composition API)** | 现代化响应式框架，极致的代码组织体验。 |
+| **TypeScript**              | 增强代码健壮性与类型自描述性。         |
+| **Ant Design Vue v3**       | 企业级 UI 交互标准，组件丰富。         |
+
+---
+
+## 🚀 快速开始
+
+### 1. 环境准备
+
+确保您的机器已安装并启动以下服务：
+
+- [x] **JDK 17+**
+- [x] **Maven 3.8+**
+- [x] **Nacos 2.x** (建议开启 Discovery & Config)
+- [x] **Redis 6.x**
+- [x] **MySQL 8.x**
+
+### 2. 启动步骤
+
+1.  **数据库初始化**：执行项目 `script/sql` 目录下的 SQL 脚本。
+2.  **配置 Nacos**：将项目中的配置文件上传或配置到 Nacos 中心。
+3.  **服务顺序启动**：
+    - `alex_miaosha_gateway` (端口: 8080)
+    - `alex_miaosha_user` (中心权限服务)
+    - 其他业务模块（如 `product`, `order` 等）
+
+---
 
 ## 🔗 项目地址
 
-目前项目代码主要托管在 GitHub 和 Gitee 平台上，欢迎大家 **Star** 和 **Fork** 支持！
+- 📦 **GitHub (Main)**：[AlexhahahaDrag/alex_miaosha](https://github.com/AlexhahahaDrag/alex_miaosha)
+- 📦 **Gitee (Mirror)**：[AlexhahahaDrug/alex_miaosha_backend](https://gitee.com/AlexhahahaDrug/alex_miaosha_backend)
+- 🎨 **Frontend Repo**：[alex_miaosha_front](https://github.com/AlexhahahaDrag/alex_miaosha_front)
+- 📱 **Mobile Repo**：[alex_miaosha_mobile](https://github.com/AlexhahahaDrag/alex_miaosha_mobile)
 
-- 📦 **后端 GitHub 仓库**：[https://github.com/AlexhahahaDrag/alex_miaosha.git](https://github.com/AlexhahahaDrag/alex_miaosha)
-- 📦 **后端 Gitee 仓库**：[https://gitee.com/AlexhahahaDrug/alex_miaosha_backend.git](https://gitee.com/AlexhahahaDrug/alex_miaosha_backend)
-- 🎨 **前端 GitHub 仓库**：[https://github.com/AlexhahahaDrag/alex_miaosha_front](https://github.com/AlexhahahaDrag/alex_miaosha_front)
+---
 
-## 🧩 模块划分
+## 🗺️ 后续计划 (Roadmap)
 
-本系统划分为以下核心业务与基础模块：
+- [ ] **分布式事务集成**：引入 Seata 解决跨服务的事务一致性问题。
+- [ ] **容器化部署优化**：提供完整的 Docker-Compose 与 K8s 部署脚本。
+- [ ] **监控大屏**：基于 Grafana 打造业务维度的实时监控仪表盘。
+- [ ] **LVS 方案探索**：学习并集成 LVS 实现网络层的高可用均衡。
 
-- **`alex_generator`**: 代码生成模块，支持一键生成前后端基础代码，极大提高开发效率。
-- **`alex_miaosha_base`**: 基础核心模块，包含项目的基本通用配置与常量封装。
-- **`alex_miaosha_common`**: 公共依赖模块，提供全局异常处理、工具类等。
-- **`alex_miaosha_finance`**: 财务/账单管理模块，负责相关财务数据的统计与处理。
-- **`alex_miaosha_gateway`**: 微服务网关模块，统一流量入口，负责路由转发、鉴权等。
-- **`alex_miaosha_mission`**: 任务调度/业务模块。
-- **`alex_miaosha_monitor`**: 监控中心模块，用于整合 Spring Boot Admin 及服务健康监控。
-- **`alex_miaosha_order`**: 订单模块，负责业务订单的生成与流转控制。
-- **`alex_miaosha_oss`**: 文件存储模块，集成对象存储服务，统一管理图片及附件。
-- **`alex_miaosha_product`**: 产品管理模块，负责商品、分类、属性等信息的维护。
-- **`alex_miaosha_user`**: 用户中心模块，负责用户管理、角色分配、权限校验、机构管理等配置。
-
-## 🛠️ 项目使用与运行环境
-
-核心基础设施依赖如下，建议在进行本地开发前先行启动以下环境及中间件服务：
-
-- **Nacos** (注册中心与配置中心)
-- **Redis** (分布式缓存)
-- **RabbitMQ** (消息队列中间件)
-- **Prometheus** (普罗米修斯监控)
-
-本地微服务启动推荐顺序：
-`Nacos` -> `alex_miaosha_gateway` -> `alex_miaosha_user` (用户实权系统) -> `alex_miaosha_monitor` -> 其它业务模块。
-
-## 🌐 站点演示
-
-👉 **演示站点**：[http://mjzp.xyz](http://mjzp.xyz) _(请注意环境是否在线)_
-
-## 📚 技术选型
-
-### 项目架构图
-
-![系统架构设计.png](./doc/img/系统架构设计.png)
-_(注：请确保设计图放置在相对系统路径内的 `./doc/img/系统架构设计.png` 中)_
-
-### 后端技术栈
-
-| 技术组件              | 说明                                 | 官方网站                                                      |
-| :-------------------- | :----------------------------------- | :------------------------------------------------------------ |
-| **Spring Cloud**      | 微服务架构核心框架                   | [Spring Cloud](https://spring.io/projects/spring-cloud)       |
-| **Spring Boot**       | 基础应用开发脚手架                   | [Spring Boot](https://spring.io/projects/spring-boot)         |
-| **Spring Security**   | 提供完善的认证和授权机制             | [Spring Security](https://spring.io/projects/spring-security) |
-| **MyBatis-Plus**      | MyBatis 的增强工具，简化 CRUD        | [Baomidou MP](https://baomidou.com/)                          |
-| **Knife4j**           | 基于 Swagger 的 Api 文档增强解决方案 | [Knife4j](https://doc.xiaominfo.com/)                         |
-| **Spring Boot Admin** | 微服务节点状态监控                   | [SBA](https://github.com/codecentric/spring-boot-admin)       |
-| **Nacos**             | 服务发现、配置管理的综合型解决方案   | [Nacos](https://nacos.io/)                                    |
-| **Redis**             | 高性能分布式内存缓存                 | [Redis](https://redis.io/)                                    |
-| **RabbitMQ**          | 可靠的企业级消息队列中间件           | [RabbitMQ](https://www.rabbitmq.com/)                         |
-| **Prometheus**        | 普罗米修斯系统监控与预警             | [Prometheus](https://prometheus.io/)                          |
-| **Arthas**            | Java 线上诊断工具                    | [Arthas](https://arthas.aliyun.com/)                          |
-
-### 前端技术栈
-
-| 技术组件           | 说明                     | 推荐版本 | 官方网站                                             |
-| :----------------- | :----------------------- | :------- | :--------------------------------------------------- |
-| **Vue**            | 渐进式 JavaScript 框架   | 3.2+     | [Vue.js](https://v3.cn.vuejs.org/)                   |
-| **Ant Design Vue** | 企业级 UI 组件库         | v3.x     | [AntDV](https://www.antdv.com/docs/vue/introduce-cn) |
-| **TypeScript**     | 强类型的 JavaScript 超集 | -        | [TypeScript](https://www.typescriptlang.org/)        |
-
-## 💡 后续计划 (TODO)
-
-- [ ] 整合并了解 **LVS**（Linux Virtual Server）在系统负载均衡中的实践，学习章文嵩博士主导的开源负载均衡项目。
-- [ ] 补充完善相关的 Monitor 与 Common 底层封装代码机制。
-- [ ] 增加更多高频业务场景（如：高并发秒杀优化）落地的最佳实践案例验证。
+---
 
 ## 💖 结语
 
-非常感谢开源社区诸多的优秀项目和思路指引！希望这个项目能为处于微服务转型探索中的同学们提供一定参考，欢迎大家交流共同进步！
+感谢开源社区提供的诸多优秀思路。如果你觉得这个项目对你有帮助，欢迎 **Star** 关注！
+如有任何建议，请随时提交 **Issue** 或 **PR**。

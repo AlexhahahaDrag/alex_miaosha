@@ -34,3 +34,9 @@ logs
 */drone-att.txt
 qodana.yaml
 .cursor
+ 
+# GitHub
+.github/*
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/codeql.yml
