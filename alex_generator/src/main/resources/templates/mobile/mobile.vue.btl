@@ -88,10 +88,10 @@ import {
     delete${entity},
 } from '@/api/${javaPath}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}/${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { getUserManagerList, } from '@/api/user/userManager';
-import { type PageInfo } from '@/views/common/config/index';
+import type { PageInfo } from '@/views/common/config/index';
+import { usePagination } from '@/composables/usePagination';
 import {
   SearchInfo,
-  pagination,
 } from './${strutil.toLowerCase(strutil.subStringTo(entity, 0, 1)) + strutil.subString (entity, 1)}Ts';
 import { showSuccessToast, showFailToast } from 'vant';
 
@@ -108,17 +108,18 @@ let searchInfo = ref<SearchInfo>({});
 
 let finished = ref<boolean>(false); //加载是否已经没有更多数据
 let isRefresh = ref<boolean>(false); //是否下拉刷新
+const { pagination, resetPagination, setTotal, nextPage } = usePagination();
 
 // const onSearch = () => {
-//  pagination.value.current = 1;
+//  resetPagination();
 //  dataSource.value = []
 //  onRefresh();
 // };
 // const onCancel = () => {
 //   searchInfo.value.typeCode = '';
-//   pagination.value.current = 0;
+//   resetPagination();
 //   dataSource.value = [];
-//   getFinancePage(searchInfo.value, pagination.value);
+//   getFinancePage(searchInfo.value, pagination);
 // };
 
 const query = async (param: SearchInfo, cur: PageInfo): Promise<void> => {
@@ -131,12 +132,10 @@ const query = async (param: SearchInfo, cur: PageInfo): Promise<void> => {
     );
 
     if (code == '200') {
-      dataSource.value = [...dataSource.value, ...data.records];
-      pagination.value.current = data.current + 1;
-      pagination.value.pageSize = data.size;
-      pagination.value.total = data.total;
-      if ((pagination.value.total || 0) <
-            (pagination.value.current || 1) * (pagination.value.pageSize || 10)) {
+      dataSource.value = [...dataSource.value, ...(data?.records || [])];
+      setTotal(data?.total || 0);
+      nextPage();
+      if ((pagination.total || 0) <= dataSource.value.length) {
         finished.value = true;
       }
     } else {
@@ -171,13 +170,13 @@ const getUserInfoList = async (): Promise<void> => {
 }
 
 const refresh = async (): Promise<void> => {
-  pagination.value.current = 0;
+  resetPagination();
   dataSource.value = []
-  await query(searchInfo.value, pagination.value);
+  await query(searchInfo.value, pagination);
 }
 
 const onRefresh = (): void => {
-  query(searchInfo.value, pagination.value);
+  query(searchInfo.value, pagination);
 };
 
 const beforeClose = (e: any): void => {
@@ -200,8 +199,8 @@ const del${entity} = async (id: number): Promise<void> => {
 
 const init = async (): Promise<void> => {
   dataSource.value = [];
-  pagination.value.current = 0;
-  await query(searchInfo.value, pagination.value);
+  resetPagination();
+  await query(searchInfo.value, pagination);
   //获取用户信息
   await getUserInfoList();
 }

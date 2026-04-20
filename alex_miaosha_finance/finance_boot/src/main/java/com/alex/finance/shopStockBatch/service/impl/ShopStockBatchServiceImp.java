@@ -2,9 +2,12 @@ package com.alex.finance.shopStockBatch.service.impl;
 
 import com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.FinanceException;
 import com.alex.finance.shopStockBatch.entity.ShopStockBatch;
 import com.alex.finance.shopStockBatch.mapper.ShopStockBatchMapper;
 import com.alex.finance.shopStockBatch.service.ShopStockBatchService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,12 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
 
     @Override
     public Boolean addShopStockBatch(ShopStockBatchVo shopStockBatchVo) {
+        long count = this.count(new LambdaQueryWrapper<ShopStockBatch>()
+                .eq(ShopStockBatch::getBatchCode, shopStockBatchVo.getBatchCode())
+                .eq(ShopStockBatch::getIsValid, "1"));
+        if (count > 0) {
+            throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "批次编码已存在！");
+        }
         ShopStockBatch shopStockBatch = new ShopStockBatch();
         BeanUtils.copyProperties(shopStockBatchVo, shopStockBatch);
         shopStockBatchMapper.insert(shopStockBatch);
@@ -48,6 +57,13 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
 
     @Override
     public Boolean updateShopStockBatch(ShopStockBatchVo shopStockBatchVo) {
+        long count = this.count(new LambdaQueryWrapper<ShopStockBatch>()
+                .eq(ShopStockBatch::getBatchCode, shopStockBatchVo.getBatchCode())
+                .ne(ShopStockBatch::getId, shopStockBatchVo.getId())
+                .eq(ShopStockBatch::getIsValid, "1"));
+        if (count > 0) {
+            throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "批次编码已存在！");
+        }
         ShopStockBatch shopStockBatch = new ShopStockBatch();
         BeanUtils.copyProperties(shopStockBatchVo, shopStockBatch);
         shopStockBatchMapper.updateById(shopStockBatch);
