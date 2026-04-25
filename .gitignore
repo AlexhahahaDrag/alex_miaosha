@@ -39,4 +39,16 @@ qodana.yaml
 .github/*
 !.github/workflows/
 .github/workflows/*
-!.github/workflows/codeql.yml
+!.github/workflows/codeql.yml
+
+# Editor directories and files
+.vscode/
+.vscode/*
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
