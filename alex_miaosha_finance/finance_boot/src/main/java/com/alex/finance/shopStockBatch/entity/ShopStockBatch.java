@@ -9,10 +9,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * description:  商店库存批次表类
  * author:       alex
- * createDate: 2024-05-10 17:30:40
+ * createDate:   2024-05-10 17:30:40
  * version:      1.0.0
  */
 @Getter
@@ -41,4 +43,16 @@ public class ShopStockBatch extends BaseEntity<ShopStockBatch>{
     @ApiModelProperty(value = "进货地点,字典(stock_place) ")
     @TableField("purchase_place")
     private String purchasePlace;
+
+    @ApiModelProperty(value = "成本")
+    @TableField("cost")
+    private Double cost;
+
+    @ApiModelProperty(value = "差旅费")
+    @TableField("travel_expense")
+    private Double travelExpense;
+
+    @ApiModelProperty(value = "进货日期")
+    @TableField("purchase_date")
+    private LocalDateTime purchaseDate;
 }

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * description:  商店库存批次表Vo
  * author:       alex
@@ -39,4 +41,13 @@ public class ShopStockBatchVo extends BaseVo<ShopStockBatchVo>{
 
     @ApiModelProperty(value = "标题")
     private String title;
+
+    @ApiModelProperty(value = "成本")
+    private Double cost;
+
+    @ApiModelProperty(value = "差旅费")
+    private Double travelExpense;
+
+    @ApiModelProperty(value = "进货日期")
+    private LocalDateTime purchaseDate;
 }
