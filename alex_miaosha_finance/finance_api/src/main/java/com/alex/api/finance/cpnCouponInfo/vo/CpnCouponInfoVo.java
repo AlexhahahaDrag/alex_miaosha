@@ -68,4 +68,10 @@ public class CpnCouponInfoVo extends BaseVo<CpnCouponInfoVo>{
     @ApiModelProperty(value = "仅查询有效的、未核销完成的数据（true：还有剩余数量且未过期）")
     private Boolean onlyValidAndNotFullyRedeemed;
 
+    @ApiModelProperty(value = "创建时间开始")
+    private String createTimeStart;
+
+    @ApiModelProperty(value = "创建时间结束")
+    private String createTimeEnd;
+
 }

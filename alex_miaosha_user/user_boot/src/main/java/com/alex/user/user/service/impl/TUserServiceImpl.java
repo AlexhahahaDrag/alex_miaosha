@@ -405,7 +405,35 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     @Override
     public List<TUserVo> getList(TUserVo tUserVo) {
-        return tUserMapper.getList(tUserVo);
+        List<TUserVo> records = tUserMapper.getList(tUserVo);
+        if (records == null || records.isEmpty()) {
+            return records;
+        }
+        List<Long> fileIdList = records.parallelStream()
+                .map(TUserVo::getAvatar)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!fileIdList.isEmpty()) {
+            try {
+                Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+                if (SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+                    Map<Long, List<FileInfoVo>> fileMap = result.getData()
+                            .parallelStream()
+                            .collect(Collectors.groupingBy(FileInfoVo::getId));
+                    records.forEach(item -> {
+                        List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
+                        if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
+                            FileInfoVo fileInfoVo = fileInfoVos.get(0);
+                            item.setAvatarUrl(fileInfoVo.getPreUrl());
+                            item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                log.error("获取用户头像列表失败！", e);
+            }
+        }
+        return records;
     }
 
     public TUserVo getUserInfo(TUserVo tUserVo) {

@@ -165,6 +165,13 @@
         )
         and cpn_coupon_info_t.end_date > now()
       </if>
+      <!-- AI Agent：创建时间区间过滤 -->
+      <if test = "cpnCouponInfoVo.createTimeStart != null and cpnCouponInfoVo.createTimeStart != ''">
+        and cpn_coupon_info_t.create_time &gt;= #{cpnCouponInfoVo.createTimeStart}
+      </if>
+      <if test = "cpnCouponInfoVo.createTimeEnd != null and cpnCouponInfoVo.createTimeEnd != ''">
+        and cpn_coupon_info_t.create_time &lt;= concat(#{cpnCouponInfoVo.createTimeEnd}, ' 23:59:59')
+      </if>
     </if>
   </sql>
 </mapper>
