@@ -183,7 +183,7 @@ const beforeClose = (e: any): void => {
   console.log(e);
 };
 
-const del${entity} = async (id: number): Promise<void> => {
+const del${entity} = async (id: string): Promise<void> => {
   try {
     const { code, message } = await delete${entity}(id + '');
     if (code == '200') {

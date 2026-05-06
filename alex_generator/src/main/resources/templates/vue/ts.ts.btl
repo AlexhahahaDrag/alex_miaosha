@@ -46,7 +46,7 @@ export async function get${entity}Page(
  * @param id 记录ID
  * @returns Promise<ApiResponse>
  */
-export async function get${entity}Detail(id: number): Promise<ResponseBody<${entity}Data>> {
+export async function get${entity}Detail(id: string): Promise<ResponseBody<${entity}Data>> {
 	const url = baseService.${javaPath} + base${entity} + ${entity}Endpoints.detail;
 	return getData(url, { id });
 }

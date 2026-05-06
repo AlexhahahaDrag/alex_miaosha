@@ -18,7 +18,7 @@ export function get${entity}Page(params: any, pageNum?: number | null, pageSize?
   return postData(url, params);
 }
 
-export function get${entity}Detail(id: number): Promise<any> {
+export function get${entity}Detail(id: string): Promise<any> {
   return getData(baseService.${javaPath} + base${entity} + ${entity}Url.url + '?id=' + id);
 }
 
