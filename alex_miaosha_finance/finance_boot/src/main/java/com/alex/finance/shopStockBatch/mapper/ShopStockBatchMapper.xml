@@ -19,6 +19,9 @@
         <result column="is_valid" property="isValid" />
         <result column="description" property="description" />
         <result column="purchase_place" property="purchasePlace" />
+        <result column="cost" property="cost" />
+        <result column="travel_expense" property="travelExpense" />
+        <result column="purchase_date" property="purchaseDate" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -34,7 +37,10 @@
         t_shop_stock_batch.operator,
         t_shop_stock_batch.operate_time,
         t_shop_stock_batch.batch_code, t_shop_stock_batch.batch_name, t_shop_stock_batch.is_valid, t_shop_stock_batch.`description`,
-        t_shop_stock_batch.purchase_place
+        t_shop_stock_batch.purchase_place,
+        t_shop_stock_batch.cost,
+        t_shop_stock_batch.travel_expense,
+        t_shop_stock_batch.purchase_date
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo">
@@ -55,6 +61,18 @@
         <where>
             t_shop_stock_batch.id = #{id}
             and t_shop_stock_batch.is_delete = 0
+        </where>
+    </select>
+
+    <select id="countByBatchCode" resultType="java.lang.Long">
+        select count(1) from t_shop_stock_batch
+        <where>
+            batch_code = #{batchCode}
+            and is_valid = '1'
+            and is_delete = 0
+            <if test="id != null">
+                and id != #{id}
+            </if>
         </where>
     </select>
     

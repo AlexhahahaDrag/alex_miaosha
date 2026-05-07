@@ -25,5 +25,8 @@ public interface ShopStockBatchMapper extends BaseMapper<ShopStockBatch> {
     ShopStockBatchVo queryShopStockBatch(@Param("id") Long id);
 
     @DataPermission(table = "t_shop_stock_batch")
+    Long countByBatchCode(@Param("batchCode") String batchCode, @Param("id") Long id);
+
+    @DataPermission(table = "t_shop_stock_batch")
     List<ShopStockBatchVo> getList(@Param("shopStockBatchVo") ShopStockBatchVo shopStockBatchVo);
 }
