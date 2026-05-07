@@ -34,7 +34,7 @@ logs
 */drone-att.txt
 qodana.yaml
 .cursor
- 
+
 # GitHub
 .github/*
 !.github/workflows/
@@ -51,4 +51,5 @@ qodana.yaml
 *.njsproj
 *.sln
 *.sw?
-
+
+.worktrees/

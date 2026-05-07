@@ -2,18 +2,26 @@ package com.alex.user.roleUserInfo.service.impl;
 
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
+import com.alex.base.constants.SysConf;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -62,6 +70,47 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
         }
         List<String> idArr = Arrays.asList(ids.split(","));
         roleUserInfoMapper.deleteBatchIds(idArr);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean assignRoles(Long userId, List<Long> roleIds) {
+        if (userId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户角色分配参数错误:");
+        }
+        List<RoleUserInfo> activeAssignments = list(Wrappers.<RoleUserInfo>lambdaQuery()
+                .eq(RoleUserInfo::getUserId, String.valueOf(userId))
+                .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
+        for (RoleUserInfo roleUserInfo : activeAssignments) {
+            roleUserInfo.setStatus(SysConf.INVALID_STATUS);
+            if (!updateById(roleUserInfo)) {
+                throw new SystemException(ResultEnum.SYSTEM_ERROR, "用户角色旧关系失效失败:");
+            }
+        }
+        if (roleIds == null || roleIds.isEmpty()) {
+            return true;
+        }
+        Set<Long> uniqueRoleIds = new LinkedHashSet<>();
+        for (Long roleId : roleIds) {
+            if (roleId != null) {
+                uniqueRoleIds.add(roleId);
+            }
+        }
+        if (uniqueRoleIds.isEmpty()) {
+            return true;
+        }
+        List<RoleUserInfo> newAssignments = new ArrayList<>();
+        for (Long roleId : uniqueRoleIds) {
+            RoleUserInfo roleUserInfo = new RoleUserInfo();
+            roleUserInfo.setUserId(String.valueOf(userId));
+            roleUserInfo.setRoleId(String.valueOf(roleId));
+            roleUserInfo.setStatus(SysConf.VALID_STATUS);
+            newAssignments.add(roleUserInfo);
+        }
+        if (!saveBatch(newAssignments)) {
+            throw new SystemException(ResultEnum.SYSTEM_ERROR, "用户角色新关系保存失败:");
+        }
         return true;
     }
 

@@ -108,6 +108,18 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "菜单信息")
     List<MenuInfoVo> menuInfoVoList;
 
+    @ApiModelProperty(value = "权限上下文")
+    private UserPermissionContextVo permissionContext;
+
+    @ApiModelProperty(value = "角色信息列表")
+    private List<RoleInfoVo> roleInfoVoList;
+
+    @ApiModelProperty(value = "权限编码列表")
+    private List<String> permissionCodes;
+
+    @ApiModelProperty(value = "按钮权限编码列表")
+    private List<String> buttonPermissionCodes;
+
     @ApiModelProperty(value = "token信息")
     private String token;
 

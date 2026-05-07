@@ -27,5 +27,7 @@ public interface OrgUserInfoService extends IService<OrgUserInfo> {
 
     Boolean deleteOrgUserInfo(String ids);
 
+    Boolean assignSingleOrg(Long userId, Long orgId);
+
     List<OrgInfoVo> getOrgInfoList(Long userId);
 }

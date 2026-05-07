@@ -8,6 +8,7 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.OnlineAdmin;
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
@@ -23,6 +24,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.service.UserPermissionContextService;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.token.service.TokenRefreshService;
@@ -109,6 +111,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final TokenRefreshService tokenRefreshService;
 
     private final OnlineUserService onlineUserService;
+
+    private final UserPermissionContextService userPermissionContextService;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
@@ -242,6 +246,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
             // 更新 token过期时间
             long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+            refreshLoginPermissionContext(redisUser);
 
             // 重新设置 Redis中相关key的值和过期时间
             redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
@@ -295,47 +300,68 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             log.error("异步获取头像信息发生错误", ex);
             return null;
         });
-        CompletableFuture<List<OrgInfoVo>> orgInfoFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return orgUserInfoService.getOrgInfoList(tUserVo.getId());
-        }).exceptionally(ex -> {
-            log.error("异步获取组织架构信息发生错误", ex);
-            return Collections.emptyList(); // 返回一个空列表或合适的错误处理
-        });
-        CompletableFuture<List<RoleInfoVo>> rolesFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return roleUserInfoService.getRoleInfoList(tUserVo.getId(), true);
-        });
-        MenuInfoVo menuInfoVo = new MenuInfoVo();
-        menuInfoVo.setStatus(SysConf.VALID_STATUS);
-        CompletableFuture<List<MenuInfoVo>> menuFuture = CompletableFuture.supplyAsync(() -> {
-            RequestContextHolder.setRequestAttributes(attributes);
-            return menuInfoService.getList(menuInfoVo);
-        });
-        // 等待所有的异步操作完成
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(orgInfoFuture, rolesFuture, menuFuture);
-        // 当所有的异步操作完成后，可以做一些处理
-        allFutures.thenRun(() -> {
+        CompletableFuture<UserPermissionContextVo> permissionContextFuture = CompletableFuture.supplyAsync(() -> {
             try {
-                List<OrgInfoVo> orgInfoList = orgInfoFuture.get(); // 获取用户信息结果
-                List<RoleInfoVo> roleInfoList = rolesFuture.get();// 获取用户角色信息结果
-                List<MenuInfoVo> menuList = menuFuture.get(); // 获取权限信息结果
-                tUserVo.setOrgInfoVo(orgInfoList == null || orgInfoList.isEmpty() ? null : orgInfoList.get(0));
-                tUserVo.setRoleInfoVo(roleInfoList == null || roleInfoList.isEmpty() ? null : roleInfoList.get(0));
-                tUserVo.setMenuInfoVoList(menuList);
-                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
-                // 将登录的管理员存储到在线用户表
-                redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
-                result.put(SysConf.ADMIN, tUserVo);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+                if (attributes != null) {
+                    RequestContextHolder.setRequestAttributes(attributes);
+                }
+                return userPermissionContextService.buildContext(tUserVo.getId());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
             }
         });
-        // 等待最后的处理完成
-        allFutures.join();
+        completeLoginResponse(tUserVo, avatarFuture, permissionContextFuture);
+        redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+        // 将登录的管理员存储到在线用户表
+        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+        result.put(SysConf.ADMIN, tUserVo);
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
         return result;
+    }
+
+    public TUserVo refreshLoginPermissionContext(TUserVo userVo) {
+        if (userVo == null || userVo.getId() == null) {
+            return userVo;
+        }
+        applyPermissionContext(userVo, userPermissionContextService.buildContext(userVo.getId()));
+        return userVo;
+    }
+
+    public static void completeLoginResponse(TUserVo userVo, CompletableFuture<Void> avatarFuture,
+                                             CompletableFuture<UserPermissionContextVo> permissionContextFuture) {
+        try {
+            if (avatarFuture != null) {
+                avatarFuture.get();
+            }
+            UserPermissionContextVo context = permissionContextFuture == null ? null : permissionContextFuture.get();
+            applyPermissionContext(userVo, context);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+        } catch (ExecutionException e) {
+            throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+        }
+    }
+
+    public static void applyPermissionContext(TUserVo userVo, UserPermissionContextVo context) {
+        if (userVo == null || context == null) {
+            return;
+        }
+        List<RoleInfoVo> roleList = context.getRoleList();
+        userVo.setPermissionContext(context);
+        userVo.setOrgInfoVo(context.getOrgInfo());
+        userVo.setRoleInfoVoList(roleList);
+        RoleInfoVo firstRole = roleList == null || roleList.isEmpty() ? null : roleList.get(0);
+        OrgInfoVo orgInfo = context.getOrgInfo();
+        userVo.setRoleInfoVo(firstRole);
+        userVo.setOrgName(orgInfo == null ? null : orgInfo.getOrgName());
+        userVo.setOrgCode(orgInfo == null ? null : orgInfo.getOrgCode());
+        userVo.setRoleName(firstRole == null ? null : firstRole.getRoleName());
+        userVo.setRoleCode(firstRole == null ? null : firstRole.getRoleCode());
+        userVo.setPermissionCodes(context.getPermissionCodes());
+        userVo.setButtonPermissionCodes(context.getButtonPermissionCodes());
+        userVo.setMenuInfoVoList(context.getMenuList());
     }
 
     private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {

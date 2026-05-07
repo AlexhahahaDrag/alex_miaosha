@@ -134,7 +134,7 @@
             and t_permission_info.status = 1
         </if>
         <where>
-            t_role_user_info.user_id = ${userId}
+            t_role_user_info.user_id = #{userId}
             and t_role_info.status = 1
             and t_role_user_info.status = 1
             and t_role_info.is_delete = 0

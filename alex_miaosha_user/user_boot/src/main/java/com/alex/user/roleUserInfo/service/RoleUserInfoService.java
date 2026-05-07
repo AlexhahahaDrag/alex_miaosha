@@ -27,5 +27,7 @@ public interface RoleUserInfoService extends IService<RoleUserInfo> {
 
     Boolean deleteRoleUserInfo(String ids);
 
+    Boolean assignRoles(Long userId, List<Long> roleIds);
+
     List<RoleInfoVo> getRoleInfoList(Long userId, boolean hasPermission);
 }
