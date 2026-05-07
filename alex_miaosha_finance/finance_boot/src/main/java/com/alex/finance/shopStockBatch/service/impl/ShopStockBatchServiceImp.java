@@ -43,9 +43,7 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
 
     @Override
     public Boolean addShopStockBatch(ShopStockBatchVo shopStockBatchVo) {
-        long count = this.count(new LambdaQueryWrapper<ShopStockBatch>()
-                .eq(ShopStockBatch::getBatchCode, shopStockBatchVo.getBatchCode())
-                .eq(ShopStockBatch::getIsValid, "1"));
+        long count = shopStockBatchMapper.countByBatchCode(shopStockBatchVo.getBatchCode(), null);
         if (count > 0) {
             throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "批次编码已存在！");
         }
@@ -57,10 +55,7 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
 
     @Override
     public Boolean updateShopStockBatch(ShopStockBatchVo shopStockBatchVo) {
-        long count = this.count(new LambdaQueryWrapper<ShopStockBatch>()
-                .eq(ShopStockBatch::getBatchCode, shopStockBatchVo.getBatchCode())
-                .ne(ShopStockBatch::getId, shopStockBatchVo.getId())
-                .eq(ShopStockBatch::getIsValid, "1"));
+        long count = shopStockBatchMapper.countByBatchCode(shopStockBatchVo.getBatchCode(), shopStockBatchVo.getId());
         if (count > 0) {
             throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "批次编码已存在！");
         }

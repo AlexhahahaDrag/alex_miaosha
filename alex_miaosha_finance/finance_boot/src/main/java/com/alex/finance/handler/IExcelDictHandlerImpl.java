@@ -24,6 +24,7 @@ public class IExcelDictHandlerImpl implements IExcelDictHandler {
 
     private final DictInfoService dictInfoService;
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<Map> getList(String dict) {
         return null;
