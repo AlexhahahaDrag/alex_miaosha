@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -29,7 +28,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @ApiModel(value = "TUserVo", description = "管理员表Vo")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -106,7 +104,7 @@ public class TUserVo extends BaseVo<TUserVo>{
     private RoleInfoVo roleInfoVo;
 
     @ApiModelProperty(value = "菜单信息")
-    List<MenuInfoVo> menuInfoVoList;
+    private List<MenuInfoVo> menuInfoVoList;
 
     @ApiModelProperty(value = "权限上下文")
     private UserPermissionContextVo permissionContext;

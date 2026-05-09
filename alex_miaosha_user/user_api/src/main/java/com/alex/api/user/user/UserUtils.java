@@ -41,7 +41,6 @@ public class UserUtils {
             throw new LoginException(ResultEnum.USER_NO_LOGIN);
         }
         String loginToken = authInfo.split("Bearer_")[1];
-        // TODO: 2022/8/18 使用断言
         if (StringUtils.isEmpty(loginToken)) {
             throw new LoginException(ResultEnum.USER_NO_LOGIN);
         }

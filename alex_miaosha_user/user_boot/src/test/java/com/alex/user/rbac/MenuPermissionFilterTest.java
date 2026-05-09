@@ -12,8 +12,8 @@ public class MenuPermissionFilterTest {
     public void testKeepsParentWithOnlyAllowedChildWhenParentPermissionDoesNotMatch() {
         MenuInfoVo addUser = menu("AddUser", "user:add");
         MenuInfoVo deleteUser = menu("DeleteUser", "user:delete");
-        MenuInfoVo parent = menu("Users", "user:manage")
-                .setChildren(Arrays.asList(addUser, deleteUser));
+        MenuInfoVo parent = menu("Users", "user:manage");
+        parent.setChildren(Arrays.asList(addUser, deleteUser));
 
         List<MenuInfoVo> filtered = UserPermissionContextServiceImpl.filterMenusByPermissionCodes(
                 Collections.singletonList(parent),
@@ -30,7 +30,8 @@ public class MenuPermissionFilterTest {
         MenuInfoVo addUser = menu("AddUser", "user:add");
         MenuInfoVo deleteUser = menu("DeleteUser", "user:delete");
         List<MenuInfoVo> originalChildren = Arrays.asList(addUser, deleteUser);
-        MenuInfoVo parent = menu("Users", null).setChildren(originalChildren);
+        MenuInfoVo parent = menu("Users", null);
+        parent.setChildren(originalChildren);
 
         List<MenuInfoVo> filtered = UserPermissionContextServiceImpl.filterMenusByPermissionCodes(
                 Collections.singletonList(parent),
@@ -43,8 +44,8 @@ public class MenuPermissionFilterTest {
     }
 
     public void testReturnsEmptyListWhenPermissionCodesAreEmpty() {
-        MenuInfoVo parent = menu("Users", null)
-                .setChildren(Collections.singletonList(menu("AddUser", "user:add")));
+        MenuInfoVo parent = menu("Users", null);
+        parent.setChildren(Collections.singletonList(menu("AddUser", "user:add")));
 
         List<MenuInfoVo> filtered = UserPermissionContextServiceImpl.filterMenusByPermissionCodes(
                 Collections.singletonList(parent),
@@ -67,9 +68,10 @@ public class MenuPermissionFilterTest {
     }
 
     private static MenuInfoVo menu(String name, String permissionCode) {
-        return new MenuInfoVo()
-                .setName(name)
-                .setPermissionCode(permissionCode);
+        MenuInfoVo m = new MenuInfoVo();
+        m.setName(name);
+        m.setPermissionCode(permissionCode);
+        return m;
     }
 
     private static void assertSame(Object expected, Object actual, String message) {

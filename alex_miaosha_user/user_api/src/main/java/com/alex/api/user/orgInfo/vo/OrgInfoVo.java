@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * description:  机构表Vo
@@ -15,7 +14,6 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @ApiModel(value = "OrgInfoVo", description = "机构表Vo")
 public class OrgInfoVo extends BaseVo<OrgInfoVo>{
 

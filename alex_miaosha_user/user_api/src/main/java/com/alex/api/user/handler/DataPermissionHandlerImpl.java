@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -46,13 +48,33 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
                     DataPermission annotation = method.getAnnotation(DataPermission.class);
                     if (ObjectUtils.isNotEmpty(annotation)) {
                         // 判断当前用户角色决定权限
-                        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-                        if (roleInfoVo == null || roleInfoVo.getRoleCode().contains("user")) {
-                            return getUserWhere(where, loginUser, annotation);
-                        } else if (roleInfoVo.getRoleCode().contains("admin")) {
-                            return getAdminWhere(where, loginUser, annotation);
-                        } else if (roleInfoVo.getRoleCode().contains("super")) {
+                        List<RoleInfoVo> roleList = loginUser.getRoleInfoVoList();
+                        List<String> roleCodes = new ArrayList<>();
+                        if (roleList != null) {
+                            roleList.stream()
+                                    .filter(role -> role != null && role.getRoleCode() != null)
+                                    .map(RoleInfoVo::getRoleCode)
+                                    .forEach(roleCodes::add);
+                        }
+                        boolean isSuper = false;
+                        boolean isAdmin = false;
+                        boolean isUser = false;
+                        for (String code : roleCodes) {
+                            if (code.contains("super")) {
+                                isSuper = true;
+                            } else if (code.contains("admin")) {
+                                isAdmin = true;
+                            } else if (code.contains("user")) {
+                                isUser = true;
+                            }
+                        }
+
+                        if (isSuper) {
                             return getSuperWhere(where);
+                        } else if (isAdmin) {
+                            return getAdminWhere(where, loginUser, annotation);
+                        } else if (isUser || roleCodes.isEmpty()) {
+                            return getUserWhere(where, loginUser, annotation);
                         } else {
                             return getDefaultWhere(where, loginUser, annotation);
                         }

@@ -28,9 +28,9 @@ public class UserPermissionContextServiceTest {
         UserPermissionContextVo permissionContext = new UserPermissionContextVo();
         List<String> permissionCodes = Arrays.asList("user:list", "user:create");
 
-        TUserVo userVo = new TUserVo()
-                .setPermissionContext(permissionContext)
-                .setPermissionCodes(permissionCodes);
+        TUserVo userVo = new TUserVo();
+        userVo.setPermissionContext(permissionContext);
+        userVo.setPermissionCodes(permissionCodes);
 
         assertSame(permissionContext, userVo.getPermissionContext(), "permissionContext should round-trip through TUserVo");
         assertEquals(permissionCodes, userVo.getPermissionCodes(), "permissionCodes should be readable from TUserVo");
@@ -38,8 +38,10 @@ public class UserPermissionContextServiceTest {
 
     public void testBuildContextMergesRolePermissionsAndUsesFirstOrg() {
         Long userId = 1001L;
-        OrgInfoVo firstOrg = new OrgInfoVo().setOrgCode("org-a");
-        OrgInfoVo secondOrg = new OrgInfoVo().setOrgCode("org-b");
+        OrgInfoVo firstOrg = new OrgInfoVo();
+        firstOrg.setOrgCode("org-a");
+        OrgInfoVo secondOrg = new OrgInfoVo();
+        secondOrg.setOrgCode("org-b");
         RoleInfoVo firstRole = role("user-admin", permissions("user:add"));
         RoleInfoVo secondRole = role("role-admin", permissions("user:add", "role:update"));
 
@@ -60,8 +62,12 @@ public class UserPermissionContextServiceTest {
     public void testBuildContextKeepsAllMenusForSuperAdmin() {
         Long userId = 1002L;
         RoleInfoVo superRole = role("super_super", permissions("user:add"));
-        MenuInfoVo allowedMenu = new MenuInfoVo().setName("User").setPermissionCode("user:add");
-        MenuInfoVo restrictedMenu = new MenuInfoVo().setName("System").setPermissionCode("system:manage");
+        MenuInfoVo allowedMenu = new MenuInfoVo();
+        allowedMenu.setName("User");
+        allowedMenu.setPermissionCode("user:add");
+        MenuInfoVo restrictedMenu = new MenuInfoVo();
+        restrictedMenu.setName("System");
+        restrictedMenu.setPermissionCode("system:manage");
         List<MenuInfoVo> allMenus = Arrays.asList(allowedMenu, restrictedMenu);
 
         UserPermissionContextService service = new UserPermissionContextServiceImpl(
@@ -78,22 +84,31 @@ public class UserPermissionContextServiceTest {
 
     public void testApplyPermissionContextSetsLoginResponseCompatibilityFields() {
         TUserVo userVo = new TUserVo();
-        OrgInfoVo orgInfo = new OrgInfoVo().setOrgCode("org-a").setOrgName("Org A");
-        RoleInfoVo firstRole = new RoleInfoVo().setRoleCode("role-a").setRoleName("Role A");
-        RoleInfoVo secondRole = new RoleInfoVo().setRoleCode("role-b").setRoleName("Role B");
+        OrgInfoVo orgInfo = new OrgInfoVo();
+        orgInfo.setOrgCode("org-a");
+        orgInfo.setOrgName("Org A");
+        RoleInfoVo firstRole = new RoleInfoVo();
+        firstRole.setRoleCode("role-a");
+        firstRole.setRoleName("Role A");
+        RoleInfoVo secondRole = new RoleInfoVo();
+        secondRole.setRoleCode("role-b");
+        secondRole.setRoleName("Role B");
         List<RoleInfoVo> roleList = Arrays.asList(firstRole, secondRole);
         List<String> permissionCodes = Arrays.asList("user:list", "role:update");
         List<String> buttonPermissionCodes = Arrays.asList("user:create", "role:delete");
-        List<MenuInfoVo> menuList = Arrays.asList(
-                new MenuInfoVo().setName("User").setPermissionCode("user:list"),
-                new MenuInfoVo().setName("Role").setPermissionCode("role:update")
-        );
-        UserPermissionContextVo context = new UserPermissionContextVo()
-                .setOrgInfo(orgInfo)
-                .setRoleList(roleList)
-                .setPermissionCodes(permissionCodes)
-                .setButtonPermissionCodes(buttonPermissionCodes)
-                .setMenuList(menuList);
+        MenuInfoVo menu1 = new MenuInfoVo();
+        menu1.setName("User");
+        menu1.setPermissionCode("user:list");
+        MenuInfoVo menu2 = new MenuInfoVo();
+        menu2.setName("Role");
+        menu2.setPermissionCode("role:update");
+        List<MenuInfoVo> menuList = Arrays.asList(menu1, menu2);
+        UserPermissionContextVo context = new UserPermissionContextVo();
+        context.setOrgInfo(orgInfo);
+        context.setRoleList(roleList);
+        context.setPermissionCodes(permissionCodes);
+        context.setButtonPermissionCodes(buttonPermissionCodes);
+        context.setMenuList(menuList);
 
         TUserServiceImpl.applyPermissionContext(userVo, context);
 
@@ -114,12 +129,16 @@ public class UserPermissionContextServiceTest {
         Long userId = 1003L;
         TUserVo cachedUser = new TUserVo();
         cachedUser.setId(userId);
-        OrgInfoVo orgInfo = new OrgInfoVo().setOrgCode("fresh-org").setOrgName("Fresh Org");
-        RoleInfoVo roleInfo = new RoleInfoVo().setRoleCode("fresh-role").setRoleName("Fresh Role");
-        UserPermissionContextVo freshContext = new UserPermissionContextVo()
-                .setOrgInfo(orgInfo)
-                .setRoleList(Collections.singletonList(roleInfo))
-                .setPermissionCodes(Collections.singletonList("fresh:permission"));
+        OrgInfoVo orgInfo = new OrgInfoVo();
+        orgInfo.setOrgCode("fresh-org");
+        orgInfo.setOrgName("Fresh Org");
+        RoleInfoVo roleInfo = new RoleInfoVo();
+        roleInfo.setRoleCode("fresh-role");
+        roleInfo.setRoleName("Fresh Role");
+        UserPermissionContextVo freshContext = new UserPermissionContextVo();
+        freshContext.setOrgInfo(orgInfo);
+        freshContext.setRoleList(Collections.singletonList(roleInfo));
+        freshContext.setPermissionCodes(Collections.singletonList("fresh:permission"));
         UserPermissionContextService contextService = requestedUserId -> {
             assertEquals(userId, requestedUserId, "cached login should rebuild context for redis user id");
             return freshContext;
@@ -137,9 +156,13 @@ public class UserPermissionContextServiceTest {
 
     public void testCompleteLoginResponseWaitsForAvatarAndPermissionContext() {
         TUserVo userVo = new TUserVo();
-        UserPermissionContextVo context = new UserPermissionContextVo()
-                .setOrgInfo(new OrgInfoVo().setOrgCode("org-a"))
-                .setRoleList(Collections.singletonList(new RoleInfoVo().setRoleCode("role-a")));
+        OrgInfoVo orgInfo = new OrgInfoVo();
+        orgInfo.setOrgCode("org-a");
+        RoleInfoVo roleInfo = new RoleInfoVo();
+        roleInfo.setRoleCode("role-a");
+        UserPermissionContextVo context = new UserPermissionContextVo();
+        context.setOrgInfo(orgInfo);
+        context.setRoleList(Collections.singletonList(roleInfo));
         CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(() -> {
             sleep(80L);
             userVo.setAvatarUrl("https://cdn.example.com/avatar.png");
@@ -170,15 +193,18 @@ public class UserPermissionContextServiceTest {
     }
 
     private static RoleInfoVo role(String roleCode, List<PermissionInfoVo> permissions) {
-        return new RoleInfoVo()
-                .setRoleCode(roleCode)
-                .setPermissionList(permissions);
+        RoleInfoVo roleInfo = new RoleInfoVo();
+        roleInfo.setRoleCode(roleCode);
+        roleInfo.setPermissionList(permissions);
+        return roleInfo;
     }
 
     private static List<PermissionInfoVo> permissions(String... permissionCodes) {
         List<PermissionInfoVo> permissions = new ArrayList<>();
         for (String permissionCode : permissionCodes) {
-            permissions.add(new PermissionInfoVo().setPermissionCode(permissionCode));
+            PermissionInfoVo p = new PermissionInfoVo();
+            p.setPermissionCode(permissionCode);
+            permissions.add(p);
         }
         return permissions;
     }

@@ -351,17 +351,13 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         List<RoleInfoVo> roleList = context.getRoleList();
         userVo.setPermissionContext(context);
         userVo.setOrgInfoVo(context.getOrgInfo());
-        userVo.setRoleInfoVoList(roleList);
-        RoleInfoVo firstRole = roleList == null || roleList.isEmpty() ? null : roleList.get(0);
+        userVo.setRoleInfoVoList(roleList != null ? new java.util.ArrayList<>(roleList) : null);
         OrgInfoVo orgInfo = context.getOrgInfo();
-        userVo.setRoleInfoVo(firstRole);
         userVo.setOrgName(orgInfo == null ? null : orgInfo.getOrgName());
         userVo.setOrgCode(orgInfo == null ? null : orgInfo.getOrgCode());
-        userVo.setRoleName(firstRole == null ? null : firstRole.getRoleName());
-        userVo.setRoleCode(firstRole == null ? null : firstRole.getRoleCode());
-        userVo.setPermissionCodes(context.getPermissionCodes());
-        userVo.setButtonPermissionCodes(context.getButtonPermissionCodes());
-        userVo.setMenuInfoVoList(context.getMenuList());
+        userVo.setPermissionCodes(context.getPermissionCodes() != null ? new java.util.ArrayList<>(context.getPermissionCodes()) : null);
+        userVo.setButtonPermissionCodes(context.getButtonPermissionCodes() != null ? new java.util.ArrayList<>(context.getButtonPermissionCodes()) : null);
+        userVo.setMenuInfoVoList(context.getMenuList() != null ? new java.util.ArrayList<>(context.getMenuList()) : null);
     }
 
     private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {

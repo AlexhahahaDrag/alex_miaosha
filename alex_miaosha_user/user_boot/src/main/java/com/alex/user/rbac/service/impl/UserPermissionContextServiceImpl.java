@@ -48,13 +48,14 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
         List<MenuInfoVo> menuList = emptyIfNull(menuInfoService.getList(menuQuery));
         List<MenuInfoVo> visibleMenus = superAdmin ? menuList : filterMenusByPermissionCodes(menuList, permissionCodes);
 
-        return new UserPermissionContextVo()
-                .setOrgInfo(orgList.isEmpty() ? null : orgList.get(0))
-                .setRoleList(roleList)
-                .setPermissionCodes(permissionCodes)
-                .setButtonPermissionCodes(permissionCodes)
-                .setMenuList(visibleMenus)
-                .setSuperAdmin(superAdmin);
+        UserPermissionContextVo context = new UserPermissionContextVo();
+        context.setOrgInfo(orgList.isEmpty() ? null : orgList.get(0));
+        context.setRoleList(roleList);
+        context.setPermissionCodes(permissionCodes);
+        context.setButtonPermissionCodes(permissionCodes);
+        context.setMenuList(visibleMenus);
+        context.setSuperAdmin(superAdmin);
+        return context;
     }
 
     private List<String> collectPermissionCodes(List<RoleInfoVo> roleList) {
