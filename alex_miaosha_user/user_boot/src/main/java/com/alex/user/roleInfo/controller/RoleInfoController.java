@@ -14,9 +14,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * description:  角色信息表restApi
@@ -79,5 +82,19 @@ public class RoleInfoController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(roleInfoService.deleteRoleInfo(ids));
+    }
+
+    @LogRestRequest(apiName = "角色分配用户")
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "角色分配用户", notes = "角色管理辅助入口，修改用户角色关系", response = Result.class)
+    @PostMapping("/assign-users")
+    public Result<Boolean> assignUsers(@RequestBody RoleUserAssignRequest request) {
+        return Result.success(roleInfoService.assignUsers(request.getRoleId(), request.getUserIds()));
+    }
+
+    @Data
+    public static class RoleUserAssignRequest {
+        private Long roleId;
+        private List<Long> userIds;
     }
 }

@@ -3,12 +3,17 @@ package com.alex.user.roleInfo.service.impl;
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
+import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
+import com.alex.base.constants.SysConf;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
 import com.alex.user.roleInfo.entity.RoleInfo;
 import com.alex.user.roleInfo.mapper.RoleInfoMapper;
 import com.alex.user.roleInfo.service.RoleInfoService;
 import com.alex.user.rolePermissionInfo.service.RolePermissionInfoService;
+import com.alex.user.roleUserInfo.entity.RoleUserInfo;
+import com.alex.user.roleUserInfo.service.RoleUserInfoService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -34,6 +40,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     private final PermissionInfoService permissionInfoService;
 
     private final RolePermissionInfoService rolePermissionInfoService;
+
+    private final RoleUserInfoService roleUserInfoService;
 
     @Override
     public Page<RoleInfoVo> getPage(Long pageNum, Long pageSize, RoleInfoVo roleInfoVo) {
@@ -58,6 +66,17 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         rolePermissionInfoVo.setRoleId(id);
         List<RolePermissionInfoVo> rolePermissionInfoVoList = rolePermissionInfoService.getList(rolePermissionInfoVo);
         roleInfoVo.setRolePermissionInfoVoList(rolePermissionInfoVoList);
+        List<RoleUserInfoVo> roleUserInfoVoList = roleUserInfoService.list(Wrappers.<RoleUserInfo>lambdaQuery()
+                        .eq(RoleUserInfo::getRoleId, id)
+                        .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS))
+                .stream()
+                .map(item -> {
+                    RoleUserInfoVo vo = new RoleUserInfoVo();
+                    BeanUtils.copyProperties(item, vo);
+                    return vo;
+                })
+                .collect(Collectors.toList());
+        roleInfoVo.setRoleUserInfoVoList(roleUserInfoVoList);
         return roleInfoVo;
     }
 
@@ -85,5 +104,10 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         List<String> idArr = Arrays.asList(ids.split(","));
         roleInfoMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    @Override
+    public Boolean assignUsers(Long roleId, List<Long> userIds) {
+        return roleUserInfoService.assignUsersToRole(roleId, userIds);
     }
 }

@@ -2,6 +2,7 @@ package com.alex.api.user.roleInfo.vo;
 
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
+import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.common.common.BaseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -38,4 +39,7 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo>{
 
     @ApiModelProperty(value = "角色权限列表")
     List<RolePermissionInfoVo> rolePermissionInfoVoList;
+
+    @ApiModelProperty(value = "角色用户列表")
+    List<RoleUserInfoVo> roleUserInfoVoList;
 }

@@ -58,6 +58,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -153,10 +154,17 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     public TUserVo queryTUser(String id) {
         TUserVo user = tUserMapper.queryTUser(id);
         setAvatarUrls(user);
+        if (user != null && user.getId() != null) {
+            applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
+            user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
+            user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList() :
+                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).collect(Collectors.toList()));
+        }
         return user;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TUser addTUser(TUserVo tUserVo) {
         Map<String, Object> map = getStringObjectMap(tUserVo);
         //校验username,mobile,email
@@ -167,6 +175,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
         tUser.setPassword(encoder.encode(password + tUserVo.getUsername()));
         tUserMapper.insert(tUser);
+        syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
     }
 
@@ -199,6 +208,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TUser updateTUser(TUserVo tUserVo) {
         Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotEmpty(tUserVo.getUsername())) {
@@ -215,7 +225,20 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         TUser tUser = new TUser();
         BeanUtils.copyProperties(tUserVo, tUser);
         tUserMapper.updateById(tUser);
+        syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
+    }
+
+    private void syncUserRbacAssignments(Long userId, TUserVo tUserVo) {
+        if (userId == null || tUserVo == null) {
+            return;
+        }
+        if (tUserVo.getOrgId() != null) {
+            orgUserInfoService.assignSingleOrg(userId, tUserVo.getOrgId());
+        }
+        if (tUserVo.getRoleIds() != null) {
+            roleUserInfoService.assignRoles(userId, tUserVo.getRoleIds());
+        }
     }
 
     @Override
@@ -248,20 +271,22 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
             refreshLoginPermissionContext(redisUser);
 
-            // 重新设置 Redis中相关key的值和过期时间
-            redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
-            redisUtils.setEx(LoginKey.loginToken, headers, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+            // headers 为 uuidToken，先取出其对应的 barToken(jwt)
+            String barToken = redisUtils.get(LoginKey.loginUuid, headers, String.class);
+            if (StringUtils.isBlank(barToken)) {
+                // 缺少映射时无法安全复用，进入正常登录流程重新签发
+                log.warn("检测到缺失 loginUuid 映射，降级为重新登录流程，username:{}", username);
+            } else {
+                // 统一维护 uuid -> barToken 与 barToken -> userJson 两层映射，避免读取链路不一致
+                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginUuid, headers, barToken, expiration, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginToken, barToken, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
 
-            // 获取 token对应的uuid并更新过期时间
-            String tokenId = redisUtils.get(LoginKey.loginUuid, headers, String.class);
-            if (StringUtils.isNotBlank(tokenId)) {
-                redisUtils.setEx(LoginKey.loginUuid, tokenId, headers, expiration, TimeUnit.SECONDS);
+                log.info("用户 {} 已登录，更新token过期时间，新过期时间：{} 秒", username, expiration);
+                result.put(SysConf.TOKEN, headers);
+                result.put(SysConf.ADMIN, redisUser);
+                return result;
             }
-
-            log.info("用户 {} 已登录，更新token过期时间，新过期时间：{} 秒", username, expiration);
-            result.put(SysConf.TOKEN, headers);
-            result.put(SysConf.ADMIN, redisUser);
-            return result;
         }
         LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery()
                 .eq(TUser::getStatus, EStatus.ENABLE.getCode())

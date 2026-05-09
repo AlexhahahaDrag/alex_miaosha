@@ -29,5 +29,7 @@ public interface RoleUserInfoService extends IService<RoleUserInfo> {
 
     Boolean assignRoles(Long userId, List<Long> roleIds);
 
+    Boolean assignUsersToRole(Long roleId, List<Long> userIds);
+
     List<RoleInfoVo> getRoleInfoList(Long userId, boolean hasPermission);
 }
