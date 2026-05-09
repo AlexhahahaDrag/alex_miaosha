@@ -96,6 +96,12 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "拥有的角色uid")
     private String roleId;
 
+    @ApiModelProperty(value = "所属机构id")
+    private Long orgId;
+
+    @ApiModelProperty(value = "角色id列表")
+    private List<Long> roleIds;
+
     @ApiModelProperty(value = "履历")
     private String personResume;
 

@@ -98,6 +98,31 @@ public class RoleUserAssignmentServiceTest {
         assertNotNull(transactional, "assignRoles should declare a transaction boundary");
     }
 
+    public void testAssignUsersToRoleInvalidatesOldActiveUsersAndCreatesNewActiveAssignments() {
+        RoleUserInfo oldActiveAssignment = assignment(1L, "100", "2", "1");
+        TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
+
+        Boolean result = service.assignUsersToRole(2L, Arrays.asList(101L, 102L));
+
+        assertTrue(Boolean.TRUE.equals(result), "assignUsersToRole should return true");
+        assertEquals("0", oldActiveAssignment.getStatus(), "old active role-user assignment should be invalidated");
+        assertEquals(1, service.updatedAssignments.size(), "old role-user assignment should be updated once");
+        assertEquals(2, service.savedAssignments.size(), "new role-user assignments should be saved");
+        assertAssignment(service.savedAssignments.get(0), "101", "2", "1");
+        assertAssignment(service.savedAssignments.get(1), "102", "2", "1");
+    }
+
+    public void testAssignUsersToRoleDeduplicatesAndFiltersNullUserIds() {
+        TestableRoleUserInfoService service = new TestableRoleUserInfoService();
+
+        Boolean result = service.assignUsersToRole(2L, Arrays.asList(101L, null, 101L, 102L));
+
+        assertTrue(Boolean.TRUE.equals(result), "assignUsersToRole should return true");
+        assertEquals(2, service.savedAssignments.size(), "duplicate and null userIds should not be saved");
+        assertAssignment(service.savedAssignments.get(0), "101", "2", "1");
+        assertAssignment(service.savedAssignments.get(1), "102", "2", "1");
+    }
+
     private static RoleUserInfo assignment(Long id, String userId, String roleId, String status) {
         RoleUserInfo roleUserInfo = new RoleUserInfo();
         roleUserInfo.setId(id);

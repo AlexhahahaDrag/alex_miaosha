@@ -115,6 +115,47 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean assignUsersToRole(Long roleId, List<Long> userIds) {
+        if (roleId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "角色用户分配参数错误:");
+        }
+        List<RoleUserInfo> activeAssignments = list(Wrappers.<RoleUserInfo>lambdaQuery()
+                .eq(RoleUserInfo::getRoleId, String.valueOf(roleId))
+                .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
+        for (RoleUserInfo roleUserInfo : activeAssignments) {
+            roleUserInfo.setStatus(SysConf.INVALID_STATUS);
+            if (!updateById(roleUserInfo)) {
+                throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户旧关系失效失败:");
+            }
+        }
+        if (userIds == null || userIds.isEmpty()) {
+            return true;
+        }
+        Set<Long> uniqueUserIds = new LinkedHashSet<>();
+        for (Long userId : userIds) {
+            if (userId != null) {
+                uniqueUserIds.add(userId);
+            }
+        }
+        if (uniqueUserIds.isEmpty()) {
+            return true;
+        }
+        List<RoleUserInfo> newAssignments = new ArrayList<>();
+        for (Long userId : uniqueUserIds) {
+            RoleUserInfo roleUserInfo = new RoleUserInfo();
+            roleUserInfo.setUserId(String.valueOf(userId));
+            roleUserInfo.setRoleId(String.valueOf(roleId));
+            roleUserInfo.setStatus(SysConf.VALID_STATUS);
+            newAssignments.add(roleUserInfo);
+        }
+        if (!saveBatch(newAssignments)) {
+            throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户新关系保存失败:");
+        }
+        return true;
+    }
+
+    @Override
     public List<RoleInfoVo> getRoleInfoList(Long userId, boolean hasPermission) {
         return roleUserInfoMapper.getRoleInfoList(userId, hasPermission);
     }

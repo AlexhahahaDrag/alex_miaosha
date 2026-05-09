@@ -58,6 +58,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -153,10 +154,17 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     public TUserVo queryTUser(String id) {
         TUserVo user = tUserMapper.queryTUser(id);
         setAvatarUrls(user);
+        if (user != null && user.getId() != null) {
+            applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
+            user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
+            user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList() :
+                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).collect(Collectors.toList()));
+        }
         return user;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TUser addTUser(TUserVo tUserVo) {
         Map<String, Object> map = getStringObjectMap(tUserVo);
         //校验username,mobile,email
@@ -167,6 +175,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
         tUser.setPassword(encoder.encode(password + tUserVo.getUsername()));
         tUserMapper.insert(tUser);
+        syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
     }
 
@@ -199,6 +208,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TUser updateTUser(TUserVo tUserVo) {
         Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotEmpty(tUserVo.getUsername())) {
@@ -215,7 +225,20 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         TUser tUser = new TUser();
         BeanUtils.copyProperties(tUserVo, tUser);
         tUserMapper.updateById(tUser);
+        syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
+    }
+
+    private void syncUserRbacAssignments(Long userId, TUserVo tUserVo) {
+        if (userId == null || tUserVo == null) {
+            return;
+        }
+        if (tUserVo.getOrgId() != null) {
+            orgUserInfoService.assignSingleOrg(userId, tUserVo.getOrgId());
+        }
+        if (tUserVo.getRoleIds() != null) {
+            roleUserInfoService.assignRoles(userId, tUserVo.getRoleIds());
+        }
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.alex.user.roleInfo.entity.RoleInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * 角色信息表服务接口
  * author: majf
@@ -23,4 +25,6 @@ public interface RoleInfoService extends IService<RoleInfo> {
     Boolean updateRoleInfo(RoleInfoVo roleInfoVo);
 
     Boolean deleteRoleInfo(String ids);
+
+    Boolean assignUsers(Long roleId, List<Long> userIds);
 }
