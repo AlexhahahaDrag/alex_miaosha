@@ -132,3 +132,17 @@
 
 感谢开源社区提供的诸多优秀思路。如果你觉得这个项目对你有帮助，欢迎 **Star** 关注！
 如有任何建议，请随时提交 **Issue** 或 **PR**。
+
+---
+
+## 礼尚往来管理模块
+
+后端已在 `alex_miaosha_finance/finance_boot` 中扩展礼尚往来业务，复用现有用户、组织、RBAC、网关与通用返回体系，不重复建设基础能力。
+
+- 业务边界：亲友档案、关系维护、事由管理、礼金记录、回礼标记、待回礼金额与统计分析。
+- 数据表：`gift_person_info_t`、`gift_relation_info_t`、`gift_event_info_t`、`gift_record_info_t`。
+- 回礼设计：不单独创建 `gift_return_record_info_t`，统一由 `gift_record_info_t.direction = GIVE | RECEIVE | RETURN` 和 `related_record_id` 表达回礼链路。
+- 数据隔离：所有业务表必须带 `org_id`，接口查询、详情、编辑、删除均按 `org_id` 与 `user_id` 权限上下文过滤。
+- 权限脚本：`doc/sql/gift_management_permission.sql` 提供菜单与按钮权限初始化，超级管理员按现有前端路由逻辑无需额外授权。
+- 表结构脚本：`doc/sql/gift_management_schema.sql` 提供表、索引与字段注释，重点索引覆盖 `org_id`、`event_id`、`giver_person_id`、`receiver_person_id`、`pay_time`、`direction`。
+- 验证命令：`mvn clean -pl alex_miaosha_finance/finance_boot -am "-Dtest=GiftRecordBusinessRuleTest,GiftOwnershipTest,GiftStructureTest" -DfailIfNoTests=false test`。
