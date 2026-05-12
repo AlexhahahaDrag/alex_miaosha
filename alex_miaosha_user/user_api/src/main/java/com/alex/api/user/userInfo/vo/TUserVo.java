@@ -106,9 +106,6 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "机构信息")
     private OrgInfoVo orgInfoVo;
 
-    @ApiModelProperty(value = "角色信息")
-    private RoleInfoVo roleInfoVo;
-
     @ApiModelProperty(value = "菜单信息")
     private List<MenuInfoVo> menuInfoVoList;
 
@@ -124,18 +121,9 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "按钮权限编码列表")
     private List<String> buttonPermissionCodes;
 
-    @ApiModelProperty(value = "token信息")
-    private String token;
-
     @ApiModelProperty(value = "所属机构名称")
     private String orgName;
 
     @ApiModelProperty(value = "所属机构编码")
     private String orgCode;
-
-    @ApiModelProperty(value = "角色名称")
-    private String roleName;
-
-    @ApiModelProperty(value = "角色编码")
-    private String roleCode;
 }

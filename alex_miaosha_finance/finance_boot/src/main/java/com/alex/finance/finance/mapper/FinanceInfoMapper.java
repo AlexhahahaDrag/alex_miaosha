@@ -3,9 +3,9 @@ package com.alex.finance.finance.mapper;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.finance.finance.entity.FinanceInfo;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
     @DataPermission(table = "finance_info", field = "belong_to")
-    IPage<FinanceInfoVo> getPage(IPage<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
+    Page<FinanceInfoVo> getPage(Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 

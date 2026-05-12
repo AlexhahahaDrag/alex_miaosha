@@ -7,6 +7,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -103,10 +104,9 @@ public class TokenRefreshService {
             String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
             if (StringUtils.isNotBlank(onlineAdminStr)) {
                 TUserVo onlineAdmin = JSONObject.parseObject(onlineAdminStr, TUserVo.class);
-                onlineAdmin.setToken(newToken);
 
                 // 更新 Redis中的用户信息
-                redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin), audience.getExpiresSecond(), TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin, SerializerFeature.DisableCircularReferenceDetect), audience.getExpiresSecond(), TimeUnit.SECONDS);
 
                 // 删除旧的 token映射
                 redisUtils.delete(LoginKey.loginToken, barToken);

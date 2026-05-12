@@ -16,10 +16,7 @@ import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.user.service.impl.TUserServiceImpl;
 
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class UserPermissionContextServiceTest {
@@ -115,11 +112,8 @@ public class UserPermissionContextServiceTest {
         assertSame(context, userVo.getPermissionContext(), "permissionContext should be attached to login response");
         assertSame(orgInfo, userVo.getOrgInfoVo(), "legacy orgInfoVo should mirror context orgInfo");
         assertSame(roleList, userVo.getRoleInfoVoList(), "legacy roleInfoVoList should mirror context roleList");
-        assertSame(firstRole, userVo.getRoleInfoVo(), "legacy roleInfoVo should use first role");
         assertEquals("Org A", userVo.getOrgName(), "legacy orgName should mirror context orgInfo");
         assertEquals("org-a", userVo.getOrgCode(), "legacy orgCode should mirror context orgInfo");
-        assertEquals("Role A", userVo.getRoleName(), "legacy roleName should mirror first context role");
-        assertEquals("role-a", userVo.getRoleCode(), "legacy roleCode should mirror first context role");
         assertSame(permissionCodes, userVo.getPermissionCodes(), "legacy permissionCodes should mirror context permissionCodes");
         assertSame(buttonPermissionCodes, userVo.getButtonPermissionCodes(), "legacy buttonPermissionCodes should mirror context buttonPermissionCodes");
         assertSame(menuList, userVo.getMenuInfoVoList(), "legacy menuInfoVoList should mirror context menuList");
@@ -151,7 +145,6 @@ public class UserPermissionContextServiceTest {
         assertSame(cachedUser, refreshedUser, "cached login should keep using the redis user object");
         assertSame(freshContext, refreshedUser.getPermissionContext(), "cached login should attach fresh permission context");
         assertEquals("Fresh Org", refreshedUser.getOrgName(), "cached login should refresh legacy orgName");
-        assertEquals("Fresh Role", refreshedUser.getRoleName(), "cached login should refresh legacy roleName");
     }
 
     public void testCompleteLoginResponseWaitsForAvatarAndPermissionContext() {
@@ -253,7 +246,7 @@ public class UserPermissionContextServiceTest {
     }
 
     private static void assertEquals(Object expected, Object actual, String message) {
-        if (expected == null ? actual != null : !expected.equals(actual)) {
+        if (!Objects.equals(expected, actual)) {
             throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
         }
     }

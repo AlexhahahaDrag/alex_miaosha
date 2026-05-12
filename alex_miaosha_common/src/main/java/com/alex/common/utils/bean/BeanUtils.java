@@ -1,6 +1,7 @@
 package com.alex.common.utils.bean;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
  *description:  bean string 转化工具
@@ -20,7 +21,7 @@ public class BeanUtils {
         } else if (String.class.equals(clazz)) {
             return (String) value;
         }
-        return JSONObject.toJSONString(value);
+        return JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     @SuppressWarnings("unchecked")

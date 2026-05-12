@@ -5,10 +5,10 @@
     <sql id="roleInfo">
         <if test="roleCode != null">
             <if test="roleCode.contains('user')">
-                AND t_shop_stock.operator = #{userId}
+                AND ${tableName}.operator = #{userId}
             </if>
             <if test="roleCode.contains('admin')">
-                AND t_shop_stock.operator in
+                AND ${tableName}.operator in
                 (select user_id from alex_user.t_org_user_info where t_org_user_info.org_id = #{orgId})
             </if>
         </if>
@@ -23,7 +23,6 @@
         WHERE
             is_valid = '1'
           AND is_delete = '0'
-        <include refid="roleInfo"/>
     </select>
 
     <select id="getAllAmountInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo">
@@ -43,7 +42,9 @@
           dict_info.belong_to = 'shop_pay_way'
           and t_shop_finance.is_delete = '0'
           and t_shop_finance.is_valid = '1'
-          <include refid="roleInfo"/>
+          <include refid="roleInfo">
+              <property name="tableName" value="t_shop_finance"/>
+          </include>
         group by
           dict_info.type_code,
           dict_info.type_name
@@ -59,7 +60,9 @@
         where
           t_shop_stock.is_delete = '0'
           and t_shop_stock.is_valid = '1'
-        <include refid="roleInfo"/>
+          <include refid="roleInfo">
+              <property name="tableName" value="t_shop_stock"/>
+          </include>
     </select>
     
     <select id="getCashAmountInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo">
@@ -79,6 +82,5 @@
           dict_info.belong_to = 'shop_pay_way'
           and t_shop_finance.is_delete = '0'
           and t_shop_finance.is_valid = '1'
-          <include refid="roleInfo"/>
     </select>
 </mapper>

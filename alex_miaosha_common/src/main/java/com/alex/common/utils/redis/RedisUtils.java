@@ -4,6 +4,7 @@ import com.alex.common.redis.key.KeyPrefix;
 import com.alex.common.utils.bean.BeanUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -104,9 +105,9 @@ public class RedisUtils {
             String realKey = prefix.getPrefix() + SEGMENT + key;
             if (exTime == 0) {
                 //不设置过期时间
-                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value));
+                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
             } else {
-                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value), exTime, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect), exTime, TimeUnit.SECONDS);
             }
             return true;
         } catch (Exception e) {
@@ -159,7 +160,7 @@ public class RedisUtils {
     }
 
     public boolean set(String key, Object value) {
-        redisTemplate.opsForValue().set(key, JSONObject.toJSONString(value));
+        redisTemplate.opsForValue().set(key, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
         return true;
     }
 

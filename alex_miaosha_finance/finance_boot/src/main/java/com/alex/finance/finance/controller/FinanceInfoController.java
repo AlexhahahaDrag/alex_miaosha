@@ -7,7 +7,7 @@ import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.service.FinanceInfoService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.annotations.Api;
@@ -44,9 +44,9 @@ public class FinanceInfoController {
             @ApiImplicitParam(value = "每页大小", name = "pageSize", dataTypeClass = Integer.class),
             @ApiImplicitParam(value = "查询条件", name = "financeInfoVo", dataTypeClass = FinanceInfoVo.class)}
     )
-    public Result<IPage<FinanceInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                @RequestBody(required = false) FinanceInfoVo financeInfoVo) {
+    public Result<Page<FinanceInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+                                               @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                               @RequestBody(required = false) FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.getPage(pageNum, pageSize, financeInfoVo));
     }
 
