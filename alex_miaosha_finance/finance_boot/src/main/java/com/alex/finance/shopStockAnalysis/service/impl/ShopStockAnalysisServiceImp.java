@@ -30,25 +30,42 @@ public class ShopStockAnalysisServiceImp implements ShopStockAnalysisService {
 
     @Override
     public ShopStockAnalysisVo getAllShopStockInfo() {
-        TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopStockAnalysisMapper.getAllShopStockInfo(roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
+        return shopStockAnalysisMapper.getAllShopStockInfo();
     }
 
     @Override
     public List<ShopStockAmountVo> getAllAmountInfo() {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopStockAnalysisMapper.getAllAmountInfo(roleInfoVo.getRoleCode(), loginUser.getId(),
+        String roleCode = getRoleCode(loginUser);
+        return shopStockAnalysisMapper.getAllAmountInfo(roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public ShopStockAmountVo getCashAmountInfo() {
-        TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopStockAnalysisMapper.getCashAmountInfo(roleInfoVo.getRoleCode(), loginUser.getId(),
-                loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
+        return shopStockAnalysisMapper.getCashAmountInfo();
+    }
+
+    private String getRoleCode(TUserVo loginUser) {
+        if (loginUser == null || loginUser.getRoleInfoVoList() == null || loginUser.getRoleInfoVoList().isEmpty()) {
+            return null;
+        }
+        List<RoleInfoVo> roleInfoVoList = loginUser.getRoleInfoVoList();
+        String targetRole = null;
+        for (RoleInfoVo role : roleInfoVoList) {
+            String code = role.getRoleCode();
+            if (code == null) {
+                continue;
+            }
+            if (code.contains("super")) {
+                return code;
+            }
+            if (code.contains("admin")) {
+                targetRole = code;
+            } else if (targetRole == null && code.contains("user")) {
+                targetRole = code;
+            }
+        }
+        return targetRole != null ? targetRole : roleInfoVoList.get(0).getRoleCode();
     }
 }

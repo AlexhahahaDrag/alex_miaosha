@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @ApiModel(value = "RoleInfoVo", description = "角色信息表Vo")
 public class RoleInfoVo extends BaseVo<RoleInfoVo>{
 

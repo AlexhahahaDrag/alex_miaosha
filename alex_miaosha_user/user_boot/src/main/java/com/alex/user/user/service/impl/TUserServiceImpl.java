@@ -2,7 +2,6 @@ package com.alex.user.user.service.impl;
 
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
-import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
@@ -36,6 +35,7 @@ import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
 import com.alex.utils.IpUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -51,6 +51,7 @@ import me.zhyd.oauth.request.AuthWeChatMpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -69,6 +70,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -113,6 +115,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private final OnlineUserService onlineUserService;
 
+    @Qualifier("asyncTaskExecutor")
+    private final Executor asyncTaskExecutor;
+
     private final UserPermissionContextService userPermissionContextService;
 
     @Override
@@ -125,28 +130,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (records == null || records.isEmpty()) {
             return userPage;
         }
-        List<Long> fileIdList = records.parallelStream()
-                .map(TUserVo::getAvatar)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        try {
-            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
-            if (SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
-                Map<Long, List<FileInfoVo>> fileMap = result.getData()
-                        .parallelStream()
-                        .collect(Collectors.groupingBy(FileInfoVo::getId));
-                records.forEach(item -> {
-                    List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
-                    if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                        FileInfoVo fileInfoVo = fileInfoVos.get(0);
-                        item.setAvatarUrl(fileInfoVo.getPreUrl());
-                        item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
-                    }
-                });
-            }
-        } catch (Exception e) {
-            log.error("获取用户头像失败！");
-        }
+        setAvatarUrls(records);
         return userPage;
     }
 
@@ -278,9 +262,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 log.warn("检测到缺失 loginUuid 映射，降级为重新登录流程，username:{}", username);
             } else {
                 // 统一维护 uuid -> barToken 与 barToken -> userJson 两层映射，避免读取链路不一致
-                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(redisUser, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS);
                 redisUtils.setEx(LoginKey.loginUuid, headers, barToken, expiration, TimeUnit.SECONDS);
-                redisUtils.setEx(LoginKey.loginToken, barToken, JSONObject.toJSONString(redisUser), expiration, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginToken, barToken, JSONObject.toJSONString(redisUser, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS);
 
                 log.info("用户 {} 已登录，更新token过期时间，新过期时间：{} 秒", username, expiration);
                 result.put(SysConf.TOKEN, headers);
@@ -336,9 +320,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             }
         });
         completeLoginResponse(tUserVo, avatarFuture, permissionContextFuture);
-        redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+        redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(tUserVo, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS);
         // 将登录的管理员存储到在线用户表
-        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo), expiration, TimeUnit.SECONDS);
+        redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), JSONObject.toJSONString(tUserVo, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS);
         result.put(SysConf.ADMIN, tUserVo);
         stopWatch.stop();
         log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
@@ -377,13 +361,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         userVo.setPermissionContext(context);
         userVo.setOrgInfoVo(context.getOrgInfo());
         userVo.setRoleInfoVoList(roleList);
-        RoleInfoVo firstRole = roleList == null || roleList.isEmpty() ? null : roleList.get(0);
         OrgInfoVo orgInfo = context.getOrgInfo();
-        userVo.setRoleInfoVo(firstRole);
         userVo.setOrgName(orgInfo == null ? null : orgInfo.getOrgName());
         userVo.setOrgCode(orgInfo == null ? null : orgInfo.getOrgCode());
-        userVo.setRoleName(firstRole == null ? null : firstRole.getRoleName());
-        userVo.setRoleCode(firstRole == null ? null : firstRole.getRoleCode());
         userVo.setPermissionCodes(context.getPermissionCodes());
         userVo.setButtonPermissionCodes(context.getButtonPermissionCodes());
         userVo.setMenuInfoVoList(context.getMenuList());
@@ -419,7 +399,17 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .loginIp(ip)
                 .loginLocation(location)
                 .build();
-        new Thread(userLogin::insert);
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        asyncTaskExecutor.execute(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(attributes);
+                userLogin.insert();
+            } catch (Exception e) {
+                log.error("异步保存登录日志失败：{}", e.getMessage());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
         // 异步添加在线用户到 redis中
         onlineUserService.addOnlineUserAsync(userLogin, expiration);
         // 设置认证信息到 SecurityContextHolder
@@ -460,30 +450,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (records == null || records.isEmpty()) {
             return records;
         }
-        List<Long> fileIdList = records.parallelStream()
-                .map(TUserVo::getAvatar)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        if (!fileIdList.isEmpty()) {
-            try {
-                Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
-                if (SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
-                    Map<Long, List<FileInfoVo>> fileMap = result.getData()
-                            .parallelStream()
-                            .collect(Collectors.groupingBy(FileInfoVo::getId));
-                    records.forEach(item -> {
-                        List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
-                        if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                            FileInfoVo fileInfoVo = fileInfoVos.get(0);
-                            item.setAvatarUrl(fileInfoVo.getPreUrl());
-                            item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                log.error("获取用户头像列表失败！", e);
-            }
-        }
+        setAvatarUrls(records);
         return records;
     }
 
@@ -512,7 +479,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             // 获取在线用户信息
             String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
             redisUtils.delete(LoginKey.loginUuid, uuidToken);
-            // 移除Redis中的用户
+            // 移除Redis 中的用户
             redisUtils.delete(LoginKey.loginToken, barToken);
             SecurityContextHolder.clearContext();
             return Result.success();
@@ -623,16 +590,34 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         }
     }
 
-    private String getFileUrl(Long fileId) {
-        if (fileId == null) {
-            return null;
+    private void setAvatarUrls(Collection<TUserVo> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        List<Long> fileIdList = records.parallelStream()
+                .map(TUserVo::getAvatar)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (fileIdList.isEmpty()) {
+            return;
         }
         try {
-            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(fileId));
-            return Optional.ofNullable(fileInfo).map(item -> item.getData().get(0).getPreUrl()).orElse("");
+            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+            if (result != null && SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+                Map<Long, List<FileInfoVo>> fileMap = result.getData()
+                        .parallelStream()
+                        .collect(Collectors.groupingBy(FileInfoVo::getId));
+                records.forEach(item -> {
+                    List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
+                    if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
+                        FileInfoVo fileInfoVo = fileInfoVos.get(0);
+                        item.setAvatarUrl(fileInfoVo.getPreUrl());
+                        item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
+                    }
+                });
+            }
         } catch (Exception e) {
-            log.error("获取头像文件错误：{}", e.getMessage());
-            return null;
+            log.error("批量获取用户头像失败！", e);
         }
     }
 

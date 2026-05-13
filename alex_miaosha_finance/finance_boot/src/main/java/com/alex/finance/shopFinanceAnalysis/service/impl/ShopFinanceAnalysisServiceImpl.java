@@ -26,43 +26,43 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     @Override
     public List<ShopFinanceAnalysisVo> getDayShopFinanceInfo(String searchDate) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
+        String roleCode = getRoleCode(loginUser);
         return shopFinanceMapper.getDayShopFinanceInfo(searchDate,
-                roleInfoVo.getRoleCode(), loginUser.getId(),
+                roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public List<ShopFinanceAnalysisVo> getMonthShopFinanceInfo(String searchDate) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
+        String roleCode = getRoleCode(loginUser);
         return shopFinanceMapper.getMonthShopFinanceInfo(searchDate,
-                roleInfoVo.getRoleCode(), loginUser.getId(),
+                roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public List<ShopFinanceAnalysisVo> getPayWayInfo(String searchDate) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
+        String roleCode = getRoleCode(loginUser);
         return shopFinanceMapper.getPayWayInfo(searchDate,
-                roleInfoVo.getRoleCode(), loginUser.getId(),
+                roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public List<ShopFinanceAnalysisVo> getShopNameInfo(String searchDate) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopFinanceMapper.getShopNameInfo(searchDate, roleInfoVo.getRoleCode(), loginUser.getId(),
+        String roleCode = getRoleCode(loginUser);
+        return shopFinanceMapper.getShopNameInfo(searchDate, roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
     @Override
     public ShopFinanceChainYearVo getChainAndYear(String startDate, String endDate) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopFinanceMapper.getChainAndYear(startDate, endDate, roleInfoVo.getRoleCode(), loginUser.getId(),
+        String roleCode = getRoleCode(loginUser);
+        return shopFinanceMapper.getChainAndYear(startDate, endDate, roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
     }
 
@@ -79,9 +79,32 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     @Override
     public ShopFinanceChainYearVo getBenefitInfo(String startDate, String endDate, String searchType) {
         TUserVo loginUser = userUtils.getLoginUser();
-        RoleInfoVo roleInfoVo = loginUser.getRoleInfoVo();
-        return shopFinanceMapper.getBenefitInfo(startDate, endDate, searchType, roleInfoVo.getRoleCode(), loginUser.getId(),
+        String roleCode = getRoleCode(loginUser);
+        return shopFinanceMapper.getBenefitInfo(startDate, endDate, searchType, roleCode, loginUser.getId(),
                 loginUser.getOrgInfoVo() == null ? null : loginUser.getOrgInfoVo().getId());
+    }
+
+    private String getRoleCode(TUserVo loginUser) {
+        if (loginUser == null || loginUser.getRoleInfoVoList() == null || loginUser.getRoleInfoVoList().isEmpty()) {
+            return null;
+        }
+        List<RoleInfoVo> roleInfoVoList = loginUser.getRoleInfoVoList();
+        String targetRole = null;
+        for (RoleInfoVo role : roleInfoVoList) {
+            String code = role.getRoleCode();
+            if (code == null) {
+                continue;
+            }
+            if (code.contains("super")) {
+                return code;
+            }
+            if (code.contains("admin")) {
+                targetRole = code;
+            } else if (targetRole == null && code.contains("user")) {
+                targetRole = code;
+            }
+        }
+        return targetRole != null ? targetRole : roleInfoVoList.get(0).getRoleCode();
     }
 }
 

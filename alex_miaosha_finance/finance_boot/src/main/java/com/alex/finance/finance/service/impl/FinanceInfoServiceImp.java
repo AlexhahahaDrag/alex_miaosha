@@ -14,7 +14,6 @@ import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.FinanceInfoService;
 import com.alex.finance.handler.IExcelDictHandlerImpl;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -45,14 +44,14 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     private final UserApi userApi;
 
     @Override
-    public IPage<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
-        IPage<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+    public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
+        Page<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         Result<List<TUserVo>> list = userApi.getList(new TUserVo());
         Map<Long, TUserVo> userMap = Optional.ofNullable(list)
                 .map(item -> item.getData().stream()
                         .collect(Collectors.toMap(TUserVo::getId, vo -> vo, (newVal, oldVal) -> newVal)))
                 .orElse(new HashMap<>());
-        IPage<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
+        Page<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
         List<FinanceInfoVo> financeInfoVos = Optional.ofNullable(result)
                 .map(item -> item.getRecords().stream().peek(
                         finance -> {

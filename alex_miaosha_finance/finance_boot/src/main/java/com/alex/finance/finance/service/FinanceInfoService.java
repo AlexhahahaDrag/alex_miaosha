@@ -2,7 +2,7 @@ package com.alex.finance.finance.service;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.finance.finance.entity.FinanceInfo;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface FinanceInfoService extends IService<FinanceInfo> {
 
-    IPage<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo);
+    Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo);
 
     List<FinanceInfoVo> getList(FinanceInfoVo financeInfoVo);
 
