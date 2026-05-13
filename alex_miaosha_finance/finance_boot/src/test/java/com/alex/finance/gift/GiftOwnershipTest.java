@@ -75,9 +75,9 @@ class GiftOwnershipTest {
         UserUtils userUtils = mock(UserUtils.class);
         OrgInfoVo orgInfoVo = new OrgInfoVo();
         orgInfoVo.setId(orgId);
-        TUserVo loginUser = new TUserVo()
-                .setOrgId(777L)
-                .setOrgInfoVo(orgInfoVo);
+        TUserVo loginUser = new TUserVo();
+        loginUser.setOrgId(777L);
+        loginUser.setOrgInfoVo(orgInfoVo);
         loginUser.setId(userId);
         when(userUtils.getLoginUser()).thenReturn(loginUser);
         return userUtils;
