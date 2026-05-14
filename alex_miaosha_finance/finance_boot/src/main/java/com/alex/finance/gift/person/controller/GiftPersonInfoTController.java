@@ -1,7 +1,10 @@
 package com.alex.finance.gift.person.controller;
 
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
+import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
@@ -48,6 +51,29 @@ public class GiftPersonInfoTController {
     @PostMapping(value = "/list")
     public Result<List<GiftPersonInfoTVo>> getList(@RequestBody(required = false) GiftPersonQuery query) {
         return Result.success(giftPersonInfoTService.getList(query));
+    }
+
+    @ApiOperationSupport(order = 16, author = "alex")
+    @ApiOperation(value = "gift person summary", response = Result.class)
+    @GetMapping(value = "/summary")
+    public Result<GiftPersonSummaryVo> summary() {
+        return Result.success(giftPersonInfoTService.getSummary());
+    }
+
+    @ApiOperationSupport(order = 17, author = "alex")
+    @ApiOperation(value = "gift person business page", response = Result.class)
+    @PostMapping(value = "/business-page")
+    public Result<Page<GiftPersonBusinessVo>> businessPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+                                                           @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                           @RequestBody(required = false) GiftPersonQuery query) {
+        return Result.success(giftPersonInfoTService.getBusinessPage(pageNum, pageSize, query));
+    }
+
+    @ApiOperationSupport(order = 18, author = "alex")
+    @ApiOperation(value = "gift person profile", response = Result.class)
+    @GetMapping(value = "/profile")
+    public Result<GiftPersonProfileVo> profile(@RequestParam(value = "id") Long id) {
+        return Result.success(giftPersonInfoTService.getProfile(id));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

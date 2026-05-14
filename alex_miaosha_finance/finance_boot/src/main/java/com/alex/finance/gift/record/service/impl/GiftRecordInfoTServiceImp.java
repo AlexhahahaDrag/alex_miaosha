@@ -2,6 +2,7 @@ package com.alex.finance.gift.record.service.impl;
 
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.record.entity.GiftRecordInfoT;
@@ -40,6 +41,20 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
     @Override
     public List<GiftRecordInfoTVo> getList(GiftRecordQuery query) {
         return list(queryWrapper(query)).stream().map(this::toVo).collect(Collectors.toList());
+    }
+
+    @Override
+    public GiftRecordSummaryVo getSummary(GiftRecordQuery query) {
+        List<GiftRecordInfoT> records = list(queryWrapper(query));
+        BigDecimal giveAmount = sumByDirection(records, DIRECTION_GIVE);
+        BigDecimal receiveAmount = sumByDirection(records, DIRECTION_RECEIVE);
+        BigDecimal returnAmount = sumByDirection(records, DIRECTION_RETURN);
+        return new GiftRecordSummaryVo()
+                .setGiveAmount(giveAmount)
+                .setReceiveAmount(receiveAmount)
+                .setReturnAmount(returnAmount)
+                .setNetAmount(receiveAmount.subtract(giveAmount).subtract(returnAmount))
+                .setRecordCount((long) records.size());
     }
 
     @Override
@@ -154,6 +169,16 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         }
         GiftRecordInfoTVo vo = new GiftRecordInfoTVo();
         BeanUtils.copyProperties(entity, vo);
+        vo.setPaymentMethod("-");
+        vo.setHandlerName("-");
         return vo;
+    }
+
+    private BigDecimal sumByDirection(List<GiftRecordInfoT> records, String direction) {
+        return records.stream()
+                .filter(record -> direction.equals(record.getDirection()))
+                .map(GiftRecordInfoT::getAmount)
+                .filter(amount -> amount != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

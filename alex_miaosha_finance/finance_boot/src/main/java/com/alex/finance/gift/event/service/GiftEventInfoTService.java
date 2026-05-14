@@ -1,7 +1,9 @@
 package com.alex.finance.gift.event.service;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
+import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.finance.gift.event.entity.GiftEventInfoT;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -13,6 +15,10 @@ public interface GiftEventInfoTService extends IService<GiftEventInfoT> {
     Page<GiftEventInfoTVo> getPage(Long pageNum, Long pageSize, GiftEventQuery query);
 
     List<GiftEventInfoTVo> getList(GiftEventQuery query);
+
+    GiftEventSummaryVo getSummary();
+
+    Page<GiftEventBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftEventQuery query);
 
     GiftEventInfoTVo queryGiftEventInfoT(Long id);
 

@@ -1,7 +1,9 @@
 package com.alex.finance.gift.event.controller;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
+import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
@@ -48,6 +50,22 @@ public class GiftEventInfoTController {
     @PostMapping(value = "/list")
     public Result<List<GiftEventInfoTVo>> getList(@RequestBody(required = false) GiftEventQuery query) {
         return Result.success(giftEventInfoTService.getList(query));
+    }
+
+    @ApiOperationSupport(order = 16, author = "alex")
+    @ApiOperation(value = "gift event summary", response = Result.class)
+    @GetMapping(value = "/summary")
+    public Result<GiftEventSummaryVo> summary() {
+        return Result.success(giftEventInfoTService.getSummary());
+    }
+
+    @ApiOperationSupport(order = 17, author = "alex")
+    @ApiOperation(value = "gift event business page", response = Result.class)
+    @PostMapping(value = "/business-page")
+    public Result<Page<GiftEventBusinessVo>> businessPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+                                                          @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                          @RequestBody(required = false) GiftEventQuery query) {
+        return Result.success(giftEventInfoTService.getBusinessPage(pageNum, pageSize, query));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

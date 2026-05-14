@@ -56,4 +56,22 @@ public class GiftRecordInfoTVo extends BaseVo<GiftRecordInfoTVo> {
 
     @ApiModelProperty(value = "remark")
     private String remark;
+
+    @ApiModelProperty(value = "event name")
+    private String eventName;
+
+    @ApiModelProperty(value = "giver person name")
+    private String giverPersonName;
+
+    @ApiModelProperty(value = "receiver person name")
+    private String receiverPersonName;
+
+    @ApiModelProperty(value = "display person name")
+    private String personName;
+
+    @ApiModelProperty(value = "payment method")
+    private String paymentMethod;
+
+    @ApiModelProperty(value = "handler name")
+    private String handlerName;
 }

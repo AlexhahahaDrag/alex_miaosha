@@ -8,6 +8,7 @@ import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
 import com.alex.api.finance.gift.relation.query.GiftRelationQuery;
 import com.alex.api.finance.gift.relation.vo.GiftRelationInfoTVo;
+import com.alex.finance.gift.analysis.controller.GiftAnalysisController;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
@@ -157,6 +158,36 @@ class GiftStructureTest {
         assertTrue(markReturned.isAnnotationPresent(PutMapping.class));
         assertEquals("/mark-returned", markReturned.getAnnotation(PutMapping.class).value()[0]);
         assertRequestParam(markReturned, "receiveRecordId");
+    }
+
+    @Test
+    void giftControllersExposeStitchAggregateRoutes() throws NoSuchMethodException {
+        Method personSummary = findMethod(GiftPersonInfoTController.class, "summary");
+        assertEquals("/summary", personSummary.getAnnotation(GetMapping.class).value()[0]);
+
+        Method personBusinessPage = findMethod(GiftPersonInfoTController.class, "businessPage");
+        assertEquals("/business-page", personBusinessPage.getAnnotation(PostMapping.class).value()[0]);
+
+        Method personProfile = findMethod(GiftPersonInfoTController.class, "profile");
+        assertEquals("/profile", personProfile.getAnnotation(GetMapping.class).value()[0]);
+        assertRequestParam(personProfile, "id");
+
+        Method eventSummary = findMethod(GiftEventInfoTController.class, "summary");
+        assertEquals("/summary", eventSummary.getAnnotation(GetMapping.class).value()[0]);
+
+        Method eventBusinessPage = findMethod(GiftEventInfoTController.class, "businessPage");
+        assertEquals("/business-page", eventBusinessPage.getAnnotation(PostMapping.class).value()[0]);
+
+        Method recordSummary = findMethod(GiftRecordInfoTController.class, "summary");
+        assertEquals("/summary", recordSummary.getAnnotation(PostMapping.class).value()[0]);
+
+        assertTrue(GiftAnalysisController.class.isAnnotationPresent(RestController.class));
+        assertEquals("${api.version:/api/v1}/gift-analysis", GiftAnalysisController.class.getAnnotation(RequestMapping.class).value()[0]);
+        assertEquals("/overview", findMethod(GiftAnalysisController.class, "overview").getAnnotation(GetMapping.class).value()[0]);
+        assertEquals("/trend", findMethod(GiftAnalysisController.class, "trend").getAnnotation(GetMapping.class).value()[0]);
+        assertEquals("/relation-distribution", findMethod(GiftAnalysisController.class, "relationDistribution").getAnnotation(GetMapping.class).value()[0]);
+        assertEquals("/event-ranking", findMethod(GiftAnalysisController.class, "eventRanking").getAnnotation(GetMapping.class).value()[0]);
+        assertEquals("/person-ranking", findMethod(GiftAnalysisController.class, "personRanking").getAnnotation(GetMapping.class).value()[0]);
     }
 
     private void assertNoBaseEntityFields(Class<?> entityClass) {

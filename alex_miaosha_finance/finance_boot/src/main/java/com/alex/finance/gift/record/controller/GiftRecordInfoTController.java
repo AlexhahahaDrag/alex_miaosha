@@ -2,6 +2,7 @@ package com.alex.finance.gift.record.controller;
 
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
@@ -49,6 +50,13 @@ public class GiftRecordInfoTController {
     @PostMapping(value = "/list")
     public Result<List<GiftRecordInfoTVo>> getList(@RequestBody(required = false) GiftRecordQuery query) {
         return Result.success(giftRecordInfoTService.getList(query));
+    }
+
+    @ApiOperationSupport(order = 16, author = "alex")
+    @ApiOperation(value = "gift record summary", response = Result.class)
+    @PostMapping(value = "/summary")
+    public Result<GiftRecordSummaryVo> summary(@RequestBody(required = false) GiftRecordQuery query) {
+        return Result.success(giftRecordInfoTService.getSummary(query));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")
