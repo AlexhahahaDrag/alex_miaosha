@@ -125,11 +125,11 @@
         on t_role_info.id = t_role_user_info.role_id
         <if test="hasPermission">
             left join t_role_permission_info
-            on t_role_info.id = t_role_permission_info.role_id
+            on cast(t_role_info.id as char) = t_role_permission_info.role_id
             and t_role_permission_info.is_delete = 0
             and t_role_permission_info.status = 1
             left join t_permission_info
-            on t_role_permission_info.permission_id = t_permission_info.id
+            on t_role_permission_info.permission_id = cast(t_permission_info.id as char)
             and t_permission_info.is_delete = 0
             and t_permission_info.status = 1
         </if>

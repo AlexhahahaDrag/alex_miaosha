@@ -66,7 +66,7 @@ VALUES
 (1900000000000005015, '1900000000000004001', '1900000000000002015', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL);
 
 -- ----------------------------
--- gift_user: core page and safe action permissions
+-- gift_user: core page permissions and data-maintenance actions, without export/analysis
 -- ----------------------------
 INSERT INTO `t_role_permission_info`
 (`id`, `role_id`, `permission_id`, `summary`, `status`, `creator`, `create_time`, `updater`, `update_time`, `deleter`, `delete_time`, `is_delete`, `operator`, `operate_time`)
@@ -77,6 +77,7 @@ VALUES
 (1900000000000006004, '1900000000000004002', '1900000000000002004', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
 (1900000000000006011, '1900000000000004002', '1900000000000002011', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
 (1900000000000006012, '1900000000000004002', '1900000000000002012', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(1900000000000006013, '1900000000000004002', '1900000000000002013', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL);
+(1900000000000006013, '1900000000000004002', '1900000000000002013', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(1900000000000006014, '1900000000000004002', '1900000000000002014', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
