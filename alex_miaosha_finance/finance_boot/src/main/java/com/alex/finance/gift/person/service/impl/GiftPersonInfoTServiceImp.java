@@ -124,7 +124,10 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
         if (!StringUtils.hasText(ids)) {
             return true;
         }
-        return removeBatchByIds(Arrays.asList(ids.split(",")));
+        return removeBatchByIds(Arrays.stream(ids.split(","))
+                .filter(StringUtils::hasText)
+                .map(Long::valueOf)
+                .collect(Collectors.toList()));
     }
 
     private com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GiftPersonInfoT> queryWrapper(GiftPersonQuery query) {

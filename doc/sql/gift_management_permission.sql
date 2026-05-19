@@ -80,4 +80,42 @@ VALUES
 (1900000000000006013, '1900000000000004002', '1900000000000002013', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
 (1900000000000006014, '1900000000000004002', '1900000000000002014', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL);
 
+-- ----------------------------
+-- Gift menu regroup: move gift pages out of finance into a standalone top menu
+-- ----------------------------
+INSERT IGNORE INTO `t_permission_info`
+(`id`, `permission_code`, `permission_name`, `summary`, `status`, `creator`, `create_time`, `updater`, `update_time`, `deleter`, `delete_time`, `is_delete`, `operator`, `operate_time`, `options`, `parent_id`)
+VALUES
+(1900000000000002000, 'gift', '礼尚往来管理', '礼尚往来管理一级菜单权限', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, '/finance/gift', 5);
+
+UPDATE `t_permission_info`
+SET `parent_id` = 1900000000000002000
+WHERE `permission_code` IN ('gift:dashboard', 'gift:person', 'gift:event', 'gift:record', 'gift:analysis');
+
+INSERT IGNORE INTO `t_menu_info`
+(`id`, `name`, `path`, `title`, `component`, `redirect`, `icon`, `hide_in_menu`, `parent_id`, `summary`, `status`, `creator`, `create_time`, `updater`, `update_time`, `deleter`, `delete_time`, `is_delete`, `operator`, `operate_time`, `order_by`, `show_in_home`, `permission_code`)
+VALUES
+(1900000000000001000, 'gift', '/finance/gift', '礼尚往来管理', 'Layout', '/finance/gift/dashboard', 'finance', '0', NULL, '礼尚往来管理', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 35, '0', 'gift');
+
+UPDATE `t_menu_info`
+SET `parent_id` = 1900000000000001000
+WHERE `name` IN ('giftDashboard', 'giftPerson', 'giftEvent', 'giftRecord', 'giftAnalysis');
+
+UPDATE `t_menu_info`
+SET `order_by` = CASE `name`
+  WHEN 'giftDashboard' THEN 10
+  WHEN 'giftPerson' THEN 20
+  WHEN 'giftEvent' THEN 30
+  WHEN 'giftRecord' THEN 40
+  WHEN 'giftAnalysis' THEN 50
+  ELSE `order_by`
+END
+WHERE `name` IN ('giftDashboard', 'giftPerson', 'giftEvent', 'giftRecord', 'giftAnalysis');
+
+INSERT IGNORE INTO `t_role_permission_info`
+(`id`, `role_id`, `permission_id`, `summary`, `status`, `creator`, `create_time`, `updater`, `update_time`, `deleter`, `delete_time`, `is_delete`, `operator`, `operate_time`)
+VALUES
+(1900000000000005000, '1900000000000004001', '1900000000000002000', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(1900000000000006000, '1900000000000004002', '1900000000000002000', NULL, '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL);
+
 SET FOREIGN_KEY_CHECKS = 1;

@@ -89,7 +89,10 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         if (!StringUtils.hasText(ids)) {
             return true;
         }
-        return removeBatchByIds(Arrays.asList(ids.split(",")));
+        return removeBatchByIds(Arrays.stream(ids.split(","))
+                .filter(StringUtils::hasText)
+                .map(Long::valueOf)
+                .collect(Collectors.toList()));
     }
 
     @Override
