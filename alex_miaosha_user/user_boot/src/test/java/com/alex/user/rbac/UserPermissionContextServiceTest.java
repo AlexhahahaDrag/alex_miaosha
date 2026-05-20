@@ -45,7 +45,8 @@ public class UserPermissionContextServiceTest {
         UserPermissionContextService service = new UserPermissionContextServiceImpl(
                 orgService(userId, Arrays.asList(firstOrg, secondOrg)),
                 roleService(userId, Arrays.asList(firstRole, secondRole)),
-                menuService(Collections.emptyList())
+                menuService(Collections.emptyList()),
+                Runnable::run
         );
 
         UserPermissionContextVo context = service.buildContext(userId);
@@ -70,7 +71,8 @@ public class UserPermissionContextServiceTest {
         UserPermissionContextService service = new UserPermissionContextServiceImpl(
                 orgService(userId, Collections.emptyList()),
                 roleService(userId, Collections.singletonList(superRole)),
-                menuService(allMenus)
+                menuService(allMenus),
+                Runnable::run
         );
 
         UserPermissionContextVo context = service.buildContext(userId);
@@ -138,7 +140,7 @@ public class UserPermissionContextServiceTest {
             return freshContext;
         };
         TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null, null,
-                null, null, null, null, null, contextService);
+                null, null, null, null, null, Runnable::run, contextService);
 
         TUserVo refreshedUser = service.refreshLoginPermissionContext(cachedUser);
 
@@ -160,9 +162,7 @@ public class UserPermissionContextServiceTest {
             sleep(80L);
             userVo.setAvatarUrl("https://cdn.example.com/avatar.png");
         });
-        CompletableFuture<UserPermissionContextVo> permissionContextFuture = CompletableFuture.completedFuture(context);
-
-        TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, permissionContextFuture);
+        TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, context);
 
         assertEquals("https://cdn.example.com/avatar.png", userVo.getAvatarUrl(), "login response should wait for avatar enrichment");
         assertSame(context, userVo.getPermissionContext(), "login response should include permission context before returning");
@@ -171,11 +171,11 @@ public class UserPermissionContextServiceTest {
     public void testCompleteLoginResponseRestoresInterruptFlagWhenInterrupted() {
         TUserVo userVo = new TUserVo();
         CompletableFuture<Void> avatarFuture = new CompletableFuture<>();
-        CompletableFuture<UserPermissionContextVo> permissionContextFuture = CompletableFuture.completedFuture(new UserPermissionContextVo());
+        UserPermissionContextVo context = new UserPermissionContextVo();
         Thread.currentThread().interrupt();
 
         try {
-            TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, permissionContextFuture);
+            TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, context);
             throw new AssertionError("interrupted wait should throw UserException");
         } catch (UserException e) {
             assertEquals(Boolean.TRUE, Thread.currentThread().isInterrupted(), "interrupted wait should restore interrupt flag");
