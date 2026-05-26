@@ -35,7 +35,7 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
       - cp /drone/src/alex_miaosha_product/product_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
 
-  - name: ssh-monitor
+  - name: pre-deploy-runtime-snapshot
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
@@ -51,33 +51,32 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       password:
         from_secret: ssh_password
       script:
-        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor
-        - docker rm -f monitor
-        - docker rmi -f alex_miaosha_monitor:latest
-        - docker build  -t alex_miaosha_monitor:latest .
-        - docker run -p 30099:30099 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=monitor -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_monitor:latest
+        - date -Is
+        - docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+        - docker stats --no-stream --format 'table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}\t{{.BlockIO}}\t{{.PIDs}}'
+        - docker events --since 30m --filter event=oom --filter event=restart || true
 
-  - name: ssh-gateway
-    pull: if-not-exists
-    image: appleboy/drone-ssh
-    settings:
-      # 你服务器ip地址
-      host:
-        from_secret: ssh_ip
-      # 服务器端口号
-      port: 22
-      # 服务器账号
-      username:
-        from_secret: ssh_root
-      # 密码登入写法
-      password:
-        from_secret: ssh_password
-      script:
-        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
-        - docker rm -f gateway
-        - docker rmi -f alex_miaosha_gateway:latest
-        - docker build  -t alex_miaosha_gateway:latest .
-        - docker run -p 30001:30001 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=gateway -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_gateway:latest
+  # - name: ssh-monitor
+  #   pull: if-not-exists
+  #   image: appleboy/drone-ssh
+  #   settings:
+  #     # 你服务器ip地址
+  #     host:
+  #       from_secret: ssh_ip
+  #     # 服务器端口号
+  #     port: 22
+  #     # 服务器账号
+  #     username:
+  #       from_secret: ssh_root
+  #     # 密码登入写法
+  #     password:
+  #       from_secret: ssh_password
+  #     script:
+  #       - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/monitor
+  #       - docker rm -f monitor
+  #       - docker rmi -f alex_miaosha_monitor:latest
+  #       - docker build  -t alex_miaosha_monitor:latest .
+  #       - docker run -p 30099:30099 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=monitor -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_monitor:latest
 
   - name: ssh-finance
     pull: if-not-exists
@@ -97,9 +96,8 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       script:
         - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance
         - docker rm -f finance
-        - docker rmi -f alex_miaosha_finance:latest
-        - docker build  -t alex_miaosha_finance:latest .
-        - docker run -p 30008:30008 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=1024m --cpus=0.5 --name=finance -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_finance:latest
+        - docker build -t alex_miaosha_finance:${DRONE_BUILD_NUMBER} -t alex_miaosha_finance:latest .
+        - docker run -p 30008:30008 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=1024m --cpus=0.5 --restart unless-stopped --name=finance -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_finance:${DRONE_BUILD_NUMBER}
 
   - name: ssh-user
     pull: if-not-exists
@@ -119,9 +117,8 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       script:
         - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/user
         - docker rm -f user
-        - docker rmi -f alex_miaosha_user:latest
-        - docker build  -t alex_miaosha_user:latest .
-        - docker run -p 30006:30006 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=user -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_user:latest
+        - docker build -t alex_miaosha_user:${DRONE_BUILD_NUMBER} -t alex_miaosha_user:latest .
+        - docker run -p 30006:30006 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=768m --memory-swap=768m --cpus=0.5 --restart unless-stopped --name=user -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_user:${DRONE_BUILD_NUMBER}
 
   - name: ssh-oss
     pull: if-not-exists
@@ -141,11 +138,10 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       script:
         - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss
         - docker rm -f oss
-        - docker rmi -f alex_miaosha_oss:latest
-        - docker build  -t alex_miaosha_oss:latest .
-        - docker run -p 30009:30009 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=oss -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_oss:latest
+        - docker build -t alex_miaosha_oss:${DRONE_BUILD_NUMBER} -t alex_miaosha_oss:latest .
+        - docker run -p 30009:30009 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=768m --memory-swap=768m --cpus=0.5 --restart unless-stopped --name=oss -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_oss:${DRONE_BUILD_NUMBER}
 
-  - name: ssh-product
+  - name: ssh-gateway
     pull: if-not-exists
     image: appleboy/drone-ssh
     settings:
@@ -161,11 +157,32 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       password:
         from_secret: ssh_password
       script:
-        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
-        - docker rm -f product
-        - docker rmi -f alex_miaosha_product:latest
-        - docker build  -t alex_miaosha_product:latest .
-        - docker run -p 30007:30007 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=product -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_product:latest
+        - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
+        - docker rm -f gateway
+        - docker build -t alex_miaosha_gateway:${DRONE_BUILD_NUMBER} -t alex_miaosha_gateway:latest .
+        - docker run -p 30001:30001 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=768m --memory-swap=768m --cpus=0.5 --restart unless-stopped --name=gateway -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_gateway:${DRONE_BUILD_NUMBER}
+
+  # - name: ssh-product
+  #   pull: if-not-exists
+  #   image: appleboy/drone-ssh
+  #   settings:
+  #     # 你服务器ip地址
+  #     host:
+  #       from_secret: ssh_ip
+  #     # 服务器端口号
+  #     port: 22
+  #     # 服务器账号
+  #     username:
+  #       from_secret: ssh_root
+  #     # 密码登入写法
+  #     password:
+  #       from_secret: ssh_password
+  #     script:
+  #       - cd /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
+  #       - docker rm -f product
+  #       - docker rmi -f alex_miaosha_product:latest
+  #       - docker build  -t alex_miaosha_product:latest .
+  #       - docker run -p 30007:30007 --network=alex_miaosha_net --log-opt max-size=10m --log-opt max-file=30 --memory=512m --cpus=0.5 --name=product -v /usr/local/soft/alex_miaosha/drone/alex_miaosha/logs:/logs -d alex_miaosha_product:latest
 
   - name: notify      # 步骤4 部署完成，邮件通知
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
