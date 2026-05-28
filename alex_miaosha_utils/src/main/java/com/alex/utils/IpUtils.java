@@ -25,6 +25,8 @@ public class IpUtils {
 
     private static final String dbPath = "city/ip2region.xdb";
 
+    private static volatile String cachedLocalHostIp = null;
+
     public static Searcher searcher;
 
     static {
@@ -70,14 +72,20 @@ public class IpUtils {
         if (checkNotIp(ipAddress)) {
             ipAddress = request.getRemoteAddr();
             if ("127.0.0.1".equals(ipAddress) || "0:0:0:0:0:0:0:1".equals(ipAddress)) {
-                InetAddress inet;
-                try {
-                    inet = InetAddress.getLocalHost();
-                    ipAddress = inet.getHostAddress();
-                } catch (UnknownHostException e) {
-                    log.error("查不到本机ip,", e);
-                    throw new Exception("查不到本机ip");
+                if (cachedLocalHostIp == null) {
+                    synchronized (IpUtils.class) {
+                        if (cachedLocalHostIp == null) {
+                            try {
+                                InetAddress inet = InetAddress.getLocalHost();
+                                cachedLocalHostIp = inet.getHostAddress();
+                            } catch (UnknownHostException e) {
+                                log.error("查不到本机ip,", e);
+                                cachedLocalHostIp = "127.0.0.1";
+                            }
+                        }
+                    }
                 }
+                ipAddress = cachedLocalHostIp;
             }
         }
         //对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照
@@ -143,14 +151,25 @@ public class IpUtils {
                 String IEVersion = (userAgent.substring(userAgent.indexOf("rv")).split(" ")[0]).replace("rv:", "-");
                 browser = "IE" + IEVersion.substring(0, IEVersion.length() - 1);
             } else {
-                String[] split2 = userAgent.substring(userAgent.indexOf("Version")).split(" ");
                 if (user.contains("safari") && user.contains("version")) {
-                    browser = (userAgent.substring(userAgent.indexOf("Safari")).split(" ")[0]).split("/")[0]
-                            + "-" + (split2[0]).split("/")[1];
+                    int versionIdx = userAgent.indexOf("Version");
+                    if (versionIdx != -1) {
+                        String[] split2 = userAgent.substring(versionIdx).split(" ");
+                        browser = (userAgent.substring(userAgent.indexOf("Safari")).split(" ")[0]).split("/")[0]
+                                + "-" + (split2[0]).split("/")[1];
+                    } else {
+                        browser = "Safari-Unknown";
+                    }
                 } else if (user.contains("opr") || user.contains("opera")) {
                     if (user.contains("opera")) {
-                        browser = (userAgent.substring(userAgent.indexOf("Opera")).split(" ")[0]).split("/")[0]
-                                + "-" + (split2[0]).split("/")[1];
+                        int versionIdx = userAgent.indexOf("Version");
+                        if (versionIdx != -1) {
+                            String[] split2 = userAgent.substring(versionIdx).split(" ");
+                            browser = (userAgent.substring(userAgent.indexOf("Opera")).split(" ")[0]).split("/")[0]
+                                    + "-" + (split2[0]).split("/")[1];
+                        } else {
+                            browser = "Opera-Unknown";
+                        }
                     } else if (user.contains("opr")) {
                         browser = ((userAgent.substring(userAgent.indexOf("OPR")).split(" ")[0]).replace("/", "-"))
                                 .replace("OPR", "Opera");

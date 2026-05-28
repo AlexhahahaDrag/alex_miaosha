@@ -53,4 +53,10 @@ qodana.yaml
 *.sw?
 
 .worktrees/
+
+# graphify
+graphify-out/cache
+
+# env variables
 .env
+*.env

@@ -6,11 +6,17 @@ import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
+import com.alex.common.redis.key.LoginKey;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.UserPermissionContextService;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,44 +24,100 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class UserPermissionContextServiceImpl implements UserPermissionContextService {
 
     private static final String SUPER_ADMIN_ROLE_CODE = "super_super";
+    private static final String PERMISSION_CONTEXT_CACHE_KEY = "permission_context";
 
     private final OrgUserInfoService orgUserInfoService;
     private final RoleUserInfoService roleUserInfoService;
     private final MenuInfoService menuInfoService;
+    private final Executor asyncTaskExecutor;
+
+    @Autowired(required = false)
+    private RedisUtils redisUtils;
 
     public UserPermissionContextServiceImpl(OrgUserInfoService orgUserInfoService,
                                             RoleUserInfoService roleUserInfoService,
-                                            MenuInfoService menuInfoService) {
+                                            MenuInfoService menuInfoService,
+                                            @Qualifier("asyncTaskExecutor") Executor asyncTaskExecutor) {
         this.orgUserInfoService = orgUserInfoService;
         this.roleUserInfoService = roleUserInfoService;
         this.menuInfoService = menuInfoService;
+        this.asyncTaskExecutor = asyncTaskExecutor;
     }
 
     @Override
     public UserPermissionContextVo buildContext(Long userId) {
-        List<OrgInfoVo> orgList = emptyIfNull(orgUserInfoService.getOrgInfoList(userId));
-        List<RoleInfoVo> roleList = emptyIfNull(roleUserInfoService.getRoleInfoList(userId, true));
-        List<String> permissionCodes = collectPermissionCodes(roleList);
-        boolean superAdmin = hasSuperAdminRole(roleList);
+        if (userId == null) {
+            return null;
+        }
 
-        MenuInfoVo menuQuery = new MenuInfoVo();
-        menuQuery.setStatus(SysConf.VALID_STATUS);
-        List<MenuInfoVo> menuList = emptyIfNull(menuInfoService.getList(menuQuery));
-        List<MenuInfoVo> visibleMenus = superAdmin ? menuList : filterMenusByPermissionCodes(menuList, permissionCodes);
+        String cacheKey = PERMISSION_CONTEXT_CACHE_KEY + ":" + userId;
+        if (redisUtils != null) {
+            try {
+                UserPermissionContextVo cachedContext = redisUtils.get(LoginKey.loginKey, cacheKey, UserPermissionContextVo.class);
+                if (cachedContext != null) {
+                    log.info("从 Redis 缓存中获取用户 {} 的权限上下文成功", userId);
+                    return cachedContext;
+                }
+            } catch (Exception e) {
+                log.error("读取用户权限上下文缓存异常，userId: {}", userId, e);
+            }
+        }
 
-        UserPermissionContextVo context = new UserPermissionContextVo();
-        context.setOrgInfo(orgList.isEmpty() ? null : orgList.get(0));
-        context.setRoleList(roleList);
-        context.setPermissionCodes(permissionCodes);
-        context.setButtonPermissionCodes(permissionCodes);
-        context.setMenuList(visibleMenus);
-        context.setSuperAdmin(superAdmin);
-        return context;
+        CompletableFuture<List<OrgInfoVo>> orgListFuture = CompletableFuture.supplyAsync(
+                () -> emptyIfNull(orgUserInfoService.getOrgInfoList(userId)), asyncTaskExecutor);
+
+        CompletableFuture<List<RoleInfoVo>> roleListFuture = CompletableFuture.supplyAsync(
+                () -> emptyIfNull(roleUserInfoService.getRoleInfoList(userId, true)), asyncTaskExecutor);
+
+        CompletableFuture<List<MenuInfoVo>> menuListFuture = CompletableFuture.supplyAsync(
+                () -> {
+                    MenuInfoVo menuQuery = new MenuInfoVo();
+                    menuQuery.setStatus(SysConf.VALID_STATUS);
+                    return emptyIfNull(menuInfoService.getList(menuQuery));
+                }, asyncTaskExecutor);
+
+        // 并发等待所有异步任务完成
+        CompletableFuture.allOf(orgListFuture, roleListFuture, menuListFuture).join();
+
+        try {
+            List<OrgInfoVo> orgList = orgListFuture.get();
+            List<RoleInfoVo> roleList = roleListFuture.get();
+            List<MenuInfoVo> menuList = menuListFuture.get();
+
+            List<String> permissionCodes = collectPermissionCodes(roleList);
+            boolean superAdmin = hasSuperAdminRole(roleList);
+            List<MenuInfoVo> visibleMenus = superAdmin ? menuList : filterMenusByPermissionCodes(menuList, permissionCodes);
+
+            UserPermissionContextVo context = new UserPermissionContextVo();
+            context.setOrgInfo(orgList.isEmpty() ? null : orgList.get(0));
+            context.setRoleList(roleList);
+            context.setPermissionCodes(permissionCodes);
+            context.setButtonPermissionCodes(permissionCodes);
+            context.setMenuList(visibleMenus);
+            context.setSuperAdmin(superAdmin);
+
+            if (redisUtils != null) {
+                try {
+                    redisUtils.setEx(LoginKey.loginKey, cacheKey, JSONObject.toJSONString(context), 1, TimeUnit.HOURS);
+                    log.info("用户 {} 的权限上下文成功写入 Redis 缓存", userId);
+                } catch (Exception e) {
+                    log.error("写入用户权限上下文缓存异常，userId: {}", userId, e);
+                }
+            }
+
+            return context;
+        } catch (Exception e) {
+            throw new RuntimeException("并行构建权限上下文发生错误", e);
+        }
     }
 
     private List<String> collectPermissionCodes(List<RoleInfoVo> roleList) {
