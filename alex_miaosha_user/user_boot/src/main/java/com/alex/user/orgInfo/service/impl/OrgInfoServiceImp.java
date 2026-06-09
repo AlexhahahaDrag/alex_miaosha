@@ -1,10 +1,16 @@
 package com.alex.user.orgInfo.service.impl;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.base.constants.SysConf;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.orgInfo.entity.OrgInfo;
 import com.alex.user.orgInfo.mapper.OrgInfoMapper;
 import com.alex.user.orgInfo.service.OrgInfoService;
+import com.alex.user.orgUserInfo.entity.OrgUserInfo;
+import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -26,6 +33,8 @@ import java.util.List;
 public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> implements OrgInfoService {
 
     private final OrgInfoMapper orgInfoMapper;
+
+    private final OrgUserInfoService orgUserInfoService;
 
     @Override
     public Page<OrgInfoVo> getPage(Long pageNum, Long pageSize, OrgInfoVo orgInfoVo) {
@@ -59,8 +68,33 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         if(StringUtils.isEmpty(ids)) {
             return true;
         }
-        List<String> idArr = Arrays.asList(ids.split(","));
+        List<Long> idArr = parseIds(ids);
+        if (idArr.isEmpty()) {
+            return true;
+        }
+        long childOrgCount = this.count(Wrappers.<OrgInfo>lambdaQuery()
+                .in(OrgInfo::getParentId, idArr)
+                .eq(OrgInfo::getIsDelete, 0));
+        if (childOrgCount > 0) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构存在下级机构，不能删除:");
+        }
+        List<String> orgIds = idArr.stream().map(String::valueOf).collect(Collectors.toList());
+        long boundUserCount = orgUserInfoService.count(Wrappers.<OrgUserInfo>lambdaQuery()
+                .in(OrgUserInfo::getOrgId, orgIds)
+                .eq(OrgUserInfo::getIsDelete, 0)
+                .eq(OrgUserInfo::getStatus, SysConf.VALID_STATUS));
+        if (boundUserCount > 0) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构仍绑定用户，不能删除:");
+        }
         orgInfoMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    private List<Long> parseIds(String ids) {
+        return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(id -> !StringUtils.isEmpty(id))
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
     }
 }

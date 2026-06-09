@@ -5,6 +5,8 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
 import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.base.constants.SysConf;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
 import com.alex.user.roleInfo.entity.RoleInfo;
@@ -101,7 +103,20 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         if(StringUtils.isEmpty(ids)) {
             return true;
         }
-        List<String> idArr = Arrays.asList(ids.split(","));
+        List<String> idArr = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(id -> !StringUtils.isEmpty(id))
+                .collect(Collectors.toList());
+        if (idArr.isEmpty()) {
+            return true;
+        }
+        long boundUserCount = roleUserInfoService.count(Wrappers.<RoleUserInfo>lambdaQuery()
+                .in(RoleUserInfo::getRoleId, idArr)
+                .eq(RoleUserInfo::getIsDelete, 0)
+                .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
+        if (boundUserCount > 0) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "角色仍绑定用户，不能删除:");
+        }
         roleInfoMapper.deleteBatchIds(idArr);
         return true;
     }

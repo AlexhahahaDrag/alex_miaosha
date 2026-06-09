@@ -34,6 +34,12 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo>{
     @ApiModelProperty(value = "状态,字典(is_valid) 1：有效,0:失效)")
     private String status;
 
+    @ApiModelProperty(value = "绑定用户数")
+    private Long boundUserCount;
+
+    @ApiModelProperty(value = "权限数量")
+    private Long permissionCount;
+
     @ApiModelProperty(value = "权限列表")
     List<PermissionInfoVo> permissionList;
 

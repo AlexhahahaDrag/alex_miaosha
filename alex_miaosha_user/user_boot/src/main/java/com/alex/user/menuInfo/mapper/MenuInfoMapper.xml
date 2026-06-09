@@ -111,6 +111,9 @@
           <if test = "menuInfoVo.orderBy != null">
             and order_by = #{menuInfoVo.orderBy}
           </if>
+          <if test = "menuInfoVo.permissionCode != null">
+            and permission_code like concat('%', #{menuInfoVo.permissionCode}, '%')
+          </if>
         </if>
      </sql>
 </mapper>
