@@ -9,9 +9,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Mapper
 public interface GiftRecordInfoTMapper extends BaseMapper<GiftRecordInfoT> {
 
-    @DataPermission(table = "gift_record_info_t", field = "org_id")
+    @DataPermission(table = "gift_record_info_t", field = "user_id")
     Page<GiftRecordInfoTVo> getPage(Page<GiftRecordInfoTVo> page, @Param("query") GiftRecordQuery query);
+
+    @DataPermission(table = "gift_record_info_t", field = "user_id")
+    List<GiftRecordInfoTVo> getList(@Param("query") GiftRecordQuery query);
+
+    @DataPermission(table = "gift_record_info_t", field = "user_id")
+    List<GiftRecordInfoT> listEntities(@Param("query") GiftRecordQuery query);
+
+    BigDecimal sumReturnAmountByRelatedRecordId(@Param("relatedRecordId") Long relatedRecordId);
 }

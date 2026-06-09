@@ -9,9 +9,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface GiftRelationInfoTMapper extends BaseMapper<GiftRelationInfoT> {
 
-    @DataPermission(table = "gift_relation_info_t", field = "org_id")
+    @DataPermission(table = "gift_relation_info_t", field = "user_id")
     Page<GiftRelationInfoTVo> getPage(Page<GiftRelationInfoTVo> page, @Param("query") GiftRelationQuery query);
+
+    @DataPermission(table = "gift_relation_info_t", field = "user_id")
+    List<GiftRelationInfoTVo> getList(@Param("query") GiftRelationQuery query);
 }

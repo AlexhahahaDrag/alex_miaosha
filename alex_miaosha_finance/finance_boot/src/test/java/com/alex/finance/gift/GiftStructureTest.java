@@ -210,7 +210,7 @@ class GiftStructureTest {
                 .orElseThrow(NoSuchMethodException::new);
         DataPermission dataPermission = getPage.getAnnotation(DataPermission.class);
         assertEquals(tableName, dataPermission.table());
-        assertEquals("org_id", dataPermission.field());
+        assertEquals("user_id", dataPermission.field());
     }
 
     private void assertControllerRoutes(Class<?> controllerClass, String route) throws NoSuchMethodException {

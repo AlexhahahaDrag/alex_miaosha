@@ -11,15 +11,21 @@ import com.alex.finance.gift.event.entity.GiftEventInfoT;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
 import com.alex.finance.gift.person.entity.GiftPersonInfoT;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
+import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfoT;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
 import com.alex.finance.gift.relation.entity.GiftRelationInfoT;
 import com.alex.finance.gift.relation.service.impl.GiftRelationInfoTServiceImp;
+import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,7 +93,7 @@ class GiftOwnershipTest {
         private GiftPersonInfoT saved;
 
         private TestPersonService(UserUtils userUtils) {
-            super(userUtils);
+            super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
@@ -102,7 +108,7 @@ class GiftOwnershipTest {
         private GiftRelationInfoT saved;
 
         private TestRelationService(UserUtils userUtils) {
-            super(userUtils);
+            super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
@@ -117,7 +123,7 @@ class GiftOwnershipTest {
         private GiftEventInfoT saved;
 
         private TestEventService(UserUtils userUtils) {
-            super(userUtils);
+            super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
@@ -132,7 +138,17 @@ class GiftOwnershipTest {
         private GiftRecordInfoT saved;
 
         private TestRecordService(UserUtils userUtils) {
-            super(userUtils);
+            super(
+                    new GiftDataScopeSupport(userUtils),
+                    mock(GiftPersonInfoTMapper.class),
+                    mock(GiftEventInfoTMapper.class));
+            GiftRecordInfoTMapper mapper = mock(GiftRecordInfoTMapper.class);
+            when(mapper.insert(any(GiftRecordInfoT.class))).thenAnswer(invocation -> {
+                GiftRecordInfoT record = invocation.getArgument(0);
+                record.setId(4L);
+                return 1;
+            });
+            ReflectionTestUtils.setField(this, "baseMapper", mapper);
         }
 
         @Override

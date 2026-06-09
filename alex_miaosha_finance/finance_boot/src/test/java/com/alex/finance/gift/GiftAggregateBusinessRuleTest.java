@@ -1,23 +1,38 @@
 package com.alex.finance.gift;
 
+import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
+import com.alex.api.user.user.UserUtils;
 import com.alex.finance.gift.event.entity.GiftEventInfoT;
+import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
 import com.alex.finance.gift.person.entity.GiftPersonInfoT;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
 import com.alex.finance.gift.record.entity.GiftRecordInfoT;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GiftAggregateBusinessRuleTest {
 
@@ -92,22 +107,34 @@ class GiftAggregateBusinessRuleTest {
         return record;
     }
 
+    private static List<GiftRecordInfoTVo> toRecordVos(List<GiftRecordInfoT> records) {
+        return records.stream().map(entity -> {
+            GiftRecordInfoTVo vo = new GiftRecordInfoTVo();
+            BeanUtils.copyProperties(entity, vo);
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
     private static class TestPersonService extends GiftPersonInfoTServiceImp {
         private List<GiftPersonInfoT> people = List.of();
         private List<GiftRecordInfoT> records = List.of();
 
         private TestPersonService() {
-            super(null);
+            super(new GiftDataScopeSupport(mock(UserUtils.class)));
         }
 
         @Override
-        public List<GiftPersonInfoT> list(Wrapper<GiftPersonInfoT> queryWrapper) {
-            return people;
+        public List<GiftPersonInfoTVo> getList(GiftPersonQuery query) {
+            return people.stream().map(entity -> {
+                GiftPersonInfoTVo vo = new GiftPersonInfoTVo();
+                BeanUtils.copyProperties(entity, vo);
+                return vo;
+            }).collect(Collectors.toList());
         }
 
         @Override
-        protected List<GiftRecordInfoT> listGiftRecordsForAggregate() {
-            return records;
+        protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
+            return toRecordVos(records);
         }
     }
 
@@ -116,17 +143,21 @@ class GiftAggregateBusinessRuleTest {
         private List<GiftRecordInfoT> records = List.of();
 
         private TestEventService() {
-            super(null);
+            super(new GiftDataScopeSupport(mock(UserUtils.class)));
         }
 
         @Override
-        public List<GiftEventInfoT> list(Wrapper<GiftEventInfoT> queryWrapper) {
-            return events;
+        public List<GiftEventInfoTVo> getList(GiftEventQuery query) {
+            return events.stream().map(entity -> {
+                GiftEventInfoTVo vo = new GiftEventInfoTVo();
+                BeanUtils.copyProperties(entity, vo);
+                return vo;
+            }).collect(Collectors.toList());
         }
 
         @Override
-        protected List<GiftRecordInfoT> listGiftRecordsForAggregate() {
-            return records;
+        protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
+            return toRecordVos(records);
         }
     }
 
@@ -134,12 +165,13 @@ class GiftAggregateBusinessRuleTest {
         private List<GiftRecordInfoT> records = List.of();
 
         private TestRecordService() {
-            super(null);
-        }
-
-        @Override
-        public List<GiftRecordInfoT> list(Wrapper<GiftRecordInfoT> queryWrapper) {
-            return records;
+            super(
+                    new GiftDataScopeSupport(mock(UserUtils.class)),
+                    mock(GiftPersonInfoTMapper.class),
+                    mock(GiftEventInfoTMapper.class));
+            GiftRecordInfoTMapper mapper = mock(GiftRecordInfoTMapper.class);
+            when(mapper.listEntities(any())).thenAnswer(invocation -> records);
+            ReflectionTestUtils.setField(this, "baseMapper", mapper);
         }
     }
 }

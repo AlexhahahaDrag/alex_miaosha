@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper">
+
+    <!-- 公共查询条件片段（与 getPage / getList / listEntities 共享） -->
+    <sql id="queryConditions">
+        <if test="query != null">
+            <if test="query.eventId != null">
+                AND r.event_id = #{query.eventId}
+            </if>
+            <if test="query.giverPersonId != null">
+                AND r.giver_person_id = #{query.giverPersonId}
+            </if>
+            <if test="query.receiverPersonId != null">
+                AND r.receiver_person_id = #{query.receiverPersonId}
+            </if>
+            <if test="query.direction != null and query.direction != ''">
+                AND r.direction = #{query.direction}
+            </if>
+            <if test="query.returnStatus != null and query.returnStatus != ''">
+                AND r.returned_flag = #{query.returnStatus}
+            </if>
+            <if test="query.payTimeStart != null">
+                AND r.pay_time &gt;= #{query.payTimeStart}
+            </if>
+            <if test="query.payTimeEnd != null">
+                AND r.pay_time &lt;= #{query.payTimeEnd}
+            </if>
+            <if test="query.amountMin != null">
+                AND r.amount &gt;= #{query.amountMin}
+            </if>
+            <if test="query.amountMax != null">
+                AND r.amount &lt;= #{query.amountMax}
+            </if>
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (
+                    e.event_name LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR giver.person_name LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR receiver.person_name LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR r.remark LIKE CONCAT('%', #{query.keyword}, '%')
+                )
+            </if>
+        </if>
+    </sql>
+
+    <!-- 分页查询（返回 VO，含联表） -->
+    <select id="getPage" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo">
+        SELECT
+            r.id,
+            r.org_id,
+            r.user_id,
+            r.event_id,
+            r.giver_person_id,
+            r.receiver_person_id,
+            r.related_record_id,
+            r.direction,
+            r.amount,
+            r.pay_time,
+            r.returned_flag,
+            r.remark,
+            r.create_time,
+            r.update_time,
+            e.event_name,
+            giver.person_name  AS giver_person_name,
+            receiver.person_name AS receiver_person_name,
+            IF(r.direction = 'RECEIVE', giver.person_name, receiver.person_name) AS person_name,
+            '-' AS payment_method,
+            '-' AS handler_name
+        FROM gift_record_info_t r
+        LEFT JOIN gift_event_info_t e
+            ON r.event_id = e.id
+        LEFT JOIN gift_person_info_t giver
+            ON r.giver_person_id = giver.id
+        LEFT JOIN gift_person_info_t receiver
+            ON r.receiver_person_id = receiver.id
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY r.pay_time DESC
+    </select>
+
+    <!-- 列表查询（返回 VO，含联表，不分页） -->
+    <select id="getList" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo">
+        SELECT
+            r.id,
+            r.org_id,
+            r.user_id,
+            r.event_id,
+            r.giver_person_id,
+            r.receiver_person_id,
+            r.related_record_id,
+            r.direction,
+            r.amount,
+            r.pay_time,
+            r.returned_flag,
+            r.remark,
+            r.create_time,
+            r.update_time,
+            e.event_name,
+            giver.person_name  AS giver_person_name,
+            receiver.person_name AS receiver_person_name,
+            IF(r.direction = 'RECEIVE', giver.person_name, receiver.person_name) AS person_name,
+            '-' AS payment_method,
+            '-' AS handler_name
+        FROM gift_record_info_t r
+        LEFT JOIN gift_event_info_t e
+            ON r.event_id = e.id
+        LEFT JOIN gift_person_info_t giver
+            ON r.giver_person_id = giver.id
+        LEFT JOIN gift_person_info_t receiver
+            ON r.receiver_person_id = receiver.id
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY r.pay_time DESC
+    </select>
+
+    <!-- 实体列表查询（返回 Entity，用于内部聚合计算） -->
+    <select id="listEntities" resultType="com.alex.finance.gift.record.entity.GiftRecordInfoT">
+        SELECT
+            r.id,
+            r.org_id,
+            r.user_id,
+            r.event_id,
+            r.giver_person_id,
+            r.receiver_person_id,
+            r.related_record_id,
+            r.direction,
+            r.amount,
+            r.pay_time,
+            r.returned_flag,
+            r.remark,
+            r.create_time,
+            r.update_time
+        FROM gift_record_info_t r
+        LEFT JOIN gift_event_info_t e
+            ON r.event_id = e.id
+        LEFT JOIN gift_person_info_t giver
+            ON r.giver_person_id = giver.id
+        LEFT JOIN gift_person_info_t receiver
+            ON r.receiver_person_id = receiver.id
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY r.pay_time DESC
+    </select>
+
+    <!-- 汇总指定收礼记录下所有回礼金额 -->
+    <select id="sumReturnAmountByRelatedRecordId" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(amount), 0)
+        FROM gift_record_info_t
+        WHERE related_record_id = #{relatedRecordId}
+          AND direction = 'RETURN'
+    </select>
+
+</mapper>

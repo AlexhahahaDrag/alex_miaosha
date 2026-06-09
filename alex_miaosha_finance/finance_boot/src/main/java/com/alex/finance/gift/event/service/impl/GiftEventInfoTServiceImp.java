@@ -4,13 +4,16 @@ import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.finance.gift.record.query.GiftRecordQuery;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfoT;
 import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
 import com.alex.finance.gift.event.service.GiftEventInfoTService;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
 import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.support.GiftDataScopeSupport;
+import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -31,28 +34,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, GiftEventInfoT> implements GiftEventInfoTService {
 
-    private final UserUtils userUtils;
+    private final GiftDataScopeSupport giftDataScopeSupport;
 
     @Autowired(required = false)
     private GiftRecordInfoTService giftRecordInfoTService;
 
     @Override
     public Page<GiftEventInfoTVo> getPage(Long pageNum, Long pageSize, GiftEventQuery query) {
-        Page<GiftEventInfoT> entityPage = page(new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize), queryWrapper(query));
-        Page<GiftEventInfoTVo> voPage = new Page<>(entityPage.getCurrent(), entityPage.getSize(), entityPage.getTotal());
-        voPage.setRecords(entityPage.getRecords().stream().map(this::toVo).collect(Collectors.toList()));
-        return voPage;
+        return getBaseMapper().getPage(
+                new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
+                query);
     }
 
     @Override
     public List<GiftEventInfoTVo> getList(GiftEventQuery query) {
-        return list(queryWrapper(query)).stream().map(this::toVo).collect(Collectors.toList());
+        return getBaseMapper().getList(query);
     }
 
     @Override
     public GiftEventSummaryVo getSummary() {
-        List<GiftEventInfoT> events = list(queryWrapper(null));
-        List<GiftRecordInfoT> records = listGiftRecordsForAggregate();
+        List<GiftEventInfoT> events = getBaseMapper().listEntities(null);
+        List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate();
         LocalDateTime now = LocalDateTime.now();
         long monthPendingCount = events.stream()
                 .filter(event -> event.getEventTime() != null)
@@ -74,7 +76,7 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
     public Page<GiftEventBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftEventQuery query) {
         long current = pageNum == null ? 1 : pageNum;
         long size = pageSize == null ? 10 : pageSize;
-        List<GiftEventBusinessVo> rows = list(queryWrapper(query)).stream()
+        List<GiftEventBusinessVo> rows = getBaseMapper().getList(query).stream()
                 .map(this::toBusinessVo)
                 .collect(Collectors.toList());
         long from = Math.max(0, (current - 1) * size);
@@ -86,7 +88,9 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
 
     @Override
     public GiftEventInfoTVo queryGiftEventInfoT(Long id) {
-        return toVo(getById(id));
+        GiftEventInfoT entity = getById(id);
+        giftDataScopeSupport.assertEventAccessible(entity);
+        return toVo(entity);
     }
 
     @Override
@@ -101,6 +105,13 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
 
     @Override
     public Boolean updateGiftEventInfoT(GiftEventInfoTVo giftEventInfoTVo) {
+        if (giftEventInfoTVo == null || giftEventInfoTVo.getId() == null) {
+            throw GiftExceptions.param("事由ID不能为空");
+        }
+        GiftEventInfoT existing = getById(giftEventInfoTVo.getId());
+        giftDataScopeSupport.assertEventAccessible(existing);
+        giftEventInfoTVo.setUserId(existing.getUserId());
+        giftEventInfoTVo.setOrgId(existing.getOrgId());
         GiftEventInfoT entity = new GiftEventInfoT();
         BeanUtils.copyProperties(giftEventInfoTVo, entity);
         return updateById(entity);
@@ -111,33 +122,36 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         if (!StringUtils.hasText(ids)) {
             return true;
         }
-        return removeBatchByIds(Arrays.stream(ids.split(","))
-                .filter(StringUtils::hasText)
-                .map(Long::valueOf)
-                .collect(Collectors.toList()));
-    }
-
-    private com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GiftEventInfoT> queryWrapper(GiftEventQuery query) {
-        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GiftEventInfoT> wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
-        if (query == null) {
-            return wrapper.orderByDesc(GiftEventInfoT::getEventTime);
+        List<Long> idList = parseIds(ids);
+        for (Long id : idList) {
+            giftDataScopeSupport.assertEventAccessible(getById(id));
         }
-        wrapper.like(StringUtils.hasText(query.getKeyword()), GiftEventInfoT::getEventName, query.getKeyword());
-        wrapper.eq(StringUtils.hasText(query.getEventType()), GiftEventInfoT::getEventType, query.getEventType());
-        wrapper.ge(query.getEventTimeStart() != null, GiftEventInfoT::getEventTime, query.getEventTimeStart());
-        wrapper.le(query.getEventTimeEnd() != null, GiftEventInfoT::getEventTime, query.getEventTimeEnd());
-        return wrapper.orderByDesc(GiftEventInfoT::getEventTime);
+        return removeBatchByIds(idList);
     }
 
-    protected List<GiftRecordInfoT> listGiftRecordsForAggregate() {
-        return giftRecordInfoTService == null ? List.of() : giftRecordInfoTService.list();
+    protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
+        return giftRecordInfoTService == null
+                ? List.of()
+                : giftRecordInfoTService.getList(new GiftRecordQuery());
     }
 
-    private GiftEventBusinessVo toBusinessVo(GiftEventInfoT entity) {
+    private List<Long> parseIds(String ids) {
+        try {
+            return Arrays.stream(ids.split(","))
+                    .map(String::trim)
+                    .filter(StringUtils::hasText)
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+        } catch (NumberFormatException ex) {
+            throw GiftExceptions.param("事由ID格式不合法");
+        }
+    }
+
+    private GiftEventBusinessVo toBusinessVo(GiftEventInfoTVo event) {
         GiftEventBusinessVo vo = new GiftEventBusinessVo();
-        BeanUtils.copyProperties(entity, vo);
-        List<GiftRecordInfoT> records = listGiftRecordsForAggregate().stream()
-                .filter(record -> entity.getId() != null && entity.getId().equals(record.getEventId()))
+        BeanUtils.copyProperties(event, vo);
+        List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate().stream()
+                .filter(record -> event.getId() != null && event.getId().equals(record.getEventId()))
                 .collect(Collectors.toList());
         BigDecimal giveAmount = records.stream()
                 .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
@@ -149,28 +163,26 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         Set<Long> participantIds = records.stream()
                 .flatMap(record -> java.util.stream.Stream.of(record.getGiverPersonId(), record.getReceiverPersonId()))
-                .filter(id -> id != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         vo.setGiveAmount(giveAmount);
         vo.setReceiveAmount(receiveAmount);
         vo.setTotalAmount(giveAmount.add(receiveAmount));
         vo.setParticipantCount((long) participantIds.size());
-        vo.setLocationText(StringUtils.hasText(entity.getRemark()) ? entity.getRemark() : "-");
-        vo.setEventStatus(entity.getEventTime() != null && entity.getEventTime().isAfter(LocalDateTime.now()) ? "PENDING" : "FINISHED");
+        vo.setLocationText(StringUtils.hasText(event.getRemark()) ? event.getRemark() : "-");
+        vo.setEventStatus(event.getEventTime() != null && event.getEventTime().isAfter(LocalDateTime.now()) ? "PENDING" : "FINISHED");
         return vo;
     }
 
-    private BigDecimal amount(GiftRecordInfoT record) {
+    private BigDecimal amount(GiftRecordInfoTVo record) {
         return record.getAmount() == null ? BigDecimal.ZERO : record.getAmount();
     }
 
     private void fillOwner(GiftEventInfoTVo vo) {
-        TUserVo loginUser = userUtils == null ? null : userUtils.getLoginUser();
-        if (loginUser == null) {
-            return;
-        }
+        TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         vo.setUserId(loginUser.getId());
-        vo.setOrgId(loginUser.getOrgInfoVo() == null ? loginUser.getOrgId() : loginUser.getOrgInfoVo().getId());
+        OrgInfoVo orgInfoVo = loginUser.getOrgInfoVo();
+        vo.setOrgId(orgInfoVo == null ? loginUser.getOrgId() : orgInfoVo.getId());
     }
 
     private GiftEventInfoTVo toVo(GiftEventInfoT entity) {

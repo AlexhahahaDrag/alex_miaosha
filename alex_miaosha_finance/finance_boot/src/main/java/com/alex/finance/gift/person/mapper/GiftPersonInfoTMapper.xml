@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper">
+
+    <sql id="queryConditions">
+        <if test="query != null">
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (
+                    p.person_name LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR p.phone LIKE CONCAT('%', #{query.keyword}, '%')
+                )
+            </if>
+            <if test="query.relationType != null and query.relationType != ''">
+                AND p.relation_type = #{query.relationType}
+            </if>
+        </if>
+    </sql>
+
+    <sql id="voColumns">
+        p.id,
+        p.org_id,
+        p.user_id,
+        p.bind_user_id,
+        p.person_name,
+        p.phone,
+        p.relation_type,
+        p.remark,
+        p.create_time,
+        p.update_time
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="listEntities" resultType="com.alex.finance.gift.person.entity.GiftPersonInfoT">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+</mapper>
