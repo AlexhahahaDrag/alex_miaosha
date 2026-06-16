@@ -16,9 +16,9 @@ import org.springframework.context.annotation.FilterType;
 
 /**
  * @description:
- * @author:       majf
- * @createDate:   2022/10/10 16:56
- * @version:      1.0.0
+ * @author: majf
+ * @createDate: 2022/10/10 16:56
+ * @version: 1.0.0
  */
 @EnableDiscoveryClient
 @SpringBootApplication
@@ -32,6 +32,11 @@ import org.springframework.context.annotation.FilterType;
 public class FinanceApplication {
 
     public static void main(String[] args) {
+        // 必须在最前面设置
+        System.setProperty(
+                "JM.SNAPSHOT.PATH",
+                "D:\\"
+        );
         SpringApplication.run(FinanceApplication.class, args);
     }
 

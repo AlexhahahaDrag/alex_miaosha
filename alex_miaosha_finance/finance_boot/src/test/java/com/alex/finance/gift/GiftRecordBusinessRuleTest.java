@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class GiftRecordBusinessRuleTest {
@@ -47,7 +48,7 @@ class GiftRecordBusinessRuleTest {
                 giftPersonInfoTMapper,
                 giftEventInfoTMapper);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoTMapper);
-        when(userUtils.getLoginUser()).thenReturn(loginUser());
+        lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());
     }
 
     @Test

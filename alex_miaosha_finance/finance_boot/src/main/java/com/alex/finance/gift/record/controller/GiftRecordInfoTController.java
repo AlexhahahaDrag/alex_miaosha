@@ -101,4 +101,11 @@ public class GiftRecordInfoTController {
     public Result<Boolean> markReturned(@RequestParam("receiveRecordId") Long receiveRecordId) {
         return Result.success(giftRecordInfoTService.markReturned(receiveRecordId));
     }
+
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "export gift record", response = void.class)
+    @PostMapping(value = "/export")
+    public void export(@RequestBody(required = false) GiftRecordQuery query, javax.servlet.http.HttpServletResponse response) {
+        giftRecordInfoTService.exportGiftRecordInfoT(query, response);
+    }
 }

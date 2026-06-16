@@ -23,6 +23,11 @@ import org.springframework.context.annotation.ComponentScan;
 public class GatewayApplication {
 
     public static void main(String[] args) {
+        // 必须在最前面设置
+        System.setProperty(
+                "JM.SNAPSHOT.PATH",
+                "D:\\"
+        );
         ConfigurableApplicationContext run = SpringApplication.run(GatewayApplication.class, args);
         AutowiredBean.setApplicationContext(run);
     }

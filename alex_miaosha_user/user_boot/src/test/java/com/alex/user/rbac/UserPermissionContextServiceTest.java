@@ -140,7 +140,7 @@ public class UserPermissionContextServiceTest {
             return freshContext;
         };
         TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null, null,
-                null, null, null, null, null, null, Runnable::run, contextService);
+                null, null, null, null, null, Runnable::run, contextService);
 
         TUserVo refreshedUser = service.refreshLoginPermissionContext(cachedUser);
 

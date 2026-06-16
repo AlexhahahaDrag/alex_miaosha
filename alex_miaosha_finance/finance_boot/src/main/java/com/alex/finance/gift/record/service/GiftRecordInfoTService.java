@@ -29,4 +29,6 @@ public interface GiftRecordInfoTService extends IService<GiftRecordInfoT> {
     BigDecimal calculatePendingReturnAmount(Long receiveRecordId);
 
     Boolean markReturned(Long receiveRecordId);
+
+    void exportGiftRecordInfoT(GiftRecordQuery query, javax.servlet.http.HttpServletResponse response);
 }

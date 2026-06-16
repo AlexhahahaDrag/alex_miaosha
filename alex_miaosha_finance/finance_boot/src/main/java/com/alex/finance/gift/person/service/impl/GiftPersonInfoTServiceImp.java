@@ -73,7 +73,7 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
     public Page<GiftPersonBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
         long current = pageNum == null ? 1 : pageNum;
         long size = pageSize == null ? 10 : pageSize;
-        List<GiftPersonBusinessVo> rows = getBaseMapper().getList(query).stream()
+        List<GiftPersonBusinessVo> rows = getList(query).stream()
                 .map(this::toBusinessVo)
                 .collect(Collectors.toList());
         long from = Math.max(0, (current - 1) * size);
