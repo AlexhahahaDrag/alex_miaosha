@@ -79,7 +79,7 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
                 .collect(Collectors.groupingBy(PermissionInfoVo::getParentId));
         return list.stream().filter(item -> item.getParentId() == null)
                 .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<PermissionInfoVo> getChildren(Long pId, Map<Long, List<PermissionInfoVo>> menuMap) {

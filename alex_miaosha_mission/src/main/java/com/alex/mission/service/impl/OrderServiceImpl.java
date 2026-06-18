@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
             return Result.success(null);
         }
         //获取商品id列表及将商品信息转化成map
-        List<Long> goodsIdList = orderList.parallelStream().map(Order::getGoodsId).collect(Collectors.toList());
+        List<Long> goodsIdList = orderList.parallelStream().map(Order::getGoodsId).toList();
         List<Goods> goodsList = goodsManager.list(Wrappers.<Goods>lambdaQuery().in(Goods::getId, goodsIdList));
         Map<Long, String> goodsMap = goodsList.parallelStream().collect(Collectors.toMap(Goods::getId, Goods::getGoodsName, (oldValue, newValue) -> newValue));
         List<OrderDetailVo> orderDetailVoList = orderList.parallelStream().map(order ->
@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                         .updatedTime(order.getUpdateTime())
                         .goodsName(goodsMap.get(order.getGoodsId()))
                         .build()
-        ).collect(Collectors.toList());
+        ).toList();
         return Result.success(orderDetailVoList);
     }
 }

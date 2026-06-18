@@ -80,7 +80,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
                 .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
         List<MenuInfoVo> result = list.stream().filter(item -> item.getParentId() == null)
                 .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
-                .collect(Collectors.toList());
+                .toList();
 
         if (isFullQuery && result != null && !result.isEmpty()) {
             try {

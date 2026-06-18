@@ -168,6 +168,6 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
                 log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
             }
             return fileInfoVo;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

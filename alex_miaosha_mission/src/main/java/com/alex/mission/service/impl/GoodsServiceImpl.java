@@ -173,7 +173,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (keys == null || keys.isEmpty()) {
             return null;
         }
-        return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).collect(Collectors.toList());
+        return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).toList();
     }
 
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {

@@ -27,8 +27,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -112,7 +110,7 @@ class GiftAggregateBusinessRuleTest {
             GiftRecordInfoTVo vo = new GiftRecordInfoTVo();
             BeanUtils.copyProperties(entity, vo);
             return vo;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     private static class TestPersonService extends GiftPersonInfoTServiceImp {
@@ -129,7 +127,7 @@ class GiftAggregateBusinessRuleTest {
                 GiftPersonInfoTVo vo = new GiftPersonInfoTVo();
                 BeanUtils.copyProperties(entity, vo);
                 return vo;
-            }).collect(Collectors.toList());
+            }).toList();
         }
 
         @Override
@@ -152,7 +150,7 @@ class GiftAggregateBusinessRuleTest {
                 GiftEventInfoTVo vo = new GiftEventInfoTVo();
                 BeanUtils.copyProperties(entity, vo);
                 return vo;
-            }).collect(Collectors.toList());
+            }).toList();
         }
 
         @Override

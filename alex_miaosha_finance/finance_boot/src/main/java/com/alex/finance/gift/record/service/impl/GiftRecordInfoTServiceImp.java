@@ -31,11 +31,11 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper, GiftRecordInfoT> implements GiftRecordInfoTService {
+public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper, GiftRecordInfoT>
+        implements GiftRecordInfoTService {
 
     private static final String DIRECTION_GIVE = "GIVE";
     private static final String DIRECTION_RECEIVE = "RECEIVE";
@@ -167,14 +167,14 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         List<GiftRecordInfoTVo> list = getList(query);
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("礼金记录");
-            
+
             // Create header row
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"日期", "事由", "往来对象", "类型", "金额", "状态"};
+            String[] headers = { "日期", "事由", "往来对象", "类型", "金额", "状态" };
             for (int i = 0; i < headers.length; i++) {
                 headerRow.createCell(i).setCellValue(headers[i]);
             }
-            
+
             // Populate data rows
             int rowNum = 1;
             for (GiftRecordInfoTVo vo : list) {
@@ -182,32 +182,40 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
                 // Date (日期)
                 String dateStr = "";
                 if (vo.getPayTime() != null) {
-                    dateStr = vo.getPayTime().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    dateStr = vo.getPayTime()
+                            .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 }
                 row.createCell(0).setCellValue(dateStr);
-                
+
                 // EventName (事由)
                 row.createCell(1).setCellValue(vo.getEventName() != null ? vo.getEventName() : "");
-                
+
                 // PersonName (往来对象)
                 row.createCell(2).setCellValue(vo.getPersonName() != null ? vo.getPersonName() : "");
-                
+
                 // Direction (类型)
                 String typeStr = "";
                 if (vo.getDirection() != null) {
                     switch (vo.getDirection()) {
-                        case "RECEIVE": typeStr = "收礼"; break;
-                        case "GIVE": typeStr = "送礼"; break;
-                        case "RETURN": typeStr = "回礼"; break;
-                        default: typeStr = vo.getDirection();
+                        case "RECEIVE":
+                            typeStr = "收礼";
+                            break;
+                        case "GIVE":
+                            typeStr = "送礼";
+                            break;
+                        case "RETURN":
+                            typeStr = "回礼";
+                            break;
+                        default:
+                            typeStr = vo.getDirection();
                     }
                 }
                 row.createCell(3).setCellValue(typeStr);
-                
+
                 // Amount (金额)
                 double amountDouble = vo.getAmount() != null ? vo.getAmount().doubleValue() : 0.0;
                 row.createCell(4).setCellValue(amountDouble);
-                
+
                 // Status (状态)
                 String statusStr = "";
                 if ("RECEIVE".equals(vo.getDirection())) {
@@ -217,11 +225,11 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
                 }
                 row.createCell(5).setCellValue(statusStr);
             }
-            
+
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             String fileName = "gift_record_info_" + System.currentTimeMillis() + ".xlsx";
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            
+
             workbook.write(response.getOutputStream());
             response.getOutputStream().flush();
         } catch (java.io.IOException e) {
@@ -305,7 +313,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
                     .map(String::trim)
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (NumberFormatException ex) {
             throw GiftExceptions.param("礼金记录ID格式不合法");
         }

@@ -148,7 +148,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
             user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
             user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList() :
-                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).collect(Collectors.toList()));
+                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
         }
         return user;
     }
@@ -708,7 +708,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         List<Long> fileIdList = records.parallelStream()
                 .map(TUserVo::getAvatar)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         if (fileIdList.isEmpty()) {
             return;
         }

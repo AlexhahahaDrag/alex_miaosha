@@ -18,11 +18,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMapper, GiftRelationInfoT> implements GiftRelationInfoTService {
+public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMapper, GiftRelationInfoT>
+        implements GiftRelationInfoTService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
 
@@ -94,7 +94,7 @@ public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMa
                     .map(String::trim)
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (NumberFormatException ex) {
             throw GiftExceptions.param("关系ID格式不合法");
         }

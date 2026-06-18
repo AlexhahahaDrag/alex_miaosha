@@ -78,7 +78,7 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         long size = pageSize == null ? 10 : pageSize;
         List<GiftEventBusinessVo> rows = getList(query).stream()
                 .map(this::toBusinessVo)
-                .collect(Collectors.toList());
+                .toList();
         long from = Math.max(0, (current - 1) * size);
         long to = Math.min(rows.size(), from + size);
         Page<GiftEventBusinessVo> page = new Page<>(current, size, rows.size());
@@ -141,7 +141,7 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
                     .map(String::trim)
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (NumberFormatException ex) {
             throw GiftExceptions.param("事由ID格式不合法");
         }
@@ -152,7 +152,7 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         BeanUtils.copyProperties(event, vo);
         List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate().stream()
                 .filter(record -> event.getId() != null && event.getId().equals(record.getEventId()))
-                .collect(Collectors.toList());
+                .toList();
         BigDecimal giveAmount = records.stream()
                 .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
                 .map(this::amount)

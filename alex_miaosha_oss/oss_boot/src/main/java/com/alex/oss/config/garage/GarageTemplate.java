@@ -214,7 +214,7 @@ public class GarageTemplate implements InitializingBean {
 
     public Map<String, String> removeObjects(String bucketName, List<String> objects) throws Exception {
         Map<String, String> resultMap = new HashMap<>();
-        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).collect(Collectors.toList());
+        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).toList();
         Iterable<Result<DeleteError>> results = minioClient.removeObjects(
                 RemoveObjectsArgs.builder()
                         .bucket(bucketName)

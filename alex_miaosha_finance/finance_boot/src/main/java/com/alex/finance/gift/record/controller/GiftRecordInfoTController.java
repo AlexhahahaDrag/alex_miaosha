@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @ApiSort(133)
-@Api(value = "gift record api", tags = {"gift record api"})
+@Api(value = "gift record api", tags = { "gift record api" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/gift-record-info-t")
@@ -40,8 +40,8 @@ public class GiftRecordInfoTController {
     @ApiOperation(value = "gift record page", response = Result.class)
     @PostMapping(value = "/page")
     public Result<Page<GiftRecordInfoTVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                   @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                   @RequestBody(required = false) GiftRecordQuery query) {
+            @RequestParam(value = "pageSize", required = false) Long pageSize,
+            @RequestBody(required = false) GiftRecordQuery query) {
         return Result.success(giftRecordInfoTService.getPage(pageNum, pageSize, query));
     }
 
@@ -70,14 +70,15 @@ public class GiftRecordInfoTController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "add gift record", response = Result.class)
     @PostMapping
-    public Result<GiftRecordInfoTVo> add(@Validated({Insert.class}) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
+    public Result<GiftRecordInfoTVo> add(
+            @Validated({ Insert.class }) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
         return Result.success(giftRecordInfoTService.addGiftRecordInfoT(giftRecordInfoTVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "update gift record", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@Validated({Update.class}) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
+    public Result<Boolean> update(@Validated({ Update.class }) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
         return Result.success(giftRecordInfoTService.updateGiftRecordInfoT(giftRecordInfoTVo));
     }
 
@@ -105,7 +106,8 @@ public class GiftRecordInfoTController {
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "export gift record", response = void.class)
     @PostMapping(value = "/export")
-    public void export(@RequestBody(required = false) GiftRecordQuery query, javax.servlet.http.HttpServletResponse response) {
+    public void export(@RequestBody(required = false) GiftRecordQuery query,
+            javax.servlet.http.HttpServletResponse response) {
         giftRecordInfoTService.exportGiftRecordInfoT(query, response);
     }
 }

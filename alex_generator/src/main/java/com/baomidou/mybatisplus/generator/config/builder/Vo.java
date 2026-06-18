@@ -74,7 +74,9 @@ public class Vo implements ITemplate, Serializable {
                 if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
                     return tableField.value();
                 } else {
-                    return null != this.columnNaming && this.columnNaming != NamingStrategy.no_change ? StringUtils.camelToUnderline(field.getName()) : field.getName();
+                    return null != this.columnNaming && this.columnNaming != NamingStrategy.no_change
+                            ? StringUtils.camelToUnderline(field.getName())
+                            : field.getName();
                 }
             }
         }).collect(Collectors.toSet()));

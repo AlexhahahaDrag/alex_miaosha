@@ -28,11 +28,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper, GiftPersonInfoT> implements GiftPersonInfoTService {
+public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper, GiftPersonInfoT>
+        implements GiftPersonInfoTService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
 
@@ -75,7 +75,7 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
         long size = pageSize == null ? 10 : pageSize;
         List<GiftPersonBusinessVo> rows = getList(query).stream()
                 .map(this::toBusinessVo)
-                .collect(Collectors.toList());
+                .toList();
         long from = Math.max(0, (current - 1) * size);
         long to = Math.min(rows.size(), from + size);
         Page<GiftPersonBusinessVo> page = new Page<>(current, size, rows.size());
@@ -97,7 +97,7 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
                 .filter(record -> personInRecord(record, id))
                 .sorted(Comparator.comparing(GiftRecordInfoTVo::getPayTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(10)
-                .collect(Collectors.toList()));
+                .toList());
         return profile;
     }
 
@@ -163,7 +163,7 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
                     .map(String::trim)
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (NumberFormatException ex) {
             throw GiftExceptions.param("亲友ID格式不合法");
         }
@@ -184,7 +184,8 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         Optional<GiftRecordInfoTVo> latest = personRecords.stream()
-                .max(Comparator.comparing(GiftRecordInfoTVo::getPayTime, Comparator.nullsFirst(Comparator.naturalOrder())));
+                .max(Comparator.comparing(GiftRecordInfoTVo::getPayTime,
+                        Comparator.nullsFirst(Comparator.naturalOrder())));
         vo.setTotalGiveAmount(giveAmount);
         vo.setTotalReceiveAmount(receiveAmount);
         vo.setNetAmount(receiveAmount.subtract(giveAmount));
@@ -197,7 +198,8 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
     }
 
     private boolean personInRecord(GiftRecordInfoTVo record, Long personId) {
-        return personId != null && (personId.equals(record.getGiverPersonId()) || personId.equals(record.getReceiverPersonId()));
+        return personId != null
+                && (personId.equals(record.getGiverPersonId()) || personId.equals(record.getReceiverPersonId()));
     }
 
     private BigDecimal amount(GiftRecordInfoTVo record) {

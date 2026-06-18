@@ -25,62 +25,59 @@ import java.util.List;
  * version: 1.0.0
  */
 @ApiSort(30)
-@Api(value = "财务分析相关接口", tags = {"财务分析相关接口"})
+@Api(value = "财务分析相关接口", tags = { "财务分析相关接口" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/finance-analysis")
 public class FinanceAnalysisController {
 
-    private final FinanceAnalysisService financeAnalysisService;
+        private final FinanceAnalysisService financeAnalysisService;
 
-    @ApiOperationSupport(order = 10, author = "alex")
-    @ApiOperation(value = "获取余额", notes = "获取余额", response = Result.class)
-    @GetMapping(value = "/getBalance")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", dataTypeClass = String.class)}
-    )
-    public Result<BalanceVo> getBalance(@RequestParam(value = "belongTo", required = false) Long belongTo,
-                                         @RequestParam(value = "searchDate", required = false) String searchDate) {
-        return Result.success(financeAnalysisService.getBalance(belongTo, searchDate));
-    }
+        @ApiOperationSupport(order = 10, author = "alex")
+        @ApiOperation(value = "获取余额", notes = "获取余额", response = Result.class)
+        @GetMapping(value = "/getBalance")
+        @ApiImplicitParams({
+                        @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+                        @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", dataTypeClass = String.class) })
+        public Result<BalanceVo> getBalance(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                        @RequestParam(value = "searchDate", required = false) String searchDate) {
+                return Result.success(financeAnalysisService.getBalance(belongTo, searchDate));
+        }
 
-    @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "获取收入", notes = "获取收入", response = Result.class)
-    @GetMapping(value = "/getIncomeAndExpense")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class),
-            @ApiImplicitParam(value = "收入支出类型（收入:income,支出:expense）", name = "type", dataTypeClass = String.class)}
-    )
-    public Result<List<AnalysisVo>> getIncomeAndExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
-                                                        @RequestParam(value = "searchDate") String searchDate,
-                                                        @RequestParam(value = "type", required = false) String type) {
-        return Result.success(financeAnalysisService.getIncomeAndExpense(belongTo, searchDate, type));
-    }
+        @ApiOperationSupport(order = 20, author = "alex")
+        @ApiOperation(value = "获取收入", notes = "获取收入", response = Result.class)
+        @GetMapping(value = "/getIncomeAndExpense")
+        @ApiImplicitParams({
+                        @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+                        @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class),
+                        @ApiImplicitParam(value = "收入支出类型（收入:income,支出:expense）", name = "type", dataTypeClass = String.class) })
+        public Result<List<AnalysisVo>> getIncomeAndExpense(
+                        @RequestParam(value = "belongTo", required = false) Long belongTo,
+                        @RequestParam(value = "searchDate") String searchDate,
+                        @RequestParam(value = "type", required = false) String type) {
+                return Result.success(financeAnalysisService.getIncomeAndExpense(belongTo, searchDate, type));
+        }
 
-    @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "获取天花费明细", notes = "获取天花费明细", response = Result.class)
-    @GetMapping(value = "/getDayExpense")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
-    )
-    public Result<List<AnalysisVo>> getDayExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
-                                                  @RequestParam(value = "searchDate") String searchDate) {
-        return Result.success(financeAnalysisService.getDayExpense(belongTo, searchDate));
-    }
+        @ApiOperationSupport(order = 30, author = "alex")
+        @ApiOperation(value = "获取天花费明细", notes = "获取天花费明细", response = Result.class)
+        @GetMapping(value = "/getDayExpense")
+        @ApiImplicitParams({
+                        @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+                        @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class) })
+        public Result<List<AnalysisVo>> getDayExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
+                        @RequestParam(value = "searchDate") String searchDate) {
+                return Result.success(financeAnalysisService.getDayExpense(belongTo, searchDate));
+        }
 
-    @ApiOperationSupport(order = 40, author = "alex")
-    @ApiOperation(value = "获取月花费明细", notes = "获取月花费明细", response = Result.class)
-    @GetMapping(value = "/getMonthExpense")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
-            @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class)}
-    )
-    public Result<List<AnalysisVo>> getMonthExpense(@RequestParam(value = "belongTo", required = false) Long belongTo,
-                                                    @RequestParam(value = "searchDate") String searchDate) {
-        return Result.success(financeAnalysisService.getMonthExpense(belongTo, searchDate));
-    }
+        @ApiOperationSupport(order = 40, author = "alex")
+        @ApiOperation(value = "获取月花费明细", notes = "获取月花费明细", response = Result.class)
+        @GetMapping(value = "/getMonthExpense")
+        @ApiImplicitParams({
+                        @ApiImplicitParam(value = "人员", name = "belongTo", dataTypeClass = Long.class),
+                        @ApiImplicitParam(value = "时间(yyyy-mm)", name = "searchDate", required = true, dataTypeClass = String.class) })
+        public Result<List<AnalysisVo>> getMonthExpense(
+                        @RequestParam(value = "belongTo", required = false) Long belongTo,
+                        @RequestParam(value = "searchDate") String searchDate) {
+                return Result.success(financeAnalysisService.getMonthExpense(belongTo, searchDate));
+        }
 }
-

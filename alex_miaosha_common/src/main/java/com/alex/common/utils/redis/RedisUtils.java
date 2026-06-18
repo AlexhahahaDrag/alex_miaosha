@@ -250,7 +250,7 @@ public class RedisUtils {
             if (keys == null || keys.isEmpty()) {
                 return null;
             }
-            return keys.parallelStream().map(item -> get(item, clazz)).collect(Collectors.toList());
+            return keys.parallelStream().map(item -> get(item, clazz)).toList();
         } catch (Exception e) {
             log.error("根据前缀模糊查询key失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
             return null;
@@ -267,7 +267,7 @@ public class RedisUtils {
                 List<T> list = getList(item, clazz);
                 list = (list == null) ? Collections.emptyList() : list;
                 return list.stream();
-            }).collect(Collectors.toList());
+            }).toList();
         } catch (Exception e) {
             log.error("根据前缀模糊查询keysList失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
             return null;

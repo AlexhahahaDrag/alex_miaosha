@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @ApiSort(134)
-@Api(value = "gift analysis api", tags = {"gift analysis api"})
+@Api(value = "gift analysis api", tags = { "gift analysis api" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/gift-analysis")

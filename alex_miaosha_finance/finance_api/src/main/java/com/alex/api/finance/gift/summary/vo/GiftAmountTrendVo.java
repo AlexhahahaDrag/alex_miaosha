@@ -13,9 +13,12 @@ import java.math.BigDecimal;
 @ApiModel(value = "GiftAmountTrendVo", description = "gift amount trend")
 public class GiftAmountTrendVo {
 
+    // 标签
     private String label;
 
+    // 支出总金额
     private BigDecimal giveAmount = BigDecimal.ZERO;
 
+    // 收入总金额
     private BigDecimal receiveAmount = BigDecimal.ZERO;
 }

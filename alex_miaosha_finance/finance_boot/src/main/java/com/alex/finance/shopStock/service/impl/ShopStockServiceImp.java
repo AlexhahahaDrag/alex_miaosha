@@ -124,7 +124,7 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         if (StringUtils.isEmpty(ids)) {
             return Lists.newArrayList();
         }
-        return shopStockMapper.getShopList(Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()));
+        return shopStockMapper.getShopList(Arrays.stream(ids.split(",")).map(Long::valueOf).toList());
     }
 
     @Override

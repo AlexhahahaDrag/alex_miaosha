@@ -207,7 +207,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         List<CpnCouponInfo> cpnCouponInfoList = excelInfo.stream()
                 .map(this::convertImportVoToEntity)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         
         if (cpnCouponInfoList.isEmpty()) {
             log.warn("没有有效的导入数据");

@@ -75,7 +75,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                     BeanUtils.copyProperties(item, vo);
                     return vo;
                 })
-                .collect(Collectors.toList());
+                .toList();
         roleInfoVo.setRoleUserInfoVoList(roleUserInfoVoList);
         return roleInfoVo;
     }
