@@ -82,7 +82,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
                 .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
                 .toList();
 
-        if (isFullQuery && result != null && !result.isEmpty()) {
+        if (isFullQuery && !result.isEmpty()) {
             try {
                 redisUtils.setEx(cacheRealKey, JSONObject.toJSONString(result), 1, TimeUnit.HOURS);
                 log.info("完整菜单树成功写入 Redis 缓存");

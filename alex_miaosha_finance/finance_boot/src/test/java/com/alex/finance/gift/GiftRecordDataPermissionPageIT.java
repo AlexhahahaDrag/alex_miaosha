@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * H1：礼金分�?{@code getPage} �?Mapper 自定义方法时，{@link DataPermissionHandlerImpl} 必须生效�?
+ * H1: Gift record paging via {@code getPage} must trigger {@link DataPermissionHandlerImpl}.
  * <p>
- * 本类验证拦截器对 {@code GiftRecordInfoMapper.getPage} 注入�?SQL 片段（不依赖真实 DB）�?
+ * Verifies SQL segment injection for {@code GiftRecordInfoMapper.getPage} without a real DB.
  */
 @ExtendWith(MockitoExtension.class)
 class GiftRecordDataPermissionPageIT {
@@ -73,6 +73,21 @@ class GiftRecordDataPermissionPageIT {
         assertTrue(sql.contains("gift_record_info_t"), () -> "sql=" + sql);
         assertTrue(sql.contains("user_id"), () -> "sql=" + sql);
         assertTrue(sql.contains("10"), () -> "sql=" + sql);
+    }
+
+    @Test
+    void orgAdmin_without_org_should_degrade_to_user_scope_on_getPage() {
+        TUserVo user = userWithRole("org_admin", 20L, 100L);
+        user.setOrgInfoVo(null);
+        when(userUtils.getLoginUser()).thenReturn(user);
+
+        Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
+
+        String sql = segment.toString();
+        assertTrue(sql.contains("gift_record_info_t"), () -> "sql=" + sql);
+        assertTrue(sql.contains("user_id"), () -> "sql=" + sql);
+        assertTrue(sql.contains("100"), () -> "sql=" + sql);
+        assertTrue(!sql.contains("t_org_user_info"), () -> "sql=" + sql);
     }
 
     @Test

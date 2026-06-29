@@ -439,7 +439,6 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .columnNaming(NamingStrategy.underline_to_camel)
                 .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())// 设置 super 类字段
                 .addIgnoreColumns("") // 设置忽略字段
-                .addTableFills(list)
                 .enableActiveRecord()
                 // 配置 client
                 .clientBuilder()

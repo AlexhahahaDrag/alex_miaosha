@@ -217,7 +217,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
                 row.createCell(4).setCellValue(amountDouble);
 
                 // Status (状态)
-                String statusStr = "";
+                String statusStr;
                 if ("RECEIVE".equals(vo.getDirection())) {
                     statusStr = (vo.getReturnedFlag() != null && vo.getReturnedFlag() == 1) ? "已回礼" : "未回礼";
                 } else {

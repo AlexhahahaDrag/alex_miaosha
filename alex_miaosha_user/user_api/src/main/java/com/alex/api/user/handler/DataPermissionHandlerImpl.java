@@ -15,9 +15,9 @@ import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SubSelect;
+import net.sf.jsqlparser.statement.select.SelectItem;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -150,36 +150,30 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
-            log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser != null ? loginUser.getId() : "unknown");
+        if (loginUser == null) {
+            return where;
+        }
+        if (loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
+            log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser.getId());
             return getUserWhere(where, loginUser, annotation);
         }
 
         InExpression useEqualsTo = new InExpression();
         useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
-        // 构建子查询
-        SubSelect subSelect = new SubSelect();
+
         PlainSelect plainSelect = new PlainSelect();
+        plainSelect.addSelectItems(new SelectItem<>(new Column("user_id")));
 
-        // 构建子查询中的 SELECT 部分
-        SelectExpressionItem selectItem = new SelectExpressionItem();
-        selectItem.setExpression(new Column("user_id"));
-        plainSelect.addSelectItems(selectItem);
-
-        // 构建子查询中的 FROM 部分
         Table table = new Table("alex_user.t_org_user_info");
         plainSelect.setFromItem(table);
 
-        // 构建 WHERE 子句
         EqualsTo whereCondition = new EqualsTo();
         whereCondition.setLeftExpression(new Column("org_id"));
-        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId())); // 设置你想查询的机构 ID
+        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
         plainSelect.setWhere(whereCondition);
 
-        // 将 PlainSelect 对象设置为 SubSelect 的 SelectBody
-        subSelect.setSelectBody(plainSelect);
-
-        // 设置右表达式为子查询
+        ParenthesedSelect subSelect = new ParenthesedSelect();
+        subSelect.setSelect(plainSelect);
         useEqualsTo.setRightExpression(subSelect);
 
         return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);

@@ -16,15 +16,16 @@ import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
@@ -76,10 +77,10 @@ class GiftRecordExportTest {
             Row data = workbook.getSheetAt(0).getRow(1);
             assertEquals("日期", header.getCell(0).getStringCellValue());
             assertEquals("事由", header.getCell(1).getStringCellValue());
-            assertEquals("往来对�?, header.getCell(2).getStringCellValue());
+            assertEquals("往来对象", header.getCell(2).getStringCellValue());
             assertEquals("类型", header.getCell(3).getStringCellValue());
             assertEquals("金额", header.getCell(4).getStringCellValue());
-            assertEquals("状�?, header.getCell(5).getStringCellValue());
+            assertEquals("状态", header.getCell(5).getStringCellValue());
             assertEquals("婚宴", data.getCell(1).getStringCellValue());
             assertEquals("张三", data.getCell(2).getStringCellValue());
             assertEquals(666.00D, data.getCell(4).getNumericCellValue(), 0.001D);
@@ -102,15 +103,21 @@ class GiftRecordExportTest {
         return user;
     }
 
-    @WebMvcTest(controllers = GiftRecordInfoController.class)
-    @Import(GlobalExceptionHandler.class)
+    @ExtendWith(MockitoExtension.class)
     static class GiftRecordExportControllerTest {
 
-        @Autowired
+        @Mock
+        private GiftRecordInfoService giftRecordInfoService;
+
         private MockMvc mockMvc;
 
-        @MockBean
-        private GiftRecordInfoService GiftRecordInfoService;
+        @BeforeEach
+        void setUp() {
+            GiftRecordInfoController controller = new GiftRecordInfoController(giftRecordInfoService);
+            mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                    .setControllerAdvice(new GlobalExceptionHandler())
+                    .build();
+        }
 
         @Test
         void postExport_should_delegate_to_service_and_return_attachment() throws Exception {
@@ -120,7 +127,7 @@ class GiftRecordExportTest {
                     .andExpect(status().isOk())
                     .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("attachment")));
 
-            verify(GiftRecordInfoService).exportGiftRecordInfo(any(GiftRecordQuery.class), any());
+            verify(giftRecordInfoService).exportGiftRecordInfo(any(GiftRecordQuery.class), any());
         }
     }
 }

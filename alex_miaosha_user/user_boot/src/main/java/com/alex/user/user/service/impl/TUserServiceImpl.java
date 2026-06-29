@@ -69,10 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -279,7 +276,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         // 如果登录错误超过5次限制，抛出异常
-        if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
+        if (limitCount != null && !limitCount.isBlank()
+                && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
             throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
         // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture 闭包内，我们可直接在主线程安全使用它
@@ -323,7 +321,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         stopWatch.start("2.数据库查询用户");
-        TUser admin = null;
+        TUser admin;
 
         // 1. 优先使用 username 精确查询（此字段拥有索引 user_uesrname_index 与 t_username_status_IDX，查询极其高效）
         LambdaQueryWrapper<TUser> queryByUsername = Wrappers.<TUser>lambdaQuery()
@@ -453,7 +451,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             try {
                 // 设置最大800毫秒的超时时间，防止微服务冷启动或RPC调用挂起阻塞登录接口
                 avatarFuture.get(800, TimeUnit.MILLISECONDS);
-            } catch (java.util.concurrent.TimeoutException e) {
+            } catch (TimeoutException e) {
                 log.warn("获取用户头像信息超时，进行熔断降级，跳过头像URL装配");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

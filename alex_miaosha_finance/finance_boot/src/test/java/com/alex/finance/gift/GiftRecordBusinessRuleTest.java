@@ -31,11 +31,11 @@ import static org.mockito.Mockito.lenient;
 class GiftRecordBusinessRuleTest {
 
     @Mock
-    private GiftRecordInfoMapper GiftRecordInfoMapper;
+    private GiftRecordInfoMapper giftRecordInfoMapper;
     @Mock
-    private GiftPersonInfoMapper GiftPersonInfoMapper;
+    private GiftPersonInfoMapper giftPersonInfoMapper;
     @Mock
-    private GiftEventInfoMapper GiftEventInfoMapper;
+    private GiftEventInfoMapper giftEventInfoMapper;
     @Mock
     private UserUtils userUtils;
 
@@ -45,9 +45,9 @@ class GiftRecordBusinessRuleTest {
     void setUp() {
         service = new GiftRecordInfoServiceImp(
                 new GiftDataScopeSupport(userUtils),
-                GiftPersonInfoMapper,
-                GiftEventInfoMapper);
-        ReflectionTestUtils.setField(service, "baseMapper", GiftRecordInfoMapper);
+                giftPersonInfoMapper,
+                giftEventInfoMapper);
+        ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
         lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());
     }
 
@@ -69,8 +69,8 @@ class GiftRecordBusinessRuleTest {
         receiveRecord.setId(1L);
         receiveRecord.setUserId(10L);
         receiveRecord.setOrgId(20L);
-        when(GiftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
-        when(GiftRecordInfoMapper.sumReturnAmountByRelatedRecordId(1L))
+        when(giftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
+        when(giftRecordInfoMapper.sumReturnAmountByRelatedRecordId(1L))
                 .thenReturn(new BigDecimal("420.50"));
 
         BigDecimal pending = service.calculatePendingReturnAmount(1L);
@@ -86,13 +86,13 @@ class GiftRecordBusinessRuleTest {
         receiveRecord.setId(1L);
         receiveRecord.setUserId(10L);
         receiveRecord.setOrgId(20L);
-        when(GiftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
-        when(GiftRecordInfoMapper.updateById(any(GiftRecordInfo.class))).thenReturn(1);
+        when(giftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
+        when(giftRecordInfoMapper.updateById(any(GiftRecordInfo.class))).thenReturn(1);
 
         service.markReturned(1L);
 
         org.mockito.ArgumentCaptor<GiftRecordInfo> captor = org.mockito.ArgumentCaptor.forClass(GiftRecordInfo.class);
-        org.mockito.Mockito.verify(GiftRecordInfoMapper).updateById(captor.capture());
+        org.mockito.Mockito.verify(giftRecordInfoMapper).updateById(captor.capture());
         assertEquals(1, captor.getValue().getReturnedFlag());
     }
 

@@ -6,6 +6,8 @@ spring:
       password: ${nacos.password}
       config:
         server-addr: ${nacos.url}
+        username: ${nacos.username}
+        password: ${nacos.password}
         file-extension: ${nacos.file-extension}
         group: ${nacos.group}
         namespace: ${nacos.namaspace}
@@ -37,9 +39,16 @@ spring:
           - data-id: ${nacos.minio}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+      discovery:
+        server-addr: ${nacos.url}
+        namespace: ${nacos.namaspace}
+        group: ${nacos.group}
+        username: ${nacos.username}
+        password: ${nacos.password}
 
 nacos:
-  url: ${info.ip}:8848
+  # 本地 dev 连本机 Nacos 3.1.1；可用环境变量 NACOS_SERVER_ADDR 覆盖
+  url: ${NACOS_SERVER_ADDR:10.10.20.238:8848}
   group: alex-miaosha
   namaspace: 033377eb-973b-4dac-a0e9-e99c87325009
   username: nacos
