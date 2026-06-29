@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Setter
 @Accessors(chain = true)
 @ApiModel(value = "GiftEventBusinessVo", description = "gift event aggregate row")
-public class GiftEventBusinessVo extends GiftEventInfoTVo {
+public class GiftEventBusinessVo extends GiftEventInfoVo {
 
     @ApiModelProperty(value = "participant count")
     private Long participantCount = 0L;

@@ -2,23 +2,23 @@ package com.alex.finance.gift;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
-import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
-import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.user.user.UserUtils;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
-import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +37,7 @@ class GiftAggregateBusinessRuleTest {
     @Test
     void personBusinessPageAggregatesGiveReceiveAndLatestRecord() {
         TestPersonService service = new TestPersonService();
-        GiftPersonInfoT person = new GiftPersonInfoT()
+        GiftPersonInfo person = new GiftPersonInfo()
                 .setPersonName("张明远")
                 .setRelationType("FRIEND")
                 .setPhone("13800000000");
@@ -60,7 +60,7 @@ class GiftAggregateBusinessRuleTest {
     @Test
     void eventBusinessPageAggregatesParticipantsAndAmounts() {
         TestEventService service = new TestEventService();
-        GiftEventInfoT event = new GiftEventInfoT()
+        GiftEventInfo event = new GiftEventInfo()
                 .setEventName("婚礼")
                 .setEventTime(LocalDateTime.of(2026, 6, 1, 12, 0));
         event.setId(9L);
@@ -94,8 +94,8 @@ class GiftAggregateBusinessRuleTest {
         assertEquals(3L, summary.getRecordCount());
     }
 
-    private static GiftRecordInfoT record(Long id, String direction, BigDecimal amount, Long giverId, Long receiverId, LocalDateTime payTime) {
-        GiftRecordInfoT record = new GiftRecordInfoT()
+    private static GiftRecordInfo record(Long id, String direction, BigDecimal amount, Long giverId, Long receiverId, LocalDateTime payTime) {
+        GiftRecordInfo record = new GiftRecordInfo()
                 .setDirection(direction)
                 .setAmount(amount)
                 .setGiverPersonId(giverId)
@@ -105,69 +105,69 @@ class GiftAggregateBusinessRuleTest {
         return record;
     }
 
-    private static List<GiftRecordInfoTVo> toRecordVos(List<GiftRecordInfoT> records) {
+    private static List<GiftRecordInfoVo> toRecordVos(List<GiftRecordInfo> records) {
         return records.stream().map(entity -> {
-            GiftRecordInfoTVo vo = new GiftRecordInfoTVo();
+            GiftRecordInfoVo vo = new GiftRecordInfoVo();
             BeanUtils.copyProperties(entity, vo);
             return vo;
         }).toList();
     }
 
-    private static class TestPersonService extends GiftPersonInfoTServiceImp {
-        private List<GiftPersonInfoT> people = List.of();
-        private List<GiftRecordInfoT> records = List.of();
+    private static class TestPersonService extends GiftPersonInfoServiceImp {
+        private List<GiftPersonInfo> people = List.of();
+        private List<GiftRecordInfo> records = List.of();
 
         private TestPersonService() {
             super(new GiftDataScopeSupport(mock(UserUtils.class)));
         }
 
         @Override
-        public List<GiftPersonInfoTVo> getList(GiftPersonQuery query) {
+        public List<GiftPersonInfoVo> getList(GiftPersonQuery query) {
             return people.stream().map(entity -> {
-                GiftPersonInfoTVo vo = new GiftPersonInfoTVo();
+                GiftPersonInfoVo vo = new GiftPersonInfoVo();
                 BeanUtils.copyProperties(entity, vo);
                 return vo;
             }).toList();
         }
 
         @Override
-        protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
+        protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
             return toRecordVos(records);
         }
     }
 
-    private static class TestEventService extends GiftEventInfoTServiceImp {
-        private List<GiftEventInfoT> events = List.of();
-        private List<GiftRecordInfoT> records = List.of();
+    private static class TestEventService extends GiftEventInfoServiceImp {
+        private List<GiftEventInfo> events = List.of();
+        private List<GiftRecordInfo> records = List.of();
 
         private TestEventService() {
             super(new GiftDataScopeSupport(mock(UserUtils.class)));
         }
 
         @Override
-        public List<GiftEventInfoTVo> getList(GiftEventQuery query) {
+        public List<GiftEventInfoVo> getList(GiftEventQuery query) {
             return events.stream().map(entity -> {
-                GiftEventInfoTVo vo = new GiftEventInfoTVo();
+                GiftEventInfoVo vo = new GiftEventInfoVo();
                 BeanUtils.copyProperties(entity, vo);
                 return vo;
             }).toList();
         }
 
         @Override
-        protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
+        protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
             return toRecordVos(records);
         }
     }
 
-    private static class TestRecordService extends GiftRecordInfoTServiceImp {
-        private List<GiftRecordInfoT> records = List.of();
+    private static class TestRecordService extends GiftRecordInfoServiceImp {
+        private List<GiftRecordInfo> records = List.of();
 
         private TestRecordService() {
             super(
                     new GiftDataScopeSupport(mock(UserUtils.class)),
-                    mock(GiftPersonInfoTMapper.class),
-                    mock(GiftEventInfoTMapper.class));
-            GiftRecordInfoTMapper mapper = mock(GiftRecordInfoTMapper.class);
+                    mock(GiftPersonInfoMapper.class),
+                    mock(GiftEventInfoMapper.class));
+            GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
             when(mapper.listEntities(any())).thenAnswer(invocation -> records);
             ReflectionTestUtils.setField(this, "baseMapper", mapper);
         }

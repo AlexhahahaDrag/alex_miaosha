@@ -1,37 +1,37 @@
 package com.alex.finance.gift;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
-import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
-import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.relation.query.GiftRelationQuery;
-import com.alex.api.finance.gift.relation.vo.GiftRelationInfoTVo;
+import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.finance.gift.analysis.controller.GiftAnalysisController;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
-import com.alex.finance.gift.event.controller.GiftEventInfoTController;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.event.service.GiftEventInfoTService;
-import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
-import com.alex.finance.gift.person.controller.GiftPersonInfoTController;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.person.service.GiftPersonInfoTService;
-import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
-import com.alex.finance.gift.record.controller.GiftRecordInfoTController;
-import com.alex.finance.gift.relation.entity.GiftRelationInfoT;
-import com.alex.finance.gift.relation.mapper.GiftRelationInfoTMapper;
-import com.alex.finance.gift.relation.service.GiftRelationInfoTService;
-import com.alex.finance.gift.relation.service.impl.GiftRelationInfoTServiceImp;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
-import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
-import com.alex.finance.gift.relation.controller.GiftRelationInfoTController;
+import com.alex.finance.gift.event.controller.GiftEventInfoController;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.event.service.GiftEventInfoService;
+import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
+import com.alex.finance.gift.person.controller.GiftPersonInfoController;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.person.service.GiftPersonInfoService;
+import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.record.controller.GiftRecordInfoController;
+import com.alex.finance.gift.relation.entity.GiftRelationInfo;
+import com.alex.finance.gift.relation.mapper.GiftRelationInfoMapper;
+import com.alex.finance.gift.relation.service.GiftRelationInfoService;
+import com.alex.finance.gift.relation.service.impl.GiftRelationInfoServiceImp;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
+import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
+import com.alex.finance.gift.relation.controller.GiftRelationInfoController;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -76,38 +76,38 @@ class GiftStructureTest {
 
     @Test
     void giftEntitiesExtendBaseEntity() {
-        assertTrue(BaseEntity.class.isAssignableFrom(GiftPersonInfoT.class));
-        assertTrue(BaseEntity.class.isAssignableFrom(GiftRelationInfoT.class));
-        assertTrue(BaseEntity.class.isAssignableFrom(GiftEventInfoT.class));
-        assertTrue(BaseEntity.class.isAssignableFrom(GiftRecordInfoT.class));
+        assertTrue(BaseEntity.class.isAssignableFrom(GiftPersonInfo.class));
+        assertTrue(BaseEntity.class.isAssignableFrom(GiftRelationInfo.class));
+        assertTrue(BaseEntity.class.isAssignableFrom(GiftEventInfo.class));
+        assertTrue(BaseEntity.class.isAssignableFrom(GiftRecordInfo.class));
     }
 
     @Test
     void giftEntitiesDoNotRedeclareBaseEntityFields() {
-        assertNoBaseEntityFields(GiftPersonInfoT.class);
-        assertNoBaseEntityFields(GiftRelationInfoT.class);
-        assertNoBaseEntityFields(GiftEventInfoT.class);
-        assertNoBaseEntityFields(GiftRecordInfoT.class);
+        assertNoBaseEntityFields(GiftPersonInfo.class);
+        assertNoBaseEntityFields(GiftRelationInfo.class);
+        assertNoBaseEntityFields(GiftEventInfo.class);
+        assertNoBaseEntityFields(GiftRecordInfo.class);
     }
 
     @Test
     void giftVosExtendBaseVo() {
-        assertTrue(BaseVo.class.isAssignableFrom(GiftPersonInfoTVo.class));
-        assertTrue(BaseVo.class.isAssignableFrom(GiftRelationInfoTVo.class));
-        assertTrue(BaseVo.class.isAssignableFrom(GiftEventInfoTVo.class));
-        assertTrue(BaseVo.class.isAssignableFrom(GiftRecordInfoTVo.class));
+        assertTrue(BaseVo.class.isAssignableFrom(GiftPersonInfoVo.class));
+        assertTrue(BaseVo.class.isAssignableFrom(GiftRelationInfoVo.class));
+        assertTrue(BaseVo.class.isAssignableFrom(GiftEventInfoVo.class));
+        assertTrue(BaseVo.class.isAssignableFrom(GiftRecordInfoVo.class));
     }
 
     @Test
     void giftRecordVoUsesStableBusinessTypes() throws NoSuchFieldException {
-        assertEquals(Long.class, GiftRecordInfoTVo.class.getDeclaredField("orgId").getType());
-        assertEquals(Long.class, GiftRecordInfoTVo.class.getDeclaredField("userId").getType());
-        assertEquals(Long.class, GiftRecordInfoTVo.class.getDeclaredField("eventId").getType());
-        assertEquals(Long.class, GiftRecordInfoTVo.class.getDeclaredField("relatedRecordId").getType());
-        assertEquals(String.class, GiftRecordInfoTVo.class.getDeclaredField("direction").getType());
-        assertEquals(BigDecimal.class, GiftRecordInfoTVo.class.getDeclaredField("amount").getType());
-        assertEquals(LocalDateTime.class, GiftRecordInfoTVo.class.getDeclaredField("payTime").getType());
-        assertEquals(Integer.class, GiftRecordInfoTVo.class.getDeclaredField("returnedFlag").getType());
+        assertEquals(Long.class, GiftRecordInfoVo.class.getDeclaredField("orgId").getType());
+        assertEquals(Long.class, GiftRecordInfoVo.class.getDeclaredField("userId").getType());
+        assertEquals(Long.class, GiftRecordInfoVo.class.getDeclaredField("eventId").getType());
+        assertEquals(Long.class, GiftRecordInfoVo.class.getDeclaredField("relatedRecordId").getType());
+        assertEquals(String.class, GiftRecordInfoVo.class.getDeclaredField("direction").getType());
+        assertEquals(BigDecimal.class, GiftRecordInfoVo.class.getDeclaredField("amount").getType());
+        assertEquals(LocalDateTime.class, GiftRecordInfoVo.class.getDeclaredField("payTime").getType());
+        assertEquals(Integer.class, GiftRecordInfoVo.class.getDeclaredField("returnedFlag").getType());
     }
 
     @Test
@@ -124,37 +124,37 @@ class GiftStructureTest {
 
     @Test
     void giftMappersUseMybatisPlusAndOrgDataPermission() throws NoSuchMethodException {
-        assertMapper(GiftPersonInfoTMapper.class, "gift_person_info_t");
-        assertMapper(GiftRelationInfoTMapper.class, "gift_relation_info_t");
-        assertMapper(GiftEventInfoTMapper.class, "gift_event_info_t");
-        assertMapper(GiftRecordInfoTMapper.class, "gift_record_info_t");
+        assertMapper(GiftPersonInfoMapper.class, "gift_person_info_t");
+        assertMapper(GiftRelationInfoMapper.class, "gift_relation_info_t");
+        assertMapper(GiftEventInfoMapper.class, "gift_event_info_t");
+        assertMapper(GiftRecordInfoMapper.class, "gift_record_info_t");
     }
 
     @Test
     void giftServicesUseMybatisPlusServiceStack() {
-        assertTrue(IService.class.isAssignableFrom(GiftPersonInfoTService.class));
-        assertTrue(IService.class.isAssignableFrom(GiftRelationInfoTService.class));
-        assertTrue(IService.class.isAssignableFrom(GiftEventInfoTService.class));
-        assertTrue(IService.class.isAssignableFrom(GiftRecordInfoTService.class));
-        assertTrue(ServiceImpl.class.isAssignableFrom(GiftPersonInfoTServiceImp.class));
-        assertTrue(ServiceImpl.class.isAssignableFrom(GiftRelationInfoTServiceImp.class));
-        assertTrue(ServiceImpl.class.isAssignableFrom(GiftEventInfoTServiceImp.class));
-        assertTrue(ServiceImpl.class.isAssignableFrom(GiftRecordInfoTServiceImp.class));
+        assertTrue(IService.class.isAssignableFrom(GiftPersonInfoService.class));
+        assertTrue(IService.class.isAssignableFrom(GiftRelationInfoService.class));
+        assertTrue(IService.class.isAssignableFrom(GiftEventInfoService.class));
+        assertTrue(IService.class.isAssignableFrom(GiftRecordInfoService.class));
+        assertTrue(ServiceImpl.class.isAssignableFrom(GiftPersonInfoServiceImp.class));
+        assertTrue(ServiceImpl.class.isAssignableFrom(GiftRelationInfoServiceImp.class));
+        assertTrue(ServiceImpl.class.isAssignableFrom(GiftEventInfoServiceImp.class));
+        assertTrue(ServiceImpl.class.isAssignableFrom(GiftRecordInfoServiceImp.class));
     }
 
     @Test
     void giftControllersFollowExistingFinanceRouteShape() throws NoSuchMethodException {
-        assertControllerRoutes(GiftPersonInfoTController.class, "${api.version:/api/v1}/gift-person-info-t");
-        assertControllerRoutes(GiftRelationInfoTController.class, "${api.version:/api/v1}/gift-relation-info-t");
-        assertControllerRoutes(GiftEventInfoTController.class, "${api.version:/api/v1}/gift-event-info-t");
-        assertControllerRoutes(GiftRecordInfoTController.class, "${api.version:/api/v1}/gift-record-info-t");
+        assertControllerRoutes(GiftPersonInfoController.class, "${api.version:/api/v1}/gift-person-info-t");
+        assertControllerRoutes(GiftRelationInfoController.class, "${api.version:/api/v1}/gift-relation-info-t");
+        assertControllerRoutes(GiftEventInfoController.class, "${api.version:/api/v1}/gift-event-info-t");
+        assertControllerRoutes(GiftRecordInfoController.class, "${api.version:/api/v1}/gift-record-info-t");
 
-        Method pendingReturnAmount = findMethod(GiftRecordInfoTController.class, "pendingReturnAmount");
+        Method pendingReturnAmount = findMethod(GiftRecordInfoController.class, "pendingReturnAmount");
         assertTrue(pendingReturnAmount.isAnnotationPresent(GetMapping.class));
         assertEquals("/pending-return-amount", pendingReturnAmount.getAnnotation(GetMapping.class).value()[0]);
         assertRequestParam(pendingReturnAmount, "receiveRecordId");
 
-        Method markReturned = findMethod(GiftRecordInfoTController.class, "markReturned");
+        Method markReturned = findMethod(GiftRecordInfoController.class, "markReturned");
         assertTrue(markReturned.isAnnotationPresent(PutMapping.class));
         assertEquals("/mark-returned", markReturned.getAnnotation(PutMapping.class).value()[0]);
         assertRequestParam(markReturned, "receiveRecordId");
@@ -162,23 +162,23 @@ class GiftStructureTest {
 
     @Test
     void giftControllersExposeStitchAggregateRoutes() throws NoSuchMethodException {
-        Method personSummary = findMethod(GiftPersonInfoTController.class, "summary");
+        Method personSummary = findMethod(GiftPersonInfoController.class, "summary");
         assertEquals("/summary", personSummary.getAnnotation(GetMapping.class).value()[0]);
 
-        Method personBusinessPage = findMethod(GiftPersonInfoTController.class, "businessPage");
+        Method personBusinessPage = findMethod(GiftPersonInfoController.class, "businessPage");
         assertEquals("/business-page", personBusinessPage.getAnnotation(PostMapping.class).value()[0]);
 
-        Method personProfile = findMethod(GiftPersonInfoTController.class, "profile");
+        Method personProfile = findMethod(GiftPersonInfoController.class, "profile");
         assertEquals("/profile", personProfile.getAnnotation(GetMapping.class).value()[0]);
         assertRequestParam(personProfile, "id");
 
-        Method eventSummary = findMethod(GiftEventInfoTController.class, "summary");
+        Method eventSummary = findMethod(GiftEventInfoController.class, "summary");
         assertEquals("/summary", eventSummary.getAnnotation(GetMapping.class).value()[0]);
 
-        Method eventBusinessPage = findMethod(GiftEventInfoTController.class, "businessPage");
+        Method eventBusinessPage = findMethod(GiftEventInfoController.class, "businessPage");
         assertEquals("/business-page", eventBusinessPage.getAnnotation(PostMapping.class).value()[0]);
 
-        Method recordSummary = findMethod(GiftRecordInfoTController.class, "summary");
+        Method recordSummary = findMethod(GiftRecordInfoController.class, "summary");
         assertEquals("/summary", recordSummary.getAnnotation(PostMapping.class).value()[0]);
 
         assertTrue(GiftAnalysisController.class.isAnnotationPresent(RestController.class));

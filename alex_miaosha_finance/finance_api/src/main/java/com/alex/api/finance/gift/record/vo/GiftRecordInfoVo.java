@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Accessors(chain = true)
-@ApiModel(value = "GiftRecordInfoTVo", description = "gift record vo")
-public class GiftRecordInfoTVo extends BaseVo<GiftRecordInfoTVo> {
+@ApiModel(value = "GiftRecordInfoVo", description = "gift record vo")
+public class GiftRecordInfoVo extends BaseVo<GiftRecordInfoVo> {
 
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "org id")

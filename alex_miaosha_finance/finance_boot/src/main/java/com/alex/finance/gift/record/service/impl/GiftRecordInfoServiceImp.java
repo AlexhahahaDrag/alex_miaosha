@@ -1,17 +1,17 @@
 package com.alex.finance.gift.record.service.impl;
 
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,32 +34,32 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper, GiftRecordInfoT>
-        implements GiftRecordInfoTService {
+public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, GiftRecordInfo>
+        implements GiftRecordInfoService {
 
     private static final String DIRECTION_GIVE = "GIVE";
     private static final String DIRECTION_RECEIVE = "RECEIVE";
     private static final String DIRECTION_RETURN = "RETURN";
 
     private final GiftDataScopeSupport giftDataScopeSupport;
-    private final GiftPersonInfoTMapper giftPersonInfoTMapper;
-    private final GiftEventInfoTMapper giftEventInfoTMapper;
+    private final GiftPersonInfoMapper giftPersonInfoMapper;
+    private final GiftEventInfoMapper giftEventInfoMapper;
 
     @Override
-    public Page<GiftRecordInfoTVo> getPage(Long pageNum, Long pageSize, GiftRecordQuery query) {
+    public Page<GiftRecordInfoVo> getPage(Long pageNum, Long pageSize, GiftRecordQuery query) {
         return getBaseMapper().getPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
     }
 
     @Override
-    public List<GiftRecordInfoTVo> getList(GiftRecordQuery query) {
+    public List<GiftRecordInfoVo> getList(GiftRecordQuery query) {
         return getBaseMapper().getList(query);
     }
 
     @Override
     public GiftRecordSummaryVo getSummary(GiftRecordQuery query) {
-        List<GiftRecordInfoT> records = getBaseMapper().listEntities(query);
+        List<GiftRecordInfo> records = getBaseMapper().listEntities(query);
         BigDecimal giveAmount = sumByDirection(records, DIRECTION_GIVE);
         BigDecimal receiveAmount = sumByDirection(records, DIRECTION_RECEIVE);
         BigDecimal returnAmount = sumByDirection(records, DIRECTION_RETURN);
@@ -72,50 +72,50 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
     }
 
     @Override
-    public GiftRecordInfoTVo queryGiftRecordInfoT(Long id) {
-        GiftRecordInfoT entity = getById(id);
+    public GiftRecordInfoVo queryGiftRecordInfo(Long id) {
+        GiftRecordInfo entity = getById(id);
         giftDataScopeSupport.assertRecordAccessible(entity);
         return toVo(entity);
     }
 
     @Override
-    public GiftRecordInfoTVo addGiftRecordInfoT(GiftRecordInfoTVo giftRecordInfoTVo) {
-        validateForSave(giftRecordInfoTVo);
-        fillOwner(giftRecordInfoTVo);
-        GiftRecordInfoT entity = new GiftRecordInfoT();
-        BeanUtils.copyProperties(giftRecordInfoTVo, entity);
+    public GiftRecordInfoVo addGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
+        validateForSave(giftRecordInfoVo);
+        fillOwner(giftRecordInfoVo);
+        GiftRecordInfo entity = new GiftRecordInfo();
+        BeanUtils.copyProperties(giftRecordInfoVo, entity);
         if (DIRECTION_RECEIVE.equals(entity.getDirection()) && entity.getReturnedFlag() == null) {
             entity.setReturnedFlag(0);
-            giftRecordInfoTVo.setReturnedFlag(0);
+            giftRecordInfoVo.setReturnedFlag(0);
         }
         save(entity);
-        giftRecordInfoTVo.setId(entity.getId());
-        return giftRecordInfoTVo;
+        giftRecordInfoVo.setId(entity.getId());
+        return giftRecordInfoVo;
     }
 
     @Override
-    public Boolean updateGiftRecordInfoT(GiftRecordInfoTVo giftRecordInfoTVo) {
-        if (giftRecordInfoTVo == null || giftRecordInfoTVo.getId() == null) {
+    public Boolean updateGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
+        if (giftRecordInfoVo == null || giftRecordInfoVo.getId() == null) {
             throw GiftExceptions.param("礼金记录ID不能为空");
         }
-        GiftRecordInfoT existing = getById(giftRecordInfoTVo.getId());
+        GiftRecordInfo existing = getById(giftRecordInfoVo.getId());
         giftDataScopeSupport.assertRecordAccessible(existing);
-        giftRecordInfoTVo.setUserId(existing.getUserId());
-        giftRecordInfoTVo.setOrgId(existing.getOrgId());
-        validateForSave(giftRecordInfoTVo);
-        GiftRecordInfoT entity = new GiftRecordInfoT();
-        BeanUtils.copyProperties(giftRecordInfoTVo, entity);
+        giftRecordInfoVo.setUserId(existing.getUserId());
+        giftRecordInfoVo.setOrgId(existing.getOrgId());
+        validateForSave(giftRecordInfoVo);
+        GiftRecordInfo entity = new GiftRecordInfo();
+        BeanUtils.copyProperties(giftRecordInfoVo, entity);
         return updateById(entity);
     }
 
     @Override
-    public Boolean deleteGiftRecordInfoT(String ids) {
+    public Boolean deleteGiftRecordInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;
         }
         List<Long> idList = parseIds(ids);
         for (Long id : idList) {
-            GiftRecordInfoT existing = getById(id);
+            GiftRecordInfo existing = getById(id);
             giftDataScopeSupport.assertRecordAccessible(existing);
         }
         return removeBatchByIds(idList);
@@ -126,7 +126,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         if (receiveRecordId == null) {
             throw GiftExceptions.param("原始收礼记录不能为空");
         }
-        GiftRecordInfoT receiveRecord = getById(receiveRecordId);
+        GiftRecordInfo receiveRecord = getById(receiveRecordId);
         if (receiveRecord == null) {
             throw GiftExceptions.param("礼金记录不存在");
         }
@@ -145,7 +145,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         if (receiveRecordId == null) {
             throw GiftExceptions.param("原始收礼记录不能为空");
         }
-        GiftRecordInfoT receiveRecord = getById(receiveRecordId);
+        GiftRecordInfo receiveRecord = getById(receiveRecordId);
         if (receiveRecord == null) {
             throw GiftExceptions.param("礼金记录不存在");
         }
@@ -156,15 +156,15 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         if (receiveRecord.getReturnedFlag() != null && receiveRecord.getReturnedFlag() == 1) {
             return true;
         }
-        GiftRecordInfoT entity = new GiftRecordInfoT();
+        GiftRecordInfo entity = new GiftRecordInfo();
         entity.setId(receiveRecordId);
         entity.setReturnedFlag(1);
         return updateById(entity);
     }
 
     @Override
-    public void exportGiftRecordInfoT(GiftRecordQuery query, HttpServletResponse response) {
-        List<GiftRecordInfoTVo> list = getList(query);
+    public void exportGiftRecordInfo(GiftRecordQuery query, HttpServletResponse response) {
+        List<GiftRecordInfoVo> list = getList(query);
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("礼金记录");
 
@@ -177,7 +177,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
 
             // Populate data rows
             int rowNum = 1;
-            for (GiftRecordInfoTVo vo : list) {
+            for (GiftRecordInfoVo vo : list) {
                 Row row = sheet.createRow(rowNum++);
                 // Date (日期)
                 String dateStr = "";
@@ -237,14 +237,14 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         }
     }
 
-    private void validateForSave(GiftRecordInfoTVo vo) {
+    private void validateForSave(GiftRecordInfoVo vo) {
         validateDirection(vo);
         validateAmount(vo);
         validateReferences(vo);
         validateReturnRelation(vo);
     }
 
-    private void validateDirection(GiftRecordInfoTVo vo) {
+    private void validateDirection(GiftRecordInfoVo vo) {
         if (vo == null || !StringUtils.hasText(vo.getDirection())) {
             throw GiftExceptions.param("礼金方向不能为空");
         }
@@ -258,31 +258,31 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         }
     }
 
-    private void validateAmount(GiftRecordInfoTVo vo) {
+    private void validateAmount(GiftRecordInfoVo vo) {
         if (vo == null || vo.getAmount() == null || vo.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw GiftExceptions.param("礼金金额必须大于0");
         }
     }
 
-    private void validateReferences(GiftRecordInfoTVo vo) {
+    private void validateReferences(GiftRecordInfoVo vo) {
         if (vo == null) {
             return;
         }
         if (vo.getGiverPersonId() != null) {
-            GiftPersonInfoT giver = giftPersonInfoTMapper.selectById(vo.getGiverPersonId());
+            GiftPersonInfo giver = giftPersonInfoMapper.selectById(vo.getGiverPersonId());
             giftDataScopeSupport.assertPersonAccessible(giver);
         }
         if (vo.getReceiverPersonId() != null) {
-            GiftPersonInfoT receiver = giftPersonInfoTMapper.selectById(vo.getReceiverPersonId());
+            GiftPersonInfo receiver = giftPersonInfoMapper.selectById(vo.getReceiverPersonId());
             giftDataScopeSupport.assertPersonAccessible(receiver);
         }
         if (vo.getEventId() != null) {
-            GiftEventInfoT event = giftEventInfoTMapper.selectById(vo.getEventId());
+            GiftEventInfo event = giftEventInfoMapper.selectById(vo.getEventId());
             giftDataScopeSupport.assertEventAccessible(event);
         }
     }
 
-    private void validateReturnRelation(GiftRecordInfoTVo vo) {
+    private void validateReturnRelation(GiftRecordInfoVo vo) {
         if (vo == null || !DIRECTION_RETURN.equals(vo.getDirection())) {
             return;
         }
@@ -290,7 +290,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         if (vo.getId() != null && vo.getId().equals(relatedRecordId)) {
             throw GiftExceptions.param("回礼记录不能关联自身");
         }
-        GiftRecordInfoT related = getById(relatedRecordId);
+        GiftRecordInfo related = getById(relatedRecordId);
         if (related == null) {
             throw GiftExceptions.param("关联的收礼记录不存在");
         }
@@ -300,7 +300,7 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         }
     }
 
-    private void fillOwner(GiftRecordInfoTVo vo) {
+    private void fillOwner(GiftRecordInfoVo vo) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         vo.setUserId(loginUser.getId());
         OrgInfoVo orgInfoVo = loginUser.getOrgInfoVo();
@@ -319,21 +319,21 @@ public class GiftRecordInfoTServiceImp extends ServiceImpl<GiftRecordInfoTMapper
         }
     }
 
-    private GiftRecordInfoTVo toVo(GiftRecordInfoT entity) {
+    private GiftRecordInfoVo toVo(GiftRecordInfo entity) {
         if (entity == null) {
             return null;
         }
-        GiftRecordInfoTVo vo = new GiftRecordInfoTVo();
+        GiftRecordInfoVo vo = new GiftRecordInfoVo();
         BeanUtils.copyProperties(entity, vo);
         vo.setPaymentMethod("-");
         vo.setHandlerName("-");
         return vo;
     }
 
-    private BigDecimal sumByDirection(List<GiftRecordInfoT> records, String direction) {
+    private BigDecimal sumByDirection(List<GiftRecordInfo> records, String direction) {
         return records.stream()
                 .filter(record -> direction.equals(record.getDirection()))
-                .map(GiftRecordInfoT::getAmount)
+                .map(GiftRecordInfo::getAmount)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

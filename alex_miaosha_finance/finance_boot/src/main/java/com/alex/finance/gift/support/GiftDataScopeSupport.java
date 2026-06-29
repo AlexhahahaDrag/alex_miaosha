@@ -4,10 +4,10 @@ import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.relation.entity.GiftRelationInfoT;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.relation.entity.GiftRelationInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -42,28 +42,28 @@ public class GiftDataScopeSupport {
 
     // ─── accessible 断言（query / update / delete / markReturned 前调用）───────
 
-    public void assertRecordAccessible(GiftRecordInfoT entity) {
+    public void assertRecordAccessible(GiftRecordInfo entity) {
         assertEntityAccessible(
                 entity == null ? null : entity.getUserId(),
                 entity == null ? null : entity.getOrgId(),
                 "礼金记录");
     }
 
-    public void assertPersonAccessible(GiftPersonInfoT entity) {
+    public void assertPersonAccessible(GiftPersonInfo entity) {
         assertEntityAccessible(
                 entity == null ? null : entity.getUserId(),
                 entity == null ? null : entity.getOrgId(),
                 "亲友");
     }
 
-    public void assertEventAccessible(GiftEventInfoT entity) {
+    public void assertEventAccessible(GiftEventInfo entity) {
         assertEntityAccessible(
                 entity == null ? null : entity.getUserId(),
                 entity == null ? null : entity.getOrgId(),
                 "事由");
     }
 
-    public void assertRelationAccessible(GiftRelationInfoT entity) {
+    public void assertRelationAccessible(GiftRelationInfo entity) {
         assertEntityAccessible(
                 entity == null ? null : entity.getUserId(),
                 entity == null ? null : entity.getOrgId(),

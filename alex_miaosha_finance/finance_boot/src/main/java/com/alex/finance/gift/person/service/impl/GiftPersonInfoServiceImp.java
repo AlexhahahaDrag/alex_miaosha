@@ -2,17 +2,17 @@ package com.alex.finance.gift.person.service.impl;
 
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
-import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.person.service.GiftPersonInfoTService;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.person.service.GiftPersonInfoService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,30 +31,30 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper, GiftPersonInfoT>
-        implements GiftPersonInfoTService {
+public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, GiftPersonInfo>
+        implements GiftPersonInfoService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
 
     @Autowired(required = false)
-    private GiftRecordInfoTService giftRecordInfoTService;
+    private GiftRecordInfoService giftRecordInfoService;
 
     @Override
-    public Page<GiftPersonInfoTVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
+    public Page<GiftPersonInfoVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
         return getBaseMapper().getPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
     }
 
     @Override
-    public List<GiftPersonInfoTVo> getList(GiftPersonQuery query) {
+    public List<GiftPersonInfoVo> getList(GiftPersonQuery query) {
         return getBaseMapper().getList(query);
     }
 
     @Override
     public GiftPersonSummaryVo getSummary() {
         long personCount = getBaseMapper().listEntities(null).size();
-        List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate();
+        List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
         BigDecimal yearTotalAmount = records.stream()
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -85,55 +85,55 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
 
     @Override
     public GiftPersonProfileVo getProfile(Long id) {
-        GiftPersonInfoT person = getById(id);
+        GiftPersonInfo person = getById(id);
         giftDataScopeSupport.assertPersonAccessible(person);
         GiftPersonProfileVo profile = new GiftPersonProfileVo();
         if (person == null) {
             return profile;
         }
-        GiftPersonInfoTVo personVo = toVo(person);
+        GiftPersonInfoVo personVo = toVo(person);
         profile.setPerson(toBusinessVo(personVo));
         profile.setRecords(listGiftRecordsForAggregate().stream()
                 .filter(record -> personInRecord(record, id))
-                .sorted(Comparator.comparing(GiftRecordInfoTVo::getPayTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                .sorted(Comparator.comparing(GiftRecordInfoVo::getPayTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(10)
                 .toList());
         return profile;
     }
 
     @Override
-    public GiftPersonInfoTVo queryGiftPersonInfoT(Long id) {
-        GiftPersonInfoT entity = getById(id);
+    public GiftPersonInfoVo queryGiftPersonInfo(Long id) {
+        GiftPersonInfo entity = getById(id);
         giftDataScopeSupport.assertPersonAccessible(entity);
         return toVo(entity);
     }
 
     @Override
-    public GiftPersonInfoTVo addGiftPersonInfoT(GiftPersonInfoTVo giftPersonInfoTVo) {
-        fillOwner(giftPersonInfoTVo);
-        GiftPersonInfoT entity = new GiftPersonInfoT();
-        BeanUtils.copyProperties(giftPersonInfoTVo, entity);
+    public GiftPersonInfoVo addGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
+        fillOwner(giftPersonInfoVo);
+        GiftPersonInfo entity = new GiftPersonInfo();
+        BeanUtils.copyProperties(giftPersonInfoVo, entity);
         save(entity);
-        giftPersonInfoTVo.setId(entity.getId());
-        return giftPersonInfoTVo;
+        giftPersonInfoVo.setId(entity.getId());
+        return giftPersonInfoVo;
     }
 
     @Override
-    public Boolean updateGiftPersonInfoT(GiftPersonInfoTVo giftPersonInfoTVo) {
-        if (giftPersonInfoTVo == null || giftPersonInfoTVo.getId() == null) {
+    public Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
+        if (giftPersonInfoVo == null || giftPersonInfoVo.getId() == null) {
             throw GiftExceptions.param("亲友ID不能为空");
         }
-        GiftPersonInfoT existing = getById(giftPersonInfoTVo.getId());
+        GiftPersonInfo existing = getById(giftPersonInfoVo.getId());
         giftDataScopeSupport.assertPersonAccessible(existing);
-        giftPersonInfoTVo.setUserId(existing.getUserId());
-        giftPersonInfoTVo.setOrgId(existing.getOrgId());
-        GiftPersonInfoT entity = new GiftPersonInfoT();
-        BeanUtils.copyProperties(giftPersonInfoTVo, entity);
+        giftPersonInfoVo.setUserId(existing.getUserId());
+        giftPersonInfoVo.setOrgId(existing.getOrgId());
+        GiftPersonInfo entity = new GiftPersonInfo();
+        BeanUtils.copyProperties(giftPersonInfoVo, entity);
         return updateById(entity);
     }
 
     @Override
-    public Boolean deleteGiftPersonInfoT(String ids) {
+    public Boolean deleteGiftPersonInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;
         }
@@ -144,13 +144,13 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
         return removeBatchByIds(idList);
     }
 
-    protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
-        return giftRecordInfoTService == null
+    protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
+        return giftRecordInfoService == null
                 ? List.of()
-                : giftRecordInfoTService.getList(new GiftRecordQuery());
+                : giftRecordInfoService.getList(new GiftRecordQuery());
     }
 
-    private void fillOwner(GiftPersonInfoTVo vo) {
+    private void fillOwner(GiftPersonInfoVo vo) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         vo.setUserId(loginUser.getId());
         OrgInfoVo orgInfoVo = loginUser.getOrgInfoVo();
@@ -169,10 +169,10 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
         }
     }
 
-    private GiftPersonBusinessVo toBusinessVo(GiftPersonInfoTVo person) {
+    private GiftPersonBusinessVo toBusinessVo(GiftPersonInfoVo person) {
         GiftPersonBusinessVo vo = new GiftPersonBusinessVo();
         BeanUtils.copyProperties(person, vo);
-        List<GiftRecordInfoTVo> personRecords = listGiftRecordsForAggregate().stream()
+        List<GiftRecordInfoVo> personRecords = listGiftRecordsForAggregate().stream()
                 .filter(record -> personInRecord(record, person.getId()))
                 .toList();
         BigDecimal giveAmount = personRecords.stream()
@@ -183,8 +183,8 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
                 .filter(record -> "RECEIVE".equals(record.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        Optional<GiftRecordInfoTVo> latest = personRecords.stream()
-                .max(Comparator.comparing(GiftRecordInfoTVo::getPayTime,
+        Optional<GiftRecordInfoVo> latest = personRecords.stream()
+                .max(Comparator.comparing(GiftRecordInfoVo::getPayTime,
                         Comparator.nullsFirst(Comparator.naturalOrder())));
         vo.setTotalGiveAmount(giveAmount);
         vo.setTotalReceiveAmount(receiveAmount);
@@ -197,20 +197,20 @@ public class GiftPersonInfoTServiceImp extends ServiceImpl<GiftPersonInfoTMapper
         return vo;
     }
 
-    private boolean personInRecord(GiftRecordInfoTVo record, Long personId) {
+    private boolean personInRecord(GiftRecordInfoVo record, Long personId) {
         return personId != null
                 && (personId.equals(record.getGiverPersonId()) || personId.equals(record.getReceiverPersonId()));
     }
 
-    private BigDecimal amount(GiftRecordInfoTVo record) {
+    private BigDecimal amount(GiftRecordInfoVo record) {
         return record.getAmount() == null ? BigDecimal.ZERO : record.getAmount();
     }
 
-    private GiftPersonInfoTVo toVo(GiftPersonInfoT entity) {
+    private GiftPersonInfoVo toVo(GiftPersonInfo entity) {
         if (entity == null) {
             return null;
         }
-        GiftPersonInfoTVo vo = new GiftPersonInfoTVo();
+        GiftPersonInfoVo vo = new GiftPersonInfoVo();
         BeanUtils.copyProperties(entity, vo);
         return vo;
     }

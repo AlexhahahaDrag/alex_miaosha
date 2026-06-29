@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper">
+<mapper namespace="com.alex.finance.gift.record.mapper.GiftRecordInfoMapper">
 
     <!-- 公共查询条件片段（与 getPage / getList / listEntities 共享） -->
     <sql id="queryConditions">
@@ -44,7 +44,7 @@
     </sql>
 
     <!-- 分页查询（返回 VO，含联表） -->
-    <select id="getPage" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo">
+    <select id="getPage" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoVo">
         SELECT
             r.id,
             r.org_id,
@@ -80,7 +80,7 @@
     </select>
 
     <!-- 列表查询（返回 VO，含联表，不分页） -->
-    <select id="getList" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo">
+    <select id="getList" resultType="com.alex.api.finance.gift.record.vo.GiftRecordInfoVo">
         SELECT
             r.id,
             r.org_id,
@@ -116,7 +116,7 @@
     </select>
 
     <!-- 实体列表查询（返回 Entity，用于内部聚合计算） -->
-    <select id="listEntities" resultType="com.alex.finance.gift.record.entity.GiftRecordInfoT">
+    <select id="listEntities" resultType="com.alex.finance.gift.record.entity.GiftRecordInfo">
         SELECT
             r.id,
             r.org_id,

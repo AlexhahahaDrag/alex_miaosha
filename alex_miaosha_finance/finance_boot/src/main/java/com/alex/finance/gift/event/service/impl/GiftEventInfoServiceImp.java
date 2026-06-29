@@ -2,16 +2,16 @@ package com.alex.finance.gift.event.service.impl;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
-import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.event.service.GiftEventInfoTService;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.event.service.GiftEventInfoService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,29 +32,29 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, GiftEventInfoT> implements GiftEventInfoTService {
+public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, GiftEventInfo> implements GiftEventInfoService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
 
     @Autowired(required = false)
-    private GiftRecordInfoTService giftRecordInfoTService;
+    private GiftRecordInfoService giftRecordInfoService;
 
     @Override
-    public Page<GiftEventInfoTVo> getPage(Long pageNum, Long pageSize, GiftEventQuery query) {
+    public Page<GiftEventInfoVo> getPage(Long pageNum, Long pageSize, GiftEventQuery query) {
         return getBaseMapper().getPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
     }
 
     @Override
-    public List<GiftEventInfoTVo> getList(GiftEventQuery query) {
+    public List<GiftEventInfoVo> getList(GiftEventQuery query) {
         return getBaseMapper().getList(query);
     }
 
     @Override
     public GiftEventSummaryVo getSummary() {
-        List<GiftEventInfoT> events = getBaseMapper().listEntities(null);
-        List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate();
+        List<GiftEventInfo> events = getBaseMapper().listEntities(null);
+        List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
         LocalDateTime now = LocalDateTime.now();
         long monthPendingCount = events.stream()
                 .filter(event -> event.getEventTime() != null)
@@ -87,38 +87,38 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
     }
 
     @Override
-    public GiftEventInfoTVo queryGiftEventInfoT(Long id) {
-        GiftEventInfoT entity = getById(id);
+    public GiftEventInfoVo queryGiftEventInfo(Long id) {
+        GiftEventInfo entity = getById(id);
         giftDataScopeSupport.assertEventAccessible(entity);
         return toVo(entity);
     }
 
     @Override
-    public GiftEventInfoTVo addGiftEventInfoT(GiftEventInfoTVo giftEventInfoTVo) {
-        fillOwner(giftEventInfoTVo);
-        GiftEventInfoT entity = new GiftEventInfoT();
-        BeanUtils.copyProperties(giftEventInfoTVo, entity);
+    public GiftEventInfoVo addGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
+        fillOwner(giftEventInfoVo);
+        GiftEventInfo entity = new GiftEventInfo();
+        BeanUtils.copyProperties(giftEventInfoVo, entity);
         save(entity);
-        giftEventInfoTVo.setId(entity.getId());
-        return giftEventInfoTVo;
+        giftEventInfoVo.setId(entity.getId());
+        return giftEventInfoVo;
     }
 
     @Override
-    public Boolean updateGiftEventInfoT(GiftEventInfoTVo giftEventInfoTVo) {
-        if (giftEventInfoTVo == null || giftEventInfoTVo.getId() == null) {
+    public Boolean updateGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
+        if (giftEventInfoVo == null || giftEventInfoVo.getId() == null) {
             throw GiftExceptions.param("事由ID不能为空");
         }
-        GiftEventInfoT existing = getById(giftEventInfoTVo.getId());
+        GiftEventInfo existing = getById(giftEventInfoVo.getId());
         giftDataScopeSupport.assertEventAccessible(existing);
-        giftEventInfoTVo.setUserId(existing.getUserId());
-        giftEventInfoTVo.setOrgId(existing.getOrgId());
-        GiftEventInfoT entity = new GiftEventInfoT();
-        BeanUtils.copyProperties(giftEventInfoTVo, entity);
+        giftEventInfoVo.setUserId(existing.getUserId());
+        giftEventInfoVo.setOrgId(existing.getOrgId());
+        GiftEventInfo entity = new GiftEventInfo();
+        BeanUtils.copyProperties(giftEventInfoVo, entity);
         return updateById(entity);
     }
 
     @Override
-    public Boolean deleteGiftEventInfoT(String ids) {
+    public Boolean deleteGiftEventInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;
         }
@@ -129,10 +129,10 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         return removeBatchByIds(idList);
     }
 
-    protected List<GiftRecordInfoTVo> listGiftRecordsForAggregate() {
-        return giftRecordInfoTService == null
+    protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
+        return giftRecordInfoService == null
                 ? List.of()
-                : giftRecordInfoTService.getList(new GiftRecordQuery());
+                : giftRecordInfoService.getList(new GiftRecordQuery());
     }
 
     private List<Long> parseIds(String ids) {
@@ -147,10 +147,10 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         }
     }
 
-    private GiftEventBusinessVo toBusinessVo(GiftEventInfoTVo event) {
+    private GiftEventBusinessVo toBusinessVo(GiftEventInfoVo event) {
         GiftEventBusinessVo vo = new GiftEventBusinessVo();
         BeanUtils.copyProperties(event, vo);
-        List<GiftRecordInfoTVo> records = listGiftRecordsForAggregate().stream()
+        List<GiftRecordInfoVo> records = listGiftRecordsForAggregate().stream()
                 .filter(record -> event.getId() != null && event.getId().equals(record.getEventId()))
                 .toList();
         BigDecimal giveAmount = records.stream()
@@ -174,22 +174,22 @@ public class GiftEventInfoTServiceImp extends ServiceImpl<GiftEventInfoTMapper, 
         return vo;
     }
 
-    private BigDecimal amount(GiftRecordInfoTVo record) {
+    private BigDecimal amount(GiftRecordInfoVo record) {
         return record.getAmount() == null ? BigDecimal.ZERO : record.getAmount();
     }
 
-    private void fillOwner(GiftEventInfoTVo vo) {
+    private void fillOwner(GiftEventInfoVo vo) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         vo.setUserId(loginUser.getId());
         OrgInfoVo orgInfoVo = loginUser.getOrgInfoVo();
         vo.setOrgId(orgInfoVo == null ? loginUser.getOrgId() : orgInfoVo.getId());
     }
 
-    private GiftEventInfoTVo toVo(GiftEventInfoT entity) {
+    private GiftEventInfoVo toVo(GiftEventInfo entity) {
         if (entity == null) {
             return null;
         }
-        GiftEventInfoTVo vo = new GiftEventInfoTVo();
+        GiftEventInfoVo vo = new GiftEventInfoVo();
         BeanUtils.copyProperties(entity, vo);
         return vo;
     }

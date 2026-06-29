@@ -3,15 +3,15 @@ package com.alex.finance.gift;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
-import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -31,7 +31,7 @@ class GiftDeleteStringIdTest {
     void personDeleteConvertsStringIdsToLongIds() {
         TestPersonService service = new TestPersonService();
 
-        service.deleteGiftPersonInfoT("2056551606332862465,2056551606332862466");
+        service.deleteGiftPersonInfo("2056551606332862465,2056551606332862466");
 
         assertLongIds(service.removedIds);
     }
@@ -40,7 +40,7 @@ class GiftDeleteStringIdTest {
     void eventDeleteConvertsStringIdsToLongIds() {
         TestEventService service = new TestEventService();
 
-        service.deleteGiftEventInfoT("2056551606332862465,2056551606332862466");
+        service.deleteGiftEventInfo("2056551606332862465,2056551606332862466");
 
         assertLongIds(service.removedIds);
     }
@@ -49,7 +49,7 @@ class GiftDeleteStringIdTest {
     void recordDeleteConvertsStringIdsToLongIds() {
         TestRecordService service = new TestRecordService();
 
-        service.deleteGiftRecordInfoT("2056551606332862465,2056551606332862466");
+        service.deleteGiftRecordInfo("2056551606332862465,2056551606332862466");
 
         assertLongIds(service.removedIds);
     }
@@ -71,7 +71,7 @@ class GiftDeleteStringIdTest {
         return user;
     }
 
-    private static class TestPersonService extends GiftPersonInfoTServiceImp {
+    private static class TestPersonService extends GiftPersonInfoServiceImp {
         private List<Object> removedIds = List.of();
 
         private TestPersonService() {
@@ -79,8 +79,8 @@ class GiftDeleteStringIdTest {
         }
 
         @Override
-        public GiftPersonInfoT getById(Serializable id) {
-            GiftPersonInfoT entity = new GiftPersonInfoT();
+        public GiftPersonInfo getById(Serializable id) {
+            GiftPersonInfo entity = new GiftPersonInfo();
             entity.setId((Long) id);
             entity.setUserId(10L);
             entity.setOrgId(20L);
@@ -94,7 +94,7 @@ class GiftDeleteStringIdTest {
         }
     }
 
-    private static class TestEventService extends GiftEventInfoTServiceImp {
+    private static class TestEventService extends GiftEventInfoServiceImp {
         private List<Object> removedIds = List.of();
 
         private TestEventService() {
@@ -102,8 +102,8 @@ class GiftDeleteStringIdTest {
         }
 
         @Override
-        public GiftEventInfoT getById(Serializable id) {
-            GiftEventInfoT entity = new GiftEventInfoT();
+        public GiftEventInfo getById(Serializable id) {
+            GiftEventInfo entity = new GiftEventInfo();
             entity.setId((Long) id);
             entity.setUserId(10L);
             entity.setOrgId(20L);
@@ -117,20 +117,20 @@ class GiftDeleteStringIdTest {
         }
     }
 
-    private static class TestRecordService extends GiftRecordInfoTServiceImp {
+    private static class TestRecordService extends GiftRecordInfoServiceImp {
         private List<Object> removedIds = List.of();
 
         private TestRecordService() {
             super(
                     new GiftDataScopeSupport(loginUserUtils()),
-                    mock(GiftPersonInfoTMapper.class),
-                    mock(GiftEventInfoTMapper.class));
-            ReflectionTestUtils.setField(this, "baseMapper", mock(GiftRecordInfoTMapper.class));
+                    mock(GiftPersonInfoMapper.class),
+                    mock(GiftEventInfoMapper.class));
+            ReflectionTestUtils.setField(this, "baseMapper", mock(GiftRecordInfoMapper.class));
         }
 
         @Override
-        public GiftRecordInfoT getById(Serializable id) {
-            GiftRecordInfoT entity = new GiftRecordInfoT();
+        public GiftRecordInfo getById(Serializable id) {
+            GiftRecordInfo entity = new GiftRecordInfo();
             entity.setId((Long) id);
             entity.setUserId(10L);
             entity.setOrgId(20L);

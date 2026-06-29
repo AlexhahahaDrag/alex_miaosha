@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @ApiModel(value = "GiftPersonBusinessVo", description = "gift person aggregate row")
-public class GiftPersonBusinessVo extends GiftPersonInfoTVo {
+public class GiftPersonBusinessVo extends GiftPersonInfoVo {
 
     @ApiModelProperty(value = "total give amount")
     private BigDecimal totalGiveAmount = BigDecimal.ZERO;

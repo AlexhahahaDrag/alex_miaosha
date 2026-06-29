@@ -1,13 +1,13 @@
 package com.alex.finance.gift.record.controller;
 
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -28,86 +28,86 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @ApiSort(133)
-@Api(value = "gift record api", tags = { "gift record api" })
+@Api(value = "礼金记录管理", tags = { "礼金记录管理" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/gift-record-info-t")
-public class GiftRecordInfoTController {
+public class GiftRecordInfoController {
 
-    private final GiftRecordInfoTService giftRecordInfoTService;
+    private final GiftRecordInfoService giftRecordInfoService;
 
     @ApiOperationSupport(order = 10, author = "alex")
-    @ApiOperation(value = "gift record page", response = Result.class)
+    @ApiOperation(value = "礼金记录分页查询", response = Result.class)
     @PostMapping(value = "/page")
-    public Result<Page<GiftRecordInfoTVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+    public Result<Page<GiftRecordInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
             @RequestParam(value = "pageSize", required = false) Long pageSize,
             @RequestBody(required = false) GiftRecordQuery query) {
-        return Result.success(giftRecordInfoTService.getPage(pageNum, pageSize, query));
+        return Result.success(giftRecordInfoService.getPage(pageNum, pageSize, query));
     }
 
     @ApiOperationSupport(order = 15, author = "alex")
-    @ApiOperation(value = "gift record list", response = Result.class)
+    @ApiOperation(value = "礼金记录列表查询", response = Result.class)
     @PostMapping(value = "/list")
-    public Result<List<GiftRecordInfoTVo>> getList(@RequestBody(required = false) GiftRecordQuery query) {
-        return Result.success(giftRecordInfoTService.getList(query));
+    public Result<List<GiftRecordInfoVo>> getList(@RequestBody(required = false) GiftRecordQuery query) {
+        return Result.success(giftRecordInfoService.getList(query));
     }
 
     @ApiOperationSupport(order = 16, author = "alex")
-    @ApiOperation(value = "gift record summary", response = Result.class)
+    @ApiOperation(value = "礼金汇总统计", response = Result.class)
     @PostMapping(value = "/summary")
     public Result<GiftRecordSummaryVo> summary(@RequestBody(required = false) GiftRecordQuery query) {
-        return Result.success(giftRecordInfoTService.getSummary(query));
+        return Result.success(giftRecordInfoService.getSummary(query));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "gift record detail", response = Result.class)
+    @ApiOperation(value = "礼金记录详情", response = Result.class)
     @GetMapping
-    public Result<GiftRecordInfoTVo> query(@RequestParam(value = "id") Long id) {
-        return Result.success(giftRecordInfoTService.queryGiftRecordInfoT(id));
+    public Result<GiftRecordInfoVo> query(@RequestParam(value = "id") Long id) {
+        return Result.success(giftRecordInfoService.queryGiftRecordInfo(id));
     }
 
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "add gift record", response = Result.class)
+    @ApiOperation(value = "新增礼金记录", response = Result.class)
     @PostMapping
-    public Result<GiftRecordInfoTVo> add(
-            @Validated({ Insert.class }) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
-        return Result.success(giftRecordInfoTService.addGiftRecordInfoT(giftRecordInfoTVo));
+    public Result<GiftRecordInfoVo> add(
+            @Validated({ Insert.class }) @RequestBody GiftRecordInfoVo giftRecordInfoVo) {
+        return Result.success(giftRecordInfoService.addGiftRecordInfo(giftRecordInfoVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
-    @ApiOperation(value = "update gift record", response = Result.class)
+    @ApiOperation(value = "修改礼金记录", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@Validated({ Update.class }) @RequestBody GiftRecordInfoTVo giftRecordInfoTVo) {
-        return Result.success(giftRecordInfoTService.updateGiftRecordInfoT(giftRecordInfoTVo));
+    public Result<Boolean> update(@Validated({ Update.class }) @RequestBody GiftRecordInfoVo giftRecordInfoVo) {
+        return Result.success(giftRecordInfoService.updateGiftRecordInfo(giftRecordInfoVo));
     }
 
     @ApiOperationSupport(order = 50, author = "alex")
-    @ApiOperation(value = "delete gift record", response = Result.class)
+    @ApiOperation(value = "删除礼金记录", response = Result.class)
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
-        return Result.success(giftRecordInfoTService.deleteGiftRecordInfoT(ids));
+        return Result.success(giftRecordInfoService.deleteGiftRecordInfo(ids));
     }
 
     @ApiOperationSupport(order = 60, author = "alex")
-    @ApiOperation(value = "pending return amount", response = Result.class)
+    @ApiOperation(value = "查询待回礼金额", response = Result.class)
     @GetMapping(value = "/pending-return-amount")
     public Result<BigDecimal> pendingReturnAmount(@RequestParam("receiveRecordId") Long receiveRecordId) {
-        return Result.success(giftRecordInfoTService.calculatePendingReturnAmount(receiveRecordId));
+        return Result.success(giftRecordInfoService.calculatePendingReturnAmount(receiveRecordId));
     }
 
     @ApiOperationSupport(order = 70, author = "alex")
-    @ApiOperation(value = "mark returned", response = Result.class)
+    @ApiOperation(value = "标记已回礼", response = Result.class)
     @PutMapping(value = "/mark-returned")
     public Result<Boolean> markReturned(@RequestParam("receiveRecordId") Long receiveRecordId) {
-        return Result.success(giftRecordInfoTService.markReturned(receiveRecordId));
+        return Result.success(giftRecordInfoService.markReturned(receiveRecordId));
     }
 
     @ApiOperationSupport(order = 80, author = "alex")
-    @ApiOperation(value = "export gift record", response = void.class)
+    @ApiOperation(value = "导出礼金记录", response = void.class)
     @PostMapping(value = "/export")
     public void export(@RequestBody(required = false) GiftRecordQuery query,
             javax.servlet.http.HttpServletResponse response) {
-        giftRecordInfoTService.exportGiftRecordInfoT(query, response);
+        giftRecordInfoService.exportGiftRecordInfo(query, response);
     }
 }

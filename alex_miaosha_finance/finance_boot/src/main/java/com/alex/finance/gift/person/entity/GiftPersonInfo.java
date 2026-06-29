@@ -1,4 +1,4 @@
-package com.alex.finance.gift.relation.entity;
+package com.alex.finance.gift.person.entity;
 
 import com.alex.common.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,16 +10,16 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * description: 礼尚往来关系表
+ * description: 礼尚往来人员表
  * author: alex
  * version: 1.0.0
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName("gift_relation_info_t")
-@ApiModel(value = "GiftRelationInfoT对象", description = "礼尚往来关系表")
-public class GiftRelationInfoT extends BaseEntity<GiftRelationInfoT> {
+@TableName("gift_person_info_t")
+@ApiModel(value = "GiftPersonInfo对象", description = "礼尚往来人员表")
+public class GiftPersonInfo extends BaseEntity<GiftPersonInfo> {
 
     @ApiModelProperty(value = "组织ID")
     @TableField("org_id")
@@ -29,13 +29,17 @@ public class GiftRelationInfoT extends BaseEntity<GiftRelationInfoT> {
     @TableField("user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "人员ID")
-    @TableField("person_id")
-    private Long personId;
+    @ApiModelProperty(value = "绑定系统用户ID")
+    @TableField("bind_user_id")
+    private Long bindUserId;
 
-    @ApiModelProperty(value = "关联人员ID")
-    @TableField("relation_person_id")
-    private Long relationPersonId;
+    @ApiModelProperty(value = "人员姓名")
+    @TableField("person_name")
+    private String personName;
+
+    @ApiModelProperty(value = "手机号")
+    @TableField("phone")
+    private String phone;
 
     @ApiModelProperty(value = "关系类型")
     @TableField("relation_type")

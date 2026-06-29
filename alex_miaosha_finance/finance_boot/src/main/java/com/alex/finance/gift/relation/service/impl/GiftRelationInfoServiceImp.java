@@ -1,12 +1,12 @@
 package com.alex.finance.gift.relation.service.impl;
 
 import com.alex.api.finance.gift.relation.query.GiftRelationQuery;
-import com.alex.api.finance.gift.relation.vo.GiftRelationInfoTVo;
+import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.relation.entity.GiftRelationInfoT;
-import com.alex.finance.gift.relation.mapper.GiftRelationInfoTMapper;
-import com.alex.finance.gift.relation.service.GiftRelationInfoTService;
+import com.alex.finance.gift.relation.entity.GiftRelationInfo;
+import com.alex.finance.gift.relation.mapper.GiftRelationInfoMapper;
+import com.alex.finance.gift.relation.service.GiftRelationInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,56 +21,56 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMapper, GiftRelationInfoT>
-        implements GiftRelationInfoTService {
+public class GiftRelationInfoServiceImp extends ServiceImpl<GiftRelationInfoMapper, GiftRelationInfo>
+        implements GiftRelationInfoService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
 
     @Override
-    public Page<GiftRelationInfoTVo> getPage(Long pageNum, Long pageSize, GiftRelationQuery query) {
+    public Page<GiftRelationInfoVo> getPage(Long pageNum, Long pageSize, GiftRelationQuery query) {
         return getBaseMapper().getPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
     }
 
     @Override
-    public List<GiftRelationInfoTVo> getList(GiftRelationQuery query) {
+    public List<GiftRelationInfoVo> getList(GiftRelationQuery query) {
         return getBaseMapper().getList(query);
     }
 
     @Override
-    public GiftRelationInfoTVo queryGiftRelationInfoT(Long id) {
-        GiftRelationInfoT entity = getById(id);
+    public GiftRelationInfoVo queryGiftRelationInfo(Long id) {
+        GiftRelationInfo entity = getById(id);
         giftDataScopeSupport.assertRelationAccessible(entity);
         return toVo(entity);
     }
 
     @Override
-    public GiftRelationInfoTVo addGiftRelationInfoT(GiftRelationInfoTVo giftRelationInfoTVo) {
-        fillOwner(giftRelationInfoTVo);
-        GiftRelationInfoT entity = new GiftRelationInfoT();
-        BeanUtils.copyProperties(giftRelationInfoTVo, entity);
+    public GiftRelationInfoVo addGiftRelationInfo(GiftRelationInfoVo giftRelationInfoVo) {
+        fillOwner(giftRelationInfoVo);
+        GiftRelationInfo entity = new GiftRelationInfo();
+        BeanUtils.copyProperties(giftRelationInfoVo, entity);
         save(entity);
-        giftRelationInfoTVo.setId(entity.getId());
-        return giftRelationInfoTVo;
+        giftRelationInfoVo.setId(entity.getId());
+        return giftRelationInfoVo;
     }
 
     @Override
-    public Boolean updateGiftRelationInfoT(GiftRelationInfoTVo giftRelationInfoTVo) {
-        if (giftRelationInfoTVo == null || giftRelationInfoTVo.getId() == null) {
+    public Boolean updateGiftRelationInfo(GiftRelationInfoVo giftRelationInfoVo) {
+        if (giftRelationInfoVo == null || giftRelationInfoVo.getId() == null) {
             throw GiftExceptions.param("关系ID不能为空");
         }
-        GiftRelationInfoT existing = getById(giftRelationInfoTVo.getId());
+        GiftRelationInfo existing = getById(giftRelationInfoVo.getId());
         giftDataScopeSupport.assertRelationAccessible(existing);
-        giftRelationInfoTVo.setUserId(existing.getUserId());
-        giftRelationInfoTVo.setOrgId(existing.getOrgId());
-        GiftRelationInfoT entity = new GiftRelationInfoT();
-        BeanUtils.copyProperties(giftRelationInfoTVo, entity);
+        giftRelationInfoVo.setUserId(existing.getUserId());
+        giftRelationInfoVo.setOrgId(existing.getOrgId());
+        GiftRelationInfo entity = new GiftRelationInfo();
+        BeanUtils.copyProperties(giftRelationInfoVo, entity);
         return updateById(entity);
     }
 
     @Override
-    public Boolean deleteGiftRelationInfoT(String ids) {
+    public Boolean deleteGiftRelationInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;
         }
@@ -81,7 +81,7 @@ public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMa
         return removeBatchByIds(idList);
     }
 
-    private void fillOwner(GiftRelationInfoTVo vo) {
+    private void fillOwner(GiftRelationInfoVo vo) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         vo.setUserId(loginUser.getId());
         OrgInfoVo orgInfoVo = loginUser.getOrgInfoVo();
@@ -100,11 +100,11 @@ public class GiftRelationInfoTServiceImp extends ServiceImpl<GiftRelationInfoTMa
         }
     }
 
-    private GiftRelationInfoTVo toVo(GiftRelationInfoT entity) {
+    private GiftRelationInfoVo toVo(GiftRelationInfo entity) {
         if (entity == null) {
             return null;
         }
-        GiftRelationInfoTVo vo = new GiftRelationInfoTVo();
+        GiftRelationInfoVo vo = new GiftRelationInfoVo();
         BeanUtils.copyProperties(entity, vo);
         return vo;
     }

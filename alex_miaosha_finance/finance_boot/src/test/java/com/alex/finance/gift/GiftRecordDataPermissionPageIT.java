@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * H1：礼金分页 {@code getPage} 走 Mapper 自定义方法时，{@link DataPermissionHandlerImpl} 必须生效。
+ * H1：礼金分�?{@code getPage} �?Mapper 自定义方法时，{@link DataPermissionHandlerImpl} 必须生效�?
  * <p>
- * 本类验证拦截器对 {@code GiftRecordInfoTMapper.getPage} 注入的 SQL 片段（不依赖真实 DB）。
+ * 本类验证拦截器对 {@code GiftRecordInfoMapper.getPage} 注入�?SQL 片段（不依赖真实 DB）�?
  */
 @ExtendWith(MockitoExtension.class)
 class GiftRecordDataPermissionPageIT {
 
     private static final String GIFT_RECORD_GET_PAGE_MS =
-            "com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper.getPage";
+            "com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.getPage";
 
     private static final String GIFT_RECORD_GET_LIST_MS =
-            "com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper.getList";
+            "com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.getList";
 
     @Mock
     private UserUtils userUtils;
@@ -87,7 +87,7 @@ class GiftRecordDataPermissionPageIT {
     @Test
     void unannotated_mappedStatement_should_not_append_filter() {
         Expression segment = handler.getSqlSegment(null,
-                "com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper.sumReturnAmountByRelatedRecordId");
+                "com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.sumReturnAmountByRelatedRecordId");
 
         assertNull(segment);
     }

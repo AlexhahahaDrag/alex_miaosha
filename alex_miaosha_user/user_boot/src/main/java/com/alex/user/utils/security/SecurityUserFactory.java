@@ -42,6 +42,7 @@ public final class SecurityUserFactory {
         }
         return authorities.stream()
                 .map(SimpleGrantedAuthority::new)
+                .map(GrantedAuthority.class::cast)
                 .toList();
     }
 

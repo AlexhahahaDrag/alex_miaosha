@@ -1,15 +1,15 @@
 package com.alex.finance.gift;
 
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.common.exception.FinanceException;
-import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
+import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,30 +31,30 @@ import static org.mockito.Mockito.lenient;
 class GiftRecordBusinessRuleTest {
 
     @Mock
-    private GiftRecordInfoTMapper giftRecordInfoTMapper;
+    private GiftRecordInfoMapper GiftRecordInfoMapper;
     @Mock
-    private GiftPersonInfoTMapper giftPersonInfoTMapper;
+    private GiftPersonInfoMapper GiftPersonInfoMapper;
     @Mock
-    private GiftEventInfoTMapper giftEventInfoTMapper;
+    private GiftEventInfoMapper GiftEventInfoMapper;
     @Mock
     private UserUtils userUtils;
 
-    private GiftRecordInfoTServiceImp service;
+    private GiftRecordInfoServiceImp service;
 
     @BeforeEach
     void setUp() {
-        service = new GiftRecordInfoTServiceImp(
+        service = new GiftRecordInfoServiceImp(
                 new GiftDataScopeSupport(userUtils),
-                giftPersonInfoTMapper,
-                giftEventInfoTMapper);
-        ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoTMapper);
+                GiftPersonInfoMapper,
+                GiftEventInfoMapper);
+        ReflectionTestUtils.setField(service, "baseMapper", GiftRecordInfoMapper);
         lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());
     }
 
     @Test
     void returnRecordMustPointToReceiveRecord() {
         FinanceException exception = assertThrows(FinanceException.class, () ->
-                service.addGiftRecordInfoT(new GiftRecordInfoTVo()
+                service.addGiftRecordInfo(new GiftRecordInfoVo()
                         .setDirection("RETURN")
                         .setAmount(new BigDecimal("100"))));
 
@@ -63,14 +63,14 @@ class GiftRecordBusinessRuleTest {
 
     @Test
     void pendingReturnAmountEqualsReceiveAmountMinusReturnAmount() {
-        GiftRecordInfoT receiveRecord = new GiftRecordInfoT()
+        GiftRecordInfo receiveRecord = new GiftRecordInfo()
                 .setDirection("RECEIVE")
                 .setAmount(new BigDecimal("1000.00"));
         receiveRecord.setId(1L);
         receiveRecord.setUserId(10L);
         receiveRecord.setOrgId(20L);
-        when(giftRecordInfoTMapper.selectById(1L)).thenReturn(receiveRecord);
-        when(giftRecordInfoTMapper.sumReturnAmountByRelatedRecordId(1L))
+        when(GiftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
+        when(GiftRecordInfoMapper.sumReturnAmountByRelatedRecordId(1L))
                 .thenReturn(new BigDecimal("420.50"));
 
         BigDecimal pending = service.calculatePendingReturnAmount(1L);
@@ -80,19 +80,19 @@ class GiftRecordBusinessRuleTest {
 
     @Test
     void markReturnedSetsReturnedFlagOnReceiveRecord() {
-        GiftRecordInfoT receiveRecord = new GiftRecordInfoT()
+        GiftRecordInfo receiveRecord = new GiftRecordInfo()
                 .setDirection("RECEIVE")
                 .setAmount(new BigDecimal("100.00"));
         receiveRecord.setId(1L);
         receiveRecord.setUserId(10L);
         receiveRecord.setOrgId(20L);
-        when(giftRecordInfoTMapper.selectById(1L)).thenReturn(receiveRecord);
-        when(giftRecordInfoTMapper.updateById(any(GiftRecordInfoT.class))).thenReturn(1);
+        when(GiftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord);
+        when(GiftRecordInfoMapper.updateById(any(GiftRecordInfo.class))).thenReturn(1);
 
         service.markReturned(1L);
 
-        org.mockito.ArgumentCaptor<GiftRecordInfoT> captor = org.mockito.ArgumentCaptor.forClass(GiftRecordInfoT.class);
-        org.mockito.Mockito.verify(giftRecordInfoTMapper).updateById(captor.capture());
+        org.mockito.ArgumentCaptor<GiftRecordInfo> captor = org.mockito.ArgumentCaptor.forClass(GiftRecordInfo.class);
+        org.mockito.Mockito.verify(GiftRecordInfoMapper).updateById(captor.capture());
         assertEquals(1, captor.getValue().getReturnedFlag());
     }
 

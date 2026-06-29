@@ -1,6 +1,6 @@
 package com.alex.api.finance.gift.person.vo;
 
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +17,5 @@ public class GiftPersonProfileVo {
 
     private GiftPersonBusinessVo person;
 
-    private List<GiftRecordInfoTVo> records = new ArrayList<>();
+    private List<GiftRecordInfoVo> records = new ArrayList<>();
 }

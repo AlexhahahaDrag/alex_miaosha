@@ -5,15 +5,15 @@ import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
 import com.alex.api.finance.gift.summary.vo.GiftRankingItemVo;
 import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
 import com.alex.finance.gift.analysis.service.GiftAnalysisService;
-import com.alex.finance.gift.event.service.GiftEventInfoTService;
-import com.alex.finance.gift.person.service.GiftPersonInfoTService;
-import com.alex.finance.gift.record.service.GiftRecordInfoTService;
+import com.alex.finance.gift.event.service.GiftEventInfoService;
+import com.alex.finance.gift.person.service.GiftPersonInfoService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,19 +36,19 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
     private static final String DIRECTION_RECEIVE = "RECEIVE";
         private static final String DIRECTION_RETURN = "RETURN";
 
-        private final GiftRecordInfoTService giftRecordInfoTService;
-        private final GiftEventInfoTService giftEventInfoTService;
-        private final GiftPersonInfoTService giftPersonInfoTService;
+        private final GiftRecordInfoService giftRecordInfoService;
+        private final GiftEventInfoService giftEventInfoService;
+        private final GiftPersonInfoService giftPersonInfoService;
 
         @Override
         public GiftRecordSummaryVo overview() {
-                return giftRecordInfoTService.getSummary(new GiftRecordQuery());
+                return giftRecordInfoService.getSummary(new GiftRecordQuery());
         }
 
         @Override
         public List<GiftAmountTrendVo> trend() {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-                Map<YearMonth, GiftAmountTrendVo> trendMap = giftRecordInfoTService.getList(new GiftRecordQuery())
+                Map<YearMonth, GiftAmountTrendVo> trendMap = giftRecordInfoService.getList(new GiftRecordQuery())
                                 .stream()
                                 .filter(giftRecord -> giftRecord.getPayTime() != null)
                                 .collect(Collectors.groupingBy(
@@ -71,7 +71,7 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
 
         @Override
         public List<GiftRelationDistributionVo> relationDistribution() {
-                return giftPersonInfoTService.getList(new GiftPersonQuery()).stream()
+                return giftPersonInfoService.getList(new GiftPersonQuery()).stream()
                                 .collect(Collectors.groupingBy(
                                                 person -> person.getRelationType() == null ? "OTHER"
                                                                 : person.getRelationType(),
@@ -87,8 +87,8 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
 
         @Override
         public List<GiftRankingItemVo> eventRanking() {
-                GiftEventSummaryVo summary = giftEventInfoTService.getSummary();
-                Page<GiftEventBusinessVo> page = giftEventInfoTService.getBusinessPage(1L, 10L, null);
+                GiftEventSummaryVo summary = giftEventInfoService.getSummary();
+                Page<GiftEventBusinessVo> page = giftEventInfoService.getBusinessPage(1L, 10L, null);
                 List<GiftRankingItemVo> rows = page.getRecords().stream()
                                 .map(event -> new GiftRankingItemVo()
                                                 .setName(event.getEventName())
@@ -107,7 +107,7 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
 
         @Override
         public List<GiftRankingItemVo> personRanking() {
-                Page<GiftPersonBusinessVo> page = giftPersonInfoTService.getBusinessPage(1L, 10L, null);
+                Page<GiftPersonBusinessVo> page = giftPersonInfoService.getBusinessPage(1L, 10L, null);
                 return page.getRecords().stream()
                                 .map(person -> new GiftRankingItemVo()
                                                 .setName(person.getPersonName())
@@ -118,11 +118,11 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
                                 .toList();
         }
 
-        private BigDecimal sumByDirection(List<GiftRecordInfoTVo> records, String direction) {
+        private BigDecimal sumByDirection(List<GiftRecordInfoVo> records, String direction) {
                 return
                         records.stream()
             .filter(giftRecord -> Objects.equals(direction, giftRecord.getDirection()))
-                                .map(GiftRecordInfoTVo::getAmount)
+                                .map(GiftRecordInfoVo::getAmount)
                                 .filter(Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         }

@@ -1,12 +1,12 @@
-# Graph Report - F:\workplace\project\myself\backend\alex_miaosha  (2026-06-16)
+# Graph Report - F:\workplace\project\myself\backend\alex_miaosha  (2026-06-29)
 
 ## Corpus Check
-- 558 files · ~335,662 words
+- 558 files · ~335,651 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3292 nodes · 5248 edges · 339 communities detected
-- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 1935 edges (avg confidence: 0.8)
+- 3292 nodes · 5250 edges · 339 communities detected
+- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 1936 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -369,123 +369,123 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (56): AccountRecordInfoController, AccountRecordInfoServiceImp, AiAnalyzeController, CloudController, CpnCouponInfoController, CpnRedemptionRecordInfoController, CpnRedemptionRecordInfoServiceImp, CpnUserCouponInfoController (+48 more)
+Nodes (57): AccountRecordInfoController, AccountRecordInfoServiceImp, AiAnalyzeController, CloudController, CpnRedemptionRecordInfoController, CpnRedemptionRecordInfoServiceImp, CpnUserCouponInfoController, FinanceAnalysisController (+49 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.01
-Nodes (60): AccessLimitAspect, AccountRecordNoticeJob, AiAnalyzeFallbackFactory, AsyncTaskConfig, AvoidRepeatableCommitAspect, BeanUtils, CodeUtils, CustomizeException (+52 more)
+Cohesion: 0.02
+Nodes (50): AccessLimitAspect, AccountRecordNoticeJob, AiAnalyzeFallbackFactory, AiEngineRouter, AsyncTaskConfig, AvoidRepeatableCommitAspect, BeanUtils, CodeUtils (+42 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.01
-Nodes (21): BaseBuilder, Builder, Client, Builder, Controller, Builder, GeneratorBuilder, Builder (+13 more)
-
-### Community 3 - "Community 3"
-Cohesion: 0.02
-Nodes (23): Content, FeignConfig, GatewayFilter, GiftDataScopeSupport, GiftDeleteStringIdTest, TestEventService, TestPersonService, TestRecordService (+15 more)
-
-### Community 4 - "Community 4"
 Cohesion: 0.02
 Nodes (15): AbstractTemplateEngine, ConfigBuilder, DetailTs, DetailVue, GlobalConfig, Builder, ListTs, ListVue (+7 more)
 
+### Community 3 - "Community 3"
+Cohesion: 0.02
+Nodes (19): BaseBuilder, Builder, Client, Builder, Controller, Builder, Builder, Builder (+11 more)
+
+### Community 4 - "Community 4"
+Cohesion: 0.02
+Nodes (20): Content, FeignConfig, GatewayFilter, GiftDataScopeSupport, GiftDeleteStringIdTest, TestEventService, TestPersonService, TestRecordService (+12 more)
+
 ### Community 5 - "Community 5"
 Cohesion: 0.03
-Nodes (11): setName(), GeneratorController, GeneratorServiceImpl, GiftAnalysisServiceImpl, MenuPermissionFilterTest, PermissionInfoController, PermissionInfoServiceImp, PrepaidCardInfoTMapper (+3 more)
+Nodes (18): Choice, DeepSeekChatCompletionResponse, Message, GarageTemplate, GatewayWebSecurityConfig, GeneratorBuilder, JdProductServiceImpl, MinioMinioFileServiceImpl (+10 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.03
 Nodes (6): Builder, PackageConfig, PathInfoHandler, Builder, TemplateConfig, WebSecurityConfig
 
 ### Community 7 - "Community 7"
-Cohesion: 0.05
-Nodes (7): GiftStructureTest, RedisConfig, RoleUserAssignmentServiceTest, TestableRoleUserInfoService, RoleUserInfoController, RoleUserInfoServiceImp, Builder
+Cohesion: 0.03
+Nodes (5): FinanceAnalysisServiceImpl, FinanceInfoController, FinanceInfoServiceImp, StrategyConfig, SwaggerResourceConfig
 
 ### Community 8 - "Community 8"
-Cohesion: 0.04
-Nodes (4): FinanceAnalysisServiceImpl, SeckillGoodsServiceImpl, StrategyConfig, SwaggerResourceConfig
+Cohesion: 0.05
+Nodes (8): MenuPermissionFilterTest, PermissionInfoController, PermissionInfoServiceImp, PrepaidCardInfoTMapper, PrepaidCardInfoTServiceImp, PrepaidConsumeRecordTController, PrepaidConsumeRecordTServiceImp, UserPermissionContextServiceImpl
 
 ### Community 9 - "Community 9"
 Cohesion: 0.08
 Nodes (8): GiftAggregateBusinessRuleTest, TestEventService, TestPersonService, TestRecordService, GiftRecordInfoTServiceIT, GiftRecordInfoTServicePageIT, MethodHandler, UserPermissionContextServiceTest
 
 ### Community 10 - "Community 10"
-Cohesion: 0.05
-Nodes (4): DateUtils, JdProductServiceImpl, PrepaidConsumeRecordTController, PrepaidConsumeRecordTServiceImp
+Cohesion: 0.08
+Nodes (5): GiftStructureTest, RoleUserAssignmentServiceTest, TestableRoleUserInfoService, RoleUserInfoController, RoleUserInfoServiceImp
 
 ### Community 11 - "Community 11"
 Cohesion: 0.06
-Nodes (8): LuaUtils, BlockingOrgUserInfoService, BlockingTransactionTemplate, OrgUserAssignmentServiceTest, TestableOrgUserInfoService, ThrowingRunnable, OrgUserInfoController, OrgUserInfoServiceImp
+Nodes (6): FileInfoController, FileInfoServiceImp, Goods, GoodsServiceImpl, POJOConverter, SeckillGoodsManagerImpl
 
 ### Community 12 - "Community 12"
 Cohesion: 0.08
 Nodes (8): DataPermissionHandlerImpl, GiftRecordDataPermissionPageIT, GiftRecordExportTest, MyMetaObjectHandler, ShopFinanceAnalysisServiceImpl, ShopStockAnalysisServiceImp, setValue(), UserUtils
 
 ### Community 13 - "Community 13"
+Cohesion: 0.06
+Nodes (7): BlockingOrgUserInfoService, BlockingTransactionTemplate, OrgUserAssignmentServiceTest, TestableOrgUserInfoService, ThrowingRunnable, OrgUserInfoController, OrgUserInfoServiceImp
+
+### Community 14 - "Community 14"
+Cohesion: 0.06
+Nodes (5): setName(), GeneratorController, GeneratorServiceImpl, GiftAnalysisServiceImpl, UserApi
+
+### Community 15 - "Community 15"
 Cohesion: 0.04
 Nodes (13): AiApplication, ApiDocApplication, AutowiredBean, FinanceApplication, GatewayApplication, GeneratorApplication, MissionApplication, MonitorApplication (+5 more)
 
-### Community 14 - "Community 14"
-Cohesion: 0.09
-Nodes (5): AiEngineRouter, EncryptionUtils, RuleBasedAiEngine, Test, WebMvcConfigurer
-
-### Community 15 - "Community 15"
-Cohesion: 0.11
-Nodes (3): DictInfoController, DictInfoServiceImp, IExcelDictHandlerImpl
-
 ### Community 16 - "Community 16"
-Cohesion: 0.1
-Nodes (3): ShopStockAttrsController, ShopStockAttrsServiceImp, ShopStockServiceImp
+Cohesion: 0.07
+Nodes (2): DateUtils, ShopFinanceNoticeJob
 
 ### Community 17 - "Community 17"
 Cohesion: 0.11
-Nodes (3): ShopFinanceNoticeJob, ShopOrderController, ShopOrderServiceImp
+Nodes (3): DictInfoController, DictInfoServiceImp, IExcelDictHandlerImpl
 
 ### Community 18 - "Community 18"
-Cohesion: 0.16
-Nodes (2): RolePermissionInfoController, RolePermissionInfoServiceImp
+Cohesion: 0.14
+Nodes (2): CpnCouponInfoController, CpnCouponInfoServiceImp
 
 ### Community 19 - "Community 19"
+Cohesion: 0.12
+Nodes (3): EncryptionUtils, Test, WebMvcConfigurer
+
+### Community 20 - "Community 20"
+Cohesion: 0.16
+Nodes (2): ShopStockAttrsController, ShopStockAttrsServiceImp
+
+### Community 21 - "Community 21"
 Cohesion: 0.14
 Nodes (1): TUserService
 
-### Community 20 - "Community 20"
+### Community 22 - "Community 22"
 Cohesion: 0.15
 Nodes (4): TestEventService, TestPersonService, TestRecordService, TestRelationService
 
-### Community 21 - "Community 21"
-Cohesion: 0.27
-Nodes (1): CpnCouponInfoServiceImp
-
-### Community 22 - "Community 22"
+### Community 23 - "Community 23"
 Cohesion: 0.17
 Nodes (1): GiftRecordInfoTService
 
-### Community 23 - "Community 23"
+### Community 24 - "Community 24"
 Cohesion: 0.17
 Nodes (1): ShopFinanceMapper
 
-### Community 24 - "Community 24"
+### Community 25 - "Community 25"
 Cohesion: 0.18
 Nodes (1): DictInfoService
 
-### Community 25 - "Community 25"
+### Community 26 - "Community 26"
 Cohesion: 0.18
 Nodes (1): GiftPersonInfoTService
 
-### Community 26 - "Community 26"
+### Community 27 - "Community 27"
 Cohesion: 0.18
 Nodes (1): GoodsService
 
-### Community 27 - "Community 27"
+### Community 28 - "Community 28"
 Cohesion: 0.18
 Nodes (1): OssApi
 
-### Community 28 - "Community 28"
+### Community 29 - "Community 29"
 Cohesion: 0.18
 Nodes (1): PmsShopProductService
-
-### Community 29 - "Community 29"
-Cohesion: 0.22
-Nodes (1): SwaggerConfig
 
 ### Community 30 - "Community 30"
 Cohesion: 0.2
@@ -2042,10 +2042,12 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TableInfo` connect `Community 4` to `Community 1`, `Community 7`?**
-  _High betweenness centrality (0.021) - this node is a cross-community bridge._
-- **Why does `Builder` connect `Community 6` to `Community 4`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `StrategyConfig` connect `Community 7` to `Community 2`, `Community 3`, `Community 14`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `Insert` connect `Community 0` to `Community 1`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 13`, `Community 17`, `Community 20`, `Community 22`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `Info` connect `Community 1` to `Community 0`, `Community 4`, `Community 5`, `Community 7`, `Community 11`, `Community 12`, `Community 16`, `Community 18`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **Are the 44 inferred relationships involving `Info` (e.g. with `.judgeStockAndDecrStock()` and `.get()`) actually correct?**
   _`Info` has 44 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 40 inferred relationships involving `Insert` (e.g. with `.addAccountRecordInfo()` and `.addCpnCouponInfo()`) actually correct?**
@@ -2053,6 +2055,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `DatabaseConfig`, `GeneratorConfig`, `MenuSearchInfo` to the rest of the system?**
   _155 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.01 - nodes in this community are weakly interconnected._
-- **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.01 - nodes in this community are weakly interconnected._

@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("gift_event_info_t")
-@ApiModel(value = "GiftEventInfoT对象", description = "礼尚往来事件表")
-public class GiftEventInfoT extends BaseEntity<GiftEventInfoT> {
+@ApiModel(value = "GiftEventInfo对象", description = "礼尚往来事件表")
+public class GiftEventInfo extends BaseEntity<GiftEventInfo> {
 
     @ApiModelProperty(value = "组织ID")
     @TableField("org_id")

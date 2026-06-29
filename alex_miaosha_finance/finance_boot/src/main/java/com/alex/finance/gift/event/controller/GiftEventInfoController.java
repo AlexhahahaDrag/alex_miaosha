@@ -2,13 +2,13 @@ package com.alex.finance.gift.event.controller;
 
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
-import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
-import com.alex.finance.gift.event.service.GiftEventInfoTService;
+import com.alex.finance.gift.event.service.GiftEventInfoService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -28,72 +28,72 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @ApiSort(132)
-@Api(value = "gift event api", tags = {"gift event api"})
+@Api(value = "礼金事由管理", tags = {"礼金事由管理"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/gift-event-info-t")
-public class GiftEventInfoTController {
+public class GiftEventInfoController {
 
-    private final GiftEventInfoTService giftEventInfoTService;
+    private final GiftEventInfoService giftEventInfoService;
 
     @ApiOperationSupport(order = 10, author = "alex")
-    @ApiOperation(value = "gift event page", response = Result.class)
+    @ApiOperation(value = "礼金事由分页查询", response = Result.class)
     @PostMapping(value = "/page")
-    public Result<Page<GiftEventInfoTVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
+    public Result<Page<GiftEventInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                                   @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                   @RequestBody(required = false) GiftEventQuery query) {
-        return Result.success(giftEventInfoTService.getPage(pageNum, pageSize, query));
+        return Result.success(giftEventInfoService.getPage(pageNum, pageSize, query));
     }
 
     @ApiOperationSupport(order = 15, author = "alex")
-    @ApiOperation(value = "gift event list", response = Result.class)
+    @ApiOperation(value = "礼金事由列表查询", response = Result.class)
     @PostMapping(value = "/list")
-    public Result<List<GiftEventInfoTVo>> getList(@RequestBody(required = false) GiftEventQuery query) {
-        return Result.success(giftEventInfoTService.getList(query));
+    public Result<List<GiftEventInfoVo>> getList(@RequestBody(required = false) GiftEventQuery query) {
+        return Result.success(giftEventInfoService.getList(query));
     }
 
     @ApiOperationSupport(order = 16, author = "alex")
-    @ApiOperation(value = "gift event summary", response = Result.class)
+    @ApiOperation(value = "礼金事由概览统计", response = Result.class)
     @GetMapping(value = "/summary")
     public Result<GiftEventSummaryVo> summary() {
-        return Result.success(giftEventInfoTService.getSummary());
+        return Result.success(giftEventInfoService.getSummary());
     }
 
     @ApiOperationSupport(order = 17, author = "alex")
-    @ApiOperation(value = "gift event business page", response = Result.class)
+    @ApiOperation(value = "礼金事由业务分页", response = Result.class)
     @PostMapping(value = "/business-page")
     public Result<Page<GiftEventBusinessVo>> businessPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                           @RequestBody(required = false) GiftEventQuery query) {
-        return Result.success(giftEventInfoTService.getBusinessPage(pageNum, pageSize, query));
+        return Result.success(giftEventInfoService.getBusinessPage(pageNum, pageSize, query));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")
-    @ApiOperation(value = "gift event detail", response = Result.class)
+    @ApiOperation(value = "礼金事由详情", response = Result.class)
     @GetMapping
-    public Result<GiftEventInfoTVo> query(@RequestParam(value = "id") Long id) {
-        return Result.success(giftEventInfoTService.queryGiftEventInfoT(id));
+    public Result<GiftEventInfoVo> query(@RequestParam(value = "id") Long id) {
+        return Result.success(giftEventInfoService.queryGiftEventInfo(id));
     }
 
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
-    @ApiOperation(value = "add gift event", response = Result.class)
+    @ApiOperation(value = "新增礼金事由", response = Result.class)
     @PostMapping
-    public Result<GiftEventInfoTVo> add(@Validated({Insert.class}) @RequestBody GiftEventInfoTVo giftEventInfoTVo) {
-        return Result.success(giftEventInfoTService.addGiftEventInfoT(giftEventInfoTVo));
+    public Result<GiftEventInfoVo> add(@Validated({Insert.class}) @RequestBody GiftEventInfoVo giftEventInfoVo) {
+        return Result.success(giftEventInfoService.addGiftEventInfo(giftEventInfoVo));
     }
 
     @ApiOperationSupport(order = 40, author = "alex")
-    @ApiOperation(value = "update gift event", response = Result.class)
+    @ApiOperation(value = "修改礼金事由", response = Result.class)
     @PutMapping
-    public Result<Boolean> update(@Validated({Update.class}) @RequestBody GiftEventInfoTVo giftEventInfoTVo) {
-        return Result.success(giftEventInfoTService.updateGiftEventInfoT(giftEventInfoTVo));
+    public Result<Boolean> update(@Validated({Update.class}) @RequestBody GiftEventInfoVo giftEventInfoVo) {
+        return Result.success(giftEventInfoService.updateGiftEventInfo(giftEventInfoVo));
     }
 
     @ApiOperationSupport(order = 50, author = "alex")
-    @ApiOperation(value = "delete gift event", response = Result.class)
+    @ApiOperation(value = "删除礼金事由", response = Result.class)
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
-        return Result.success(giftEventInfoTService.deleteGiftEventInfoT(ids));
+        return Result.success(giftEventInfoService.deleteGiftEventInfo(ids));
     }
 }

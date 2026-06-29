@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.alex.finance.gift.event.mapper.GiftEventInfoTMapper">
+<mapper namespace="com.alex.finance.gift.event.mapper.GiftEventInfoMapper">
 
     <sql id="queryConditions">
         <if test="query != null">
@@ -32,7 +32,7 @@
         e.update_time
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoTVo">
+    <select id="getPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>
@@ -41,7 +41,7 @@
         ORDER BY e.event_time DESC
     </select>
 
-    <select id="getList" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoTVo">
+    <select id="getList" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>
@@ -50,7 +50,7 @@
         ORDER BY e.event_time DESC
     </select>
 
-    <select id="listEntities" resultType="com.alex.finance.gift.event.entity.GiftEventInfoT">
+    <select id="listEntities" resultType="com.alex.finance.gift.event.entity.GiftEventInfo">
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>

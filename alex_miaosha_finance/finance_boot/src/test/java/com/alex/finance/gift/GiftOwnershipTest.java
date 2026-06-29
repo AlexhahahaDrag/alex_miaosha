@@ -1,23 +1,23 @@
 package com.alex.finance.gift;
 
-import com.alex.api.finance.gift.event.vo.GiftEventInfoTVo;
-import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoTVo;
-import com.alex.api.finance.gift.relation.vo.GiftRelationInfoTVo;
+import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
+import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
+import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.finance.gift.event.entity.GiftEventInfoT;
-import com.alex.finance.gift.event.service.impl.GiftEventInfoTServiceImp;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
-import com.alex.finance.gift.person.service.impl.GiftPersonInfoTServiceImp;
-import com.alex.finance.gift.event.mapper.GiftEventInfoTMapper;
-import com.alex.finance.gift.person.mapper.GiftPersonInfoTMapper;
-import com.alex.finance.gift.record.entity.GiftRecordInfoT;
-import com.alex.finance.gift.record.mapper.GiftRecordInfoTMapper;
-import com.alex.finance.gift.record.service.impl.GiftRecordInfoTServiceImp;
-import com.alex.finance.gift.relation.entity.GiftRelationInfoT;
-import com.alex.finance.gift.relation.service.impl.GiftRelationInfoTServiceImp;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
+import com.alex.finance.gift.relation.entity.GiftRelationInfo;
+import com.alex.finance.gift.relation.service.impl.GiftRelationInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,7 +36,7 @@ class GiftOwnershipTest {
         UserUtils userUtils = loginUser(10L, 20L);
         TestPersonService service = new TestPersonService(userUtils);
 
-        GiftPersonInfoTVo result = service.addGiftPersonInfoT(new GiftPersonInfoTVo()
+        GiftPersonInfoVo result = service.addGiftPersonInfo(new GiftPersonInfoVo()
                 .setOrgId(999L)
                 .setUserId(888L)
                 .setPersonName("client"));
@@ -52,21 +52,21 @@ class GiftOwnershipTest {
         UserUtils userUtils = loginUser(11L, 21L);
 
         TestRelationService relationService = new TestRelationService(userUtils);
-        GiftRelationInfoTVo relation = relationService.addGiftRelationInfoT(new GiftRelationInfoTVo().setOrgId(1L).setUserId(2L));
+        GiftRelationInfoVo relation = relationService.addGiftRelationInfo(new GiftRelationInfoVo().setOrgId(1L).setUserId(2L));
         assertEquals(21L, relationService.saved.getOrgId());
         assertEquals(11L, relationService.saved.getUserId());
         assertEquals(21L, relation.getOrgId());
         assertEquals(11L, relation.getUserId());
 
         TestEventService eventService = new TestEventService(userUtils);
-        GiftEventInfoTVo event = eventService.addGiftEventInfoT(new GiftEventInfoTVo().setOrgId(1L).setUserId(2L));
+        GiftEventInfoVo event = eventService.addGiftEventInfo(new GiftEventInfoVo().setOrgId(1L).setUserId(2L));
         assertEquals(21L, eventService.saved.getOrgId());
         assertEquals(11L, eventService.saved.getUserId());
         assertEquals(21L, event.getOrgId());
         assertEquals(11L, event.getUserId());
 
         TestRecordService recordService = new TestRecordService(userUtils);
-        GiftRecordInfoTVo record = recordService.addGiftRecordInfoT(new GiftRecordInfoTVo()
+        GiftRecordInfoVo record = recordService.addGiftRecordInfo(new GiftRecordInfoVo()
                 .setOrgId(1L)
                 .setUserId(2L)
                 .setDirection("RECEIVE")
@@ -89,62 +89,62 @@ class GiftOwnershipTest {
         return userUtils;
     }
 
-    private static class TestPersonService extends GiftPersonInfoTServiceImp {
-        private GiftPersonInfoT saved;
+    private static class TestPersonService extends GiftPersonInfoServiceImp {
+        private GiftPersonInfo saved;
 
         private TestPersonService(UserUtils userUtils) {
             super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
-        public boolean save(GiftPersonInfoT entity) {
+        public boolean save(GiftPersonInfo entity) {
             this.saved = entity;
             entity.setId(1L);
             return true;
         }
     }
 
-    private static class TestRelationService extends GiftRelationInfoTServiceImp {
-        private GiftRelationInfoT saved;
+    private static class TestRelationService extends GiftRelationInfoServiceImp {
+        private GiftRelationInfo saved;
 
         private TestRelationService(UserUtils userUtils) {
             super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
-        public boolean save(GiftRelationInfoT entity) {
+        public boolean save(GiftRelationInfo entity) {
             this.saved = entity;
             entity.setId(2L);
             return true;
         }
     }
 
-    private static class TestEventService extends GiftEventInfoTServiceImp {
-        private GiftEventInfoT saved;
+    private static class TestEventService extends GiftEventInfoServiceImp {
+        private GiftEventInfo saved;
 
         private TestEventService(UserUtils userUtils) {
             super(new GiftDataScopeSupport(userUtils));
         }
 
         @Override
-        public boolean save(GiftEventInfoT entity) {
+        public boolean save(GiftEventInfo entity) {
             this.saved = entity;
             entity.setId(3L);
             return true;
         }
     }
 
-    private static class TestRecordService extends GiftRecordInfoTServiceImp {
-        private GiftRecordInfoT saved;
+    private static class TestRecordService extends GiftRecordInfoServiceImp {
+        private GiftRecordInfo saved;
 
         private TestRecordService(UserUtils userUtils) {
             super(
                     new GiftDataScopeSupport(userUtils),
-                    mock(GiftPersonInfoTMapper.class),
-                    mock(GiftEventInfoTMapper.class));
-            GiftRecordInfoTMapper mapper = mock(GiftRecordInfoTMapper.class);
-            when(mapper.insert(any(GiftRecordInfoT.class))).thenAnswer(invocation -> {
-                GiftRecordInfoT record = invocation.getArgument(0);
+                    mock(GiftPersonInfoMapper.class),
+                    mock(GiftEventInfoMapper.class));
+            GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
+            when(mapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {
+                GiftRecordInfo record = invocation.getArgument(0);
                 record.setId(4L);
                 return 1;
             });
@@ -152,7 +152,7 @@ class GiftOwnershipTest {
         }
 
         @Override
-        public boolean save(GiftRecordInfoT entity) {
+        public boolean save(GiftRecordInfo entity) {
             this.saved = entity;
             entity.setId(4L);
             return true;

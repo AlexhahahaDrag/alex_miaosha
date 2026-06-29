@@ -1,4 +1,4 @@
-package com.alex.api.finance.gift.relation.vo;
+package com.alex.api.finance.gift.person.vo;
 
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
@@ -12,8 +12,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-@ApiModel(value = "GiftRelationInfoTVo", description = "gift relation vo")
-public class GiftRelationInfoTVo extends BaseVo<GiftRelationInfoTVo> {
+@ApiModel(value = "GiftPersonInfoVo", description = "gift person vo")
+public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
 
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "org id")
@@ -24,12 +24,14 @@ public class GiftRelationInfoTVo extends BaseVo<GiftRelationInfoTVo> {
     private Long userId;
 
     @JsonSerialize(using = Long2StringSerializer.class)
-    @ApiModelProperty(value = "person id")
-    private Long personId;
+    @ApiModelProperty(value = "bound system user id")
+    private Long bindUserId;
 
-    @JsonSerialize(using = Long2StringSerializer.class)
-    @ApiModelProperty(value = "relation person id")
-    private Long relationPersonId;
+    @ApiModelProperty(value = "person name")
+    private String personName;
+
+    @ApiModelProperty(value = "phone")
+    private String phone;
 
     @ApiModelProperty(value = "relation type")
     private String relationType;

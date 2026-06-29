@@ -2,20 +2,20 @@ package com.alex.finance.gift.person.service;
 
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
-import com.alex.api.finance.gift.person.vo.GiftPersonInfoTVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
-import com.alex.finance.gift.person.entity.GiftPersonInfoT;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
-public interface GiftPersonInfoTService extends IService<GiftPersonInfoT> {
+public interface GiftPersonInfoService extends IService<GiftPersonInfo> {
 
-    Page<GiftPersonInfoTVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query);
+    Page<GiftPersonInfoVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query);
 
-    List<GiftPersonInfoTVo> getList(GiftPersonQuery query);
+    List<GiftPersonInfoVo> getList(GiftPersonQuery query);
 
     GiftPersonSummaryVo getSummary();
 
@@ -23,11 +23,11 @@ public interface GiftPersonInfoTService extends IService<GiftPersonInfoT> {
 
     GiftPersonProfileVo getProfile(Long id);
 
-    GiftPersonInfoTVo queryGiftPersonInfoT(Long id);
+    GiftPersonInfoVo queryGiftPersonInfo(Long id);
 
-    GiftPersonInfoTVo addGiftPersonInfoT(GiftPersonInfoTVo giftPersonInfoTVo);
+    GiftPersonInfoVo addGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo);
 
-    Boolean updateGiftPersonInfoT(GiftPersonInfoTVo giftPersonInfoTVo);
+    Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo);
 
-    Boolean deleteGiftPersonInfoT(String ids);
+    Boolean deleteGiftPersonInfo(String ids);
 }

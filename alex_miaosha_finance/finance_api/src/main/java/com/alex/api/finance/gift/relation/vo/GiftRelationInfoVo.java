@@ -1,4 +1,4 @@
-package com.alex.api.finance.gift.event.vo;
+package com.alex.api.finance.gift.relation.vo;
 
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
@@ -9,13 +9,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Accessors(chain = true)
-@ApiModel(value = "GiftEventInfoTVo", description = "gift event vo")
-public class GiftEventInfoTVo extends BaseVo<GiftEventInfoTVo> {
+@ApiModel(value = "GiftRelationInfoVo", description = "gift relation vo")
+public class GiftRelationInfoVo extends BaseVo<GiftRelationInfoVo> {
 
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "org id")
@@ -25,18 +23,16 @@ public class GiftEventInfoTVo extends BaseVo<GiftEventInfoTVo> {
     @ApiModelProperty(value = "user id")
     private Long userId;
 
-    @ApiModelProperty(value = "event name")
-    private String eventName;
-
-    @ApiModelProperty(value = "event type")
-    private String eventType;
-
-    @ApiModelProperty(value = "event time")
-    private LocalDateTime eventTime;
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "person id")
+    private Long personId;
 
     @JsonSerialize(using = Long2StringSerializer.class)
-    @ApiModelProperty(value = "host person id")
-    private Long hostPersonId;
+    @ApiModelProperty(value = "relation person id")
+    private Long relationPersonId;
+
+    @ApiModelProperty(value = "relation type")
+    private String relationType;
 
     @ApiModelProperty(value = "remark")
     private String remark;
