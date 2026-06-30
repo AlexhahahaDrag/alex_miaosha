@@ -94,6 +94,7 @@
         <minio.version>8.5.1</minio.version>
         <weixin.version>4.4.0</weixin.version>
         <xxl-job.version>2.3.1</xxl-job.version>
+        <jetbrains-annotations.version>24.1.0</jetbrains-annotations.version>
     </properties>
 
     <dependencyManagement>
@@ -126,6 +127,12 @@
                 <groupId>com.alibaba.nacos</groupId>
                 <artifactId>nacos-client</artifactId>
                 <version>${nacos.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains-annotations.version}</version>
             </dependency>
 
             <!-- 传递依赖安全补丁 -->

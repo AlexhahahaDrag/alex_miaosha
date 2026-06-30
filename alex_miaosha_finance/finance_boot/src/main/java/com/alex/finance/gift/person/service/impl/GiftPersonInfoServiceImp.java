@@ -12,6 +12,7 @@ import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
@@ -35,6 +36,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         implements GiftPersonInfoService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
+    private final GiftPersonRelationOptionService giftPersonRelationOptionService;
 
     @Autowired(required = false)
     private GiftRecordInfoService giftRecordInfoService;
@@ -71,16 +73,9 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
     @Override
     public Page<GiftPersonBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
-        long current = pageNum == null ? 1 : pageNum;
-        long size = pageSize == null ? 10 : pageSize;
-        List<GiftPersonBusinessVo> rows = getList(query).stream()
-                .map(this::toBusinessVo)
-                .toList();
-        long from = Math.max(0, (current - 1) * size);
-        long to = Math.min(rows.size(), from + size);
-        Page<GiftPersonBusinessVo> page = new Page<>(current, size, rows.size());
-        page.setRecords(from >= rows.size() ? List.of() : rows.subList((int) from, (int) to));
-        return page;
+        return getBaseMapper().getBusinessPage(
+                new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
+                query);
     }
 
     @Override
@@ -111,11 +106,13 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     @Override
     public GiftPersonInfoVo addGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         fillOwner(giftPersonInfoVo);
+        applyRelationOption(giftPersonInfoVo);
         GiftPersonInfo entity = new GiftPersonInfo();
         BeanUtils.copyProperties(giftPersonInfoVo, entity);
         save(entity);
         giftPersonInfoVo.setId(entity.getId());
-        return giftPersonInfoVo;
+        rememberRelationOption(entity);
+        return enrichRelationOption(giftPersonInfoVo);
     }
 
     @Override
@@ -127,9 +124,14 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         giftDataScopeSupport.assertPersonAccessible(existing);
         giftPersonInfoVo.setUserId(existing.getUserId());
         giftPersonInfoVo.setOrgId(existing.getOrgId());
+        applyRelationOption(giftPersonInfoVo);
         GiftPersonInfo entity = new GiftPersonInfo();
         BeanUtils.copyProperties(giftPersonInfoVo, entity);
-        return updateById(entity);
+        boolean updated = updateById(entity);
+        if (updated) {
+            rememberRelationOption(entity);
+        }
+        return updated;
     }
 
     @Override
@@ -157,6 +159,28 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         vo.setOrgId(orgInfoVo == null ? loginUser.getOrgId() : orgInfoVo.getId());
     }
 
+    private void rememberRelationOption(GiftPersonInfo entity) {
+        giftPersonRelationOptionService.rememberCustomRelation(
+                entity.getUserId(), entity.getOrgId(), entity.getRelationType());
+    }
+
+    private void applyRelationOption(GiftPersonInfoVo vo) {
+        if (vo.getRelationOptionId() == null) {
+            return;
+        }
+        vo.setRelationType(giftPersonRelationOptionService.resolveRelationType(
+                vo.getRelationOptionId(), vo.getUserId()));
+    }
+
+    private GiftPersonInfoVo enrichRelationOption(GiftPersonInfoVo vo) {
+        if (vo == null) {
+            return null;
+        }
+        vo.setRelationOptionId(giftPersonRelationOptionService.findRelationOptionId(
+                vo.getUserId(), vo.getRelationType()));
+        return vo;
+    }
+
     private List<Long> parseIds(String ids) {
         try {
             return Arrays.stream(ids.split(","))
@@ -169,7 +193,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         }
     }
 
-    private GiftPersonBusinessVo toBusinessVo(GiftPersonInfoVo person) {
+    protected GiftPersonBusinessVo toBusinessVo(GiftPersonInfoVo person) {
         GiftPersonBusinessVo vo = new GiftPersonBusinessVo();
         BeanUtils.copyProperties(person, vo);
         List<GiftRecordInfoVo> personRecords = listGiftRecordsForAggregate().stream()
@@ -212,6 +236,6 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         }
         GiftPersonInfoVo vo = new GiftPersonInfoVo();
         BeanUtils.copyProperties(entity, vo);
-        return vo;
+        return enrichRelationOption(vo);
     }
 }

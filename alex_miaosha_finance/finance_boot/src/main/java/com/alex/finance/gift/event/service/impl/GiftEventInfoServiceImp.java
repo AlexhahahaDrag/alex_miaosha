@@ -74,16 +74,9 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
 
     @Override
     public Page<GiftEventBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftEventQuery query) {
-        long current = pageNum == null ? 1 : pageNum;
-        long size = pageSize == null ? 10 : pageSize;
-        List<GiftEventBusinessVo> rows = getList(query).stream()
-                .map(this::toBusinessVo)
-                .toList();
-        long from = Math.max(0, (current - 1) * size);
-        long to = Math.min(rows.size(), from + size);
-        Page<GiftEventBusinessVo> page = new Page<>(current, size, rows.size());
-        page.setRecords(from >= rows.size() ? List.of() : rows.subList((int) from, (int) to));
-        return page;
+        return getBaseMapper().getBusinessPage(
+                new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
+                query);
     }
 
     @Override
@@ -147,7 +140,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         }
     }
 
-    private GiftEventBusinessVo toBusinessVo(GiftEventInfoVo event) {
+    protected GiftEventBusinessVo toBusinessVo(GiftEventInfoVo event) {
         GiftEventBusinessVo vo = new GiftEventBusinessVo();
         BeanUtils.copyProperties(event, vo);
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate().stream()

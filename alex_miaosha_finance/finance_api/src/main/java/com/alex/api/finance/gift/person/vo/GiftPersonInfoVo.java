@@ -36,6 +36,10 @@ public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
     @ApiModelProperty(value = "relation type")
     private String relationType;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "relation option id")
+    private Long relationOptionId;
+
     @ApiModelProperty(value = "remark")
     private String remark;
 }

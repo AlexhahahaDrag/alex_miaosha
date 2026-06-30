@@ -4,6 +4,7 @@ import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
@@ -134,6 +135,20 @@ class GiftAggregateBusinessRuleTest {
         protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
             return toRecordVos(records);
         }
+
+        @Override
+        public Page<GiftPersonBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
+            long current = pageNum == null ? 1 : pageNum;
+            long size = pageSize == null ? 10 : pageSize;
+            List<GiftPersonBusinessVo> rows = getList(query).stream()
+                    .map(this::toBusinessVo)
+                    .toList();
+            long from = Math.max(0, (current - 1) * size);
+            long to = Math.min(rows.size(), from + size);
+            Page<GiftPersonBusinessVo> page = new Page<>(current, size, rows.size());
+            page.setRecords(from >= rows.size() ? List.of() : rows.subList((int) from, (int) to));
+            return page;
+        }
     }
 
     private static class TestEventService extends GiftEventInfoServiceImp {
@@ -156,6 +171,20 @@ class GiftAggregateBusinessRuleTest {
         @Override
         protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {
             return toRecordVos(records);
+        }
+
+        @Override
+        public Page<GiftEventBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftEventQuery query) {
+            long current = pageNum == null ? 1 : pageNum;
+            long size = pageSize == null ? 10 : pageSize;
+            List<GiftEventBusinessVo> rows = getList(query).stream()
+                    .map(this::toBusinessVo)
+                    .toList();
+            long from = Math.max(0, (current - 1) * size);
+            long to = Math.min(rows.size(), from + size);
+            Page<GiftEventBusinessVo> page = new Page<>(current, size, rows.size());
+            page.setRecords(from >= rows.size() ? List.of() : rows.subList((int) from, (int) to));
+            return page;
         }
     }
 

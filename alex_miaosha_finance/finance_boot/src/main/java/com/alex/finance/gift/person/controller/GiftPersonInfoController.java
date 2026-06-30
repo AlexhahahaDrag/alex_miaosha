@@ -4,12 +4,14 @@ import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
+import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionsVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -36,13 +38,14 @@ import java.util.List;
 public class GiftPersonInfoController {
 
     private final GiftPersonInfoService giftPersonInfoService;
+    private final GiftPersonRelationOptionService giftPersonRelationOptionService;
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "礼金往来人分页查询", response = Result.class)
     @PostMapping(value = "/page")
     public Result<Page<GiftPersonInfoVo>> getPage(@RequestParam(value = "pageNum", required = false) Long pageNum,
-                                                   @RequestParam(value = "pageSize", required = false) Long pageSize,
-                                                   @RequestBody(required = false) GiftPersonQuery query) {
+                                                  @RequestParam(value = "pageSize", required = false) Long pageSize,
+                                                  @RequestBody(required = false) GiftPersonQuery query) {
         return Result.success(giftPersonInfoService.getPage(pageNum, pageSize, query));
     }
 
@@ -74,6 +77,14 @@ public class GiftPersonInfoController {
     @GetMapping(value = "/profile")
     public Result<GiftPersonProfileVo> profile(@RequestParam(value = "id") Long id) {
         return Result.success(giftPersonInfoService.getProfile(id));
+    }
+
+    @ApiOperationSupport(order = 19, author = "alex")
+    @ApiOperation(value = "联系人关系下拉选项（含用户私有自定义）", response = Result.class)
+    @GetMapping(value = "/relation-options")
+    public Result<GiftPersonRelationOptionsVo> relationOptions(
+            @RequestParam(value = "personId", required = false) Long personId) {
+        return Result.success(giftPersonRelationOptionService.listRelationOptions(personId));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

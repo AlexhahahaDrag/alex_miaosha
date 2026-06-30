@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.alex.finance.gift.person.mapper.GiftPersonInfoMapper">
 
+    <sql id="baseConditions">
+        p.is_delete = 0
+    </sql>
+
     <sql id="queryConditions">
         <if test="query != null">
             <if test="query.keyword != null and query.keyword != ''">
@@ -33,6 +37,7 @@
         SELECT <include refid="voColumns"/>
         FROM gift_person_info_t p
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY p.create_time DESC
@@ -42,6 +47,7 @@
         SELECT <include refid="voColumns"/>
         FROM gift_person_info_t p
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY p.create_time DESC
@@ -51,9 +57,74 @@
         SELECT <include refid="voColumns"/>
         FROM gift_person_info_t p
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY p.create_time DESC
+    </select>
+
+    <!-- 礼金聚合在 SQL 层完成，分页由 MyBatis-Plus 在数据库执行 -->
+    <select id="getBusinessPage" resultType="com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo">
+        SELECT
+            <include refid="voColumns"/>,
+            IFNULL(agg.total_give_amount, 0) AS total_give_amount,
+            IFNULL(agg.total_receive_amount, 0) AS total_receive_amount,
+            IFNULL(agg.total_receive_amount, 0) - IFNULL(agg.total_give_amount, 0) AS net_amount,
+            GREATEST(IFNULL(agg.total_receive_amount, 0) - IFNULL(agg.total_give_amount, 0), 0) AS pending_return_amount,
+            (
+                SELECT r.pay_time
+                FROM gift_record_info_t r
+                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                  AND r.is_delete = 0
+                ORDER BY r.pay_time IS NULL, r.pay_time DESC, r.id DESC
+                LIMIT 1
+            ) AS latest_record_time,
+            (
+                SELECT r.direction
+                FROM gift_record_info_t r
+                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                  AND r.is_delete = 0
+                ORDER BY r.pay_time IS NULL, r.pay_time DESC, r.id DESC
+                LIMIT 1
+            ) AS latest_direction
+        FROM gift_person_info_t p
+        LEFT JOIN (
+            SELECT
+                pr.person_id,
+                SUM(CASE WHEN pr.direction IN ('GIVE', 'RETURN') THEN IFNULL(pr.amount, 0) ELSE 0 END) AS total_give_amount,
+                SUM(CASE WHEN pr.direction = 'RECEIVE' THEN IFNULL(pr.amount, 0) ELSE 0 END) AS total_receive_amount
+            FROM (
+                SELECT p_agg.id AS person_id, r.direction, r.amount
+                FROM gift_person_info_t p_agg
+                INNER JOIN gift_record_info_t r
+                    ON (r.giver_person_id = p_agg.id OR r.receiver_person_id = p_agg.id)
+                    AND r.is_delete = 0
+                WHERE p_agg.is_delete = 0
+            ) pr
+            GROUP BY pr.person_id
+        ) agg ON agg.person_id = p.id
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="listDistinctCustomRelationTypes" resultType="java.lang.String">
+        SELECT DISTINCT p.relation_type
+        FROM gift_person_info_t p
+        WHERE p.user_id = #{userId}
+          AND p.is_delete = 0
+          AND p.relation_type IS NOT NULL
+          AND p.relation_type != ''
+          AND p.relation_type NOT IN (
+              SELECT o.relation_code
+              FROM gift_person_relation_option_t o
+              WHERE o.user_id = 0
+                AND o.option_type = 'SYSTEM'
+                AND o.is_delete = 0
+                AND o.relation_code IS NOT NULL
+          )
     </select>
 
 </mapper>

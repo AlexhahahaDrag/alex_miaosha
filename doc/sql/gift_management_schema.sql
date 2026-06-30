@@ -121,4 +121,41 @@ CREATE TABLE `gift_record_info_t` (
   INDEX `idx_gift_record_related`(`org_id` ASC, `related_record_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来礼金记录表' ROW_FORMAT = DYNAMIC;
 
+-- ----------------------------
+-- Table structure for gift_person_relation_option_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_person_relation_option_t`;
+CREATE TABLE `gift_person_relation_option_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID',
+  `user_id` bigint NOT NULL COMMENT '归属用户ID，系统预设为0',
+  `option_type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'CUSTOM' COMMENT 'SYSTEM|CUSTOM',
+  `relation_code` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '预设code',
+  `relation_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '关系展示文案',
+  `sort_order` int NOT NULL DEFAULT 0 COMMENT '排序',
+  `last_used_time` datetime NULL DEFAULT NULL COMMENT '最近使用时间',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_gift_person_relation_option_user_label`(`user_id` ASC, `relation_label` ASC) USING BTREE,
+  UNIQUE INDEX `uk_gift_person_relation_option_system_code`(`user_id` ASC, `relation_code` ASC) USING BTREE,
+  INDEX `idx_gift_person_relation_option_user_time`(`user_id` ASC, `last_used_time` DESC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来联系人关系词典' ROW_FORMAT = DYNAMIC;
+
+INSERT INTO `gift_person_relation_option_t` (
+  `id`, `org_id`, `user_id`, `option_type`, `relation_code`, `relation_label`, `sort_order`, `last_used_time`, `is_delete`, `create_time`
+) VALUES
+(9000000000000000001, 0, 0, 'SYSTEM', 'RELATIVE', '亲属', 1, NOW(), 0, NOW()),
+(9000000000000000002, 0, 0, 'SYSTEM', 'FRIEND', '朋友', 2, NOW(), 0, NOW()),
+(9000000000000000003, 0, 0, 'SYSTEM', 'COLLEAGUE', '同事', 3, NOW(), 0, NOW()),
+(9000000000000000004, 0, 0, 'SYSTEM', 'NEIGHBOR', '邻里', 4, NOW(), 0, NOW()),
+(9000000000000000005, 0, 0, 'SYSTEM', 'OTHER', '其他', 5, NOW(), 0, NOW());
+
 SET FOREIGN_KEY_CHECKS = 1;

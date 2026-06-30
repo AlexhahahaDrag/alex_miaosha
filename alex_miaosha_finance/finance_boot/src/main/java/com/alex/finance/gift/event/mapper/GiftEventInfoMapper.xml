@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.alex.finance.gift.event.mapper.GiftEventInfoMapper">
 
+    <sql id="baseConditions">
+        e.is_delete = 0
+    </sql>
+
     <sql id="queryConditions">
         <if test="query != null">
             <if test="query.keyword != null and query.keyword != ''">
@@ -36,6 +40,7 @@
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY e.event_time DESC
@@ -45,6 +50,7 @@
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY e.event_time DESC
@@ -54,6 +60,52 @@
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
         <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getBusinessPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventBusinessVo">
+        SELECT
+            <include refid="voColumns"/>,
+            IFNULL(agg.give_amount, 0) AS give_amount,
+            IFNULL(agg.receive_amount, 0) AS receive_amount,
+            IFNULL(agg.give_amount, 0) + IFNULL(agg.receive_amount, 0) AS total_amount,
+            IFNULL(participants.participant_count, 0) AS participant_count,
+            IF(e.remark IS NOT NULL AND e.remark != '', e.remark, '-') AS location_text,
+            CASE
+                WHEN e.event_time IS NOT NULL AND e.event_time &gt; NOW() THEN 'PENDING'
+                ELSE 'FINISHED'
+            END AS event_status
+        FROM gift_event_info_t e
+        LEFT JOIN (
+            SELECT
+                r.event_id,
+                SUM(CASE WHEN r.direction IN ('GIVE', 'RETURN') THEN IFNULL(r.amount, 0) ELSE 0 END) AS give_amount,
+                SUM(CASE WHEN r.direction = 'RECEIVE' THEN IFNULL(r.amount, 0) ELSE 0 END) AS receive_amount
+            FROM gift_record_info_t r
+            WHERE r.event_id IS NOT NULL
+              AND r.is_delete = 0
+            GROUP BY r.event_id
+        ) agg ON agg.event_id = e.id
+        LEFT JOIN (
+            SELECT
+                pr.event_id,
+                COUNT(DISTINCT pr.person_id) AS participant_count
+            FROM (
+                SELECT r.event_id, r.giver_person_id AS person_id
+                FROM gift_record_info_t r
+                WHERE r.event_id IS NOT NULL AND r.giver_person_id IS NOT NULL AND r.is_delete = 0
+                UNION ALL
+                SELECT r.event_id, r.receiver_person_id AS person_id
+                FROM gift_record_info_t r
+                WHERE r.event_id IS NOT NULL AND r.receiver_person_id IS NOT NULL AND r.is_delete = 0
+            ) pr
+            GROUP BY pr.event_id
+        ) participants ON participants.event_id = e.id
+        <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY e.event_time DESC

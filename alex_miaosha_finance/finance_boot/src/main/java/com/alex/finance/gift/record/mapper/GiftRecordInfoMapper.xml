@@ -3,6 +3,10 @@
 <mapper namespace="com.alex.finance.gift.record.mapper.GiftRecordInfoMapper">
 
     <!-- 公共查询条件片段（与 getPage / getList / listEntities 共享） -->
+    <sql id="baseConditions">
+        r.is_delete = 0
+    </sql>
+
     <sql id="queryConditions">
         <if test="query != null">
             <if test="query.eventId != null">
@@ -74,6 +78,7 @@
         LEFT JOIN gift_person_info_t receiver
             ON r.receiver_person_id = receiver.id
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY r.pay_time DESC
@@ -110,6 +115,7 @@
         LEFT JOIN gift_person_info_t receiver
             ON r.receiver_person_id = receiver.id
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY r.pay_time DESC
@@ -140,6 +146,7 @@
         LEFT JOIN gift_person_info_t receiver
             ON r.receiver_person_id = receiver.id
         <where>
+            <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
         ORDER BY r.pay_time DESC
@@ -151,6 +158,7 @@
         FROM gift_record_info_t
         WHERE related_record_id = #{relatedRecordId}
           AND direction = 'RETURN'
+          AND is_delete = 0
     </select>
 
 </mapper>
