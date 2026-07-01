@@ -33,7 +33,7 @@ VALUES
 INSERT INTO `t_menu_info`
 (`id`, `name`, `path`, `title`, `component`, `redirect`, `icon`, `hide_in_menu`, `parent_id`, `summary`, `status`, `creator`, `create_time`, `updater`, `update_time`, `deleter`, `delete_time`, `is_delete`, `operator`, `operate_time`, `order_by`, `show_in_home`, `permission_code`)
 VALUES
-(1900000000000001001, 'giftDashboard', '/finance/gift/dashboard', '数据概览', '/src/views/finance/gift/dashboard/index.vue', NULL, 'financeAnalysis', '0', 5, '礼尚往来数据概览', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 810, '1', 'gift:dashboard'),
+(1900000000000001001, 'giftDashboard', '/finance/gift/dashboard', '数据概览', '/src/views/finance/gift/gift-dashboard/index.vue', NULL, 'financeAnalysis', '0', 5, '礼尚往来数据概览', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 810, '1', 'gift:dashboard'),
 (1900000000000001002, 'giftPerson', '/finance/gift/person', '亲友管理', '/src/views/finance/gift/person/index.vue', NULL, 'menuInfo', '0', 5, '礼尚往来亲友管理', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 820, '1', 'gift:person'),
 (1900000000000001003, 'giftEvent', '/finance/gift/event', '事由管理', '/src/views/finance/gift/event/index.vue', NULL, 'dict', '0', 5, '礼尚往来事由管理', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 830, '1', 'gift:event'),
 (1900000000000001004, 'giftRecord', '/finance/gift/record', '礼金记录', '/src/views/finance/gift/record/index.vue', NULL, 'finance', '0', 5, '礼尚往来礼金记录', '1', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL, NULL, 840, '1', 'gift:record'),

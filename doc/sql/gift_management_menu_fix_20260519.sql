@@ -32,6 +32,10 @@ SET `parent_id` = @gift_menu_id
 WHERE `name` IN ('giftDashboard', 'giftPerson', 'giftEvent', 'giftRecord', 'giftAnalysis');
 
 UPDATE `t_menu_info`
+SET `component` = '/src/views/finance/gift/gift-dashboard/index.vue'
+WHERE `name` = 'giftDashboard';
+
+UPDATE `t_menu_info`
 SET `order_by` = CASE `name`
   WHEN 'giftDashboard' THEN 10
   WHEN 'giftPerson' THEN 20
