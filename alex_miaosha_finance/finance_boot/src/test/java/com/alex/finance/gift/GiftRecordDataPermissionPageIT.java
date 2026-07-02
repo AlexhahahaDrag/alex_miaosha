@@ -19,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * H1: Gift record paging via {@code getPage} must trigger {@link DataPermissionHandlerImpl}.
- * <p>
- * Verifies SQL segment injection for {@code GiftRecordInfoMapper.getPage} without a real DB.
+ * Gift record paging via {@code getPage} triggers {@link DataPermissionHandlerImpl} with ORG_SHARED.
  */
 @ExtendWith(MockitoExtension.class)
 class GiftRecordDataPermissionPageIT {
@@ -31,6 +29,9 @@ class GiftRecordDataPermissionPageIT {
 
     private static final String GIFT_RECORD_GET_LIST_MS =
             "com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.getList";
+
+    private static final String FINANCE_INFO_GET_PAGE_MS =
+            "com.alex.finance.finance.mapper.FinanceInfoMapper.getPage";
 
     @Mock
     private UserUtils userUtils;
@@ -52,20 +53,37 @@ class GiftRecordDataPermissionPageIT {
     }
 
     @Test
-    void orgAdmin_should_append_org_scope_subquery_on_getPage() {
+    void orgAdmin_should_append_org_id_filter_on_gift_getPage() {
         when(userUtils.getLoginUser()).thenReturn(userWithRole("org_admin", 20L, 100L));
 
         Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
 
         String sql = segment.toString();
         assertTrue(sql.contains("gift_record_info_t"), () -> "sql=" + sql);
-        assertTrue(sql.contains("user_id"), () -> "sql=" + sql);
-        assertTrue(sql.contains("t_org_user_info"), () -> "sql=" + sql);
+        assertTrue(sql.contains("org_id"), () -> "sql=" + sql);
+        assertTrue(sql.contains("20"), () -> "sql=" + sql);
+        assertTrue(!sql.contains("t_org_user_info"), () -> "sql=" + sql);
     }
 
     @Test
-    void normalUser_should_append_scope_on_getPage() {
+    void normalUser_should_append_org_id_filter_on_gift_getPage() {
         when(userUtils.getLoginUser()).thenReturn(userWithRole("rbac_user", 20L, 10L));
+
+        Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
+
+        String sql = segment.toString();
+        assertTrue(sql.contains("gift_record_info_t"), () -> "sql=" + sql);
+        assertTrue(sql.contains("org_id"), () -> "sql=" + sql);
+        assertTrue(sql.contains("20"), () -> "sql=" + sql);
+        assertTrue(!sql.contains("10"), () -> "sql=" + sql);
+    }
+
+    @Test
+    void user_without_org_should_degrade_to_user_scope_on_gift_getPage() {
+        TUserVo user = userWithRole("rbac_user", 20L, 10L);
+        user.setOrgInfoVo(null);
+        user.setOrgId(null);
+        when(userUtils.getLoginUser()).thenReturn(user);
 
         Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
 
@@ -76,18 +94,15 @@ class GiftRecordDataPermissionPageIT {
     }
 
     @Test
-    void orgAdmin_without_org_should_degrade_to_user_scope_on_getPage() {
-        TUserVo user = userWithRole("org_admin", 20L, 100L);
-        user.setOrgInfoVo(null);
-        when(userUtils.getLoginUser()).thenReturn(user);
+    void financeInfo_should_keep_user_owner_admin_subquery() {
+        when(userUtils.getLoginUser()).thenReturn(userWithRole("org_admin", 20L, 100L));
 
-        Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
+        Expression segment = handler.getSqlSegment(null, FINANCE_INFO_GET_PAGE_MS);
 
         String sql = segment.toString();
-        assertTrue(sql.contains("gift_record_info_t"), () -> "sql=" + sql);
-        assertTrue(sql.contains("user_id"), () -> "sql=" + sql);
-        assertTrue(sql.contains("100"), () -> "sql=" + sql);
-        assertTrue(!sql.contains("t_org_user_info"), () -> "sql=" + sql);
+        assertTrue(sql.contains("finance_info"), () -> "sql=" + sql);
+        assertTrue(sql.contains("belong_to"), () -> "sql=" + sql);
+        assertTrue(sql.contains("t_org_user_info"), () -> "sql=" + sql);
     }
 
     @Test

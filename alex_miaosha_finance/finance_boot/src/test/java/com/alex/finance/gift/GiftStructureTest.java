@@ -10,6 +10,7 @@ import com.alex.api.finance.gift.relation.query.GiftRelationQuery;
 import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.finance.gift.analysis.controller.GiftAnalysisController;
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.common.common.BaseEntity;
 import com.alex.common.common.BaseVo;
 import com.alex.finance.gift.event.controller.GiftEventInfoController;
@@ -211,6 +212,8 @@ class GiftStructureTest {
         DataPermission dataPermission = getPage.getAnnotation(DataPermission.class);
         assertEquals(tableName, dataPermission.table());
         assertEquals("user_id", dataPermission.field());
+        assertEquals("org_id", dataPermission.orgField());
+        assertEquals(DataPermissionScope.ORG_SHARED, dataPermission.scope());
     }
 
     private void assertControllerRoutes(Class<?> controllerClass, String route) throws NoSuchMethodException {

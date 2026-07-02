@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class XxlProperties {
 
-    private String appname;
+    private String appName;
 
     private String ip;
 

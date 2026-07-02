@@ -43,12 +43,4 @@ public class ShopFinanceNoticeJob {
                 "month");
         log.info("===============结束调用店铺财务当月统计信息查询===================耗时：{}", Duration.ofNanos(System.nanoTime() - startTime));
     }
-
-    @XxlJob("demoJobHandler")
-    public void demoJobHandler() {
-        XxlJobHelper.log("demoJobHandler");
-        XxlJobHelper.log("demoJobHandler:", XxlJobHelper.getJobParam());
-        log.info("===============demoJobHandler===================耗时");
-        XxlJobHelper.handleSuccess("demoJobHandler success");
-    }
 }

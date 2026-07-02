@@ -22,7 +22,7 @@ public class XxlJobConfig {
         log.info(">>>>>>>>>>> xxl-job config init.");
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
         xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
-        xxlJobSpringExecutor.setAppname(xxlProperties.getAppname());
+        xxlJobSpringExecutor.setAppname(xxlProperties.getAppName());
         xxlJobSpringExecutor.setIp(xxlProperties.getIp());
         xxlJobSpringExecutor.setPort(xxlProperties.getPort());
         xxlJobSpringExecutor.setAccessToken(xxlProperties.getAccessToken());

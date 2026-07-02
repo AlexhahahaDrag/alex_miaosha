@@ -433,8 +433,42 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         result.put(SysConf.ADMIN, tUserVo);
-        log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
+        log.info("登录成功，耗时：\n{}, {} 秒", formatStopWatchInSeconds(stopWatch),
+                formatNanosToSeconds(stopWatch.getTotalTimeNanos()));
         return result;
+    }
+
+    private static String formatStopWatchInSeconds(StopWatch stopWatch) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("StopWatch '").append(stopWatch.getId()).append("': running time = ")
+                .append(formatNanosToSeconds(stopWatch.getTotalTimeNanos())).append(" s");
+        if (stopWatch.getTaskCount() > 0) {
+            sb.append('\n');
+            sb.append("---------------------------------------------\n");
+            sb.append("s          %     Task name\n");
+            sb.append("---------------------------------------------\n");
+            long totalNanos = stopWatch.getTotalTimeNanos();
+            for (StopWatch.TaskInfo task : stopWatch.getTaskInfo()) {
+                long taskNanos = task.getTimeNanos();
+                int percent = totalNanos > 0 ? (int) Math.round(100.0 * taskNanos / totalNanos) : 0;
+                sb.append(String.format("%11s", formatNanosToSeconds(taskNanos)))
+                        .append("  ")
+                        .append(String.format("%03d", percent))
+                        .append("%  ")
+                        .append(task.getTaskName())
+                        .append('\n');
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String formatNanosToSeconds(long nanos) {
+        long seconds = nanos / 1_000_000_000L;
+        long remainder = nanos % 1_000_000_000L;
+        if (seconds == 0) {
+            return String.format("0.%09d", remainder);
+        }
+        return String.format("%d.%09d", seconds, remainder);
     }
 
     public TUserVo refreshLoginPermissionContext(TUserVo userVo) {

@@ -21,7 +21,7 @@ mybatis-plus:
 xxl:
   job:
     executor:
-      appname: xxl-finance-prod
-      logretentiondays: 30
+      appName: xxl-finance-prod
+      logRetentionDays: 30
       port: 8008
       accessToken: asdfghjkl

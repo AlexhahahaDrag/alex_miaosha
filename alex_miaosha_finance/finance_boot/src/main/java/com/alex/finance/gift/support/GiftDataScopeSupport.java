@@ -75,7 +75,8 @@ public class GiftDataScopeSupport {
     /**
      * 断言当前登录用户有权访问该实体。
      * <p>
-     * 检查顺序：entity 存在性 → 超管直通 → admin 比机构 → user 比 userId。
+     * Gift 模块 Mapper 使用 {@link com.alex.api.user.annotation.DataPermissionScope#ORG_SHARED}：
+     * 超管直通；其余角色按家庭组 {@code org_id} 校验（无机构时降级为本人 {@code user_id}）。
      */
     private void assertEntityAccessible(Long entityUserId, Long entityOrgId, String resourceName) {
         if (entityUserId == null && entityOrgId == null) {
@@ -85,17 +86,17 @@ public class GiftDataScopeSupport {
         if (isSuper(user)) {
             return;
         }
-        if (isAdmin(user)) {
-            Long myOrgId = loginOrgId(user);
-            if (myOrgId == null || !myOrgId.equals(entityOrgId)) {
-                throw GiftExceptions.forbidden("无权访问其他机构的" + resourceName);
-            }
+        Long myOrgId = loginOrgId(user);
+        if (myOrgId != null && myOrgId.equals(entityOrgId)) {
             return;
         }
-        // 普通用户：仅能访问自己的数据
-        if (!user.getId().equals(entityUserId)) {
-            throw GiftExceptions.forbidden("无权访问其他用户的" + resourceName);
+        if (myOrgId == null && user.getId().equals(entityUserId)) {
+            return;
         }
+        if (myOrgId != null && entityOrgId == null && user.getId().equals(entityUserId)) {
+            return;
+        }
+        throw GiftExceptions.forbidden("无权访问其他机构的" + resourceName);
     }
 
     /** roleCode 含 "super" → 超管。 */

@@ -1,10 +1,10 @@
 package com.alex.api.user.handler;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,13 @@ import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -76,37 +77,34 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             return where;
         }
 
-        // 判断当前用户角色决定权限
-        List<RoleInfoVo> roleList = loginUser.getRoleInfoVoList();
-        List<String> roleCodes = new ArrayList<>();
-        if (roleList != null) {
-            roleList.stream()
-                    .filter(role -> role != null && role.getRoleCode() != null)
-                    .map(RoleInfoVo::getRoleCode)
-                    .forEach(roleCodes::add);
-        }
-        boolean isSuper = false;
-        boolean isAdmin = false;
-        boolean isUser = false;
-        for (String code : roleCodes) {
-            if (code.contains("super")) {
-                isSuper = true;
-            } else if (code.contains("admin")) {
-                isAdmin = true;
-            } else if (code.contains("user")) {
-                isUser = true;
-            }
+        RoleFlags roleFlags = resolveRoleFlags(loginUser);
+        if (roleFlags.isSuper()) {
+            return getSuperWhere(where);
         }
 
-        if (isSuper) {
-            return getSuperWhere(where);
-        } else if (isAdmin) {
-            return getAdminWhere(where, loginUser, annotation);
-        } else if (isUser || roleCodes.isEmpty()) {
-            return getUserWhere(where, loginUser, annotation);
-        } else {
-            return getDefaultWhere(where, loginUser, annotation);
+        if (annotation.scope() == DataPermissionScope.ORG_SHARED) {
+            return getOrgSharedWhere(where, loginUser, annotation);
         }
+
+        if (roleFlags.isAdmin()) {
+            return getAdminWhere(where, loginUser, annotation);
+        }
+        if (roleFlags.isUser() || roleFlags.isEmpty()) {
+            return getUserWhere(where, loginUser, annotation);
+        }
+        return getDefaultWhere(where, loginUser, annotation);
+    }
+
+    private Expression getOrgSharedWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
+        Long orgId = resolveLoginOrgId(loginUser);
+        if (orgId == null) {
+            log.warn("家庭组共享模式未解析到机构，降级为个人数据权限：userId={}", loginUser.getId());
+            return getUserWhere(where, loginUser, annotation);
+        }
+        if (StringUtils.hasText(annotation.orgField())) {
+            return appendFieldEquals(where, annotation.table(), annotation.orgField(), orgId);
+        }
+        return appendOrgMembersIn(where, loginUser, annotation, orgId);
     }
 
     /**
@@ -143,23 +141,21 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     private Expression getUserWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        EqualsTo useEqualsTo = new EqualsTo();
-        useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
-        useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-        return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+        return appendFieldEquals(where, annotation.table(), annotation.field(), loginUser.getId());
     }
 
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        if (loginUser == null) {
-            return where;
-        }
-        if (loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
+        Long orgId = resolveLoginOrgId(loginUser);
+        if (orgId == null) {
             log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser.getId());
             return getUserWhere(where, loginUser, annotation);
         }
+        return appendOrgMembersIn(where, loginUser, annotation, orgId);
+    }
 
-        InExpression useEqualsTo = new InExpression();
-        useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
+    private Expression appendOrgMembersIn(Expression where, TUserVo loginUser, DataPermission annotation, Long orgId) {
+        InExpression inExpression = new InExpression();
+        inExpression.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
 
         PlainSelect plainSelect = new PlainSelect();
         plainSelect.addSelectItems(new SelectItem<>(new Column("user_id")));
@@ -169,14 +165,21 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
         EqualsTo whereCondition = new EqualsTo();
         whereCondition.setLeftExpression(new Column("org_id"));
-        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
+        whereCondition.setRightExpression(new LongValue(orgId));
         plainSelect.setWhere(whereCondition);
 
         ParenthesedSelect subSelect = new ParenthesedSelect();
         subSelect.setSelect(plainSelect);
-        useEqualsTo.setRightExpression(subSelect);
+        inExpression.setRightExpression(subSelect);
 
-        return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+        return where == null ? inExpression : new AndExpression(where, inExpression);
+    }
+
+    private Expression appendFieldEquals(Expression where, String tableName, String fieldName, Long value) {
+        EqualsTo equalsTo = new EqualsTo();
+        equalsTo.setLeftExpression(new Column(new Table(tableName), fieldName));
+        equalsTo.setRightExpression(new LongValue(value));
+        return where == null ? equalsTo : new AndExpression(where, equalsTo);
     }
 
     private Expression getSuperWhere(Expression where) {
@@ -188,5 +191,42 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         useEqualsTo.setLeftExpression(new Column(annotation.field()));
         useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
         return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+    }
+
+    private Long resolveLoginOrgId(TUserVo loginUser) {
+        if (loginUser == null) {
+            return null;
+        }
+        if (loginUser.getOrgInfoVo() != null && loginUser.getOrgInfoVo().getId() != null) {
+            return loginUser.getOrgInfoVo().getId();
+        }
+        return loginUser.getOrgId();
+    }
+
+    private RoleFlags resolveRoleFlags(TUserVo loginUser) {
+        List<RoleInfoVo> roleList = loginUser.getRoleInfoVoList();
+        List<String> roleCodes = new ArrayList<>();
+        if (roleList != null) {
+            roleList.stream()
+                    .filter(role -> role != null && role.getRoleCode() != null)
+                    .map(RoleInfoVo::getRoleCode)
+                    .forEach(roleCodes::add);
+        }
+        boolean isSuper = false;
+        boolean isAdmin = false;
+        boolean isUser = false;
+        for (String code : roleCodes) {
+            if (code.contains("super")) {
+                isSuper = true;
+            } else if (code.contains("admin")) {
+                isAdmin = true;
+            } else if (code.contains("user")) {
+                isUser = true;
+            }
+        }
+        return new RoleFlags(isSuper, isAdmin, isUser, roleCodes.isEmpty());
+    }
+
+    private record RoleFlags(boolean isSuper, boolean isAdmin, boolean isUser, boolean isEmpty) {
     }
 }
