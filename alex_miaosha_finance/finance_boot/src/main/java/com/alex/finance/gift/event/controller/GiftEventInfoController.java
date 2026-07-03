@@ -4,11 +4,13 @@ import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
+import com.alex.api.finance.gift.event.vo.GiftEventTypeOptionsVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.finance.gift.event.service.GiftEventInfoService;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -35,6 +37,7 @@ import java.util.List;
 public class GiftEventInfoController {
 
     private final GiftEventInfoService giftEventInfoService;
+    private final GiftEventTypeOptionService giftEventTypeOptionService;
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "礼金事由分页查询", response = Result.class)
@@ -66,6 +69,13 @@ public class GiftEventInfoController {
                                                           @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                           @RequestBody(required = false) GiftEventQuery query) {
         return Result.success(giftEventInfoService.getBusinessPage(pageNum, pageSize, query));
+    }
+
+    @ApiOperationSupport(order = 18, author = "alex")
+    @ApiOperation(value = "事由类型下拉选项（含家庭组共享自定义）", response = Result.class)
+    @GetMapping(value = "/event-type-options")
+    public Result<GiftEventTypeOptionsVo> eventTypeOptions() {
+        return Result.success(giftEventTypeOptionService.listEventTypeOptions());
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

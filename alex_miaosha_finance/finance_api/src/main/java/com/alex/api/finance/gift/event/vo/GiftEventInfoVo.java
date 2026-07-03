@@ -31,6 +31,10 @@ public class GiftEventInfoVo extends BaseVo<GiftEventInfoVo> {
     @ApiModelProperty(value = "event type")
     private String eventType;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "event type option id")
+    private Long eventTypeOptionId;
+
     @ApiModelProperty(value = "event time")
     private LocalDateTime eventTime;
 

@@ -11,6 +11,7 @@ import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.event.service.GiftEventInfoService;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, GiftEventInfo> implements GiftEventInfoService {
 
     private final GiftDataScopeSupport giftDataScopeSupport;
+    private final GiftEventTypeOptionService giftEventTypeOptionService;
 
     @Autowired(required = false)
     private GiftRecordInfoService giftRecordInfoService;
@@ -89,11 +91,13 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     @Override
     public GiftEventInfoVo addGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
         fillOwner(giftEventInfoVo);
+        applyEventTypeOption(giftEventInfoVo);
         GiftEventInfo entity = new GiftEventInfo();
         BeanUtils.copyProperties(giftEventInfoVo, entity);
         save(entity);
         giftEventInfoVo.setId(entity.getId());
-        return giftEventInfoVo;
+        rememberEventTypeOption(entity);
+        return enrichEventTypeOption(giftEventInfoVo);
     }
 
     @Override
@@ -105,9 +109,14 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         giftDataScopeSupport.assertEventAccessible(existing);
         giftEventInfoVo.setUserId(existing.getUserId());
         giftEventInfoVo.setOrgId(existing.getOrgId());
+        applyEventTypeOption(giftEventInfoVo);
         GiftEventInfo entity = new GiftEventInfo();
         BeanUtils.copyProperties(giftEventInfoVo, entity);
-        return updateById(entity);
+        boolean updated = updateById(entity);
+        if (updated) {
+            rememberEventTypeOption(entity);
+        }
+        return updated;
     }
 
     @Override
@@ -184,6 +193,28 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         }
         GiftEventInfoVo vo = new GiftEventInfoVo();
         BeanUtils.copyProperties(entity, vo);
+        return enrichEventTypeOption(vo);
+    }
+
+    private void rememberEventTypeOption(GiftEventInfo entity) {
+        giftEventTypeOptionService.rememberCustomEventType(
+                entity.getOrgId(), entity.getUserId(), entity.getEventType());
+    }
+
+    private void applyEventTypeOption(GiftEventInfoVo vo) {
+        if (vo.getEventTypeOptionId() == null) {
+            return;
+        }
+        vo.setEventType(giftEventTypeOptionService.resolveEventType(
+                vo.getEventTypeOptionId(), vo.getOrgId()));
+    }
+
+    private GiftEventInfoVo enrichEventTypeOption(GiftEventInfoVo vo) {
+        if (vo == null) {
+            return null;
+        }
+        vo.setEventTypeOptionId(giftEventTypeOptionService.findEventTypeOptionId(
+                vo.getOrgId(), vo.getEventType()));
         return vo;
     }
 }

@@ -7,8 +7,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for gift_person_info_t
 -- ----------------------------
-DROP TABLE IF EXISTS `gift_person_info_t`;
-CREATE TABLE `gift_person_info_t` (
+DROP TABLE IF EXISTS `alex_finance`.`gift_person_info_t`;
+CREATE TABLE `alex_finance`.`gift_person_info_t` (
   `id` bigint NOT NULL COMMENT '主键',
   `org_id` bigint NOT NULL COMMENT '组织ID',
   `user_id` bigint NOT NULL COMMENT '归属用户ID',
@@ -35,8 +35,8 @@ CREATE TABLE `gift_person_info_t` (
 -- ----------------------------
 -- Table structure for gift_relation_info_t
 -- ----------------------------
-DROP TABLE IF EXISTS `gift_relation_info_t`;
-CREATE TABLE `gift_relation_info_t` (
+DROP TABLE IF EXISTS `alex_finance`.`gift_relation_info_t`;
+CREATE TABLE `alex_finance`.`gift_relation_info_t` (
   `id` bigint NOT NULL COMMENT '主键',
   `org_id` bigint NOT NULL COMMENT '组织ID',
   `user_id` bigint NOT NULL COMMENT '归属用户ID',
@@ -61,8 +61,8 @@ CREATE TABLE `gift_relation_info_t` (
 -- ----------------------------
 -- Table structure for gift_event_info_t
 -- ----------------------------
-DROP TABLE IF EXISTS `gift_event_info_t`;
-CREATE TABLE `gift_event_info_t` (
+DROP TABLE IF EXISTS `alex_finance`.`gift_event_info_t`;
+CREATE TABLE `alex_finance`.`gift_event_info_t` (
   `id` bigint NOT NULL COMMENT '主键',
   `org_id` bigint NOT NULL COMMENT '组织ID',
   `user_id` bigint NOT NULL COMMENT '归属用户ID',
@@ -89,8 +89,8 @@ CREATE TABLE `gift_event_info_t` (
 -- ----------------------------
 -- Table structure for gift_record_info_t
 -- ----------------------------
-DROP TABLE IF EXISTS `gift_record_info_t`;
-CREATE TABLE `gift_record_info_t` (
+DROP TABLE IF EXISTS `alex_finance`.`gift_record_info_t`;
+CREATE TABLE `alex_finance`.`gift_record_info_t` (
   `id` bigint NOT NULL COMMENT '主键',
   `org_id` bigint NOT NULL COMMENT '组织ID',
   `user_id` bigint NOT NULL COMMENT '归属用户ID',
@@ -124,8 +124,8 @@ CREATE TABLE `gift_record_info_t` (
 -- ----------------------------
 -- Table structure for gift_person_relation_option_t
 -- ----------------------------
-DROP TABLE IF EXISTS `gift_person_relation_option_t`;
-CREATE TABLE `gift_person_relation_option_t` (
+DROP TABLE IF EXISTS `alex_finance`.`gift_person_relation_option_t`;
+CREATE TABLE `alex_finance`.`gift_person_relation_option_t` (
   `id` bigint NOT NULL COMMENT '主键',
   `org_id` bigint NOT NULL COMMENT '组织ID',
   `user_id` bigint NOT NULL COMMENT '归属用户ID，系统预设为0',
@@ -149,7 +149,7 @@ CREATE TABLE `gift_person_relation_option_t` (
   INDEX `idx_gift_person_relation_option_user_time`(`user_id` ASC, `last_used_time` DESC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来联系人关系词典' ROW_FORMAT = DYNAMIC;
 
-INSERT INTO `gift_person_relation_option_t` (
+INSERT INTO `alex_finance`.`gift_person_relation_option_t` (
   `id`, `org_id`, `user_id`, `option_type`, `relation_code`, `relation_label`, `sort_order`, `last_used_time`, `is_delete`, `create_time`
 ) VALUES
 (9000000000000000001, 0, 0, 'SYSTEM', 'RELATIVE', '亲属', 1, NOW(), 0, NOW()),
@@ -157,5 +157,43 @@ INSERT INTO `gift_person_relation_option_t` (
 (9000000000000000003, 0, 0, 'SYSTEM', 'COLLEAGUE', '同事', 3, NOW(), 0, NOW()),
 (9000000000000000004, 0, 0, 'SYSTEM', 'NEIGHBOR', '邻里', 4, NOW(), 0, NOW()),
 (9000000000000000005, 0, 0, 'SYSTEM', 'OTHER', '其他', 5, NOW(), 0, NOW());
+
+-- ----------------------------
+-- Table structure for gift_event_type_option_t
+-- ----------------------------
+DROP TABLE IF EXISTS `alex_finance`.`gift_event_type_option_t`;
+CREATE TABLE `alex_finance`.`gift_event_type_option_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID，系统预设为0',
+  `user_id` bigint NOT NULL COMMENT '创建用户ID，系统预设为0',
+  `option_type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'CUSTOM' COMMENT 'SYSTEM|CUSTOM',
+  `event_code` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '预设code',
+  `event_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '类型展示文案',
+  `sort_order` int NOT NULL DEFAULT 0 COMMENT '排序',
+  `last_used_time` datetime NULL DEFAULT NULL COMMENT '最近使用时间',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_gift_event_type_option_org_label`(`org_id` ASC, `event_label` ASC) USING BTREE,
+  UNIQUE INDEX `uk_gift_event_type_option_system_code`(`user_id` ASC, `event_code` ASC) USING BTREE,
+  INDEX `idx_gift_event_type_option_org_time`(`org_id` ASC, `last_used_time` DESC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来事由类型词典' ROW_FORMAT = DYNAMIC;
+
+INSERT INTO `alex_finance`.`gift_event_type_option_t` (
+  `id`, `org_id`, `user_id`, `option_type`, `event_code`, `event_label`, `sort_order`, `last_used_time`, `is_delete`, `create_time`
+) VALUES
+(9100000000000000001, 0, 0, 'SYSTEM', 'WEDDING', '婚礼', 1, NOW(), 0, NOW()),
+(9100000000000000002, 0, 0, 'SYSTEM', 'BIRTH', '满月', 2, NOW(), 0, NOW()),
+(9100000000000000003, 0, 0, 'SYSTEM', 'HOUSEWARMING', '乔迁', 3, NOW(), 0, NOW()),
+(9100000000000000004, 0, 0, 'SYSTEM', 'EDUCATION', '升学', 4, NOW(), 0, NOW()),
+(9100000000000000005, 0, 0, 'SYSTEM', 'BIRTHDAY', '寿宴', 5, NOW(), 0, NOW()),
+(9100000000000000006, 0, 0, 'SYSTEM', 'OTHER', '其他', 6, NOW(), 0, NOW());
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -111,4 +111,21 @@
         ORDER BY e.event_time DESC
     </select>
 
+    <select id="listDistinctCustomEventTypes" resultType="java.lang.String">
+        SELECT DISTINCT e.event_type
+        FROM gift_event_info_t e
+        WHERE e.org_id = #{orgId}
+          AND e.is_delete = 0
+          AND e.event_type IS NOT NULL
+          AND e.event_type != ''
+          AND e.event_type NOT IN (
+              SELECT o.event_code
+              FROM gift_event_type_option_t o
+              WHERE o.user_id = 0
+                AND o.option_type = 'SYSTEM'
+                AND o.is_delete = 0
+                AND o.event_code IS NOT NULL
+          )
+    </select>
+
 </mapper>

@@ -27,4 +27,6 @@ public interface GiftEventInfoMapper extends BaseMapper<GiftEventInfo> {
 
     @DataPermission(table = "gift_event_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<GiftEventBusinessVo> getBusinessPage(Page<GiftEventBusinessVo> page, @Param("query") GiftEventQuery query);
+
+    List<String> listDistinctCustomEventTypes(@Param("orgId") Long orgId);
 }
