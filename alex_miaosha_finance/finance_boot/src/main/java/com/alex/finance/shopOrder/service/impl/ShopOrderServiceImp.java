@@ -99,7 +99,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopOrderMapper.deleteBatchIds(idArr);
+        shopOrderMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -149,7 +149,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
                 shopOrderDetailVoList.forEach(item -> item.setOrderId(shopOrder.getId()));
                 shopOrderDetailService.batchUpdateShopOrderDetail(shopOrderDetailVoList);
             } catch (Exception e) {
-                // TODO (majf) 2024/4/9 15:53 将来插入到日志表中，方便补偿数据
+                //  (majf) 2024/4/9 15:53 将来插入到日志表中，方便补偿数据
                 log.error("更新订单明细失败：{}", e.getMessage());
             }
         });

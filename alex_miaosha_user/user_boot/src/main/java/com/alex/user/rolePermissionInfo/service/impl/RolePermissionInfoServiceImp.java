@@ -65,7 +65,7 @@ public class RolePermissionInfoServiceImp extends ServiceImpl<RolePermissionInfo
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        rolePermissionInfoMapper.deleteBatchIds(idArr);
+        rolePermissionInfoMapper.deleteByIds(idArr);
         return true;
     }
 }

@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.builder.CustomFile;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.util.FileUtils;
 import com.baomidou.mybatisplus.generator.util.RuntimeUtils;
@@ -41,12 +42,20 @@ public abstract class AbstractTemplateEngine {
     @NotNull
     public abstract AbstractTemplateEngine init(@NotNull ConfigBuilder configBuilder);
 
-    protected void outputCustomFile(@NotNull Map<String, String> customFile, @NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-        String otherPath = this.getPathInfo(OutputFile.other);
-        String feignPath = this.getPathInfo(OutputFile.feign);
-        customFile.forEach((key, value) -> {
-            String fileName = String.format(feignPath + File.separator + File.separator + "%s", key);
-            this.outputFile(new File(fileName), objectMap, value);
+    protected void outputCustomFile(@NotNull List<CustomFile> customFiles, @NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+        String entityName = tableInfo.getEntityName();
+        String parentPath = Optional.ofNullable(this.getPathInfo(OutputFile.other))
+                .orElseGet(() -> this.getPathInfo(OutputFile.entity));
+        customFiles.forEach((file) -> {
+            String filePath = StringUtils.isNotBlank(file.getFilePath()) ? file.getFilePath() : parentPath;
+            if (StringUtils.isNotBlank(file.getPackageName())) {
+                filePath = filePath + File.separator + file.getPackageName().replace(".", File.separator);
+            }
+            Function<TableInfo, String> formatNameFunction = file.getFormatNameFunction();
+            String outputName = (formatNameFunction != null ? formatNameFunction.apply(tableInfo) : entityName) + file.getFileName();
+            File output = new File(filePath + File.separator + outputName);
+            boolean fileOverride = file.isFileOverride() || this.getConfigBuilder().getGlobalConfig().isOverrideExistingFiles();
+            this.outputFile(output, objectMap, file.getTemplatePath(), fileOverride);
         });
     }
 
@@ -150,7 +159,11 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected void outputFile(@NotNull File file, @NotNull Map<String, Object> objectMap, @NotNull String templatePath) {
-        if (this.isCreate(file)) {
+        this.outputFile(file, objectMap, templatePath, this.getConfigBuilder().getGlobalConfig().isOverrideExistingFiles());
+    }
+
+    protected void outputFile(@NotNull File file, @NotNull Map<String, Object> objectMap, @NotNull String templatePath, boolean fileOverride) {
+        if (this.isCreate(file, fileOverride)) {
             try {
                 boolean exist = file.exists();
                 if (!exist) {
@@ -296,7 +309,7 @@ public abstract class AbstractTemplateEngine {
                 Map<String, Object> objectMap = this.getObjectMap(config, tableInfo);
                 Optional.ofNullable(config.getInjectionConfig()).ifPresent((t) -> {
                     t.beforeOutputFile(tableInfo, objectMap);
-                    this.outputCustomFile(t.getCustomFile(), tableInfo, objectMap);
+                    this.outputCustomFile(t.getCustomFiles(), tableInfo, objectMap);
                 });
                 this.outputEntity(tableInfo, objectMap);
                 this.outputMapper(tableInfo, objectMap);
@@ -417,7 +430,14 @@ public abstract class AbstractTemplateEngine {
     }
 
     protected boolean isCreate(@NotNull File file) {
-        return !file.exists() || this.getConfigBuilder().getGlobalConfig().isFileOverride();
+        return this.isCreate(file, this.getConfigBuilder().getGlobalConfig().isOverrideExistingFiles());
+    }
+
+    protected boolean isCreate(@NotNull File file, boolean fileOverride) {
+        if (file.exists() && !fileOverride) {
+            this.logger.warn("文件[{}]已存在，且未开启文件覆盖配置，如需重新生成请调整相关配置后重试", file.getName());
+        }
+        return !file.exists() || fileOverride;
     }
 
     protected String suffixJavaOrKt() {

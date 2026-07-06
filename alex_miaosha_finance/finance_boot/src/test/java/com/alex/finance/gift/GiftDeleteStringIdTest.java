@@ -12,6 +12,9 @@ import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -75,7 +78,10 @@ class GiftDeleteStringIdTest {
         private List<Object> removedIds = List.of();
 
         private TestPersonService() {
-            super(new GiftDataScopeSupport(loginUserUtils()));
+            super(
+                    new GiftDataScopeSupport(loginUserUtils()),
+                    mock(GiftPersonRelationOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override
@@ -98,7 +104,10 @@ class GiftDeleteStringIdTest {
         private List<Object> removedIds = List.of();
 
         private TestEventService() {
-            super(new GiftDataScopeSupport(loginUserUtils()));
+            super(
+                    new GiftDataScopeSupport(loginUserUtils()),
+                    mock(GiftEventTypeOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override

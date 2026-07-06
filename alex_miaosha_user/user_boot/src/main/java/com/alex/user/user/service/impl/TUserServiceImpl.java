@@ -20,7 +20,6 @@ import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.UserPermissionContextService;
@@ -41,6 +40,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
@@ -50,7 +50,7 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatMpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -103,8 +103,6 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Value(value = "${defaultPassword}")
     private String defaultPassword;
 
-    private final MenuInfoService menuInfoService;
-
     private final UserUtils userUtils;
 
     private final OrgUserInfoService orgUserInfoService;
@@ -120,8 +118,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private final UserPermissionContextService userPermissionContextService;
 
-    @Autowired(required = false)
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final ObjectProvider<ObjectMapper> objectMapper;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
@@ -240,7 +237,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        tUserMapper.deleteBatchIds(idArr);
+        tUserMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -409,7 +406,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
         stopWatch.start("8.Redis缓存写入");
         try {
-            String userJson = objectMapper.writeValueAsString(tUserVo);
+            ObjectMapper mapper = objectMapper.getIfAvailable();
+            if (mapper == null) {
+                throw new IllegalStateException("ObjectMapper bean is not available");
+            }
+            String userJson = mapper.writeValueAsString(tUserVo);
             final String finalUserJson = userJson;
             final String finalWriteIp = ip;
             

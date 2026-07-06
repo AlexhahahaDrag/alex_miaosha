@@ -60,7 +60,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        orgInfoMapper.deleteBatchIds(idArr);
+        orgInfoMapper.deleteByIds(idArr);
         return true;
     }
 }

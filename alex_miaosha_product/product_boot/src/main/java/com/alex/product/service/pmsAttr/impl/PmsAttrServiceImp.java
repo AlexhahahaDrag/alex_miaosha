@@ -60,7 +60,7 @@ public class PmsAttrServiceImp extends ServiceImpl<PmsAttrMapper, PmsAttr> imple
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsAttrMapper.deleteBatchIds(idArr);
+        pmsAttrMapper.deleteByIds(idArr);
         return true;
     }
 }

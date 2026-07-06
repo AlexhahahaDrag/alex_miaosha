@@ -19,6 +19,9 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
@@ -119,7 +122,10 @@ class GiftAggregateBusinessRuleTest {
         private List<GiftRecordInfo> records = List.of();
 
         private TestPersonService() {
-            super(new GiftDataScopeSupport(mock(UserUtils.class)));
+            super(
+                    new GiftDataScopeSupport(mock(UserUtils.class)),
+                    mock(GiftPersonRelationOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override
@@ -156,7 +162,10 @@ class GiftAggregateBusinessRuleTest {
         private List<GiftRecordInfo> records = List.of();
 
         private TestEventService() {
-            super(new GiftDataScopeSupport(mock(UserUtils.class)));
+            super(
+                    new GiftDataScopeSupport(mock(UserUtils.class)),
+                    mock(GiftEventTypeOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override

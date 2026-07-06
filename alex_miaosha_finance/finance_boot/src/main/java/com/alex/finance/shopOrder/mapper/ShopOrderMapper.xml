@@ -38,26 +38,7 @@
         t_shop_order.operate_time,
         t_shop_order.sale_order_code, t_shop_order.sale_order_name, t_shop_order.sale_amount, t_shop_order.is_valid, t_shop_order.sale_date, t_shop_order.`description`, t_shop_order.pay_way, t_shop_order.sale_count
     </sql>
-
-    <select id="getPage" resultType="com.alex.api.finance.shopOrder.vo.ShopOrderVo">
-        select <include refid="Base_Column_List"/>from t_shop_order
-        <where>
-            t_shop_order.is_delete = 0
-            <include refid="queryInfo"/>
-        </where>
-        order by t_shop_order.operate_time desc
-    </select>
-
-    <select id="queryShopOrder" resultType="com.alex.api.finance.shopOrder.vo.ShopOrderVo">
-        select <include refid="Base_Column_List"/> from t_shop_order
-                left join
-        <where>
-            t_shop_order.id = #{id}
-            and t_shop_order.is_delete = 0
-        </where>
-    </select>
-
-     <sql id="queryInfo">
+    <sql id="queryInfo">
         <if test = "shopOrderVo != null">
           <if test = "shopOrderVo.saleOrderCode != null">
             and t_shop_order.sale_order_code like concat('%', #{shopOrderVo.saleOrderCode}, '%')
@@ -85,4 +66,22 @@
           </if>
         </if>
      </sql>
-</mapper>
+
+
+    <select id="getPage" resultType="com.alex.api.finance.shopOrder.vo.ShopOrderVo">
+        select <include refid="Base_Column_List"/>from t_shop_order
+        <where>
+            t_shop_order.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+        order by t_shop_order.operate_time desc
+    </select>
+
+    <select id="queryShopOrder" resultType="com.alex.api.finance.shopOrder.vo.ShopOrderVo">
+        select <include refid="Base_Column_List"/> from t_shop_order
+                left join
+        <where>
+            t_shop_order.id = #{id}
+            and t_shop_order.is_delete = 0
+        </where>
+    </select></mapper>

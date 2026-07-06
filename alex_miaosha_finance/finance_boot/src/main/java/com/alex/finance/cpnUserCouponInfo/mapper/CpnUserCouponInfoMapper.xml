@@ -42,6 +42,39 @@
         cpn_user_coupon_info_t.redemption_quantity
     </sql>
 
+    <sql id="queryInfo">
+        <if test="cpnUserCouponInfoVo != null">
+            <if test="cpnUserCouponInfoVo.userId != null">
+                and cpn_user_coupon_info_t.user_id = #{cpnUserCouponInfoVo.userId}
+            </if>
+            <if test="cpnUserCouponInfoVo.couponId != null">
+                and cpn_user_coupon_info_t.coupon_id = #{cpnUserCouponInfoVo.couponId}
+            </if>
+            <if test="cpnUserCouponInfoVo.status != null and cpnUserCouponInfoVo.status != ''">
+                and cpn_user_coupon_info_t.status = #{cpnUserCouponInfoVo.status}
+            </if>
+            <if test="cpnUserCouponInfoVo.receiveTime != null">
+                and cpn_user_coupon_info_t.receive_time = #{cpnUserCouponInfoVo.receiveTime}
+            </if>
+            <if test="cpnUserCouponInfoVo.expireTime != null">
+                and cpn_user_coupon_info_t.expire_time = #{cpnUserCouponInfoVo.expireTime}
+            </if>
+        </if>
+    </sql>
+
+    <!-- 仅 getPage 使用：依赖用户表 / 消费券表 join -->
+    <sql id="queryInfoForPage">
+        <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.userName != null and cpnUserCouponInfoVo.userName != ''">
+            and (
+                tu.username like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
+                or tu.nick_name like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
+            )
+        </if>
+        <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.couponName != null and cpnUserCouponInfoVo.couponName != ''">
+            and cci.coupon_name like concat('%', #{cpnUserCouponInfoVo.couponName}, '%')
+        </if>
+    </sql>
+
     <select id="getPage" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
         select
         <include refid="Base_Column_List"/>,
@@ -57,22 +90,13 @@
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
-            <!-- AI Agent: 追加“用户名 / 消费券名”模糊查询（仅 getPage 有 join，避免影响 getList） -->
-            <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.userName != null and cpnUserCouponInfoVo.userName != ''">
-                and (
-                    tu.username like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
-                    or tu.nick_name like concat('%', #{cpnUserCouponInfoVo.userName}, '%')
-                )
-            </if>
-            <if test="cpnUserCouponInfoVo != null and cpnUserCouponInfoVo.couponName != null and cpnUserCouponInfoVo.couponName != ''">
-                and cci.coupon_name like concat('%', #{cpnUserCouponInfoVo.couponName}, '%')
-            </if>
+            <include refid="queryInfoForPage"/>
         </where>
         order by cpn_user_coupon_info_t.operate_time desc
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo">
-        select <include refid="Base_Column_List"/>from cpn_user_coupon_info_t
+        select <include refid="Base_Column_List"/> from cpn_user_coupon_info_t
         <where>
             cpn_user_coupon_info_t.is_delete = 0
             <include refid="queryInfo"/>
@@ -87,24 +111,4 @@
             and cpn_user_coupon_info_t.is_delete = 0
         </where>
     </select>
-
-     <sql id="queryInfo">
-        <if test = "cpnUserCouponInfoVo != null">
-          <if test = "cpnUserCouponInfoVo.userId != null">
-            and cpn_user_coupon_info_t.user_id = #{cpnUserCouponInfoVo.userId}
-          </if>
-          <if test = "cpnUserCouponInfoVo.couponId != null">
-            and cpn_user_coupon_info_t.coupon_id = #{cpnUserCouponInfoVo.couponId}
-          </if>
-          <if test = "cpnUserCouponInfoVo.status != null">
-            and cpn_user_coupon_info_t.status = #{cpnUserCouponInfoVo.status}
-          </if>
-          <if test = "cpnUserCouponInfoVo.receiveTime != null">
-            and cpn_user_coupon_info_t.receive_time = #{cpnUserCouponInfoVo.receiveTime}
-          </if>
-          <if test = "cpnUserCouponInfoVo.expireTime != null">
-            and cpn_user_coupon_info_t.expire_time = #{cpnUserCouponInfoVo.expireTime}
-          </if>
-        </if>
-     </sql>
 </mapper>

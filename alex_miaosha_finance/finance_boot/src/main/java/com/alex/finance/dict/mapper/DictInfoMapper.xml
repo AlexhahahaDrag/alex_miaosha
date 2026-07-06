@@ -33,6 +33,24 @@
         dict_info.operate_time,
         dict_info.type_code, dict_info.type_name, dict_info.belong_to, dict_info.belong_to_name, dict_info.order_by, dict_info.is_valid
     </sql>
+    
+    <sql id="queryInfo">
+        <if test = "dictInfoVo != null">
+          <if test = "dictInfoVo.typeCode != null">
+            and type_code like concat('%', #{dictInfoVo.typeCode}, '%')
+          </if>
+          <if test = "dictInfoVo.typeName != null">
+            and type_name like concat('%', #{dictInfoVo.typeName}, '%')
+          </if>
+          <if test = "dictInfoVo.belongToName != null">
+            and belong_to_name like concat('%', #{dictInfoVo.belongToName}, '%')
+          </if>
+          <if test = "dictInfoVo.isValid != null">
+            and is_valid = #{dictInfoVo.isValid}
+          </if>
+        </if>
+     </sql>
+
 
     <select id="getPage" resultType="com.alex.api.finance.vo.dict.DictInfoVo">
         select <include refid="Base_Column_List"/> from dict_info
@@ -53,30 +71,13 @@
         select <include refid="Base_Column_List"/> from dict_info
         <where>
             dict_info.is_delete = 0 and is_valid = '1'
-            <if test="belongTo != null">
+            <if test="belongTo != null and belongTo.length > 0">
                 and belong_to in
-                <foreach collection="belongTo" open="(" close=")" item="be" separator=",">
-                    #{be}
+                <foreach collection="belongTo" open="(" close=")" item="belongToItem" separator=",">
+                    #{belongToItem}
                 </foreach>
             </if>
         </where>
         order by dict_info.order_by
     </select>
-
-     <sql id="queryInfo">
-        <if test = "dictInfoVo != null">
-          <if test = "dictInfoVo.typeCode != null">
-            and type_code like concat('%', #{dictInfoVo.typeCode}, '%')
-          </if>
-          <if test = "dictInfoVo.typeName != null">
-            and type_name like concat('%', #{dictInfoVo.typeName}, '%')
-          </if>
-          <if test = "dictInfoVo.belongToName != null">
-            and belong_to_name like concat('%', #{dictInfoVo.belongToName}, '%')
-          </if>
-          <if test = "dictInfoVo.isValid != null">
-            and is_valid = #{dictInfoVo.isValid}
-          </if>
-        </if>
-     </sql>
 </mapper>

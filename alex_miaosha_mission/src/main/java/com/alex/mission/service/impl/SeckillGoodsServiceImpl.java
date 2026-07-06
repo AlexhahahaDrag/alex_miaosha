@@ -28,7 +28,6 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
     @Override
     public int reduceStock(Long goodsId) {
         SeckillGoods seckillGoods = seckillGoodsMapper.selectOne(Wrappers.<SeckillGoods>lambdaQuery().eq(SeckillGoods::getGoodsId, goodsId));
-        // TODO: 2022/7/12 测试库存
         reduceStockCount(goodsId, seckillGoods);
         boolean update = seckillGoodsManager.update(seckillGoods, Wrappers.<SeckillGoods>lambdaUpdate().eq(SeckillGoods::getGoodsId, goodsId));
         return update ? 1 : 0;
@@ -41,7 +40,6 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
         return Result.success(seckillGoodsPage);
     }
 
-    // TODO: 2022/7/12 库存减1
     private void reduceStockCount(Long goodsId, SeckillGoods seckillGoods) {
         Integer stockCount = redisUtils.get(SeckillGoodsKey.seckillCount, "" + goodsId, Integer.class);
         seckillGoods.setGoodsStock(stockCount);

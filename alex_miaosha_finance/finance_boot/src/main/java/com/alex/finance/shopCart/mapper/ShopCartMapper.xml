@@ -35,6 +35,27 @@
         t_shop_cart.operate_time,
         t_shop_cart.shop_id, t_shop_cart.user_id, t_shop_cart.customer_id, t_shop_cart.is_valid, t_shop_cart.sale_num
     </sql>
+    
+    <sql id="queryInfo">
+        <if test = "shopCartVo != null">
+          <if test = "shopCartVo.shopId != null">
+            and t_shop_cart.shop_id = #{shopCartVo.shopId}
+          </if>
+          <if test = "shopCartVo.userId != null">
+            and t_shop_cart.user_id = #{shopCartVo.userId}
+          </if>
+          <if test = "shopCartVo.customerId != null">
+            and t_shop_cart.customer_id = #{shopCartVo.customerId}
+          </if>
+          <if test = "shopCartVo.isValid != null">
+            and t_shop_cart.is_valid like concat('%', #{shopCartVo.isValid}, '%')
+          </if>
+          <if test = "shopCartVo.saleNum != null">
+            and t_shop_cart.sale_num = #{shopCartVo.saleNum}
+          </if>
+        </if>
+     </sql>
+
 
     <select id="getPage" resultType="com.alex.api.finance.shopCart.vo.ShopCartVo">
         select <include refid="Base_Column_List"/>from t_shop_cart
@@ -71,32 +92,12 @@
         on t_shop_cart.shop_id = t_shop_stock.id
         <where>
             t_shop_cart.is_delete = 0
-            <if test="ids != null">
+            <if test="ids != null and ids.size() > 0">
             and t_shop_cart.id in
-                <foreach collection="ids" item="id" open="(" close=")" separator=",">
-                    #{id}
+                <foreach collection="ids" item="cartId" open="(" close=")" separator=",">
+                    #{cartId}
                 </foreach>
            </if>
         </where>
     </select>
-
-     <sql id="queryInfo">
-        <if test = "shopCartVo != null">
-          <if test = "shopCartVo.shopId != null">
-            and t_shop_cart.shop_id = #{shopCartVo.shopId}
-          </if>
-          <if test = "shopCartVo.userId != null">
-            and t_shop_cart.user_id = #{shopCartVo.userId}
-          </if>
-          <if test = "shopCartVo.customerId != null">
-            and t_shop_cart.customer_id = #{shopCartVo.customerId}
-          </if>
-          <if test = "shopCartVo.isValid != null">
-            and t_shop_cart.is_valid like concat('%', #{shopCartVo.isValid}, '%')
-          </if>
-          <if test = "shopCartVo.saleNum != null">
-            and t_shop_cart.sale_num = #{shopCartVo.saleNum}
-          </if>
-        </if>
-     </sql>
-</mapper>
+  </mapper>

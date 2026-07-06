@@ -30,8 +30,6 @@ public class SeckillController {
 
     private final SeckillService seckillService;
 
-    // TODO: 2022/8/19 减库存 多久同步一回到数据库
-    // TODO: 2022/8/19 校验同一用户不能连续秒杀多次 
     @GetMapping
     @ApiOperation(value = "执行秒杀", notes = "执行秒杀")
     public Result<Integer> doSeckill(@ApiParam(value = "商品id", name = "goodsId", required = true) @RequestParam(value = "goodsId") Long goodsId,
@@ -46,7 +44,6 @@ public class SeckillController {
         return seckillService.seckillResult(goodsId, request);
     }
 
-    // TODO: 2022/7/15 测试一个id最多访问几回 
     @GetMapping(value = "getPath")
     @SeckillLimit(seconds = 5, maxCount = 10)
     @ApiOperation(value = "返回一个唯一的path的id", notes = "返回一个唯一的path的id")

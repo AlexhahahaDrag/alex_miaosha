@@ -98,7 +98,7 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        dictInfoMapper.deleteBatchIds(idArr);
+        dictInfoMapper.deleteByIds(idArr);
         initDictRedis();
         return true;
     }

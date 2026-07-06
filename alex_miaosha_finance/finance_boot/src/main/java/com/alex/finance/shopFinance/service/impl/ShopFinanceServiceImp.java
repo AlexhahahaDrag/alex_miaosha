@@ -60,7 +60,7 @@ public class ShopFinanceServiceImp extends ServiceImpl<ShopFinanceMapper, ShopFi
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopFinanceMapper.deleteBatchIds(idArr);
+        shopFinanceMapper.deleteByIds(idArr);
         return true;
     }
 }

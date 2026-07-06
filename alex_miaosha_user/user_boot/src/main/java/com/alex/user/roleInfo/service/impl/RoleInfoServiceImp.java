@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -102,7 +101,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        roleInfoMapper.deleteBatchIds(idArr);
+        roleInfoMapper.deleteByIds(idArr);
         return true;
     }
 

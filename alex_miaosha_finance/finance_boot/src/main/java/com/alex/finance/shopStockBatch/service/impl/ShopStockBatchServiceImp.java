@@ -71,7 +71,7 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopStockBatchMapper.deleteBatchIds(idArr);
+        shopStockBatchMapper.deleteByIds(idArr);
         return true;
     }
 

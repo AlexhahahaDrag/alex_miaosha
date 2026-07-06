@@ -14,8 +14,15 @@ import org.springframework.web.server.ServerWebExchange;
  * version:      1.0.0
  */
 @Component
-public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory {
+public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory<SwaggerHeaderFilter.Config> {
     private static final String HEADER_NAME = "X-Forwarded-Prefix";
+
+    public SwaggerHeaderFilter() {
+        super(Config.class);
+    }
+
+    public static class Config {
+    }
 
     /**
      * swagger2默认的url后缀
@@ -23,7 +30,7 @@ public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory {
     private static final String URI = "/v3/api-docs";
 
     @Override
-    public GatewayFilter apply(Object config) {
+    public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getURI().getPath();

@@ -1,6 +1,5 @@
 package com.alex.product.job;
 
-import com.alex.product.enums.SourceType;
 import com.alex.product.service.shopProduct.ShopProductService;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;

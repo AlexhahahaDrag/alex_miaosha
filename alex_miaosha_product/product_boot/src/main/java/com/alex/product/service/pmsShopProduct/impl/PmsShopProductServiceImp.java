@@ -66,7 +66,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsShopProductMapper.deleteBatchIds(idArr);
+        pmsShopProductMapper.deleteByIds(idArr);
         return true;
     }
 

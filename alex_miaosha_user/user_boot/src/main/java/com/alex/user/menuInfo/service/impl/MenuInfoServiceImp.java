@@ -148,7 +148,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        menuInfoMapper.deleteBatchIds(idArr);
+        menuInfoMapper.deleteByIds(idArr);
         clearMenuCache();
         return true;
     }

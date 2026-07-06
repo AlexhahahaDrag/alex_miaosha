@@ -16,7 +16,7 @@ import java.util.List;
 public interface GiftRelationInfoMapper extends BaseMapper<GiftRelationInfo> {
 
     @DataPermission(table = "gift_relation_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
-    Page<GiftRelationInfoVo> getPage(Page<GiftRelationInfoVo> page, @Param("query") GiftRelationQuery query);
+    Page<GiftRelationInfoVo> getPage(@Param("page") Page<GiftRelationInfoVo> page, @Param("query") GiftRelationQuery query);
 
     @DataPermission(table = "gift_relation_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<GiftRelationInfoVo> getList(@Param("query") GiftRelationQuery query);

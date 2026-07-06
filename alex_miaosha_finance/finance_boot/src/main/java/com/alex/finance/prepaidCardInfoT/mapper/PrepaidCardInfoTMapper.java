@@ -20,7 +20,7 @@ import java.util.List;
 public interface PrepaidCardInfoTMapper extends BaseMapper<PrepaidCardInfoT> {
 
     @DataPermission(table = "prepaid_card_info_t")
-    Page<PrepaidCardInfoTVo> getPage(Page<PrepaidCardInfoTVo> page, @Param("prepaidCardInfoTVo") PrepaidCardInfoTVo prepaidCardInfoTVo);
+    Page<PrepaidCardInfoTVo> getPage(@Param("page") Page<PrepaidCardInfoTVo> page, @Param("prepaidCardInfoTVo") PrepaidCardInfoTVo prepaidCardInfoTVo);
 
     List<PrepaidCardInfoTVo> getList(@Param("prepaidCardInfoTVo") PrepaidCardInfoTVo prepaidCardInfoTVo);
 

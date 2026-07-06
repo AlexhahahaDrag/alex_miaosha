@@ -196,7 +196,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        prepaidCardInfoTMapper.deleteBatchIds(idArr);
+        prepaidCardInfoTMapper.deleteByIds(idArr);
         return true;
     }
 

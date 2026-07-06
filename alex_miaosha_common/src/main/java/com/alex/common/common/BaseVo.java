@@ -7,12 +7,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BaseVo<T extends Model<T>> extends Model<T> implements Serializable {
+public class BaseVo<T extends Model<T>> extends Model<T> {
 
     @ApiModelProperty(value = "id")
     @JsonSerialize(using = Long2StringSerializer.class)

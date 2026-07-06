@@ -101,7 +101,7 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsBrandMapper.deleteBatchIds(idArr);
+        pmsBrandMapper.deleteByIds(idArr);
         return true;
     }
 

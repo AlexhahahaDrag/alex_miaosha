@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
@@ -65,13 +66,11 @@ public class WebSecurityConfig {
 
         return http
                 // 基于 token，不需要 csrf
-                .csrf()
-                .disable()
+                .csrf(AbstractHttpConfigurer::disable)
                 // 基于 token，不需要 session
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests((authorize) -> authorize
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
                         // AI Agent：安全加固：显式拒绝 /null/** 路径，防止 CVE-2025-22235 风险
                         // 说明：当 EndpointRequest.to() 引用的端点被禁用时，可能创建 null/** 匹配器，需要显式拒绝
                         .antMatchers("/null/**")

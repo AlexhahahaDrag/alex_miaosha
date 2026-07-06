@@ -18,6 +18,9 @@ import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.relation.entity.GiftRelationInfo;
 import com.alex.finance.gift.relation.service.impl.GiftRelationInfoServiceImp;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -93,7 +96,10 @@ class GiftOwnershipTest {
         private GiftPersonInfo saved;
 
         private TestPersonService(UserUtils userUtils) {
-            super(new GiftDataScopeSupport(userUtils));
+            super(
+                    new GiftDataScopeSupport(userUtils),
+                    mock(GiftPersonRelationOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override
@@ -123,7 +129,10 @@ class GiftOwnershipTest {
         private GiftEventInfo saved;
 
         private TestEventService(UserUtils userUtils) {
-            super(new GiftDataScopeSupport(userUtils));
+            super(
+                    new GiftDataScopeSupport(userUtils),
+                    mock(GiftEventTypeOptionService.class),
+                    mock(GiftRecordInfoService.class));
         }
 
         @Override

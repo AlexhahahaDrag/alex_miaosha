@@ -18,7 +18,7 @@ import com.alex.api.user.annotation.DataPermission;
 public interface ShopOrderDetailMapper extends BaseMapper<ShopOrderDetail> {
 
     @DataPermission(table = "t_shop_order_detail")
-    Page<ShopOrderDetailVo> getPage(Page<ShopOrderDetailVo> page, @Param("shopOrderDetailVo") ShopOrderDetailVo shopOrderDetailVo);
+    Page<ShopOrderDetailVo> getPage(@Param("page") Page<ShopOrderDetailVo> page, @Param("shopOrderDetailVo") ShopOrderDetailVo shopOrderDetailVo);
 
     ShopOrderDetailVo queryShopOrderDetail(@Param("id") Long id);
 }

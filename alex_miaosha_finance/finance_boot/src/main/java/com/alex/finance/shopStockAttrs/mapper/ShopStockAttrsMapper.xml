@@ -36,24 +36,7 @@
         t_shop_stock_attrs.operate_time,
         t_shop_stock_attrs.stock_id, t_shop_stock_attrs.attr_code, t_shop_stock_attrs.attr_name, t_shop_stock_attrs.attr_value, t_shop_stock_attrs.is_valid, t_shop_stock_attrs.`description`
     </sql>
-
-    <select id="getPage" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
-        select <include refid="Base_Column_List"/>from t_shop_stock_attrs
-        <where>
-            t_shop_stock_attrs.is_delete = 0
-            <include refid="queryInfo"/>
-        </where>
-    </select>
-
-    <select id="queryShopStockAttrs" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
-        select <include refid="Base_Column_List"/> from t_shop_stock_attrs
-        <where>
-            t_shop_stock_attrs.id = #{id}
-            and t_shop_stock_attrs.is_delete = 0
-        </where>
-    </select>
-
-     <sql id="queryInfo">
+    <sql id="queryInfo">
         <if test = "shopStockAttrsVo != null">
           <if test = "shopStockAttrsVo.stockId != null">
             and t_shop_stock_attrs.stock_id = #{shopStockAttrsVo.stockId}
@@ -75,4 +58,20 @@
           </if>
         </if>
      </sql>
-</mapper>
+
+
+    <select id="getPage" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
+        select <include refid="Base_Column_List"/>from t_shop_stock_attrs
+        <where>
+            t_shop_stock_attrs.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopStockAttrs" resultType="com.alex.api.finance.shopStockAttrs.vo.ShopStockAttrsVo">
+        select <include refid="Base_Column_List"/> from t_shop_stock_attrs
+        <where>
+            t_shop_stock_attrs.id = #{id}
+            and t_shop_stock_attrs.is_delete = 0
+        </where>
+    </select></mapper>

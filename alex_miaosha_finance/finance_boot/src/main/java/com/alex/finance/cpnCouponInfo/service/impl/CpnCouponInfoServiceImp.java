@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -88,7 +87,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        cpnCouponInfoMapper.deleteBatchIds(idArr);
+        cpnCouponInfoMapper.deleteByIds(idArr);
         return true;
     }
 

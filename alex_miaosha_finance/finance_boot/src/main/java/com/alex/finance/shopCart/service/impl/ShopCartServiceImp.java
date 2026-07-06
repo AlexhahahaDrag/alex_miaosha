@@ -72,7 +72,7 @@ public class ShopCartServiceImp extends ServiceImpl<ShopCartMapper, ShopCart> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopCartMapper.deleteBatchIds(idArr);
+        shopCartMapper.deleteByIds(idArr);
         return true;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
  *createDate:   2022/7/15 9:53
  *version:      1.0.0
  */
-// TODO: 2022/7/15 判断效果与aspect是否一致
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -19,7 +18,6 @@ public class SeckillInterceptor {
 //
 //    private final RedisUtils redisUtils;
 //
-//    // TODO: 2022/7/15 测试访问限制
 //    @Override
 //    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 //        if (handler instanceof HandlerMethod) {
@@ -30,7 +28,6 @@ public class SeckillInterceptor {
 //            }
 //            int seconds = seckillLimit.seconds();
 //            int maxCount = seckillLimit.maxCount();
-//            // TODO: 2022/7/15 获取真正ip
 //            String requestURI = request.getRequestURI();
 //            AccessKey accessKey = AccessKey.withExpire;
 //            //当前获取指定url的访问次数

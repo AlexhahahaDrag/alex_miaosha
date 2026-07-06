@@ -48,9 +48,13 @@ public class GlobalConfig {
         return this.outputDir;
     }
 
-    /** @deprecated */
+    /** @deprecated use {@link #isOverrideExistingFiles()} */
     @Deprecated
     public boolean isFileOverride() {
+        return this.isOverrideExistingFiles();
+    }
+
+    public boolean isOverrideExistingFiles() {
         return this.fileOverride;
     }
 

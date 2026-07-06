@@ -60,7 +60,7 @@ public class PmsSkuInfoServiceImp extends ServiceImpl<PmsSkuInfoMapper, PmsSkuIn
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsSkuInfoMapper.deleteBatchIds(idArr);
+        pmsSkuInfoMapper.deleteByIds(idArr);
         return true;
     }
 }

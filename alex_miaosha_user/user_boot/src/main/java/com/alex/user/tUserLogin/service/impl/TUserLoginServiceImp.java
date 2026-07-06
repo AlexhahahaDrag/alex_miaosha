@@ -60,7 +60,7 @@ public class TUserLoginServiceImp extends ServiceImpl<TUserLoginMapper, TUserLog
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        tUserLoginMapper.deleteBatchIds(idArr);
+        tUserLoginMapper.deleteByIds(idArr);
         return true;
     }
 }

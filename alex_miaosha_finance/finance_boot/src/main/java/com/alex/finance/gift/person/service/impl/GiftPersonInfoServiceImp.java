@@ -20,7 +20,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,8 +37,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonRelationOptionService giftPersonRelationOptionService;
 
-    @Autowired(required = false)
-    private GiftRecordInfoService giftRecordInfoService;
+    private final GiftRecordInfoService giftRecordInfoService;
 
     @Override
     public Page<GiftPersonInfoVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query) {

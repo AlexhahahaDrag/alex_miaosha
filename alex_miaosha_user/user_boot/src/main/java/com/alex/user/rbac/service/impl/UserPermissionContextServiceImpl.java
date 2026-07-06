@@ -39,18 +39,18 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
     private final RoleUserInfoService roleUserInfoService;
     private final MenuInfoService menuInfoService;
     private final Executor asyncTaskExecutor;
-
-    @Autowired(required = false)
-    private RedisUtils redisUtils;
+    private final RedisUtils redisUtils;
 
     public UserPermissionContextServiceImpl(OrgUserInfoService orgUserInfoService,
                                             RoleUserInfoService roleUserInfoService,
                                             MenuInfoService menuInfoService,
-                                            @Qualifier("asyncTaskExecutor") Executor asyncTaskExecutor) {
+                                            @Qualifier("asyncTaskExecutor") Executor asyncTaskExecutor,
+                                            @Autowired(required = false) RedisUtils redisUtils) {
         this.orgUserInfoService = orgUserInfoService;
         this.roleUserInfoService = roleUserInfoService;
         this.menuInfoService = menuInfoService;
         this.asyncTaskExecutor = asyncTaskExecutor;
+        this.redisUtils = redisUtils;
     }
 
     @Override

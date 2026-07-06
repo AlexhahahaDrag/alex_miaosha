@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -115,7 +114,7 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopStockMapper.deleteBatchIds(idArr);
+        shopStockMapper.deleteByIds(idArr);
         return true;
     }
 

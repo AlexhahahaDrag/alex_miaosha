@@ -96,7 +96,12 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (StringUtils.isEmpty(ids)) {
             return true;
         }
-        financeInfoMapper.deleteBatchIds(Arrays.asList(ids.split(",")));
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::valueOf)
+                .toList();
+        financeInfoMapper.deleteByIds(idList);
         return true;
     }
 

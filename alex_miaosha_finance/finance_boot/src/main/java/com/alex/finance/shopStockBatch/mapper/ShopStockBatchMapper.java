@@ -20,12 +20,12 @@ import java.util.List;
 public interface ShopStockBatchMapper extends BaseMapper<ShopStockBatch> {
 
     @DataPermission(table = "t_shop_stock_batch")
-    Page<ShopStockBatchVo> getPage(Page<ShopStockBatchVo> page, @Param("shopStockBatchVo") ShopStockBatchVo shopStockBatchVo);
+    Page<ShopStockBatchVo> getPage(@Param("page") Page<ShopStockBatchVo> page, @Param("shopStockBatchVo") ShopStockBatchVo shopStockBatchVo);
 
     ShopStockBatchVo queryShopStockBatch(@Param("id") Long id);
 
     @DataPermission(table = "t_shop_stock_batch")
-    Long countByBatchCode(@Param("batchCode") String batchCode, @Param("id") Long id);
+    Long countByBatchCode(@Param("batchCode") String batchCode, @Param("excludeId") Long excludeId);
 
     @DataPermission(table = "t_shop_stock_batch")
     List<ShopStockBatchVo> getList(@Param("shopStockBatchVo") ShopStockBatchVo shopStockBatchVo);

@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Collection;
  *createDate:   2021/7/25 14:23
  *version:      1.0.0
  */
-public class SecurityUser implements UserDetails, Serializable {
+public class SecurityUser implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;

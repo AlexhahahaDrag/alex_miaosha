@@ -19,7 +19,7 @@ import java.util.List;
 @Mapper
 public interface AccountRecordInfoMapper extends BaseMapper<AccountRecordInfo> {
 
-    Page<AccountRecordInfoVo> getPage(Page<AccountRecordInfoVo> page, @Param("accountRecordInfoVo") AccountRecordInfoVo accountRecordInfoVo);
+    Page<AccountRecordInfoVo> getPage(@Param("page") Page<AccountRecordInfoVo> page, @Param("accountRecordInfoVo") AccountRecordInfoVo accountRecordInfoVo);
 
     AccountRecordInfoVo queryAccountRecordInfo(@Param("id") String id);
 

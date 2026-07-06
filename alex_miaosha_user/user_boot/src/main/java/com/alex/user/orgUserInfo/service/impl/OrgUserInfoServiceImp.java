@@ -70,7 +70,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        orgUserInfoMapper.deleteBatchIds(idArr);
+        orgUserInfoMapper.deleteByIds(idArr);
         return true;
     }
 

@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * <p>
  *
@@ -128,7 +126,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        fileInfoMapper.deleteBatchIds(idArr);
+        fileInfoMapper.deleteByIds(idArr);
         return true;
     }
 

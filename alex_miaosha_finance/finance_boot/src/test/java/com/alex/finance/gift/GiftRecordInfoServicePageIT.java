@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -39,6 +40,9 @@ class GiftRecordInfoServicePageIT {
     @Mock
     private UserUtils userUtils;
 
+    @Captor
+    private ArgumentCaptor<Page<GiftRecordInfoVo>> pageCaptor;
+
     private GiftRecordInfoServiceImp service;
 
     @BeforeEach
@@ -59,7 +63,6 @@ class GiftRecordInfoServicePageIT {
 
         Page<GiftRecordInfoVo> actual = service.getPage(1L, 10L, query);
 
-        ArgumentCaptor<Page<GiftRecordInfoVo>> pageCaptor = ArgumentCaptor.forClass(Page.class);
         verify(giftRecordInfoMapper).getPage(pageCaptor.capture(), eq(query));
         assertEquals(1L, pageCaptor.getValue().getCurrent());
         assertEquals(10L, pageCaptor.getValue().getSize());

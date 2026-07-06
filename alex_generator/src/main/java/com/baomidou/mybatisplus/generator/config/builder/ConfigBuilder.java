@@ -5,7 +5,7 @@
 
 package com.baomidou.mybatisplus.generator.config.builder;
 
-import com.baomidou.mybatisplus.generator.IDatabaseQuery;
+import com.baomidou.mybatisplus.generator.query.DefaultQuery;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 public class ConfigBuilder {
     private final TemplateConfig templateConfig;
-    private final List<TableInfo> tableInfoList = new ArrayList();
-    private final Map<OutputFile, String> pathInfo = new HashMap();
+    private final List<TableInfo> tableInfoList = new ArrayList<>();
+    private final Map<OutputFile, String> pathInfo = new HashMap<>();
     private StrategyConfig strategyConfig;
     private GlobalConfig globalConfig;
     private InjectionConfig injectionConfig;
@@ -69,7 +69,7 @@ public class ConfigBuilder {
     @NotNull
     public List<TableInfo> getTableInfoList() {
         if (this.tableInfoList.isEmpty()) {
-            List<TableInfo> tableInfos = (new IDatabaseQuery.DefaultDatabaseQuery(this)).queryTables();
+            List<TableInfo> tableInfos = new DefaultQuery(this).queryTables();
             if (!tableInfos.isEmpty()) {
                 this.tableInfoList.addAll(tableInfos);
             }

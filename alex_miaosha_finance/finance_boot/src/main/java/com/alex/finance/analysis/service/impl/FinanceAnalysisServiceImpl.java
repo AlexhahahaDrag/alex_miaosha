@@ -106,7 +106,7 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
             return current.compareTo(BigDecimal.ZERO) == 0 ? "0.0%" : (current.compareTo(BigDecimal.ZERO) > 0 ? "+100%" : "-100%");
         }
         BigDecimal change = current.subtract(previous);
-        BigDecimal trend = change.divide(previous.abs(), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal trend = change.divide(previous.abs(), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         String prefix = trend.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "";
         return prefix + trend.setScale(1, RoundingMode.HALF_UP) + "%";
     }

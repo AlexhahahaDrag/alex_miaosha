@@ -7,11 +7,8 @@ package com.baomidou.mybatisplus.generator.config;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TemplateConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TemplateConfig.class);
     private String entity;
     private String entityKt;
     private String controller;
@@ -64,13 +61,6 @@ public class TemplateConfig {
         this.mobileDetailTs = "/templates/mobile/mobile.detail.ts";
         this.mobileTsTs = "/templates/mobile/mobile.ts.ts";
         this.clientFallbackFactory = "/templates/feignClientFallbackFactory.java";
-    }
-
-    private void logger(String value, TemplateType templateType) {
-        if (StringUtils.isBlank(value)) {
-            LOGGER.warn("推荐使用disable(TemplateType.{})方法进行默认模板禁用.", templateType.name());
-        }
-
     }
 
     public String getEntity(boolean kotlin) {

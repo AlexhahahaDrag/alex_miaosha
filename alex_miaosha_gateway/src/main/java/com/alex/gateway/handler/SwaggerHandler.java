@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import springfox.documentation.swagger.web.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -62,7 +63,7 @@ public class SwaggerHandler {
      * Swagger资源配置，微服务中这各个服务的api-docs信息
      */
     @GetMapping()
-    public Mono<ResponseEntity> swaggerResources() {
+    public Mono<ResponseEntity<List<SwaggerResource>>> swaggerResources() {
         return Mono.just((new ResponseEntity<>(swaggerResources.get(), HttpStatus.OK)));
     }
 }

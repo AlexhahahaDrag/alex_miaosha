@@ -12,20 +12,22 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * <p>
- * description:  权限信息表服务实现类
- * author:       majf
- * createDate:   2024-01-16 15:43:56
- * version:      1.0.0
+ * description: 权限信息表服务实现类
+ * author: majf
+ * createDate: 2024-01-16 15:43:56
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
-public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, PermissionInfo> implements PermissionInfoService {
+public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, PermissionInfo>
+        implements PermissionInfoService {
 
     private final PermissionInfoMapper permissionInfoMapper;
 
@@ -60,11 +62,11 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
 
     @Override
     public Boolean deletePermissionInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        permissionInfoMapper.deleteBatchIds(idArr);
+        permissionInfoMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -72,7 +74,7 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     public List<PermissionInfoVo> getList(PermissionInfoVo permissionInfoVo) {
         List<PermissionInfoVo> list = permissionInfoMapper.getList(permissionInfoVo);
         if (list == null || list.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
         Map<Long, List<PermissionInfoVo>> menuMap = list.stream()
                 .filter(item -> item.getParentId() != null)
