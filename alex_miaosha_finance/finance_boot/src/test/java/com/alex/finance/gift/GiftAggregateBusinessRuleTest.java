@@ -10,7 +10,9 @@ import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
+import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
@@ -125,7 +127,9 @@ class GiftAggregateBusinessRuleTest {
             super(
                     new GiftDataScopeSupport(mock(UserUtils.class)),
                     mock(GiftPersonRelationOptionService.class),
-                    mock(GiftRecordInfoService.class));
+                    mock(GiftRecordInfoService.class),
+                    mock(OrgUserInfoApi.class),
+                    mock(UserApi.class));
         }
 
         @Override

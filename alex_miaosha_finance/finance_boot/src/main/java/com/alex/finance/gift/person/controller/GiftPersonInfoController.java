@@ -87,6 +87,14 @@ public class GiftPersonInfoController {
         return Result.success(giftPersonRelationOptionService.listRelationOptions(personId));
     }
 
+    @ApiOperationSupport(order = 18, author = "alex")
+    @ApiOperation(value = "家庭组成员下拉（含 shadow person 懒加载）", response = Result.class)
+    @GetMapping(value = "/org-member-options")
+    public Result<List<GiftPersonInfoVo>> orgMemberOptions(
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        return Result.success(giftPersonInfoService.listOrgMemberOptions(keyword));
+    }
+
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "礼金往来人详情", response = Result.class)
     @GetMapping

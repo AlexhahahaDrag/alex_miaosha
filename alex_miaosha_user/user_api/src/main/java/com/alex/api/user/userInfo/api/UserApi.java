@@ -25,6 +25,9 @@ public interface UserApi {
     @PostMapping(value = "list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
+    @GetMapping
+    Result<TUserVo> queryUser(@RequestParam(value = "id") String id);
+
     @GetMapping(value = "getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 

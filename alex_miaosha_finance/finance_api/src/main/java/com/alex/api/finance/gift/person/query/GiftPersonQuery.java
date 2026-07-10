@@ -19,4 +19,7 @@ public class GiftPersonQuery implements Serializable {
 
     @ApiModelProperty(value = "relation type")
     private String relationType;
+
+    @ApiModelProperty(value = "person scope: CONTACT | ORG_MEMBER | ALL")
+    private String personScope;
 }

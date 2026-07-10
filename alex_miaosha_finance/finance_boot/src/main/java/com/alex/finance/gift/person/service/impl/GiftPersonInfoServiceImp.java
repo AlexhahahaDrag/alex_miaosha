@@ -8,7 +8,11 @@ import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
+import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
+import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.base.common.Result;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
@@ -18,6 +22,7 @@ import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -27,7 +32,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +43,9 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonRelationOptionService giftPersonRelationOptionService;
-
     private final GiftRecordInfoService giftRecordInfoService;
+    private final OrgUserInfoApi orgUserInfoApi;
+    private final UserApi userApi;
 
     @Override
     public Page<GiftPersonInfoVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
@@ -142,6 +150,97 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
             giftDataScopeSupport.assertPersonAccessible(getById(id));
         }
         return removeBatchByIds(idList);
+    }
+
+    @Override
+    public List<GiftPersonInfoVo> listOrgMemberOptions(String keyword) {
+        TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+        Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
+        List<Long> memberUserIds = resolveOrgMemberUserIds(loginUser, orgId);
+        return memberUserIds.stream()
+                .map(userId -> ensureOrgMemberPerson(orgId, userId, loginUser))
+                .filter(Objects::nonNull)
+                .filter(vo -> matchesKeyword(vo, keyword))
+                .sorted(Comparator.comparing(GiftPersonInfoVo::getPersonName,
+                        Comparator.nullsLast(String::compareToIgnoreCase)))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> resolveOrgMemberUserIds(TUserVo loginUser, Long orgId) {
+        if (orgId == null) {
+            return List.of(loginUser.getId());
+        }
+        if (giftDataScopeSupport.isSuper(loginUser) || giftDataScopeSupport.isAdmin(loginUser)) {
+            OrgUserInfoVo query = new OrgUserInfoVo();
+            query.setOrgId(String.valueOf(orgId));
+            query.setStatus("1");
+            Result<Page<OrgUserInfoVo>> result =
+                    orgUserInfoApi.getOrgUserInfoPage(1L, 500L, query);
+            if (result == null || result.getData() == null || result.getData().getRecords() == null) {
+                return List.of(loginUser.getId());
+            }
+            return result.getData().getRecords().stream()
+                    .map(OrgUserInfoVo::getUserId)
+                    .filter(StringUtils::hasText)
+                    .map(Long::valueOf)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return List.of(loginUser.getId());
+    }
+
+    private GiftPersonInfoVo ensureOrgMemberPerson(Long orgId, Long bindUserId, TUserVo loginUser) {
+        GiftPersonInfo existing = findOrgMemberPerson(orgId, bindUserId);
+        if (existing != null) {
+            return toVo(existing);
+        }
+        GiftPersonInfo entity = new GiftPersonInfo();
+        entity.setOrgId(orgId);
+        entity.setUserId(bindUserId);
+        entity.setBindUserId(bindUserId);
+        entity.setPersonName(resolveMemberDisplayName(bindUserId, loginUser));
+        save(entity);
+        return toVo(entity);
+    }
+
+    private GiftPersonInfo findOrgMemberPerson(Long orgId, Long bindUserId) {
+        return getOne(Wrappers.<GiftPersonInfo>lambdaQuery()
+                .eq(GiftPersonInfo::getIsDelete, 0)
+                .eq(GiftPersonInfo::getBindUserId, bindUserId)
+                .eq(orgId != null, GiftPersonInfo::getOrgId, orgId)
+                .isNull(orgId == null, GiftPersonInfo::getOrgId)
+                .last("LIMIT 1"));
+    }
+
+    private String resolveMemberDisplayName(Long bindUserId, TUserVo loginUser) {
+        if (bindUserId != null && bindUserId.equals(loginUser.getId())) {
+            if (StringUtils.hasText(loginUser.getNickName())) {
+                return loginUser.getNickName();
+            }
+            if (StringUtils.hasText(loginUser.getUsername())) {
+                return loginUser.getUsername();
+            }
+        }
+        Result<TUserVo> userResult = userApi.queryUser(String.valueOf(bindUserId));
+        if (userResult != null && userResult.getData() != null) {
+            TUserVo user = userResult.getData();
+            if (StringUtils.hasText(user.getNickName())) {
+                return user.getNickName();
+            }
+            if (StringUtils.hasText(user.getUsername())) {
+                return user.getUsername();
+            }
+        }
+        return "家庭成员";
+    }
+
+    private boolean matchesKeyword(GiftPersonInfoVo vo, String keyword) {
+        if (!StringUtils.hasText(keyword)) {
+            return true;
+        }
+        String text = keyword.trim();
+        return (vo.getPersonName() != null && vo.getPersonName().contains(text))
+                || (vo.getPhone() != null && vo.getPhone().contains(text));
     }
 
     protected List<GiftRecordInfoVo> listGiftRecordsForAggregate() {

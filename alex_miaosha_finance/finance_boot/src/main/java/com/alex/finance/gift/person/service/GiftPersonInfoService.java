@@ -30,4 +30,6 @@ public interface GiftPersonInfoService extends IService<GiftPersonInfo> {
     Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo);
 
     Boolean deleteGiftPersonInfo(String ids);
+
+    List<GiftPersonInfoVo> listOrgMemberOptions(String keyword);
 }

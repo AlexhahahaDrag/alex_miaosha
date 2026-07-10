@@ -17,6 +17,12 @@
             <if test="query.relationType != null and query.relationType != ''">
                 AND p.relation_type = #{query.relationType}
             </if>
+            <if test="query.personScope == 'CONTACT'">
+                AND p.bind_user_id IS NULL
+            </if>
+            <if test="query.personScope == 'ORG_MEMBER'">
+                AND p.bind_user_id IS NOT NULL
+            </if>
         </if>
     </sql>
 
