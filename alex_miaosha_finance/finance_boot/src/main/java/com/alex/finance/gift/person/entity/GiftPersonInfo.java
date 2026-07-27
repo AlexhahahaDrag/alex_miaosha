@@ -1,6 +1,7 @@
 package com.alex.finance.gift.person.entity;
 
 import com.alex.common.common.BaseEntity;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -42,7 +43,7 @@ public class GiftPersonInfo extends BaseEntity<GiftPersonInfo> {
     private String phone;
 
     @ApiModelProperty(value = "头像 OSS 文件ID")
-    @TableField("avatar")
+    @TableField(value = "avatar", updateStrategy = FieldStrategy.ALWAYS)
     private Long avatar;
 
     @ApiModelProperty(value = "关系类型")
