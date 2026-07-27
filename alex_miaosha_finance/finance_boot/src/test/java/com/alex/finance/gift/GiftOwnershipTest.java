@@ -8,6 +8,7 @@ import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.api.UserApi;
+import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
@@ -103,7 +104,8 @@ class GiftOwnershipTest {
                     mock(GiftPersonRelationOptionService.class),
                     mock(GiftRecordInfoService.class),
                     mock(OrgUserInfoApi.class),
-                    mock(UserApi.class));
+                    mock(UserApi.class),
+                    mock(OssApi.class));
         }
 
         @Override

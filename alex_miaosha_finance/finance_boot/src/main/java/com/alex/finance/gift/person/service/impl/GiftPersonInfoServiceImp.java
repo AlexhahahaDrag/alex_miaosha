@@ -7,12 +7,15 @@ import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
+import com.alex.api.oss.fileInfo.api.OssApi;
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.base.constants.SysConf;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
@@ -24,20 +27,24 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, GiftPersonInfo>
         implements GiftPersonInfoService {
 
@@ -46,17 +53,22 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     private final GiftRecordInfoService giftRecordInfoService;
     private final OrgUserInfoApi orgUserInfoApi;
     private final UserApi userApi;
+    private final OssApi ossApi;
 
     @Override
     public Page<GiftPersonInfoVo> getPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
-        return getBaseMapper().getPage(
+        Page<GiftPersonInfoVo> page = getBaseMapper().getPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
+        fillAvatarUrls(page.getRecords());
+        return page;
     }
 
     @Override
     public List<GiftPersonInfoVo> getList(GiftPersonQuery query) {
-        return getBaseMapper().getList(query);
+        List<GiftPersonInfoVo> list = getBaseMapper().getList(query);
+        fillAvatarUrls(list);
+        return list;
     }
 
     @Override
@@ -79,9 +91,11 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
     @Override
     public Page<GiftPersonBusinessVo> getBusinessPage(Long pageNum, Long pageSize, GiftPersonQuery query) {
-        return getBaseMapper().getBusinessPage(
+        Page<GiftPersonBusinessVo> page = getBaseMapper().getBusinessPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
+        fillAvatarUrls(page.getRecords());
+        return page;
     }
 
     @Override
@@ -333,6 +347,61 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         }
         GiftPersonInfoVo vo = new GiftPersonInfoVo();
         BeanUtils.copyProperties(entity, vo);
-        return enrichRelationOption(vo);
+        GiftPersonInfoVo enriched = enrichRelationOption(vo);
+        fillAvatarUrls(enriched);
+        return enriched;
+    }
+
+    private void fillAvatarUrls(GiftPersonInfoVo vo) {
+        if (vo == null || vo.getAvatar() == null) {
+            return;
+        }
+        try {
+            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(List.of(vo.getAvatar()));
+            if (fileInfo != null
+                    && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode())
+                    && fileInfo.getData() != null
+                    && !fileInfo.getData().isEmpty()) {
+                FileInfoVo file = fileInfo.getData().get(0);
+                vo.setAvatarUrl(file.getPreUrl());
+                vo.setAvatarThumbnailUrl(file.getPreThumbnailUrl());
+            }
+        } catch (Exception e) {
+            log.error("获取亲友头像文件错误：{}", e.getMessage());
+        }
+    }
+
+    private void fillAvatarUrls(Collection<? extends GiftPersonInfoVo> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        List<Long> fileIdList = records.stream()
+                .map(GiftPersonInfoVo::getAvatar)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (fileIdList.isEmpty()) {
+            return;
+        }
+        try {
+            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+            if (result != null
+                    && SysConf.RESULT_SUCCESS.equals(result.getCode())
+                    && result.getData() != null
+                    && !result.getData().isEmpty()) {
+                Map<Long, List<FileInfoVo>> fileMap = result.getData().stream()
+                        .collect(Collectors.groupingBy(FileInfoVo::getId));
+                records.forEach(item -> {
+                    List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
+                    if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
+                        FileInfoVo fileInfoVo = fileInfoVos.get(0);
+                        item.setAvatarUrl(fileInfoVo.getPreUrl());
+                        item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
+                    }
+                });
+            }
+        } catch (Exception e) {
+            log.error("批量获取亲友头像失败！", e);
+        }
     }
 }

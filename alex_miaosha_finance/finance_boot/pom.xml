@@ -51,6 +51,11 @@
 
         <dependency>
             <groupId>com.alex</groupId>
+            <artifactId>oss_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
             <artifactId>finance_api</artifactId>
         </dependency>
 

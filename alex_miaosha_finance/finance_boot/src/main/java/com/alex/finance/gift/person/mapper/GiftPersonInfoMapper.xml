@@ -33,6 +33,7 @@
         p.bind_user_id,
         p.person_name,
         p.phone,
+        p.avatar,
         p.relation_type,
         p.remark,
         p.create_time,
