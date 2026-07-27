@@ -1,5 +1,6 @@
 package com.alex.api.finance.gift.person.vo;
 
+import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -37,11 +38,9 @@ public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
     @ApiModelProperty(value = "avatar file id")
     private Long avatar;
 
-    @ApiModelProperty(value = "avatar url")
-    private String avatarUrl;
-
-    @ApiModelProperty(value = "avatar thumbnail url")
-    private String avatarThumbnailUrl;
+    /** 只读：OSS 回填，勿写回 entity */
+    @ApiModelProperty(value = "avatar file info")
+    private FileInfoVo fileInfoVo;
 
     @ApiModelProperty(value = "relation type")
     private String relationType;

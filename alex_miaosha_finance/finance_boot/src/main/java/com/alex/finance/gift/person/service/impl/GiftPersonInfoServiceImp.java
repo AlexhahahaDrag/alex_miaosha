@@ -362,9 +362,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode())
                     && fileInfo.getData() != null
                     && !fileInfo.getData().isEmpty()) {
-                FileInfoVo file = fileInfo.getData().get(0);
-                vo.setAvatarUrl(file.getPreUrl());
-                vo.setAvatarThumbnailUrl(file.getPreThumbnailUrl());
+                vo.setFileInfoVo(fileInfo.getData().get(0));
             }
         } catch (Exception e) {
             log.error("获取亲友头像文件错误：{}", e.getMessage());
@@ -394,9 +392,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 records.forEach(item -> {
                     List<FileInfoVo> fileInfoVos = fileMap.get(item.getAvatar());
                     if (fileInfoVos != null && !fileInfoVos.isEmpty()) {
-                        FileInfoVo fileInfoVo = fileInfoVos.get(0);
-                        item.setAvatarUrl(fileInfoVo.getPreUrl());
-                        item.setAvatarThumbnailUrl(fileInfoVo.getPreThumbnailUrl());
+                        item.setFileInfoVo(fileInfoVos.get(0));
                     }
                 });
             }

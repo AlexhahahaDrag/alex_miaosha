@@ -37,12 +37,13 @@ class GiftPersonAvatarFillTest {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setAvatar(100L);
         ReflectionTestUtils.invokeMethod(service, "fillAvatarUrls", vo);
 
-        assertEquals("https://cdn.example/avatar.png", vo.getAvatarUrl());
-        assertEquals("https://cdn.example/avatar-thumb.png", vo.getAvatarThumbnailUrl());
+        assertEquals(file, vo.getFileInfoVo());
+        assertEquals("https://cdn.example/avatar.png", vo.getFileInfoVo().getPreUrl());
+        assertEquals("https://cdn.example/avatar-thumb.png", vo.getFileInfoVo().getPreThumbnailUrl());
     }
 
     @Test
-    void fillAvatarUrls_swallowsOssFailureAndLeavesUrlsNull() {
+    void fillAvatarUrls_swallowsOssFailureAndLeavesFileInfoNull() {
         OssApi ossApi = mock(OssApi.class);
         GiftPersonInfoServiceImp service = newService(ossApi);
         when(ossApi.getFileInfo(anyList())).thenThrow(new RuntimeException("oss down"));
@@ -50,8 +51,7 @@ class GiftPersonAvatarFillTest {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setAvatar(200L);
         ReflectionTestUtils.invokeMethod(service, "fillAvatarUrls", vo);
 
-        assertNull(vo.getAvatarUrl());
-        assertNull(vo.getAvatarThumbnailUrl());
+        assertNull(vo.getFileInfoVo());
         assertEquals(200L, vo.getAvatar());
     }
 
