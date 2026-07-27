@@ -24,6 +24,8 @@ logging:
 
 xxl:
   job:
+    # 本地/开发环境关闭，避免连不上 admin 持续刷 Connect timed out
+    enabled: false
     executor:
       appName: xxl-finance-dev
       logRetentionDays: 30
