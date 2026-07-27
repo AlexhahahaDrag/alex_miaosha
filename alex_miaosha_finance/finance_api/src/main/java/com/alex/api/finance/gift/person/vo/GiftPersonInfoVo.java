@@ -33,6 +33,16 @@ public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
     @ApiModelProperty(value = "phone")
     private String phone;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "avatar file id")
+    private Long avatar;
+
+    @ApiModelProperty(value = "avatar url")
+    private String avatarUrl;
+
+    @ApiModelProperty(value = "avatar thumbnail url")
+    private String avatarThumbnailUrl;
+
     @ApiModelProperty(value = "relation type")
     private String relationType;
 

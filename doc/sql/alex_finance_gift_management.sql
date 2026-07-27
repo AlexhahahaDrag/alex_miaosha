@@ -29,6 +29,7 @@ CREATE TABLE `alex_finance`.`gift_person_info_t` (
   `bind_user_id` bigint NULL DEFAULT NULL COMMENT '绑定系统用户ID',
   `person_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '人员姓名',
   `phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '手机号',
+  `avatar` bigint NULL DEFAULT NULL COMMENT '头像 OSS 文件ID',
   `relation_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '关系类型',
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '备注',
   `creator` bigint NULL DEFAULT NULL COMMENT '创建人',

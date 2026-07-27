@@ -41,6 +41,10 @@ public class GiftPersonInfo extends BaseEntity<GiftPersonInfo> {
     @TableField("phone")
     private String phone;
 
+    @ApiModelProperty(value = "头像 OSS 文件ID")
+    @TableField("avatar")
+    private Long avatar;
+
     @ApiModelProperty(value = "关系类型")
     @TableField("relation_type")
     private String relationType;
