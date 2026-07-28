@@ -84,8 +84,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         FileInfo fileInfo = new FileInfo();
         BeanUtils.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
-        BeanUtils.copyProperties(fileInfo, uploadFile);
-        return uploadFile;
+        return queryFileInfo(fileInfo.getId());
     }
 
     @Override
