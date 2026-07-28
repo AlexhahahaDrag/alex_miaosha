@@ -1,6 +1,7 @@
 -- =============================================================================
 -- alex_finance_gift_management.sql
--- 礼尚往来：表结构 + 权限/角色/菜单（含移动端亲友详情隐藏路由）
+-- 礼尚往来管理模块 SQL 唯一维护文件（表结构 + 权限/角色/菜单 + 增量变更）
+-- 约定：后续本模块所有 SQL 修改一律追加到本文件末尾，勿再拆独立脚本。
 -- 合并自：
 --   gift_management_schema.sql
 --   gift_management_permission.sql
@@ -8,6 +9,7 @@
 --   gift_management_menu_fix_20260519.sql
 --   gift_person_detail_menu_20260720.sql
 --   gift_event_detail_menu_20260727.sql
+--   gift_person_avatar_20260727.sql
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -457,3 +459,27 @@ WHERE NOT EXISTS (
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- -----------------------------------------------------------------------------
+-- 7. Incremental 2026-07-27：亲友头像字段（存量库升级；新建库见上文 CREATE）
+-- 来源：gift_person_avatar_20260727.sql
+-- -----------------------------------------------------------------------------
+USE alex_finance;
+
+SET @gift_person_avatar_exists := (
+  SELECT COUNT(1)
+  FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = 'alex_finance'
+    AND TABLE_NAME = 'gift_person_info_t'
+    AND COLUMN_NAME = 'avatar'
+);
+
+SET @gift_person_avatar_sql := IF(
+  @gift_person_avatar_exists = 0,
+  'ALTER TABLE `alex_finance`.`gift_person_info_t` ADD COLUMN `avatar` bigint NULL COMMENT ''头像 OSS 文件ID'' AFTER `phone`',
+  'SELECT ''gift_person_info_t.avatar already exists'' AS info'
+);
+
+PREPARE gift_person_avatar_stmt FROM @gift_person_avatar_sql;
+EXECUTE gift_person_avatar_stmt;
+DEALLOCATE PREPARE gift_person_avatar_stmt;

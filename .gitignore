@@ -62,3 +62,4 @@ graphify-out/cache
 *.env
 
 .mybatis
+.superpowers
