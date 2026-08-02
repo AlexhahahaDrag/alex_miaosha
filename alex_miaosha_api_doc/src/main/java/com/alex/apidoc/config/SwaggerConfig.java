@@ -13,14 +13,14 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /**
- *description:  swagger配置类
- *author:       alex
- *createDate:   2021/6/6 15:17
- *version:      1.0.0
+ * description: swagger配置类
+ * author: alex
+ * createDate: 2021/6/6 15:17
+ * version: 1.0.0
  */
 @Configuration
 @EnableOpenApi
-@Profile({"test", "dev"})
+@Profile({ "test", "dev" })
 public class SwaggerConfig {
 
     @Bean(value = "apiDoc")
@@ -32,8 +32,7 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.alex.apidoc.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .groupName("alex-apidoc")
-                ;//注意这里
+                .groupName("alex-apidoc");// 注意这里
     }
 
     private ApiInfo apiInfo() {

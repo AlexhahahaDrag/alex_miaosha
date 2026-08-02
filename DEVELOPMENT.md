@@ -36,3 +36,9 @@
 ```bash
 mvn clean -pl alex_miaosha_finance/finance_boot -am "-Dtest=GiftRecordBusinessRuleTest,GiftOwnershipTest,GiftStructureTest" -DfailIfNoTests=false test
 ```
+
+### 空指针与类型安全
+
+- 在进行 Stream 映射操作时，避免直接使用可能带有 `@Nullable` 属性的实例方法引用（如 `String::trim`），因为编译器（如 ECJ 等）会对方法引用的接收者 `this` 进行非空校验，从而报 `Null type safety: parameter 'this' ... needs unchecked conversion` 的警告或错误。
+- 推荐使用显式的 Lambda 表达式或带非空校验的表达式进行转换，例如：`.map(s -> s == null ? "" : s.trim())`。
+

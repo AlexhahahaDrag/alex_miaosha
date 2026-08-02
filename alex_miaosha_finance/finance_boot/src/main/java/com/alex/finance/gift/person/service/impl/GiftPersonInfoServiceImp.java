@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -73,8 +74,48 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
     @Override
     public GiftPersonSummaryVo getSummary() {
-        long personCount = getBaseMapper().listEntities(null).size();
+        List<GiftPersonInfoVo> people = getList(new GiftPersonQuery());
+        long personCount = people.size();
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
+
+        BigDecimal receiveSum = records.stream()
+                .filter(record -> "RECEIVE".equals(record.getDirection()))
+                .map(this::amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal giveSum = records.stream()
+                .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                .map(this::amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal netAmount = receiveSum.subtract(giveSum);
+
+        long activeCount = 0;
+        long pendingMaintenanceCount = 0;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ninetyDaysAgo = now.minusDays(90);
+        LocalDateTime oneEightyDaysAgo = now.minusDays(180);
+
+        for (GiftPersonInfoVo person : people) {
+            java.util.Optional<GiftRecordInfoVo> latest = records.stream()
+                    .filter(r -> personInRecord(r, person.getId()))
+                    .max(java.util.Comparator.comparing(GiftRecordInfoVo::getPayTime,
+                            java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder())));
+
+            if (latest.isPresent()) {
+                LocalDateTime payTime = latest.get().getPayTime();
+                if (payTime != null) {
+                    if (payTime.isAfter(ninetyDaysAgo)) {
+                        activeCount++;
+                    } else if (payTime.isBefore(oneEightyDaysAgo)) {
+                        pendingMaintenanceCount++;
+                    }
+                } else {
+                    pendingMaintenanceCount++;
+                }
+            } else {
+                pendingMaintenanceCount++;
+            }
+        }
+
         BigDecimal yearTotalAmount = records.stream()
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -83,8 +124,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 .filter(record -> record.getReturnedFlag() == null || record.getReturnedFlag() == 0)
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         return new GiftPersonSummaryVo()
                 .setPersonCount(personCount)
+                .setNetAmount(netAmount)
+                .setActiveCount(activeCount)
+                .setPendingMaintenanceCount(pendingMaintenanceCount)
                 .setYearTotalAmount(yearTotalAmount)
                 .setPendingReturnAmount(pendingReturnAmount);
     }
@@ -295,7 +340,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     private List<Long> parseIds(String ids) {
         try {
             return Arrays.stream(ids.split(","))
-                    .map(String::trim)
+                    .map(s -> s == null ? "" : s.trim())
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
                     .toList();
@@ -329,6 +374,22 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
             vo.setLatestRecordTime(record.getPayTime());
             vo.setLatestDirection(record.getDirection());
         });
+
+        // Calculate relationStatus
+        if (vo.getLatestRecordTime() != null) {
+            LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
+            LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
+            if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
+                vo.setRelationStatus("ACTIVE");
+            } else if (vo.getLatestRecordTime().isBefore(oneEightyDaysAgo)) {
+                vo.setRelationStatus("DISTANT");
+            } else {
+                vo.setRelationStatus("GENERAL");
+            }
+        } else {
+            vo.setRelationStatus("DISTANT");
+        }
+
         return vo;
     }
 

@@ -10,6 +10,7 @@
 - 修改关键代码后，必须保证同步更新或运行 graphify 知识图谱以维护最新分析（运行 `graphify update .` 或 `npm run graphify:update` 等），且需要同步更新对应的 `DEVELOPMENT.md` 或 `.cursorrules` 文件。
 - 新增功能开发前必须先阅读项目根目录的 `TESTING_STANDARD.md`，按测试金字塔分层落地（后端 单元 70%/集成 25%/AI 5%，PC 端 60/25/15，移动端 55/25/20），并在 `tests/checklists/{feature}.md` 中沿用 `gift.md` 样板补齐字段边界（七点法）、状态机、权限矩阵与"不测理由"。
 - AI/E2E 测试统一使用 Midscene + Playwright 组合：所有可交互 DOM 必须挂 `data-testid` 并禁止用中文文案做精确匹配；等待必须用 `waitForResponse` / `waitForSelector` / `aiWaitFor`，禁用 `Thread.sleep` 或 `waitForTimeout`；测试数据需 try/finally 通过 API 清理，禁止直接连 dev 库跑 CRUD 残留脏数据。
+- 在制定任何方案（Implementation Plan 或重构方案）后，**必须立即终止工具调用并结束当前 Turn（回合）**，严禁在未获得用户通过 "Proceed" 或显式消息授权前自动执行后续的文件修改或命令运行。
 
 ## Learned Workspace Facts
 

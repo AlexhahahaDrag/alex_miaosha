@@ -4,7 +4,14 @@
 
     <select id="listSystemPresets" resultType="com.alex.api.finance.gift.event.vo.GiftEventTypeItemVo">
         SELECT o.id AS id,
-               o.event_label AS name
+               o.event_label AS name,
+               o.event_code AS eventCode,
+               o.category AS category,
+               o.icon AS icon,
+               o.status AS status,
+               o.use_count AS useCount,
+               o.default_amount AS defaultAmount,
+               o.sort_order AS sortOrder
         FROM gift_event_type_option_t o
         WHERE o.user_id = 0
           AND o.option_type = 'SYSTEM'
@@ -17,9 +24,16 @@
                o.option_type AS optionType,
                o.event_code AS eventCode,
                o.event_label AS eventLabel,
-               o.org_id AS orgId
+               o.org_id AS orgId,
+               o.category AS category,
+               o.icon AS icon,
+               o.status AS status,
+               o.use_count AS useCount,
+               o.default_amount AS defaultAmount,
+               o.sort_order AS sortOrder
         FROM gift_event_type_option_t o
         WHERE o.is_delete = 0
+          AND o.status = 1
           AND (
               (o.option_type = 'SYSTEM' AND o.user_id = 0)
               OR (o.option_type = 'CUSTOM' AND o.org_id = #{orgId})

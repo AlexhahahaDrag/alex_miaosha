@@ -137,7 +137,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     private List<Long> parseIds(String ids) {
         try {
             return Arrays.stream(ids.split(","))
-                    .map(String::trim)
+                    .map(s -> s == null ? "" : s.trim())
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
                     .toList();

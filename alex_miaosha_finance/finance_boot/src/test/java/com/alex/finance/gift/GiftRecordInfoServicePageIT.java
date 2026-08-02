@@ -50,7 +50,8 @@ class GiftRecordInfoServicePageIT {
         service = new GiftRecordInfoServiceImp(
                 new GiftDataScopeSupport(userUtils),
                 giftPersonInfoMapper,
-                giftEventInfoMapper);
+                giftEventInfoMapper,
+                null);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
     }
 

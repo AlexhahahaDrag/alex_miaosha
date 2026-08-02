@@ -16,16 +16,16 @@ import java.util.List;
 @Mapper
 public interface GiftPersonInfoMapper extends BaseMapper<GiftPersonInfo> {
 
-    @DataPermission(table = "gift_person_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<GiftPersonInfoVo> getPage(@Param("page") Page<GiftPersonInfoVo> page, @Param("query") GiftPersonQuery query);
 
-    @DataPermission(table = "gift_person_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<GiftPersonInfoVo> getList(@Param("query") GiftPersonQuery query);
 
-    @DataPermission(table = "gift_person_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<GiftPersonInfo> listEntities(@Param("query") GiftPersonQuery query);
 
-    @DataPermission(table = "gift_person_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<GiftPersonBusinessVo> getBusinessPage(Page<GiftPersonBusinessVo> page, @Param("query") GiftPersonQuery query);
 
     List<String> listDistinctCustomRelationTypes(@Param("userId") Long userId);

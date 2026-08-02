@@ -12,6 +12,8 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
+import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
+import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,6 +47,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonInfoMapper giftPersonInfoMapper;
     private final GiftEventInfoMapper giftEventInfoMapper;
+    private final GiftEventTypeOptionMapper giftEventTypeOptionMapper;
 
     @Override
     public Page<GiftRecordInfoVo> getPage(Long pageNum, Long pageSize, GiftRecordQuery query) {
@@ -80,6 +84,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
 
     @Override
     public GiftRecordInfoVo addGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
+        autoResolveOrCreateEvent(giftRecordInfoVo);
         validateForSave(giftRecordInfoVo);
         fillOwner(giftRecordInfoVo);
         GiftRecordInfo entity = new GiftRecordInfo();
@@ -102,6 +107,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         giftDataScopeSupport.assertRecordAccessible(existing);
         giftRecordInfoVo.setUserId(existing.getUserId());
         giftRecordInfoVo.setOrgId(existing.getOrgId());
+        autoResolveOrCreateEvent(giftRecordInfoVo);
         validateForSave(giftRecordInfoVo);
         GiftRecordInfo entity = new GiftRecordInfo();
         BeanUtils.copyProperties(giftRecordInfoVo, entity);
@@ -310,7 +316,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     private List<Long> parseIds(String ids) {
         try {
             return Arrays.stream(ids.split(","))
-                    .map(String::trim)
+                    .map(s -> s == null ? "" : s.trim())
                     .filter(StringUtils::hasText)
                     .map(Long::valueOf)
                     .toList();
@@ -332,9 +338,89 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
 
     private BigDecimal sumByDirection(List<GiftRecordInfo> records, String direction) {
         return records.stream()
-                .filter(record -> direction.equals(record.getDirection()))
-                .map(GiftRecordInfo::getAmount)
+                .filter(record -> record != null && direction.equals(record.getDirection()))
+                .map(record -> record == null ? null : record.getAmount())
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private void autoResolveOrCreateEvent(GiftRecordInfoVo vo) {
+        if (vo.getEventId() != null) {
+            return;
+        }
+        String eventType = vo.getEventType();
+        Long eventOptionId = vo.getEventOptionId();
+
+        if (!StringUtils.hasText(eventType) && eventOptionId == null) {
+            return;
+        }
+
+        if (vo.getUserId() == null || vo.getOrgId() == null) {
+            fillOwner(vo);
+        }
+
+        if (eventOptionId != null) {
+            GiftEventTypeOption option = giftEventTypeOptionMapper.selectById(eventOptionId);
+            if (option != null) {
+                eventType = "SYSTEM".equals(option.getOptionType()) ? option.getEventCode() : option.getEventLabel();
+                option.setUseCount((option.getUseCount() == null ? 0 : option.getUseCount()) + 1);
+                giftEventTypeOptionMapper.updateById(option);
+            }
+        } else if (StringUtils.hasText(eventType)) {
+            eventOptionId = giftEventTypeOptionMapper.findOptionIdByEventType(vo.getOrgId(), eventType.trim());
+            if (eventOptionId != null) {
+                GiftEventTypeOption option = giftEventTypeOptionMapper.selectById(eventOptionId);
+                if (option != null) {
+                    option.setUseCount((option.getUseCount() == null ? 0 : option.getUseCount()) + 1);
+                    giftEventTypeOptionMapper.updateById(option);
+                }
+            }
+        }
+
+        if (!StringUtils.hasText(eventType)) {
+            return;
+        }
+
+        Long contactPersonId = "GIVE".equals(vo.getDirection()) ? vo.getReceiverPersonId() : vo.getGiverPersonId();
+        if (contactPersonId == null) {
+            return;
+        }
+
+        GiftPersonInfo contactPerson = giftPersonInfoMapper.selectById(contactPersonId);
+        if (contactPerson == null) {
+            return;
+        }
+        String personName = contactPerson.getPersonName();
+
+        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftEventInfo> query = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+        query.eq("host_person_id", contactPersonId)
+                .eq("event_type", eventType)
+                .eq("is_delete", 0);
+        List<GiftEventInfo> existingEvents = giftEventInfoMapper.selectList(query);
+
+        if (existingEvents != null && !existingEvents.isEmpty()) {
+            vo.setEventId(existingEvents.get(0).getId());
+        } else {
+            String eventLabel = eventType;
+            if (eventOptionId != null) {
+                GiftEventTypeOption option = giftEventTypeOptionMapper.selectById(eventOptionId);
+                if (option != null) {
+                    eventLabel = option.getEventLabel();
+                }
+            }
+            String eventName = personName + eventLabel;
+
+            GiftEventInfo newEvent = new GiftEventInfo()
+                    .setOrgId(vo.getOrgId())
+                    .setUserId(vo.getUserId())
+                    .setEventName(eventName)
+                    .setEventType(eventType)
+                    .setEventTime(vo.getPayTime() != null ? vo.getPayTime() : LocalDateTime.now())
+                    .setHostPersonId(contactPersonId)
+                    .setRemark("人情关系智能助手自动生成的事由");
+
+            giftEventInfoMapper.insert(newEvent);
+            vo.setEventId(newEvent.getId());
+        }
     }
 }

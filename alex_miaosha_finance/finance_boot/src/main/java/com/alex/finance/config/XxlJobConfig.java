@@ -27,6 +27,7 @@ public class XxlJobConfig {
     private String adminAddresses;
 
     @Bean(initMethod = "start", destroyMethod = "destroy")
+    @ConditionalOnProperty(prefix = "xxl.job", name = "enabled", havingValue = "true", matchIfMissing = true)
     public XxlJobSpringExecutor xxlJobExecutor() {
         log.info(">>>>>>>>>>> xxl-job config init. (profile=prod, enabled=true)");
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();

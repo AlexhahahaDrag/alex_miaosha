@@ -16,13 +16,13 @@ import java.util.List;
 @Mapper
 public interface GiftRecordInfoMapper extends BaseMapper<GiftRecordInfo> {
 
-    @DataPermission(table = "gift_record_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_record_info_t", alias = "r", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<GiftRecordInfoVo> getPage(@Param("page") Page<GiftRecordInfoVo> page, @Param("query") GiftRecordQuery query);
 
-    @DataPermission(table = "gift_record_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_record_info_t", alias = "r", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<GiftRecordInfoVo> getList(@Param("query") GiftRecordQuery query);
 
-    @DataPermission(table = "gift_record_info_t", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "gift_record_info_t", alias = "r", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<GiftRecordInfo> listEntities(@Param("query") GiftRecordQuery query);
 
     BigDecimal sumReturnAmountByRelatedRecordId(@Param("relatedRecordId") Long relatedRecordId);

@@ -17,7 +17,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
+import com.alex.api.finance.gift.event.vo.GiftRecordRecommendAmountVo;
+import com.alex.finance.gift.event.entity.GiftEventInfo;
+import com.alex.finance.gift.record.entity.GiftRecordInfo;
+import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,7 @@ public class GiftEventTypeOptionServiceImp
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftEventInfoMapper giftEventInfoMapper;
     private final GiftEventTypePresetSupport giftEventTypePresetSupport;
+    private final GiftRecordInfoMapper giftRecordInfoMapper;
 
     @Override
     public GiftEventTypeOptionsVo listEventTypeOptions() {
@@ -48,7 +54,14 @@ public class GiftEventTypeOptionServiceImp
             for (GiftEventTypeOptionRowVo row : rows) {
                 GiftEventTypeItemVo item = new GiftEventTypeItemVo()
                         .setId(row.getId())
-                        .setName(row.getEventLabel());
+                        .setName(row.getEventLabel())
+                        .setEventCode(row.getEventCode())
+                        .setCategory(row.getCategory())
+                        .setIcon(row.getIcon())
+                        .setStatus(row.getStatus())
+                        .setUseCount(row.getUseCount())
+                        .setDefaultAmount(row.getDefaultAmount())
+                        .setSortOrder(row.getSortOrder());
                 if (GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
                     presets.add(item);
                     continue;
@@ -166,5 +179,85 @@ public class GiftEventTypeOptionServiceImp
                 .eq(GiftEventTypeOption::getOptionType, GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM)
                 .eq(GiftEventTypeOption::getEventLabel, label)
                 .last("LIMIT 1"));
+    }
+
+    @Override
+    public GiftRecordRecommendAmountVo getRecommendAmount(Long personId, String eventType, String direction) {
+        Long orgId = resolveOrgId();
+        
+        BigDecimal defaultAmount = BigDecimal.ZERO;
+        Long optionId = findEventTypeOptionId(orgId, eventType);
+        if (optionId != null) {
+            GiftEventTypeOption option = getById(optionId);
+            if (option != null && option.getDefaultAmount() != null) {
+                defaultAmount = option.getDefaultAmount();
+            }
+        }
+        if (defaultAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            defaultAmount = new BigDecimal("500.00");
+        }
+
+        List<Long> eventIds = giftEventInfoMapper.selectList(
+            new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftEventInfo>()
+                .eq("event_type", eventType)
+                .eq("is_delete", 0)
+        ).stream().map(GiftEventInfo::getId).toList();
+
+        BigDecimal averageAmount = BigDecimal.ZERO;
+        BigDecimal latestAmount = BigDecimal.ZERO;
+
+        if (personId != null && !eventIds.isEmpty()) {
+            com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftRecordInfo> query = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+            query.eq("is_delete", 0)
+                 .in("event_id", eventIds)
+                 .and(wrapper -> wrapper.eq("giver_person_id", personId).or().eq("receiver_person_id", personId));
+            if (StringUtils.hasText(direction)) {
+                query.eq("direction", direction);
+            }
+            query.orderByDesc("pay_time");
+
+            List<GiftRecordInfo> records = giftRecordInfoMapper.selectList(query);
+            if (records != null && !records.isEmpty()) {
+                latestAmount = records.get(0).getAmount();
+                BigDecimal total = BigDecimal.ZERO;
+                int count = 0;
+                for (GiftRecordInfo r : records) {
+                    if (r.getAmount() != null) {
+                        total = total.add(r.getAmount());
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    averageAmount = total.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+                }
+            }
+        }
+
+        BigDecimal baseAmount = averageAmount.compareTo(BigDecimal.ZERO) > 0 ? averageAmount : defaultAmount;
+        
+        List<BigDecimal> recommendations = List.of(
+            roundAmount(baseAmount.multiply(new BigDecimal("0.80"))),
+            roundAmount(baseAmount.multiply(new BigDecimal("1.00"))),
+            roundAmount(baseAmount.multiply(new BigDecimal("1.50"))),
+            roundAmount(baseAmount.multiply(new BigDecimal("2.00")))
+        );
+
+        return new GiftRecordRecommendAmountVo()
+                .setAverageAmount(averageAmount)
+                .setLatestAmount(latestAmount)
+                .setDefaultAmount(defaultAmount)
+                .setRecommendations(recommendations);
+    }
+
+    private BigDecimal roundAmount(BigDecimal val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
+        double valDouble = val.doubleValue();
+        if (valDouble > 100) {
+            return BigDecimal.valueOf(Math.round(valDouble / 50.0) * 50);
+        } else {
+            return BigDecimal.valueOf(Math.round(valDouble / 10.0) * 10);
+        }
     }
 }

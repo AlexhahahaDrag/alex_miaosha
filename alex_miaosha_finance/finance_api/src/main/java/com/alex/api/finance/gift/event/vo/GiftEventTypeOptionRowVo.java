@@ -22,4 +22,16 @@ public class GiftEventTypeOptionRowVo {
     @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty("家庭组 orgId，系统预设为0")
     private Long orgId;
+
+    private String category;
+
+    private String icon;
+
+    private Integer status;
+
+    private Integer useCount;
+
+    private java.math.BigDecimal defaultAmount;
+
+    private Integer sortOrder;
 }

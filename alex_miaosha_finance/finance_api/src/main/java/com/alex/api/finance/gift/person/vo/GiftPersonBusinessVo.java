@@ -35,4 +35,7 @@ public class GiftPersonBusinessVo extends GiftPersonInfoVo {
 
     @ApiModelProperty(value = "pending return amount")
     private BigDecimal pendingReturnAmount = BigDecimal.ZERO;
+
+    @ApiModelProperty(value = "relation status: ACTIVE, GENERAL, DISTANT")
+    private String relationStatus;
 }

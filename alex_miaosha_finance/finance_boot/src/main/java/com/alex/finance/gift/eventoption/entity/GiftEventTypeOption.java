@@ -45,4 +45,24 @@ public class GiftEventTypeOption extends BaseEntity<GiftEventTypeOption> {
     @ApiModelProperty("最近使用时间")
     @TableField("last_used_time")
     private LocalDateTime lastUsedTime;
+
+    @ApiModelProperty("事由分类")
+    @TableField("category")
+    private String category;
+
+    @ApiModelProperty("图标/Emoji")
+    @TableField("icon")
+    private String icon;
+
+    @ApiModelProperty("状态: 0禁用, 1启用")
+    @TableField("status")
+    private Integer status;
+
+    @ApiModelProperty("累计使用次数")
+    @TableField("use_count")
+    private Integer useCount;
+
+    @ApiModelProperty("默认推荐金额")
+    @TableField("default_amount")
+    private java.math.BigDecimal defaultAmount;
 }

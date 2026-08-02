@@ -53,4 +53,8 @@ public class GiftPersonInfo extends BaseEntity<GiftPersonInfo> {
     @ApiModelProperty(value = "备注")
     @TableField("remark")
     private String remark;
+
+    @ApiModelProperty(value = "关系等级: CORE核心, IMPORTANT重要, NORMAL普通, WEAK弱关系")
+    @TableField("relation_grade")
+    private String relationGrade;
 }

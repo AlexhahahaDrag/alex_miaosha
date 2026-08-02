@@ -54,7 +54,7 @@ class GiftRecordInfoServiceIT {
     @BeforeEach
     void setUp() {
         GiftDataScopeSupport giftDataScopeSupport = new GiftDataScopeSupport(userUtils);
-        service = new GiftRecordInfoServiceImp(giftDataScopeSupport, giftPersonInfoMapper, giftEventInfoMapper);
+        service = new GiftRecordInfoServiceImp(giftDataScopeSupport, giftPersonInfoMapper, giftEventInfoMapper, null);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
         when(userUtils.getLoginUser()).thenReturn(loginUser());
         when(giftRecordInfoMapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {

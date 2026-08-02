@@ -102,9 +102,16 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             return getUserWhere(where, loginUser, annotation);
         }
         if (StringUtils.hasText(annotation.orgField())) {
-            return appendFieldEquals(where, annotation.table(), annotation.orgField(), orgId);
+            return appendFieldEquals(where, resolveTargetTable(annotation), annotation.orgField(), orgId);
         }
         return appendOrgMembersIn(where, loginUser, annotation, orgId);
+    }
+
+    private String resolveTargetTable(DataPermission annotation) {
+        if (annotation != null && StringUtils.hasText(annotation.alias())) {
+            return annotation.alias().trim();
+        }
+        return annotation != null ? annotation.table() : "";
     }
 
     /**
@@ -141,7 +148,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     private Expression getUserWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        return appendFieldEquals(where, annotation.table(), annotation.field(), loginUser.getId());
+        return appendFieldEquals(where, resolveTargetTable(annotation), annotation.field(), loginUser.getId());
     }
 
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
@@ -155,7 +162,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     private Expression appendOrgMembersIn(Expression where, TUserVo loginUser, DataPermission annotation, Long orgId) {
         InExpression inExpression = new InExpression();
-        inExpression.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
+        inExpression.setLeftExpression(new Column(new Table(resolveTargetTable(annotation)), annotation.field()));
 
         PlainSelect plainSelect = new PlainSelect();
         plainSelect.addSelectItems(new SelectItem<>(new Column("user_id")));
@@ -188,7 +195,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     private Expression getDefaultWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
         EqualsTo useEqualsTo = new EqualsTo();
-        useEqualsTo.setLeftExpression(new Column(annotation.field()));
+        useEqualsTo.setLeftExpression(new Column(new Table(resolveTargetTable(annotation)), annotation.field()));
         useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
         return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
     }

@@ -51,4 +51,7 @@ public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
 
     @ApiModelProperty(value = "remark")
     private String remark;
+
+    @ApiModelProperty(value = "relation grade: CORE, IMPORTANT, NORMAL, WEAK")
+    private String relationGrade;
 }

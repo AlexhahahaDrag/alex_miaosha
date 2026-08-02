@@ -17,6 +17,15 @@ public class GiftPersonSummaryVo {
     @ApiModelProperty(value = "person count")
     private Long personCount = 0L;
 
+    @ApiModelProperty(value = "net amount")
+    private BigDecimal netAmount = BigDecimal.ZERO;
+
+    @ApiModelProperty(value = "active count")
+    private Long activeCount = 0L;
+
+    @ApiModelProperty(value = "pending maintenance count")
+    private Long pendingMaintenanceCount = 0L;
+
     @ApiModelProperty(value = "year total amount")
     private BigDecimal yearTotalAmount = BigDecimal.ZERO;
 

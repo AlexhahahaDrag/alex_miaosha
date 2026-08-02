@@ -5,12 +5,14 @@ import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeOptionsVo;
+import com.alex.api.finance.gift.event.vo.GiftRecordRecommendAmountVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
 import com.alex.finance.gift.event.service.GiftEventInfoService;
 import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
+import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -105,5 +107,21 @@ public class GiftEventInfoController {
     @DeleteMapping
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(giftEventInfoService.deleteGiftEventInfo(ids));
+    }
+
+    @ApiOperationSupport(order = 19, author = "alex")
+    @ApiOperation(value = "智能推荐金额", response = Result.class)
+    @GetMapping(value = "/recommend-amount")
+    public Result<GiftRecordRecommendAmountVo> recommendAmount(@RequestParam(value = "personId", required = false) Long personId,
+                                                               @RequestParam(value = "eventType") String eventType,
+                                                               @RequestParam(value = "direction", required = false) String direction) {
+        return Result.success(giftEventTypeOptionService.getRecommendAmount(personId, eventType, direction));
+    }
+
+    @ApiOperationSupport(order = 21, author = "alex")
+    @ApiOperation(value = "更新事由类型词典选项", response = Result.class)
+    @PutMapping(value = "/event-type-option")
+    public Result<Boolean> updateEventTypeOption(@RequestBody GiftEventTypeOption option) {
+        return Result.success(giftEventTypeOptionService.updateById(option));
     }
 }

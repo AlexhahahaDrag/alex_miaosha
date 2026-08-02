@@ -12,6 +12,8 @@ import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
@@ -139,7 +141,8 @@ class GiftDeleteStringIdTest {
             super(
                     new GiftDataScopeSupport(loginUserUtils()),
                     mock(GiftPersonInfoMapper.class),
-                    mock(GiftEventInfoMapper.class));
+                    mock(GiftEventInfoMapper.class),
+                    null);
             ReflectionTestUtils.setField(this, "baseMapper", mock(GiftRecordInfoMapper.class));
         }
 

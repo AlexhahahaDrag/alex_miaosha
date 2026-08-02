@@ -8,6 +8,12 @@ public @interface DataPermission {
 
     String table() default "t_user";
 
+    /**
+     * 表别名（例如 SQL 中 FROM gift_person_info_t p 时配置 alias = "p"）。
+     * 有别名时优先使用别名，无别名时使用 table()。
+     */
+    String alias() default "";
+
     String[] where() default {};
 
     /** 用户维度字段，如 user_id / operator / belong_to */

@@ -20,10 +20,10 @@ import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
-import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
-import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
@@ -73,8 +73,10 @@ class GiftAggregateBusinessRuleTest {
         event.setId(9L);
         service.events = List.of(event);
         service.records = List.of(
-                record(1L, "GIVE", new BigDecimal("200.00"), 1L, 2L, LocalDateTime.of(2026, 5, 1, 10, 0)).setEventId(9L),
-                record(2L, "RECEIVE", new BigDecimal("300.00"), 3L, 2L, LocalDateTime.of(2026, 5, 2, 10, 0)).setEventId(9L));
+                record(1L, "GIVE", new BigDecimal("200.00"), 1L, 2L, LocalDateTime.of(2026, 5, 1, 10, 0))
+                        .setEventId(9L),
+                record(2L, "RECEIVE", new BigDecimal("300.00"), 3L, 2L, LocalDateTime.of(2026, 5, 2, 10, 0))
+                        .setEventId(9L));
 
         GiftEventBusinessVo row = service.getBusinessPage(1L, 10L, null).getRecords().get(0);
 
@@ -101,7 +103,8 @@ class GiftAggregateBusinessRuleTest {
         assertEquals(3L, summary.getRecordCount());
     }
 
-    private static GiftRecordInfo record(Long id, String direction, BigDecimal amount, Long giverId, Long receiverId, LocalDateTime payTime) {
+    private static GiftRecordInfo record(Long id, String direction, BigDecimal amount, Long giverId, Long receiverId,
+            LocalDateTime payTime) {
         GiftRecordInfo record = new GiftRecordInfo()
                 .setDirection(direction)
                 .setAmount(amount)
@@ -210,7 +213,8 @@ class GiftAggregateBusinessRuleTest {
             super(
                     new GiftDataScopeSupport(mock(UserUtils.class)),
                     mock(GiftPersonInfoMapper.class),
-                    mock(GiftEventInfoMapper.class));
+                    mock(GiftEventInfoMapper.class),
+                    null);
             GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
             when(mapper.listEntities(any())).thenAnswer(invocation -> records);
             ReflectionTestUtils.setField(this, "baseMapper", mapper);

@@ -17,6 +17,44 @@
             <if test="query.relationType != null and query.relationType != ''">
                 AND p.relation_type = #{query.relationType}
             </if>
+            <if test="query.relationGrade != null and query.relationGrade != ''">
+                AND p.relation_grade = #{query.relationGrade}
+            </if>
+            <if test="query.relationStatus != null and query.relationStatus != ''">
+                <choose>
+                    <when test="query.relationStatus == 'ACTIVE'">
+                        AND (
+                            SELECT MAX(r.pay_time)
+                            FROM gift_record_info_t r
+                            WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                              AND r.is_delete = 0
+                        ) &gt;= DATE_SUB(NOW(), INTERVAL 90 DAY)
+                    </when>
+                    <when test="query.relationStatus == 'GENERAL'">
+                        AND (
+                            SELECT MAX(r.pay_time)
+                            FROM gift_record_info_t r
+                            WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                              AND r.is_delete = 0
+                        ) BETWEEN DATE_SUB(NOW(), INTERVAL 180 DAY) AND DATE_SUB(NOW(), INTERVAL 90 DAY)
+                    </when>
+                    <when test="query.relationStatus == 'DISTANT'">
+                        AND (
+                            (
+                                SELECT MAX(r.pay_time)
+                                FROM gift_record_info_t r
+                                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                                  AND r.is_delete = 0
+                            ) &lt; DATE_SUB(NOW(), INTERVAL 180 DAY)
+                            OR NOT EXISTS (
+                                SELECT 1 FROM gift_record_info_t r
+                                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                                  AND r.is_delete = 0
+                            )
+                        )
+                    </when>
+                </choose>
+            </if>
             <if test="query.personScope == 'CONTACT'">
                 AND p.bind_user_id IS NULL
             </if>
@@ -35,6 +73,7 @@
         p.phone,
         p.avatar,
         p.relation_type,
+        p.relation_grade,
         p.remark,
         p.create_time,
         p.update_time

@@ -14,6 +14,8 @@ import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
+import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
+import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
@@ -156,7 +158,8 @@ class GiftOwnershipTest {
             super(
                     new GiftDataScopeSupport(userUtils),
                     mock(GiftPersonInfoMapper.class),
-                    mock(GiftEventInfoMapper.class));
+                    mock(GiftEventInfoMapper.class),
+                    null);
             GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
             when(mapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {
                 GiftRecordInfo record = invocation.getArgument(0);

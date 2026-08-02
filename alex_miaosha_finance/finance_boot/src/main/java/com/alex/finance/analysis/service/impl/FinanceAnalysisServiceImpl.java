@@ -56,9 +56,9 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
         BigDecimal yoyTotal = BigDecimal.ZERO;
 
         Map<String, AnalysisVo> momMap = momList == null ? new HashMap<>() : 
-            momList.stream().collect(Collectors.toMap(AnalysisVo::getTypeCode, vo -> vo, (v1, v2) -> v1));
+            momList.stream().collect(Collectors.toMap(vo -> vo.getTypeCode(), vo -> vo, (v1, v2) -> v1));
         Map<String, AnalysisVo> yoyMap = yoyList == null ? new HashMap<>() : 
-            yoyList.stream().collect(Collectors.toMap(AnalysisVo::getTypeCode, vo -> vo, (v1, v2) -> v1));
+            yoyList.stream().collect(Collectors.toMap(vo -> vo.getTypeCode(), vo -> vo, (v1, v2) -> v1));
 
         for (AnalysisVo vo : currentList) {
             BigDecimal currentAmount = vo.getAmount() == null ? BigDecimal.ZERO : vo.getAmount();
