@@ -1,6 +1,7 @@
 package com.alex.user.rbac;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermission.Scope;
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
@@ -121,7 +122,7 @@ public class DataPermissionScopeHandlerTest {
      * Annotation fixtures resolved via mappedStatementId Class.forName lookup.
      */
     private static final class Fixtures {
-        @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
+        @DataPermission(table = "t_org_info", field = "id", scope = Scope.ORG_ID)
         void orgIdScope() {
         }
 
