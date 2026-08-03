@@ -1,6 +1,7 @@
 package com.alex.user.roleInfo.controller;
 
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
+import com.alex.api.user.roleInfo.vo.RolePermissionAssignRequest;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -90,6 +91,14 @@ public class RoleInfoController {
     @PostMapping("/assign-users")
     public Result<Boolean> assignUsers(@RequestBody RoleUserAssignRequest request) {
         return Result.success(roleInfoService.assignUsers(request.getRoleId(), request.getUserIds()));
+    }
+
+    @LogRestRequest(apiName = "角色分配权限")
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "角色分配权限", notes = "全量替换角色权限关系", response = Result.class)
+    @PostMapping("/assign-permissions")
+    public Result<Boolean> assignPermissions(@RequestBody RolePermissionAssignRequest request) {
+        return Result.success(roleInfoService.assignPermissions(request.getRoleId(), request.getPermissionIds()));
     }
 
     @Data

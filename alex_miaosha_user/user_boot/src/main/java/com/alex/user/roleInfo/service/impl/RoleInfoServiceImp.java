@@ -7,6 +7,8 @@ import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
+import com.alex.common.redis.key.LoginKey;
+import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
 import com.alex.user.roleInfo.entity.RoleInfo;
@@ -44,6 +46,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     private final RolePermissionInfoService rolePermissionInfoService;
 
     private final RoleUserInfoService roleUserInfoService;
+
+    private final RedisUtils redisUtils;
 
     @Override
     public Page<RoleInfoVo> getPage(Long pageNum, Long pageSize, RoleInfoVo roleInfoVo) {
@@ -124,5 +128,31 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     @Override
     public Boolean assignUsers(Long roleId, List<Long> userIds) {
         return roleUserInfoService.assignUsersToRole(roleId, userIds);
+    }
+
+    @Override
+    public Boolean assignPermissions(Long roleId, List<Long> permissionIds) {
+        if (roleId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "角色权限分配参数错误:");
+        }
+        RoleInfo roleInfo = roleInfoMapper.selectById(roleId);
+        if (roleInfo == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "角色不存在:");
+        }
+        Boolean ok = rolePermissionInfoService.assignPermissions(roleId, permissionIds);
+        List<RoleUserInfo> users = roleUserInfoService.list(Wrappers.<RoleUserInfo>lambdaQuery()
+                .eq(RoleUserInfo::getRoleId, String.valueOf(roleId))
+                .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
+        for (RoleUserInfo ru : users) {
+            if (ru.getUserId() == null) {
+                continue;
+            }
+            try {
+                redisUtils.delete(LoginKey.loginKey, "permission_context:" + ru.getUserId());
+            } catch (Exception ignored) {
+                // 缓存清理失败不阻断主流程，与用户同步侧 try/catch 一致
+            }
+        }
+        return ok;
     }
 }
