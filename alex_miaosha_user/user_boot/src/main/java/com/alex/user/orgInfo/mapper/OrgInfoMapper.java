@@ -1,5 +1,6 @@
 package com.alex.user.orgInfo.mapper;
 
+import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.user.orgInfo.entity.OrgInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -16,6 +17,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrgInfoMapper extends BaseMapper<OrgInfo> {
 
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
     Page<OrgInfoVo> getPage(Page<OrgInfoVo> page, @Param("orgInfoVo") OrgInfoVo orgInfoVo);
 
     OrgInfoVo queryOrgInfo(@Param("id") String id);
