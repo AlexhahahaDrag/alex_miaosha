@@ -76,6 +76,9 @@ public class GiftRecordInfoVo extends BaseVo<GiftRecordInfoVo> {
     @ApiModelProperty(value = "display person name")
     private String personName;
 
+    @ApiModelProperty(value = "relation type")
+    private String relationType;
+
     @ApiModelProperty(value = "payment method")
     private String paymentMethod;
 

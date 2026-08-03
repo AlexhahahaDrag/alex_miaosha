@@ -68,6 +68,14 @@
             giver.person_name  AS giver_person_name,
             receiver.person_name AS receiver_person_name,
             IF(r.direction = 'RECEIVE', giver.person_name, receiver.person_name) AS person_name,
+            CASE IF(r.direction = 'RECEIVE', giver.relation_type, receiver.relation_type)
+                WHEN 'RELATIVE' THEN '亲属'
+                WHEN 'FRIEND' THEN '朋友'
+                WHEN 'COLLEAGUE' THEN '同事'
+                WHEN 'NEIGHBOR' THEN '邻里'
+                WHEN 'OTHER' THEN '其他'
+                ELSE IF(r.direction = 'RECEIVE', giver.relation_type, receiver.relation_type)
+            END AS relation_type,
             '-' AS payment_method,
             '-' AS handler_name
         FROM gift_record_info_t r
@@ -105,6 +113,14 @@
             giver.person_name  AS giver_person_name,
             receiver.person_name AS receiver_person_name,
             IF(r.direction = 'RECEIVE', giver.person_name, receiver.person_name) AS person_name,
+            CASE IF(r.direction = 'RECEIVE', giver.relation_type, receiver.relation_type)
+                WHEN 'RELATIVE' THEN '亲属'
+                WHEN 'FRIEND' THEN '朋友'
+                WHEN 'COLLEAGUE' THEN '同事'
+                WHEN 'NEIGHBOR' THEN '邻里'
+                WHEN 'OTHER' THEN '其他'
+                ELSE IF(r.direction = 'RECEIVE', giver.relation_type, receiver.relation_type)
+            END AS relation_type,
             '-' AS payment_method,
             '-' AS handler_name
         FROM gift_record_info_t r
