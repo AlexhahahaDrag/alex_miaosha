@@ -65,7 +65,7 @@ public class RoleInfoController {
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色信息表", notes = "新增角色信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody RoleInfoVo roleInfoVo) {
+    public Result<String> add(@Validated({Insert.class}) @RequestBody RoleInfoVo roleInfoVo) {
         return Result.success(roleInfoService.addRoleInfo(roleInfoVo));
     }
 

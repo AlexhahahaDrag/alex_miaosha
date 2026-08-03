@@ -44,7 +44,7 @@ public interface RoleInfoApi {
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色信息表", notes = "新增角色信息表", response = Result.class)
     @PostMapping
-    Result<Boolean> addRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
+    Result<String> addRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
 
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改角色信息表", notes = "修改角色信息表", response = Result.class)

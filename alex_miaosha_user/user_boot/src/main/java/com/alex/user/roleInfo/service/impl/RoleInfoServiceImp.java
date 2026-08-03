@@ -87,11 +87,12 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     }
 
     @Override
-    public Boolean addRoleInfo(RoleInfoVo roleInfoVo) {
+    public String addRoleInfo(RoleInfoVo roleInfoVo) {
         RoleInfo roleInfo = new RoleInfo();
         BeanUtils.copyProperties(roleInfoVo, roleInfo);
         roleInfoMapper.insert(roleInfo);
-        return true;
+        // Return created id as String to avoid frontend page-lookup race / LIKE mismatch
+        return String.valueOf(roleInfo.getId());
     }
 
     @Override
