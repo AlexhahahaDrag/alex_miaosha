@@ -11,4 +11,15 @@ public @interface DataPermission {
     String[] where() default {};
 
     String field() default "operator";
+
+    /**
+     * USER_IDS: admin uses org-member user id subquery; user uses self id.
+     * ORG_ID: admin/user filter by login user's org id.
+     */
+    Scope scope() default Scope.USER_IDS;
+
+    enum Scope {
+        USER_IDS,
+        ORG_ID
+    }
 }

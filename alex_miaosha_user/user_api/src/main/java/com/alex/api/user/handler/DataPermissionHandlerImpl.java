@@ -4,12 +4,12 @@ import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
@@ -100,13 +100,17 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
         if (isSuper) {
             return getSuperWhere(where);
-        } else if (isAdmin) {
-            return getAdminWhere(where, loginUser, annotation);
-        } else if (isUser || roleCodes.isEmpty()) {
-            return getUserWhere(where, loginUser, annotation);
-        } else {
-            return getDefaultWhere(where, loginUser, annotation);
         }
+        if (annotation.scope() == DataPermission.Scope.ORG_ID) {
+            return getOrgIdWhere(where, loginUser, annotation);
+        }
+        if (isAdmin) {
+            return getAdminWhere(where, loginUser, annotation);
+        }
+        if (isUser || roleCodes.isEmpty()) {
+            return getUserWhere(where, loginUser, annotation);
+        }
+        return getDefaultWhere(where, loginUser, annotation);
     }
 
     /**
@@ -149,6 +153,23 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
     }
 
+    /**
+     * ORG_ID scope: filter by login user's org id (admin and normal user share same equals).
+     * Missing org → impossible equals so no rows leak.
+     */
+    private Expression getOrgIdWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
+        if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
+            EqualsTo impossible = new EqualsTo();
+            impossible.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
+            impossible.setRightExpression(new LongValue(-1L));
+            return where == null ? impossible : new AndExpression(where, impossible);
+        }
+        EqualsTo eq = new EqualsTo();
+        eq.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
+        eq.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
+        return where == null ? eq : new AndExpression(where, eq);
+    }
+
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
         if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
             log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser != null ? loginUser.getId() : "unknown");
@@ -170,10 +191,23 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         Table table = new Table("alex_user.t_org_user_info");
         plainSelect.setFromItem(table);
 
-        // 构建 WHERE 子句
-        EqualsTo whereCondition = new EqualsTo();
-        whereCondition.setLeftExpression(new Column("org_id"));
-        whereCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId())); // 设置你想查询的机构 ID
+        // WHERE: org_id = ? AND status = '1' AND is_delete = 0
+        EqualsTo orgIdCondition = new EqualsTo();
+        orgIdCondition.setLeftExpression(new Column("org_id"));
+        orgIdCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
+
+        EqualsTo statusCondition = new EqualsTo();
+        statusCondition.setLeftExpression(new Column("status"));
+        statusCondition.setRightExpression(new StringValue("1"));
+
+        EqualsTo deleteCondition = new EqualsTo();
+        deleteCondition.setLeftExpression(new Column("is_delete"));
+        deleteCondition.setRightExpression(new LongValue(0L));
+
+        Expression whereCondition = new AndExpression(
+                new AndExpression(orgIdCondition, statusCondition),
+                deleteCondition
+        );
         plainSelect.setWhere(whereCondition);
 
         // 将 PlainSelect 对象设置为 SubSelect 的 SelectBody
