@@ -23,6 +23,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.service.UserDeleteCleanupService;
 import com.alex.user.rbac.service.UserPermissionContextService;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.tUserLogin.entity.TUserLogin;
@@ -122,6 +123,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final Executor asyncTaskExecutor;
 
     private final UserPermissionContextService userPermissionContextService;
+
+    private final UserDeleteCleanupService userDeleteCleanupService;
 
     @Autowired(required = false)
     private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
@@ -238,12 +241,22 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteTUser(String ids) {
         if (StringUtils.isEmpty(ids)) {
             return true;
         }
-        List<String> idArr = Arrays.asList(ids.split(","));
+        List<String> idArr = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+        if (idArr.isEmpty()) {
+            return true;
+        }
         tUserMapper.deleteBatchIds(idArr);
+        for (String userId : idArr) {
+            userDeleteCleanupService.cleanupAfterUserDeleted(userId);
+        }
         return true;
     }
 
