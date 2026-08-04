@@ -1,6 +1,7 @@
 package com.alex.finance.gift.person.service;
 
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
+import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
@@ -32,4 +33,7 @@ public interface GiftPersonInfoService extends IService<GiftPersonInfo> {
     Boolean deleteGiftPersonInfo(String ids);
 
     List<GiftPersonInfoVo> listOrgMemberOptions(String keyword);
+
+    /** 关系类型分布 SQL 聚合（analysis 用） */
+    List<GiftRelationDistributionVo> getRelationDistribution();
 }

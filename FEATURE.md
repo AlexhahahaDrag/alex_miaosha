@@ -17,7 +17,6 @@
 ### 表结构
 
 - `gift_person_info_t`
-- `gift_relation_info_t`
 - `gift_event_info_t`
 - `gift_record_info_t`
 

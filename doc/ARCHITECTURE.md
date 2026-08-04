@@ -303,8 +303,7 @@ Controller 禁止直接返回 Entity；业务接口均使用 DTO、Query、VO �
 
 ```mermaid
 flowchart LR
-    Org["org_id 数据隔离"] --> Person["gift_person_info_t 亲友"]
-    Person --> Relation["gift_relation_info_t 关系"]
+    Org["org_id 数据隔离"] --> Person["gift_person_info_t 亲友（含 relation_type 关系）"]
     Person --> Event["gift_event_info_t 事由"]
     Event --> Record["gift_record_info_t 礼金记录"]
     Record --> Return["direction=RETURN 回礼记录"]

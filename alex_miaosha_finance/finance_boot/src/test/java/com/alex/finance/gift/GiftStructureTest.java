@@ -6,8 +6,6 @@ import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
-import com.alex.api.finance.gift.relation.query.GiftRelationQuery;
-import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.finance.gift.analysis.controller.GiftAnalysisController;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.annotation.DataPermissionScope;
@@ -24,15 +22,10 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
 import com.alex.finance.gift.record.controller.GiftRecordInfoController;
-import com.alex.finance.gift.relation.entity.GiftRelationInfo;
-import com.alex.finance.gift.relation.mapper.GiftRelationInfoMapper;
-import com.alex.finance.gift.relation.service.GiftRelationInfoService;
-import com.alex.finance.gift.relation.service.impl.GiftRelationInfoServiceImp;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
-import com.alex.finance.gift.relation.controller.GiftRelationInfoController;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -78,7 +71,6 @@ class GiftStructureTest {
     @Test
     void giftEntitiesExtendBaseEntity() {
         assertTrue(BaseEntity.class.isAssignableFrom(GiftPersonInfo.class));
-        assertTrue(BaseEntity.class.isAssignableFrom(GiftRelationInfo.class));
         assertTrue(BaseEntity.class.isAssignableFrom(GiftEventInfo.class));
         assertTrue(BaseEntity.class.isAssignableFrom(GiftRecordInfo.class));
     }
@@ -86,7 +78,6 @@ class GiftStructureTest {
     @Test
     void giftEntitiesDoNotRedeclareBaseEntityFields() {
         assertNoBaseEntityFields(GiftPersonInfo.class);
-        assertNoBaseEntityFields(GiftRelationInfo.class);
         assertNoBaseEntityFields(GiftEventInfo.class);
         assertNoBaseEntityFields(GiftRecordInfo.class);
     }
@@ -94,7 +85,6 @@ class GiftStructureTest {
     @Test
     void giftVosExtendBaseVo() {
         assertTrue(BaseVo.class.isAssignableFrom(GiftPersonInfoVo.class));
-        assertTrue(BaseVo.class.isAssignableFrom(GiftRelationInfoVo.class));
         assertTrue(BaseVo.class.isAssignableFrom(GiftEventInfoVo.class));
         assertTrue(BaseVo.class.isAssignableFrom(GiftRecordInfoVo.class));
     }
@@ -114,7 +104,6 @@ class GiftStructureTest {
     @Test
     void giftQueriesExposePageFilterFields() throws NoSuchFieldException {
         assertEquals(String.class, GiftPersonQuery.class.getDeclaredField("keyword").getType());
-        assertEquals(String.class, GiftRelationQuery.class.getDeclaredField("relationType").getType());
         assertEquals(String.class, GiftEventQuery.class.getDeclaredField("keyword").getType());
         assertEquals(LocalDateTime.class, GiftRecordQuery.class.getDeclaredField("payTimeStart").getType());
         assertEquals(LocalDateTime.class, GiftRecordQuery.class.getDeclaredField("payTimeEnd").getType());
@@ -126,7 +115,6 @@ class GiftStructureTest {
     @Test
     void giftMappersUseMybatisPlusAndOrgDataPermission() throws NoSuchMethodException {
         assertMapper(GiftPersonInfoMapper.class, "gift_person_info_t");
-        assertMapper(GiftRelationInfoMapper.class, "gift_relation_info_t");
         assertMapper(GiftEventInfoMapper.class, "gift_event_info_t");
         assertMapper(GiftRecordInfoMapper.class, "gift_record_info_t");
     }
@@ -134,11 +122,9 @@ class GiftStructureTest {
     @Test
     void giftServicesUseMybatisPlusServiceStack() {
         assertTrue(IService.class.isAssignableFrom(GiftPersonInfoService.class));
-        assertTrue(IService.class.isAssignableFrom(GiftRelationInfoService.class));
         assertTrue(IService.class.isAssignableFrom(GiftEventInfoService.class));
         assertTrue(IService.class.isAssignableFrom(GiftRecordInfoService.class));
         assertTrue(ServiceImpl.class.isAssignableFrom(GiftPersonInfoServiceImp.class));
-        assertTrue(ServiceImpl.class.isAssignableFrom(GiftRelationInfoServiceImp.class));
         assertTrue(ServiceImpl.class.isAssignableFrom(GiftEventInfoServiceImp.class));
         assertTrue(ServiceImpl.class.isAssignableFrom(GiftRecordInfoServiceImp.class));
     }
@@ -146,7 +132,6 @@ class GiftStructureTest {
     @Test
     void giftControllersFollowExistingFinanceRouteShape() throws NoSuchMethodException {
         assertControllerRoutes(GiftPersonInfoController.class, "${api.version:/api/v1}/gift-person-info-t");
-        assertControllerRoutes(GiftRelationInfoController.class, "${api.version:/api/v1}/gift-relation-info-t");
         assertControllerRoutes(GiftEventInfoController.class, "${api.version:/api/v1}/gift-event-info-t");
         assertControllerRoutes(GiftRecordInfoController.class, "${api.version:/api/v1}/gift-record-info-t");
 

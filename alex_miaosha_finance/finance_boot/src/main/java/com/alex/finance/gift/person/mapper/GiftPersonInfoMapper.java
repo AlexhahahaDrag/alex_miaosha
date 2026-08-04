@@ -3,6 +3,7 @@ package com.alex.finance.gift.person.mapper;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
+import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
@@ -29,4 +30,8 @@ public interface GiftPersonInfoMapper extends BaseMapper<GiftPersonInfo> {
     Page<GiftPersonBusinessVo> getBusinessPage(Page<GiftPersonBusinessVo> page, @Param("query") GiftPersonQuery query);
 
     List<String> listDistinctCustomRelationTypes(@Param("userId") Long userId);
+
+    /** 关系类型分布 SQL 聚合（analysis 用，避免全量拉亲友内存分组） */
+    @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    List<GiftRelationDistributionVo> countRelationDistribution();
 }

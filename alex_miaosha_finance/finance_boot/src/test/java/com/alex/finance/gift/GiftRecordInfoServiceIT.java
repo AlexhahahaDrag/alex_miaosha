@@ -26,12 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Service 层集成测试：真实 {@link GiftDataScopeSupport} + {@link GiftRecordInfoServiceImp}，
  * 仅 Mock 外部 Mapper / 登录态。
+ * <p>
+ * 数据权限口径为 ORG_SHARED（家庭组共享）：同机构成员数据互通，跨机构一律拒绝。
  */
 @ExtendWith(MockitoExtension.class)
 class GiftRecordInfoServiceIT {
@@ -39,6 +42,7 @@ class GiftRecordInfoServiceIT {
     private static final Long LOGIN_USER_ID = 10L;
     private static final Long LOGIN_ORG_ID = 20L;
     private static final Long OTHER_USER_ID = 99L;
+    private static final Long OTHER_ORG_ID = 88L;
 
     @Mock
     private GiftRecordInfoMapper giftRecordInfoMapper;
@@ -56,8 +60,9 @@ class GiftRecordInfoServiceIT {
         GiftDataScopeSupport giftDataScopeSupport = new GiftDataScopeSupport(userUtils);
         service = new GiftRecordInfoServiceImp(giftDataScopeSupport, giftPersonInfoMapper, giftEventInfoMapper, null);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
-        when(userUtils.getLoginUser()).thenReturn(loginUser());
-        when(giftRecordInfoMapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {
+        // lenient：部分用例在触达登录态/insert 之前即因参数校验抛出，属预期路径
+        lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());
+        lenient().when(giftRecordInfoMapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {
             GiftRecordInfo entity = invocation.getArgument(0);
             entity.setId(100L);
             return 1;
@@ -96,12 +101,12 @@ class GiftRecordInfoServiceIT {
     }
 
     @Test
-    void addRecord_RETURN_should_reject_when_related_belongs_to_other_user() {
-        when(giftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord(1L, OTHER_USER_ID, LOGIN_ORG_ID));
+    void addRecord_RETURN_should_reject_when_related_belongs_to_other_org() {
+        when(giftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord(1L, OTHER_USER_ID, OTHER_ORG_ID));
 
         FinanceException ex = assertThrows(FinanceException.class, () ->
                 service.addGiftRecordInfo(returnVo(1L, new BigDecimal("100"))));
-        assertEquals("无权访问其他用户的礼金记录", ex.getMsg());
+        assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
     @Test
@@ -120,14 +125,26 @@ class GiftRecordInfoServiceIT {
     }
 
     @Test
-    void addRecord_should_reject_when_personId_belongs_to_other() {
-        when(giftPersonInfoMapper.selectById(5L)).thenReturn(person(5L, OTHER_USER_ID, LOGIN_ORG_ID));
+    void addRecord_should_reject_when_personId_belongs_to_other_org() {
+        when(giftPersonInfoMapper.selectById(5L)).thenReturn(person(5L, OTHER_USER_ID, OTHER_ORG_ID));
 
         GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
         vo.setGiverPersonId(5L);
 
         FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
-        assertEquals("无权访问其他用户的亲友", ex.getMsg());
+        assertEquals("无权访问其他机构的亲友", ex.getMsg());
+    }
+
+    /** 家庭组共享：同机构其他成员的亲友可正常引用。 */
+    @Test
+    void addRecord_should_allow_person_of_same_org_family_member() {
+        when(giftPersonInfoMapper.selectById(5L)).thenReturn(person(5L, OTHER_USER_ID, LOGIN_ORG_ID));
+
+        GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
+        vo.setGiverPersonId(5L);
+
+        GiftRecordInfoVo saved = service.addGiftRecordInfo(vo);
+        assertNotNull(saved.getId());
     }
 
     @Test
@@ -142,14 +159,14 @@ class GiftRecordInfoServiceIT {
     }
 
     @Test
-    void addRecord_should_reject_when_eventId_belongs_to_other() {
-        when(giftEventInfoMapper.selectById(8L)).thenReturn(event(8L, OTHER_USER_ID, LOGIN_ORG_ID));
+    void addRecord_should_reject_when_eventId_belongs_to_other_org() {
+        when(giftEventInfoMapper.selectById(8L)).thenReturn(event(8L, OTHER_USER_ID, OTHER_ORG_ID));
 
         GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
         vo.setEventId(8L);
 
         FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
-        assertEquals("无权访问其他用户的事由", ex.getMsg());
+        assertEquals("无权访问其他机构的事由", ex.getMsg());
     }
 
     @Test
@@ -172,8 +189,8 @@ class GiftRecordInfoServiceIT {
     }
 
     @Test
-    void updateRecord_should_reject_cross_user() {
-        GiftRecordInfo existing = receiveRecord(2L, OTHER_USER_ID, LOGIN_ORG_ID);
+    void updateRecord_should_reject_cross_org() {
+        GiftRecordInfo existing = receiveRecord(2L, OTHER_USER_ID, OTHER_ORG_ID);
         when(giftRecordInfoMapper.selectById(2L)).thenReturn(existing);
 
         GiftRecordInfoVo update = receiveVo(new BigDecimal("100"));
@@ -181,15 +198,15 @@ class GiftRecordInfoServiceIT {
 
         FinanceException ex = assertThrows(FinanceException.class, () ->
                 service.updateGiftRecordInfo(update));
-        assertEquals("无权访问其他用户的礼金记录", ex.getMsg());
+        assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
     @Test
-    void markReturned_should_reject_cross_user() {
-        when(giftRecordInfoMapper.selectById(3L)).thenReturn(receiveRecord(3L, OTHER_USER_ID, LOGIN_ORG_ID));
+    void markReturned_should_reject_cross_org() {
+        when(giftRecordInfoMapper.selectById(3L)).thenReturn(receiveRecord(3L, OTHER_USER_ID, OTHER_ORG_ID));
 
         FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(3L));
-        assertEquals("无权访问其他用户的礼金记录", ex.getMsg());
+        assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
     private GiftRecordInfoVo receiveVo(BigDecimal amount) {

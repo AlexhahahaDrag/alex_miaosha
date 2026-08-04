@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,15 +30,18 @@ public class GiftAnalysisController {
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "gift analysis overview", response = Result.class)
     @GetMapping(value = "/overview")
-    public Result<GiftRecordSummaryVo> overview() {
-        return Result.success(giftAnalysisService.overview());
+    public Result<GiftRecordSummaryVo> overview(
+            @RequestParam(value = "direction", required = false) String direction) {
+        return Result.success(giftAnalysisService.overview(direction));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "gift analysis trend", response = Result.class)
     @GetMapping(value = "/trend")
-    public Result<List<GiftAmountTrendVo>> trend() {
-        return Result.success(giftAnalysisService.trend());
+    public Result<List<GiftAmountTrendVo>> trend(
+            @RequestParam(value = "period", required = false) String period,
+            @RequestParam(value = "direction", required = false) String direction) {
+        return Result.success(giftAnalysisService.trend(period, direction));
     }
 
     @ApiOperationSupport(order = 30, author = "alex")

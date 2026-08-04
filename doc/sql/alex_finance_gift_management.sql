@@ -51,32 +51,6 @@ CREATE TABLE `alex_finance`.`gift_person_info_t` (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来人员表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Table structure for gift_relation_info_t
--- ----------------------------
-DROP TABLE IF EXISTS `alex_finance`.`gift_relation_info_t`;
-CREATE TABLE `alex_finance`.`gift_relation_info_t` (
-  `id` bigint NOT NULL COMMENT '主键',
-  `org_id` bigint NOT NULL COMMENT '组织ID',
-  `user_id` bigint NOT NULL COMMENT '归属用户ID',
-  `person_id` bigint NOT NULL COMMENT '人员ID',
-  `relation_person_id` bigint NOT NULL COMMENT '关联人员ID',
-  `relation_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '关系类型',
-  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '备注',
-  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
-  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
-  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
-  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
-  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
-  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
-  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
-  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_gift_relation_org_user_person`(`org_id` ASC, `user_id` ASC, `person_id` ASC) USING BTREE,
-  INDEX `idx_gift_relation_org_relation_person`(`org_id` ASC, `relation_person_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来关系表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
 -- Table structure for gift_event_info_t
 -- ----------------------------
 DROP TABLE IF EXISTS `alex_finance`.`gift_event_info_t`;
@@ -483,3 +457,13 @@ SET @gift_person_avatar_sql := IF(
 PREPARE gift_person_avatar_stmt FROM @gift_person_avatar_sql;
 EXECUTE gift_person_avatar_stmt;
 DEALLOCATE PREPARE gift_person_avatar_stmt;
+
+-- -----------------------------------------------------------------------------
+-- 8. Incremental 2026-08-04：下线关系表 gift_relation_info_t
+-- 说明：该表前端（PC/移动端）从未接入，关系语义已由 gift_person_info_t.relation_type
+--       + gift_person_relation_option_t（关系词典）承载，经确认整体砍掉。
+--       同步删除了后端 relation 子域代码（controller/service/entity/mapper）。
+-- -----------------------------------------------------------------------------
+USE alex_finance;
+
+DROP TABLE IF EXISTS `alex_finance`.`gift_relation_info_t`;

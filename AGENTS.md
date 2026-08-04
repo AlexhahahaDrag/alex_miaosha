@@ -14,7 +14,7 @@
 
 ## Learned Workspace Facts
 
-- 后端项目采用微服务和多模块架构，主要包含：`alex_miaosha_user`（用户服务，含 `user_boot` 与 `user_api`）、`alex_miaosha_base`（基础模块）、`alex_miaosha_common`（公共工具）、`alex_miaosha_oss`（OSS 服务）、`alex_miaosha_finance`（财务/礼尚往来微服务，含 `finance_boot` 与 `finance_api`，其中 gift 业务按 `record/person/event/relation` 四个子领域 + `analysis` 聚合分包，对应四张表 `gift_record_info_t/gift_person_info_t/gift_event_info_t/gift_relation_info_t`）。
+- 后端项目采用微服务和多模块架构，主要包含：`alex_miaosha_user`（用户服务，含 `user_boot` 与 `user_api`）、`alex_miaosha_base`（基础模块）、`alex_miaosha_common`（公共工具）、`alex_miaosha_oss`（OSS 服务）、`alex_miaosha_finance`（财务/礼尚往来微服务，含 `finance_boot` 与 `finance_api`，其中 gift 业务按 `record/person/event` 三个子领域 + `analysis` 聚合分包，对应三张表 `gift_record_info_t/gift_person_info_t/gift_event_info_t`；原 `relation` 子域与 `gift_relation_info_t` 表已于 2026-08-04 下线，关系语义由 `gift_person_info_t.relation_type` + `gift_person_relation_option_t` 词典承载）。
 - 权限上下文构建由 `UserPermissionContextService.buildContext()` 统一负责，聚合了用户的第一有效机构、关联角色列表、菜单树及按钮/API权限码，并可靠地写入 Redis 缓存。
 - 组织关系和角色管理逻辑中，机构关系采用单用户唯一有效机构模式（调用 `assignSingleOrg` 时将原有效关系置为 `status=0` 且新增有效关系 `status=1`，需严密事务保障），而角色关系支持多角色绑定（调用 `assignRoles` 时替换并过滤掉 null 等无效角色 ID）。
 - 登录逻辑（`TUserServiceImpl.login()`）中，必须通过 `allFutures.join()` 显式同步/等待异步头像获取（`avatarFuture`）及权限上下文构建（`buildContext`）等 CompletableFuture，再装配登录响应并写入 Redis 缓存，以防并发写盘及查询缺失。

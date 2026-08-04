@@ -3,6 +3,8 @@ package com.alex.finance.gift.record.service.impl;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
+import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
+import com.alex.api.finance.gift.summary.vo.GiftDirectionAggVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
@@ -21,6 +23,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 
@@ -61,18 +64,35 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         return getBaseMapper().getList(query);
     }
 
+    /**
+     * 汇总统计：下沉为 SQL GROUP BY direction 聚合（sumDirectionAgg），
+     * 不再全量拉取记录在内存中累加，数据量增长时不劣化。
+     */
     @Override
     public GiftRecordSummaryVo getSummary(GiftRecordQuery query) {
-        List<GiftRecordInfo> records = getBaseMapper().listEntities(query);
-        BigDecimal giveAmount = sumByDirection(records, DIRECTION_GIVE);
-        BigDecimal receiveAmount = sumByDirection(records, DIRECTION_RECEIVE);
-        BigDecimal returnAmount = sumByDirection(records, DIRECTION_RETURN);
+        List<GiftDirectionAggVo> aggRows = getBaseMapper().sumDirectionAgg(query);
+        BigDecimal giveAmount = aggAmount(aggRows, DIRECTION_GIVE);
+        BigDecimal receiveAmount = aggAmount(aggRows, DIRECTION_RECEIVE);
+        BigDecimal returnAmount = aggAmount(aggRows, DIRECTION_RETURN);
+        long receiveCount = aggCount(aggRows, DIRECTION_RECEIVE);
+        long giveCount = aggCount(aggRows, DIRECTION_GIVE);
+        long returnCount = aggCount(aggRows, DIRECTION_RETURN);
         return new GiftRecordSummaryVo()
                 .setGiveAmount(giveAmount)
                 .setReceiveAmount(receiveAmount)
                 .setReturnAmount(returnAmount)
                 .setNetAmount(receiveAmount.subtract(giveAmount).subtract(returnAmount))
-                .setRecordCount((long) records.size());
+                .setRecordCount(receiveCount + giveCount + returnCount)
+                .setReceiveCount(receiveCount)
+                .setGiveCount(giveCount)
+                .setReturnCount(returnCount);
+    }
+
+    @Override
+    public List<GiftAmountTrendVo> getTrend(String period, String direction) {
+        // 月度 %Y-%m / 年度 %Y，与原 YearMonth 内存分组口径一致
+        String dateFormat = "year".equalsIgnoreCase(period) ? "%Y" : "%Y-%m";
+        return getBaseMapper().sumTrendAgg(dateFormat, normalizeDirection(direction));
     }
 
     @Override
@@ -82,7 +102,14 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         return toVo(entity);
     }
 
+    /**
+     * 新增礼金记录。
+     * <p>
+     * 事务边界：autoResolveOrCreateEvent 可能插入事由并更新词典 useCount，
+     * 必须与记录落库保持原子；RETURN 记录落库后同步回礼状态。
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GiftRecordInfoVo addGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
         autoResolveOrCreateEvent(giftRecordInfoVo);
         validateForSave(giftRecordInfoVo);
@@ -95,10 +122,14 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         }
         save(entity);
         giftRecordInfoVo.setId(entity.getId());
+        if (DIRECTION_RETURN.equals(entity.getDirection())) {
+            syncReturnedFlag(entity.getRelatedRecordId());
+        }
         return giftRecordInfoVo;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
         if (giftRecordInfoVo == null || giftRecordInfoVo.getId() == null) {
             throw GiftExceptions.param("礼金记录ID不能为空");
@@ -111,20 +142,37 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         validateForSave(giftRecordInfoVo);
         GiftRecordInfo entity = new GiftRecordInfo();
         BeanUtils.copyProperties(giftRecordInfoVo, entity);
-        return updateById(entity);
+        Boolean updated = updateById(entity);
+        // 回礼金额可能变化：原关联与新关联的收礼记录都要重算回礼状态
+        if (DIRECTION_RETURN.equals(existing.getDirection())) {
+            syncReturnedFlag(existing.getRelatedRecordId());
+        }
+        if (DIRECTION_RETURN.equals(giftRecordInfoVo.getDirection())) {
+            syncReturnedFlag(giftRecordInfoVo.getRelatedRecordId());
+        }
+        return updated;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteGiftRecordInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;
         }
         List<Long> idList = parseIds(ids);
+        // 记录被删 RETURN 关联的收礼ID，删除后重算其回礼状态
+        List<Long> relatedReceiveIds = new java.util.ArrayList<>();
         for (Long id : idList) {
             GiftRecordInfo existing = getById(id);
             giftDataScopeSupport.assertRecordAccessible(existing);
+            if (existing != null && DIRECTION_RETURN.equals(existing.getDirection())
+                    && existing.getRelatedRecordId() != null) {
+                relatedReceiveIds.add(existing.getRelatedRecordId());
+            }
         }
-        return removeBatchByIds(idList);
+        Boolean removed = removeBatchByIds(idList);
+        relatedReceiveIds.stream().distinct().forEach(this::syncReturnedFlag);
+        return removed;
     }
 
     @Override
@@ -147,6 +195,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean markReturned(Long receiveRecordId) {
         if (receiveRecordId == null) {
             throw GiftExceptions.param("原始收礼记录不能为空");
@@ -243,6 +292,31 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         }
     }
 
+    /**
+     * 按回礼流水重算收礼记录的 returned_flag：
+     * 累计回礼金额 >= 收礼金额 时置 1，否则置 0（覆盖手动误标场景）。
+     * 在 RETURN 记录新增/修改/删除后调用，保证状态与流水口径一致。
+     */
+    private void syncReturnedFlag(Long receiveRecordId) {
+        if (receiveRecordId == null) {
+            return;
+        }
+        GiftRecordInfo receiveRecord = getById(receiveRecordId);
+        if (receiveRecord == null || !DIRECTION_RECEIVE.equals(receiveRecord.getDirection())) {
+            return;
+        }
+        BigDecimal receiveAmount = receiveRecord.getAmount() == null ? BigDecimal.ZERO : receiveRecord.getAmount();
+        BigDecimal returnedAmount = getBaseMapper().sumReturnAmountByRelatedRecordId(receiveRecordId);
+        int expectedFlag = receiveAmount.subtract(returnedAmount == null ? BigDecimal.ZERO : returnedAmount)
+                .compareTo(BigDecimal.ZERO) <= 0 ? 1 : 0;
+        if (receiveRecord.getReturnedFlag() == null || receiveRecord.getReturnedFlag() != expectedFlag) {
+            GiftRecordInfo entity = new GiftRecordInfo();
+            entity.setId(receiveRecordId);
+            entity.setReturnedFlag(expectedFlag);
+            updateById(entity);
+        }
+    }
+
     private void validateForSave(GiftRecordInfoVo vo) {
         validateDirection(vo);
         validateAmount(vo);
@@ -336,12 +410,34 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         return vo;
     }
 
-    private BigDecimal sumByDirection(List<GiftRecordInfo> records, String direction) {
-        return records.stream()
-                .filter(record -> record != null && direction.equals(record.getDirection()))
-                .map(record -> record == null ? null : record.getAmount())
+    /** 从方向聚合行中取指定方向金额（无该方向记录时返回 0） */
+    private BigDecimal aggAmount(List<GiftDirectionAggVo> aggRows, String direction) {
+        return aggRows.stream()
+                .filter(row -> row != null && direction.equals(row.getDirection()))
+                .map(GiftDirectionAggVo::getTotalAmount)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
+    }
+
+    /** 从方向聚合行中取指定方向笔数 */
+    private long aggCount(List<GiftDirectionAggVo> aggRows, String direction) {
+        return aggRows.stream()
+                .filter(row -> row != null && direction.equals(row.getDirection()))
+                .map(GiftDirectionAggVo::getRecordCount)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(0L);
+    }
+
+    /** 方向参数白名单校验：非法值一律按"全部"处理，防止外部输入直接进 SQL 条件 */
+    private String normalizeDirection(String direction) {
+        if (DIRECTION_GIVE.equals(direction)
+                || DIRECTION_RECEIVE.equals(direction)
+                || DIRECTION_RETURN.equals(direction)) {
+            return direction;
+        }
+        return null;
     }
 
     private void autoResolveOrCreateEvent(GiftRecordInfoVo vo) {

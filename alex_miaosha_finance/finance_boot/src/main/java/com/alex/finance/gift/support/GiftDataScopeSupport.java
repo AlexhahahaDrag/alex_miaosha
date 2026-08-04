@@ -7,7 +7,6 @@ import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
-import com.alex.finance.gift.relation.entity.GiftRelationInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -61,13 +60,6 @@ public class GiftDataScopeSupport {
                 entity == null ? null : entity.getUserId(),
                 entity == null ? null : entity.getOrgId(),
                 "事由");
-    }
-
-    public void assertRelationAccessible(GiftRelationInfo entity) {
-        assertEntityAccessible(
-                entity == null ? null : entity.getUserId(),
-                entity == null ? null : entity.getOrgId(),
-                "关系");
     }
 
     // ─── 私有辅助 ──────────────────────────────────────────────────────────────

@@ -177,4 +177,42 @@
           AND is_delete = 0
     </select>
 
+    <!-- 按方向聚合金额与笔数（summary / analysis overview 下沉 SQL）。
+         联表仅为复用 queryConditions 中的 keyword 条件，无 keyword 时优化器会裁剪。 -->
+    <select id="sumDirectionAgg" resultType="com.alex.api.finance.gift.summary.vo.GiftDirectionAggVo">
+        SELECT
+            r.direction AS direction,
+            COUNT(1) AS record_count,
+            COALESCE(SUM(r.amount), 0) AS total_amount
+        FROM gift_record_info_t r
+        LEFT JOIN gift_event_info_t e
+            ON r.event_id = e.id
+        LEFT JOIN gift_person_info_t giver
+            ON r.giver_person_id = giver.id
+        LEFT JOIN gift_person_info_t receiver
+            ON r.receiver_person_id = receiver.id
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        GROUP BY r.direction
+    </select>
+
+    <!-- 按时间粒度聚合收支趋势（analysis trend 下沉 SQL）：
+         支出口径 = GIVE + RETURN，与 GiftAnalysisServiceImpl 原内存聚合一致 -->
+    <select id="sumTrendAgg" resultType="com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo">
+        SELECT
+            DATE_FORMAT(r.pay_time, #{dateFormat}) AS label,
+            COALESCE(SUM(CASE WHEN r.direction = 'RECEIVE' THEN r.amount ELSE 0 END), 0) AS receive_amount,
+            COALESCE(SUM(CASE WHEN r.direction != 'RECEIVE' THEN r.amount ELSE 0 END), 0) AS give_amount
+        FROM gift_record_info_t r
+        WHERE r.is_delete = 0
+          AND r.pay_time IS NOT NULL
+        <if test="direction != null and direction != ''">
+            AND r.direction = #{direction}
+        </if>
+        GROUP BY DATE_FORMAT(r.pay_time, #{dateFormat})
+        ORDER BY label
+    </select>
+
 </mapper>

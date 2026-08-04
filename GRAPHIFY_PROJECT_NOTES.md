@@ -13,7 +13,7 @@ Gift management module notes:
 
 - Backend implementation lives under `alex_miaosha_finance/finance_boot/src/main/java/com/alex/finance/gift`.
 - SQL initialization files live at `doc/sql/gift_management_schema.sql` and `doc/sql/gift_management_permission.sql`.
-- Data tables are `gift_person_info_t`, `gift_relation_info_t`, `gift_event_info_t`, and `gift_record_info_t`.
+- Data tables are `gift_person_info_t`, `gift_event_info_t`, and `gift_record_info_t` (the former `gift_relation_info_t` was removed on 2026-08-04; relation semantics live in `gift_person_info_t.relation_type` plus the `gift_person_relation_option_t` dictionary).
 - Return records are represented in `gift_record_info_t` with `direction = RETURN` and `related_record_id`; there is no separate `gift_return_record_info_t`.
 - All business queries must include `org_id` data isolation, and user-scoped access can additionally use `user_id`.
 - Important indexes include organization, event, giver, receiver, pay time, and direction combinations for 10w+ gift records.

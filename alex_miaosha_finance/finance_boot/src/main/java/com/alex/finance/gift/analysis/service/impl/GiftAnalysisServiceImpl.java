@@ -2,10 +2,8 @@ package com.alex.finance.gift.analysis.service.impl;
 
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventSummaryVo;
-import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
-import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
 import com.alex.api.finance.gift.summary.vo.GiftRankingItemVo;
@@ -19,14 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,49 +32,30 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
     private final GiftEventInfoService giftEventInfoService;
     private final GiftPersonInfoService giftPersonInfoService;
 
+    /**
+     * 统计总览：direction 白名单过滤后走 getSummary 的 SQL 聚合。
+     */
     @Override
-    public GiftRecordSummaryVo overview() {
-        return giftRecordInfoService.getSummary(new GiftRecordQuery());
+    public GiftRecordSummaryVo overview(String direction) {
+        GiftRecordQuery query = new GiftRecordQuery();
+        query.setDirection(normalizeDirection(direction));
+        return giftRecordInfoService.getSummary(query);
     }
 
+    /**
+     * 收支趋势：下沉为 SQL DATE_FORMAT 分组聚合（原实现全量拉记录按 YearMonth 内存分组）。
+     */
     @Override
-    public List<GiftAmountTrendVo> trend() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        Map<YearMonth, GiftAmountTrendVo> trendMap = giftRecordInfoService.getList(new GiftRecordQuery())
-                .stream()
-                .filter(giftRecord -> giftRecord.getPayTime() != null)
-                .collect(Collectors.groupingBy(
-                        giftRecord -> YearMonth.from(giftRecord.getPayTime()),
-                        LinkedHashMap::new,
-                        Collectors.collectingAndThen(Collectors.toList(), records -> {
-                            BigDecimal giveAmount = sumByDirection(records, DIRECTION_GIVE)
-                                    .add(sumByDirection(records, DIRECTION_RETURN));
-                            BigDecimal receiveAmount = sumByDirection(records,
-                                    DIRECTION_RECEIVE);
-                            return new GiftAmountTrendVo()
-                                    .setGiveAmount(giveAmount)
-                                    .setReceiveAmount(receiveAmount);
-                        })));
-        return trendMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(entry -> entry.getValue().setLabel(entry.getKey().format(formatter)))
-                .toList();
+    public List<GiftAmountTrendVo> trend(String period, String direction) {
+        return giftRecordInfoService.getTrend(period, normalizeDirection(direction));
     }
 
+    /**
+     * 关系分布：下沉为 SQL GROUP BY 聚合（原实现全量拉亲友内存分组）。
+     */
     @Override
     public List<GiftRelationDistributionVo> relationDistribution() {
-        return giftPersonInfoService.getList(new GiftPersonQuery()).stream()
-                .collect(Collectors.groupingBy(
-                        person -> person.getRelationType() == null ? "OTHER"
-                                : person.getRelationType(),
-                        Collectors.counting()))
-                .entrySet()
-                .stream()
-                .map(entry -> new GiftRelationDistributionVo()
-                        .setRelationType(entry.getKey())
-                        .setCount(entry.getValue()))
-                .sorted(Comparator.comparing(GiftRelationDistributionVo::getCount).reversed())
-                .toList();
+        return giftPersonInfoService.getRelationDistribution();
     }
 
     @Override
@@ -118,13 +91,14 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
                 .toList();
     }
 
-    private BigDecimal sumByDirection(List<GiftRecordInfoVo> records, String direction) {
-        return
-                records.stream()
-                        .filter(giftRecord -> Objects.equals(direction, giftRecord.getDirection()))
-                        .map(GiftRecordInfoVo::getAmount)
-                        .filter(Objects::nonNull)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+    /** 方向参数白名单：非法值按"全部"处理 */
+    private String normalizeDirection(String direction) {
+        if (DIRECTION_GIVE.equals(direction)
+                || DIRECTION_RECEIVE.equals(direction)
+                || DIRECTION_RETURN.equals(direction)) {
+            return direction;
+        }
+        return null;
     }
 
     private BigDecimal defaultAmount(BigDecimal amount) {

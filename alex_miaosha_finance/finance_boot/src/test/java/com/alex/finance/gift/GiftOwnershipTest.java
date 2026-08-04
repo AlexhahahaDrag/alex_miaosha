@@ -3,7 +3,6 @@ package com.alex.finance.gift;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
-import com.alex.api.finance.gift.relation.vo.GiftRelationInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.user.UserUtils;
@@ -21,10 +20,6 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
-import com.alex.finance.gift.relation.entity.GiftRelationInfo;
-import com.alex.finance.gift.relation.service.impl.GiftRelationInfoServiceImp;
-import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
-import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.Test;
@@ -56,15 +51,8 @@ class GiftOwnershipTest {
     }
 
     @Test
-    void addRelationEventAndRecordOverrideClientOrgAndUserFromLoginUser() {
+    void addEventAndRecordOverrideClientOrgAndUserFromLoginUser() {
         UserUtils userUtils = loginUser(11L, 21L);
-
-        TestRelationService relationService = new TestRelationService(userUtils);
-        GiftRelationInfoVo relation = relationService.addGiftRelationInfo(new GiftRelationInfoVo().setOrgId(1L).setUserId(2L));
-        assertEquals(21L, relationService.saved.getOrgId());
-        assertEquals(11L, relationService.saved.getUserId());
-        assertEquals(21L, relation.getOrgId());
-        assertEquals(11L, relation.getUserId());
 
         TestEventService eventService = new TestEventService(userUtils);
         GiftEventInfoVo event = eventService.addGiftEventInfo(new GiftEventInfoVo().setOrgId(1L).setUserId(2L));
@@ -114,21 +102,6 @@ class GiftOwnershipTest {
         public boolean save(GiftPersonInfo entity) {
             this.saved = entity;
             entity.setId(1L);
-            return true;
-        }
-    }
-
-    private static class TestRelationService extends GiftRelationInfoServiceImp {
-        private GiftRelationInfo saved;
-
-        private TestRelationService(UserUtils userUtils) {
-            super(new GiftDataScopeSupport(userUtils));
-        }
-
-        @Override
-        public boolean save(GiftRelationInfo entity) {
-            this.saved = entity;
-            entity.setId(2L);
             return true;
         }
     }

@@ -139,8 +139,8 @@
 
 后端已在 `alex_miaosha_finance/finance_boot` 中扩展礼尚往来业务，复用现有用户、组织、RBAC、网关与通用返回体系，不重复建设基础能力。
 
-- 业务边界：亲友档案、关系维护、事由管理、礼金记录、回礼标记、待回礼金额与统计分析。
-- 数据表：`gift_person_info_t`、`gift_relation_info_t`、`gift_event_info_t`、`gift_record_info_t`。
+- 业务边界：亲友档案（含关系类型）、事由管理、礼金记录、回礼标记、待回礼金额与统计分析。
+- 数据表：`gift_person_info_t`、`gift_event_info_t`、`gift_record_info_t`（原 `gift_relation_info_t` 已于 2026-08-04 下线，关系语义由 `gift_person_info_t.relation_type` + 关系词典表承载）。
 - 回礼设计：不单独创建 `gift_return_record_info_t`，统一由 `gift_record_info_t.direction = GIVE | RECEIVE | RETURN` 和 `related_record_id` 表达回礼链路。
 - 数据隔离：所有业务表必须带 `org_id`，接口查询、详情、编辑、删除均按 `org_id` 与 `user_id` 权限上下文过滤。
 - 权限脚本：`doc/sql/gift_management_permission.sql` 提供菜单与按钮权限初始化，超级管理员按现有前端路由逻辑无需额外授权。

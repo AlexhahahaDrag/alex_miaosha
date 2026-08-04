@@ -173,4 +173,15 @@
           )
     </select>
 
+    <!-- 关系类型分布聚合（analysis relation-distribution 下沉 SQL），空关系归入 OTHER -->
+    <select id="countRelationDistribution" resultType="com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo">
+        SELECT
+            COALESCE(NULLIF(p.relation_type, ''), 'OTHER') AS relation_type,
+            COUNT(1) AS count
+        FROM gift_person_info_t p
+        WHERE p.is_delete = 0
+        GROUP BY COALESCE(NULLIF(p.relation_type, ''), 'OTHER')
+        ORDER BY count DESC
+    </select>
+
 </mapper>

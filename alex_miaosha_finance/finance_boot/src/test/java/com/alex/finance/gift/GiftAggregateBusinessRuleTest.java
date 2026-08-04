@@ -10,6 +10,7 @@ import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
+import com.alex.api.finance.gift.summary.vo.GiftDirectionAggVo;
 import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.api.UserApi;
@@ -216,7 +217,19 @@ class GiftAggregateBusinessRuleTest {
                     mock(GiftEventInfoMapper.class),
                     null);
             GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
-            when(mapper.listEntities(any())).thenAnswer(invocation -> records);
+            // getSummary 已下沉为 SQL 聚合：按方向分组模拟 sumDirectionAgg 的返回行
+            when(mapper.sumDirectionAgg(any())).thenAnswer(invocation -> records.stream()
+                    .filter(record -> record.getDirection() != null)
+                    .collect(java.util.stream.Collectors.groupingBy(GiftRecordInfo::getDirection))
+                    .entrySet().stream()
+                    .map(entry -> new GiftDirectionAggVo()
+                            .setDirection(entry.getKey())
+                            .setRecordCount((long) entry.getValue().size())
+                            .setTotalAmount(entry.getValue().stream()
+                                    .map(GiftRecordInfo::getAmount)
+                                    .filter(java.util.Objects::nonNull)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)))
+                    .toList());
             ReflectionTestUtils.setField(this, "baseMapper", mapper);
         }
     }

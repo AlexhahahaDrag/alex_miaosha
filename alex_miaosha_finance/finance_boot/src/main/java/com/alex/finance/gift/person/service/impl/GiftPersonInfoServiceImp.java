@@ -7,6 +7,7 @@ import com.alex.api.finance.gift.person.vo.GiftPersonProfileVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonSummaryVo;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
+import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -116,7 +118,10 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
             }
         }
 
+        // 年度往来总额：仅统计当前自然年内发生（payTime）的记录，payTime 为空的不计入
+        int currentYear = now.getYear();
         BigDecimal yearTotalAmount = records.stream()
+                .filter(record -> record.getPayTime() != null && record.getPayTime().getYear() == currentYear)
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal pendingReturnAmount = records.stream()
@@ -168,7 +173,9 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         return toVo(entity);
     }
 
+    /** 事务边界：主表落库 + rememberRelationOption 写关系词典表，需保持原子。 */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GiftPersonInfoVo addGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         fillOwner(giftPersonInfoVo);
         applyRelationOption(giftPersonInfoVo);
@@ -181,6 +188,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         if (giftPersonInfoVo == null || giftPersonInfoVo.getId() == null) {
             throw GiftExceptions.param("亲友ID不能为空");
@@ -211,13 +219,26 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         return removeBatchByIds(idList);
     }
 
+    /**
+     * 家庭组成员选项（懒建档）：成员首次出现时自动创建其亲友档案。
+     * <p>
+     * 性能：已建档成员一次 IN 批量查询取回，仅缺档成员逐个走 Feign 取展示名并插库；
+     * 事务：可能发生多条插入，整体包在同一事务内。
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<GiftPersonInfoVo> listOrgMemberOptions(String keyword) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
         List<Long> memberUserIds = resolveOrgMemberUserIds(loginUser, orgId);
+        Map<Long, GiftPersonInfo> existingByBindUserId = listOrgMemberPersons(orgId, memberUserIds);
         return memberUserIds.stream()
-                .map(userId -> ensureOrgMemberPerson(orgId, userId, loginUser))
+                .map(userId -> {
+                    GiftPersonInfo existing = existingByBindUserId.get(userId);
+                    return existing != null
+                            ? toVo(existing)
+                            : createOrgMemberPerson(orgId, userId, loginUser);
+                })
                 .filter(Objects::nonNull)
                 .filter(vo -> matchesKeyword(vo, keyword))
                 .sorted(Comparator.comparing(GiftPersonInfoVo::getPersonName,
@@ -248,11 +269,31 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         return List.of(loginUser.getId());
     }
 
-    private GiftPersonInfoVo ensureOrgMemberPerson(Long orgId, Long bindUserId, TUserVo loginUser) {
-        GiftPersonInfo existing = findOrgMemberPerson(orgId, bindUserId);
-        if (existing != null) {
-            return toVo(existing);
+    /** 关系类型分布：SQL GROUP BY 聚合，数据权限由 mapper 注解过滤。 */
+    @Override
+    public List<GiftRelationDistributionVo> getRelationDistribution() {
+        return getBaseMapper().countRelationDistribution();
+    }
+
+    /** 批量查询已建档的家庭组成员亲友（key=bindUserId；同一成员多行时保留最早一行，等价原 LIMIT 1 语义）。 */
+    private Map<Long, GiftPersonInfo> listOrgMemberPersons(Long orgId, List<Long> memberUserIds) {
+        if (memberUserIds == null || memberUserIds.isEmpty()) {
+            return Map.of();
         }
+        List<GiftPersonInfo> persons = list(Wrappers.<GiftPersonInfo>lambdaQuery()
+                .eq(GiftPersonInfo::getIsDelete, 0)
+                .in(GiftPersonInfo::getBindUserId, memberUserIds)
+                .eq(orgId != null, GiftPersonInfo::getOrgId, orgId)
+                .isNull(orgId == null, GiftPersonInfo::getOrgId));
+        Map<Long, GiftPersonInfo> byBindUserId = new java.util.LinkedHashMap<>();
+        for (GiftPersonInfo person : persons) {
+            byBindUserId.putIfAbsent(person.getBindUserId(), person);
+        }
+        return byBindUserId;
+    }
+
+    /** 为缺档成员创建亲友档案（仅在成员首次进入选项列表时触发一次）。 */
+    private GiftPersonInfoVo createOrgMemberPerson(Long orgId, Long bindUserId, TUserVo loginUser) {
         GiftPersonInfo entity = new GiftPersonInfo();
         entity.setOrgId(orgId);
         entity.setUserId(bindUserId);
@@ -260,15 +301,6 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         entity.setPersonName(resolveMemberDisplayName(bindUserId, loginUser));
         save(entity);
         return toVo(entity);
-    }
-
-    private GiftPersonInfo findOrgMemberPerson(Long orgId, Long bindUserId) {
-        return getOne(Wrappers.<GiftPersonInfo>lambdaQuery()
-                .eq(GiftPersonInfo::getIsDelete, 0)
-                .eq(GiftPersonInfo::getBindUserId, bindUserId)
-                .eq(orgId != null, GiftPersonInfo::getOrgId, orgId)
-                .isNull(orgId == null, GiftPersonInfo::getOrgId)
-                .last("LIMIT 1"));
     }
 
     private String resolveMemberDisplayName(Long bindUserId, TUserVo loginUser) {

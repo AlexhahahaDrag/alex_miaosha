@@ -108,6 +108,10 @@ public class GiftRecordInfoController {
     @PostMapping(value = "/export")
     public void export(@RequestBody(required = false) GiftRecordQuery query,
             javax.servlet.http.HttpServletResponse response) {
+        // HTTP 契约兜底：先声明附件下载头，前端按 Content-Disposition 解析文件名；
+        // 服务层写出 Excel 时会用带时间戳的具体文件名覆盖此默认值
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=gift_record_info.xlsx");
         giftRecordInfoService.exportGiftRecordInfo(query, response);
     }
 }
