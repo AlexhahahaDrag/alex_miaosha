@@ -35,13 +35,13 @@ Status: 评审进行中
 | PC | PERM | 5 | 3 | 3 | 2 | 2 | 71 |
 | PC | RELATION | 5 | 3 | 3 | 2 | 2 | 71 |
 | PC | SCOPE | 5 | N/A | 2 | N/A | 2 | 73 |
-| MB | ORG | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | USER | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | ROLE | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | MENU | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | PERM | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | RELATION | TBD | TBD | TBD | TBD | TBD | TBD |
-| MB | SCOPE | TBD | N/A | TBD | N/A | TBD | TBD |
+| MB | ORG | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | USER | 3 | 0 | 3 | 5 | 0 | 39 |
+| MB | ROLE | 3 | 3 | 3 | 1 | 0 | 51 |
+| MB | MENU | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | PERM | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | RELATION | 3 | 1 | 3 | 1 | 0 | 39 |
+| MB | SCOPE | 3 | N/A | 3 | N/A | 0 | 50 |
 <!-- matrix:end -->
 
 ### 2.1 判据勾选明细
@@ -183,6 +183,63 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 - D4: N/A。
 - D5: 勾中 2/5 → 2 分（40%）。勾中 1、5。不勾 2 数据范围表达无测试、3、4。
 
+### MB 判据适用说明
+
+- D1 全部 7 格用**前端消费侧**判据。7 格 D1 一律 3 分：勾中 1 ID 全程 string、3 不承担安全决策、5 payload 干净；不勾 2 全仓无 `hasPermission`/`usePermission`/`v-permission`，3 `buildPermissionContext` 只产出 menuInfo/roleInfo/orgInfo，**根本没有权限码这一概念**，页内无从做按钮级校验；不勾 4 `pickPrimaryRole` 取 `roleInfoVoList[0]`。
+- MB-USER 按**个人信息页**评（spec 6 节的描述准确）：`src/views/user/userManager/` 下只有 `index.vue`（17 行）、`config`、`api`，没有列表也没有详情页，不构成用户管理能力。故 D2 分母只保留判据 1（CRUD）与 8（目标态），其余管理类判据全部剔除。
+- MB-USER 的 D4 得 5 分而 D2 得 0 分不是矛盾：完整的个人中心 `src/views/user/index.vue` 视觉最规范（骨架屏、16px 圆角、`navigator.vibrate`、侧距齐全），但路由 `/myself/info`「个人信息」指向的是那个 17 行残片。视觉规范与功能完成度在这一格恰好分离。
+- 7 个管理模块的 D4 判据 3（卡片化圆角）与 4（触觉反馈）**适用且未满足**：`border-radius` 与 `vibrate` 只出现在个人中心页，管理页一处都没有。
+
+#### MB-ORG
+
+- D2: 勾中 4/9 → 2 分（44.4%）。勾中：1 列表加详情齐备、2 `van-search` 筛选、3 `usePagination` 服务端分页、7 `orgUserInfo` 有独立页面入口。不勾：4 无批量；5 无机构树；6 无启停；8 `mobile-rbac-visibility-checklist.md` 要求的按权限可见性控制未落地；9 无导出。
+- D3: 勾中 4/7 → 3 分（57.1%）。勾中：1 列表加详情页路由形态统一、4 `rulesRef` 与 `required="auto"`、6 复用 `CommonList` 与 `CommonPullRefresh`、7 命名规范。不勾：2 全仓无 `showConfirmDialog`，删除没有二次确认；3 详情页提交按钮无 loading 防重；5 PC 内嵌而 mobile 独立成页。
+- D4: 勾中 2/7 → 1 分（28.6%）。勾中：2 `van-empty` 空状态、6 无 emoji。不勾：1 管理页只有 loading 无骨架屏；3 无 16px 卡片圆角；4 无触觉反馈；5 无 `0 16px` 侧距；7 详情页 placeholder 文案乱码。
+- D5: 勾中 0/5 → 0 分。`tests/` 目录不存在，无任何自动化测试、无定位钩子、无可跑命令。
+
+#### MB-USER
+
+- D2: 勾中 0/2 → 0 分。剔除：2、3、4、5、6、7、9（个人信息页不承载列表与管理能力）。不勾：1 `/myself/info` 渲染的 `userManager/index.vue` 只有一个孤立头像上传字段，既无其他字段也无保存按钮，`value` 定义后未使用，是挂在路由上的未完成残片；8 目标态未落地。
+- D3: 勾中 4/6 → 3 分（66.7%）。剔除：4（残片无表单校验可评）。勾中：1、3 个人中心有 loading、6、7。不勾：2 退出登录无二次确认；5。
+- D4: 勾中 6/6 → 5 分。剔除：2（个人页无列表空态）。个人中心页骨架屏、16px 圆角、`navigator.vibrate`、侧距、无 emoji、无乱码全部满足，是三端里唯一完全符合自身 `.cursorrules` 视觉基准的页面。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-ROLE
+
+- D2: 勾中 4/7 → 3 分（57.1%）。剔除：5 树、9 导出。勾中：1、2、3、7（`roleUserInfo` 与 `rolePermissionInfo` 均有独立页）。不勾：4、6、8。
+- D3: 勾中 4/7 → 3 分（57.1%）。同 MB-ORG。
+- D4: 勾中 2/7 → 1 分（28.6%）。同 MB-ORG。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-MENU
+
+- D2: 勾中 3/7 → 2 分（42.9%）。剔除：7 关系配置、9 导出。勾中：1、2、3。不勾：4 无批量；5 无树；6 无启停；8 目标态未落地。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。本模块乱码最严重，`menuInfoDetail/index.vue` 有 11 处受损文案。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-PERM
+
+- D2: 勾中 3/6 → 2 分（50%）。剔除：5 树、7 关系配置、9 导出。勾中：1、2、3。不勾：4、6、8。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-RELATION
+
+- D2: 勾中 2/7 → 1 分（28.6%）。剔除：5 树、9 导出。勾中：1、3。不勾：2 `roleUserInfo/index.vue:11` 的搜索框绑定的是 `searchInfo.typeCode`，而该模块根本没有 typeCode 这个业务字段，筛选形同失效；4 无批量；6 无启停；7 详情页用 `van-field` 要求用户手填 Long 型 orgId 与 userId，无任何选择器，实际不可用；8 目标态未落地。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-SCOPE
+
+- D1: 勾中 3/5 → 3 分。取首个角色这条对本格影响最直接：多角色用户的数据范围判断从源头就是错的。
+- D2: N/A。
+- D3: 勾中 3/4 → 3 分（75%）。剔除：2、3、4。勾中：1、6、7。不勾：5 与 PC 同样不表达数据范围，且 mobile 连权限码都没有，三端口径差距最大。
+- D4: N/A。
+- D5: 勾中 0/5 → 0 分。
+
 ## 3. 缺陷登记册
 
 证据写法 `<repo>/<路径>:<起行>-<止行>`，`repo` 取 `backend` `front` `mobile`，门禁会回仓核对文件与行号。
@@ -238,6 +295,25 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 | RBAC-PC-RELATION-002 | 关系配置宿主页无空状态与调试残留清理 | PC | RELATION | D4,D5 | S4 | front/src/views/user/roleInfo/authorizationDetail/index.vue:1-40 | 关系配置抽屉无空态提示也无 data-testid，无法自动化验收 | 随宿主页面一并补空态与 data-testid | S | 静态检查通过 | 新发现 |
 | RBAC-PC-SCOPE-001 | 前端完全不表达当前数据范围 | PC | SCOPE | D3 | S3 | front/src/utils/permission/index.ts:95-105 | 用户看到空列表时无法区分无数据与无权限；后端 ORG_ID scope 又不含子机构，管理员会误以为下级机构没有数据 | 列表页展示当前数据范围提示，与后端 scope 口径对齐 | M | midscene：管理员登录后页面显示数据范围说明 | wave1 Risks（产品限制） |
 | RBAC-PC-SCOPE-002 | 数据范围表达无任何测试覆盖 | PC | SCOPE | D5 | S3 | front/tests/midscene/rbac/cases/stage1-smoke.json:1-40 | 数据权限的消费侧行为改坏了不会被发现 | 补一条不同角色登录后可见范围的用例 | M | 新增用例通过 | 新发现 |
+| RBAC-MB-SCOPE-001 | 权限上下文只取首个角色且不产出权限码 | MB | SCOPE | D1 | S2 | mobile/src/utils/permission/index.ts:19-38 | pickPrimaryRole 取 roleInfoVoList[0]，多角色用户丢失其余角色；buildPermissionContext 完全不产出 permissionCodes，页内无从做按钮级校验 | 合并全部角色的权限码去重后写入上下文，与 PC 的 utils/permission 对齐 | M | 单测：双角色用户的权限码为两者并集 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-SCOPE-002 | 移动端无任何自动化测试 | MB | SCOPE | D5 | S3 | mobile/docs/testing/mobile-rbac-visibility-checklist.md:1-40 | 可见性清单只是文档，无一条能执行的断言，改坏不会被发现 | 建 tests 目录，先覆盖权限上下文合并与路由可见性 | M | 一条命令可跑通且用例通过 | 新发现 |
+| RBAC-MB-USER-001 | 个人信息页渲染的是未完成残片 | MB | USER | D2 | S3 | mobile/src/router/index.ts:14-21 mobile/src/views/user/userManager/index.vue:1-17 | 路由 /myself/info 指向只有一个孤立头像上传字段的 17 行文件，无其他字段也无保存按钮，用户点进去等于进了坏页面 | 补齐个人信息表单与保存，或先从路由摘除该入口 | M | 进入个人信息页可查看并保存资料 | 新发现 |
+| RBAC-MB-USER-002 | 个人中心与个人信息无测试覆盖 | MB | USER | D5 | S3 | mobile/src/views/user/index.vue:1-40 | 三端唯一视觉达标的页面也无回归保护 | 补组件测试覆盖资料读取与保存 | M | 用例通过 | 新发现 |
+| RBAC-MB-ORG-001 | 机构管理无批量、无树、无启停 | MB | ORG | D2 | S3 | mobile/src/views/user/orgInfo/index.vue:1-60 | 移动端只能逐条维护，机构层级不可见 | 按移动端形态补树视图与状态切换，批量视需要再定 | L | 可在移动端查看机构层级并切换状态 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-ORG-002 | 管理页不符合移动端视觉基准且详情文案乱码 | MB | ORG | D4 | S4 | mobile/src/views/user/orgInfo/orgInfoDetail/index.vue:1-40 | 无骨架屏、无 16px 卡片圆角、无触觉反馈、无 0 16px 侧距，placeholder 文案乱码用户直接可见 | 按 .cursorrules 补骨架屏、圆角、侧距与触觉，并按 UTF-8 重写文案 | M | 视觉检查加静态扫描无 U+FFFD | 新发现 |
+| RBAC-MB-ORG-003 | 机构模块无测试与定位钩子 | MB | ORG | D5 | S3 | mobile/src/views/user/orgInfo/index.vue:1-60 | tests 目录不存在，修完上面两条也无法验收 | 建 tests 目录并补 data-testid | M | 一条命令跑通用例 | 新发现 |
+| RBAC-MB-ROLE-001 | 角色管理页视觉不达标且文案乱码 | MB | ROLE | D4 | S4 | mobile/src/views/user/roleInfo/index.vue:1-60 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查加静态扫描通过 | 新发现 |
+| RBAC-MB-ROLE-002 | 角色模块无测试与定位钩子 | MB | ROLE | D5 | S3 | mobile/src/views/user/roleInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-MENU-001 | 菜单管理无树视图与启停 | MB | MENU | D2 | S3 | mobile/src/views/user/menuInfo/index.vue:1-60 | 菜单层级在移动端完全不可见，只能看平铺列表 | 补树视图或分级下钻 | L | 移动端可查看菜单层级 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-MENU-002 | 菜单详情 11 处文案乱码且视觉不达标 | MB | MENU | D4 | S4 | mobile/src/views/user/menuInfo/menuInfoDetail/index.vue:1-40 | 本模块乱码最密集，表单几乎每个 placeholder 都损坏 | 按 UTF-8 重写全部文案并补视觉规范 | M | 静态扫描无 U+FFFD | 新发现 |
+| RBAC-MB-MENU-003 | 菜单模块无测试与定位钩子 | MB | MENU | D5 | S3 | mobile/src/views/user/menuInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-PERM-001 | 权限点管理无批量与启停 | MB | PERM | D2 | S3 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 移动端只能逐条维护权限点 | 按移动端形态补状态切换 | M | 可在移动端切换权限点状态 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-PERM-002 | 权限点页视觉不达标且文案乱码 | MB | PERM | D4 | S4 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查通过 | 新发现 |
+| RBAC-MB-PERM-003 | 权限点模块无测试与定位钩子 | MB | PERM | D5 | S3 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-RELATION-001 | 关系配置详情要求手填 Long 型 ID | MB | RELATION | D2 | S3 | mobile/src/views/user/orgUserInfo/orgUserInfoDetail/index.vue:8-37 | 用户须自行记住并输入机构与用户的 Long ID，没有任何选择器，功能实际不可用 | 换成 van-picker 拉取机构与用户列表选择 | M | 不输入 ID 也能完成一次绑定 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-RELATION-002 | 角色用户列表搜索绑定了不存在的字段 | MB | RELATION | D2 | S3 | mobile/src/views/user/roleUserInfo/index.vue:10-11 | 搜索框绑 searchInfo.typeCode，而该模块无此业务字段，筛选形同失效且用户不会察觉 | 改绑角色或用户维度的真实查询字段 | S | 输入关键字后列表结果确实收敛 | 新发现 |
+| RBAC-MB-RELATION-003 | 关系配置页视觉不达标且文案乱码 | MB | RELATION | D4 | S4 | mobile/src/views/user/roleUserInfo/roleUserInfoDetail/index.vue:1-40 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查通过 | 新发现 |
+| RBAC-MB-RELATION-004 | 关系模块无测试与定位钩子 | MB | RELATION | D5 | S3 | mobile/src/views/user/orgUserInfo/index.vue:1-60 | 手填 ID 改成选择器后无法自动化验收 | 补测试与 data-testid | M | 用例通过 | 新发现 |
 <!-- registry:end -->
 
 ## 4. 汇总
