@@ -14,13 +14,18 @@ import com.alex.user.rbac.service.UserPermissionContextService;
 import com.alex.user.rbac.service.impl.UserPermissionContextServiceImpl;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.user.service.impl.TUserServiceImpl;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 public class UserPermissionContextServiceTest {
 
+    @Test
     public void testTUserVoExposesPermissionContextAndPermissionCodes() {
         UserPermissionContextVo permissionContext = new UserPermissionContextVo();
         List<String> permissionCodes = Arrays.asList("user:list", "user:create");
@@ -33,6 +38,7 @@ public class UserPermissionContextServiceTest {
         assertEquals(permissionCodes, userVo.getPermissionCodes(), "permissionCodes should be readable from TUserVo");
     }
 
+    @Test
     public void testBuildContextMergesRolePermissionsAndUsesFirstOrg() {
         Long userId = 1001L;
         OrgInfoVo firstOrg = new OrgInfoVo();
@@ -57,6 +63,7 @@ public class UserPermissionContextServiceTest {
         assertEquals(Arrays.asList("user:add", "role:update"), context.getButtonPermissionCodes(), "button permission codes should match merged permissions");
     }
 
+    @Test
     public void testBuildContextKeepsAllMenusForSuperAdmin() {
         Long userId = 1002L;
         RoleInfoVo superRole = role("super_super", permissions("user:add"));
@@ -81,6 +88,7 @@ public class UserPermissionContextServiceTest {
         assertSame(allMenus, context.getMenuList(), "super admin menus should not be filtered");
     }
 
+    @Test
     public void testApplyPermissionContextSetsLoginResponseCompatibilityFields() {
         TUserVo userVo = new TUserVo();
         OrgInfoVo orgInfo = new OrgInfoVo();
@@ -121,6 +129,7 @@ public class UserPermissionContextServiceTest {
         assertSame(menuList, userVo.getMenuInfoVoList(), "legacy menuInfoVoList should mirror context menuList");
     }
 
+    @Test
     public void testRefreshLoginPermissionContextRebuildsCachedUserContext() {
         Long userId = 1003L;
         TUserVo cachedUser = new TUserVo();
@@ -149,6 +158,7 @@ public class UserPermissionContextServiceTest {
         assertEquals("Fresh Org", refreshedUser.getOrgName(), "cached login should refresh legacy orgName");
     }
 
+    @Test
     public void testCompleteLoginResponseWaitsForAvatarAndPermissionContext() {
         TUserVo userVo = new TUserVo();
         OrgInfoVo orgInfo = new OrgInfoVo();
@@ -168,6 +178,7 @@ public class UserPermissionContextServiceTest {
         assertSame(context, userVo.getPermissionContext(), "login response should include permission context before returning");
     }
 
+    @Test
     public void testCompleteLoginResponseRestoresInterruptFlagWhenInterrupted() {
         TUserVo userVo = new TUserVo();
         CompletableFuture<Void> avatarFuture = new CompletableFuture<>();
@@ -237,18 +248,6 @@ public class UserPermissionContextServiceTest {
 
     private interface MethodHandler {
         Object invoke(Object[] args);
-    }
-
-    private static void assertSame(Object expected, Object actual, String message) {
-        if (expected != actual) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (!Objects.equals(expected, actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
     }
 
     private static void sleep(Long millis) {

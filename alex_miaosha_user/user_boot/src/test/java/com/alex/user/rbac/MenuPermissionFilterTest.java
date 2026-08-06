@@ -2,13 +2,18 @@ package com.alex.user.rbac;
 
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.user.rbac.service.impl.UserPermissionContextServiceImpl;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 public class MenuPermissionFilterTest {
 
+    @Test
     public void testKeepsParentWithOnlyAllowedChildWhenParentPermissionDoesNotMatch() {
         MenuInfoVo addUser = menu("AddUser", "user:add");
         MenuInfoVo deleteUser = menu("DeleteUser", "user:delete");
@@ -26,6 +31,7 @@ public class MenuPermissionFilterTest {
         assertSame(addUser, filtered.get(0).getChildren().get(0), "matching child should be retained");
     }
 
+    @Test
     public void testDoesNotMutateOriginalChildrenWhenFiltering() {
         MenuInfoVo addUser = menu("AddUser", "user:add");
         MenuInfoVo deleteUser = menu("DeleteUser", "user:delete");
@@ -43,6 +49,7 @@ public class MenuPermissionFilterTest {
         assertEquals(1, filtered.get(0).getChildren().size(), "filtered copy should have only visible children");
     }
 
+    @Test
     public void testReturnsEmptyListWhenPermissionCodesAreEmpty() {
         MenuInfoVo parent = menu("Users", null);
         parent.setChildren(Collections.singletonList(menu("AddUser", "user:add")));
@@ -55,6 +62,7 @@ public class MenuPermissionFilterTest {
         assertEquals(0, filtered.size(), "empty permission codes should produce no visible menus");
     }
 
+    @Test
     public void testKeepsMenuWhenOwnPermissionMatches() {
         MenuInfoVo parent = menu("Users", "user:list");
 
@@ -72,17 +80,5 @@ public class MenuPermissionFilterTest {
         m.setName(name);
         m.setPermissionCode(permissionCode);
         return m;
-    }
-
-    private static void assertSame(Object expected, Object actual, String message) {
-        if (expected != actual) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (expected == null ? actual != null : !expected.equals(actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
     }
 }
