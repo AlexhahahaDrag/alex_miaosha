@@ -94,6 +94,8 @@ RBAC 相关能力此前以「波次」方式推进，已落地三份 spec：
 - D2 第 9 条「导出能力」仅对 机构、用户 两个模块适用，其余模块该条从分母剔除。
 - D4 按各端自己的 `.cursorrules` 评：PC 用 `alex_miaosha_front/.cursorrules`，mobile 用 `alex_miaosha_mobile/.cursorrules`；backend 列的 7 格 D4 全部不适用，直接记为 N/A 且从加权中剔除（该格权重按剩余 93% 归一化）。
 - D4 第 4 条「触觉反馈」仅 mobile 适用。
+- N/A 只允许出现在白名单格子：`BE` 全部 7 格的 D4（必须 N/A）；`PC-SCOPE` 与 `MB-SCOPE` 的 D2 与 D4（前端不承载数据权限功能本体与其视觉）。其余格子一律必须给 0–5 的数字。
+- 前端 `SCOPE` 格的 D1 用前端消费侧判据、D3 评三端口径一致性、D5 评是否有测试覆盖数据范围的表达，D2 与 D4 记 N/A。
 
 **D1 判据（后端）**
 
