@@ -285,6 +285,48 @@ for (const end of scopedEnds) {
 	}
 }
 
+// ---------- 既有 spec 遗留项映射 ----------
+/** spec 第 10 节列出的遗留项, 每条都必须映射到至少一个登记册条目。 */
+const LEGACY_ITEMS = [
+	'Org/Role 详情与写接口的数据权限',
+	'删除角色时级联清理',
+	'管理员仅可见本机构',
+	'无独立启停接口',
+	'机构无批量删除',
+	'移动端全部 RBAC 变更',
+	'历史失效关系行持续累积',
+	'PC stage1 目标 UI 未落地',
+];
+if (!argEnd) {
+	const mapped = new Map();
+	for (const cells of tableRows('legacy')) {
+		if (cells.length < 2) {
+			errors.push(`遗留项映射行列数不足 2: ${cells.join(' | ')}`);
+			continue;
+		}
+		const [item, idsRaw] = cells;
+		const ids = idsRaw
+			.split(/[,，\s]+/)
+			.map((id) => id.trim())
+			.filter(Boolean);
+		if (ids.length === 0) {
+			errors.push(`遗留项 "${item}" 未映射任何登记册 ID`);
+		}
+		for (const id of ids) {
+			if (!seenIds.has(id)) {
+				errors.push(`遗留项 "${item}" 引用了不存在的条目 ${id}`);
+			}
+		}
+		mapped.set(item, ids);
+	}
+	for (const item of LEGACY_ITEMS) {
+		const hit = [...mapped.keys()].some((key) => key.includes(item) || item.includes(key));
+		if (!hit) {
+			errors.push(`spec 第 10 节遗留项未出现在映射表: ${item}`);
+		}
+	}
+}
+
 // ---------- 输出 ----------
 const scopeLabel = argEnd ? `端 ${argEnd}` : '全量';
 for (const warn of new Set(warns)) {

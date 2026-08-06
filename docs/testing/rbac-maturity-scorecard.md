@@ -318,11 +318,79 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 
 ## 4. 汇总
 
-（Task 5 填：端总分、模块总分、拉后腿的端、Top 风险格）
+### 4.1 端总分
+
+| 端 | 7 格平均 | 最弱格 | 最弱维度（该端 7 格均值） |
+| --- | --- | --- | --- |
+| BE | 45 | MENU 38、PERM 38 | D1 = 1.29 |
+| PC | 71 | ORG 65 | D5 = 2.00 |
+| MB | 45 | USER 39、RELATION 39 | D5 = 0.00 |
+
+各端各维度均值：
+
+| 端 | D1 | D2 | D3 | D4 | D5 |
+| --- | --- | --- | --- | --- | --- |
+| BE | 1.29 | 2.86 | 3.57 | N/A | 1.57 |
+| PC | 5.00 | 2.83 | 2.86 | 2.17 | 2.00 |
+| MB | 3.00 | 1.67 | 3.00 | 1.67 | 0.00 |
+
+### 4.2 模块总分
+
+| 模块 | BE | PC | MB | 模块平均 | 拉后腿的端 |
+| --- | --- | --- | --- | --- | --- |
+| ORG | 42 | 65 | 45 | 51 | BE |
+| USER | 64 | 71 | 39 | 58 | MB |
+| ROLE | 45 | 71 | 51 | 56 | BE |
+| MENU | 38 | 72 | 45 | 52 | BE |
+| PERM | 38 | 71 | 45 | 51 | BE |
+| RELATION | 47 | 71 | 39 | 52 | MB |
+| SCOPE | 42 | 73 | 50 | 55 | BE |
+
+### 4.3 Top 风险格
+
+按 D1 升序取前 5 格。D1 = 1 的格共 6 个，全部在后端：
+
+| 排名 | 格 | D1 | 加权总分 | 对应 S1 / S2 条目 |
+| --- | --- | --- | --- | --- |
+| 1 | BE-MENU | 1 | 38 | RBAC-BE-MENU-001、RBAC-BE-MENU-002 |
+| 2 | BE-PERM | 1 | 38 | RBAC-BE-PERM-001、RBAC-BE-PERM-002、RBAC-BE-PERM-003 |
+| 3 | BE-ORG | 1 | 42 | RBAC-BE-ORG-001（S1）、RBAC-BE-ORG-002 |
+| 4 | BE-SCOPE | 1 | 42 | RBAC-BE-SCOPE-001（S1）、RBAC-BE-SCOPE-003（S1）、RBAC-BE-SCOPE-004 |
+| 5 | BE-RELATION | 1 | 47 | RBAC-BE-RELATION-001（S1）、RBAC-BE-RELATION-002、RBAC-BE-RELATION-003 |
+
+### 4.4 结论
+
+**当前 RBAC 的完善程度：功能面基本齐、安全面成体系性欠账。** 三端加权总分 BE 45、PC 71、MB 45，登记册共 67 条，其中 S1 七条、S2 十三条、S3 三十五条、S4 十二条。
+
+三条结论：
+
+1. **7 条 S1 全部在后端，且集中于同一个根因**：数据权限只覆盖了分页查询。`@DataPermission` 挂了 5 个 mapper 的 `getPage`，而所有详情查询与全部写操作都不经过 handler，加上角色判定用 `code.contains("admin")` 子串匹配，构成一条可复现的越权链路。前端两端 D1 分别为 5 分和 3 分，不代表整体安全——前端只做展示控制，安全边界在后端，而后端 D1 均值只有 1.29。
+2. **D5 是唯一三端一致薄弱的维度**（BE 1.57、PC 2.00、MB 0.00）。后端 7 个 RBAC 测试类里 4 个没挂 `@Test`，约 16 个用例一个都不执行，且恰好覆盖唯一有效机构约束、菜单过滤不污染缓存、权限上下文构建这三条最关键逻辑；PC 全站 RBAC 页面无一个 `data-testid`，冒烟脚本只能用文案和 `.ant-*` 类选择器；mobile 连 `tests/` 目录都不存在。这意味着 S1、S2 修完后没有任何手段证明修好了，也没有手段防止改回去。
+3. **移动端和 PC 的差距不在页面数量而在权限模型**：mobile 有 7 个管理模块的完整 CRUD 骨架，但 `buildPermissionContext` 只产出 menuInfo/roleInfo/orgInfo，**完全没有权限码概念**，且 `pickPrimaryRole` 只取首个角色，因此页内无法做按钮级校验、多角色用户从源头就判断错误。此外关系配置要求手填 Long 型 ID、`/myself/info` 指向 17 行未完成残片、7 个管理页无一处符合自身 `.cursorrules` 的骨架屏与圆角基准。
+
+**关于跨端比较的口径**：PC 总分（71）明显高于 BE（45）与 MB（45），主要来自 PC 的 D1 满分——wave2 已落地 ID string 化、`v-permission` 指令与多角色权限码合并，恰好命中前端消费侧 5 条判据的全部。由于 BE 与前端用的是两套 D1 判据、BE 无 D4、前端 SCOPE 格有 N/A，**单格总分不做跨端排名**；跨端只在 4.2 的模块平均与 4.1 的单维度均值上解读。
 
 ## 5. 既有 spec 遗留项映射
 
-（Task 5 填）
+下列条目来自既有三份 spec 的 Non-goals 与 Risks，已在登记册中登记，**不得作为新发现重复讨论**。
+
+<!-- legacy:start -->
+| 遗留项 | 登记册 ID |
+| --- | --- |
+| Org/Role 详情与写接口的数据权限（仅 getPage 已覆盖） | RBAC-BE-ORG-001 RBAC-BE-ROLE-001 RBAC-BE-SCOPE-003 |
+| 删除角色时级联清理 t_role_permission_info | RBAC-BE-ROLE-002 |
+| 管理员仅可见本机构，无法看子机构 | RBAC-BE-SCOPE-002 RBAC-PC-SCOPE-001 |
+| 无独立启停接口 | RBAC-BE-USER-003 RBAC-PC-USER-001 |
+| 机构无批量删除 | RBAC-PC-ORG-001 |
+| 移动端全部 RBAC 变更 | RBAC-MB-SCOPE-001 RBAC-MB-ORG-001 RBAC-MB-MENU-001 RBAC-MB-PERM-001 RBAC-MB-RELATION-001 |
+| 历史失效关系行持续累积 | RBAC-BE-RELATION-004 |
+| PC stage1 目标 UI 未落地 | RBAC-PC-ORG-002 RBAC-PC-ROLE-001 |
+<!-- legacy:end -->
+
+两点需要说明：
+
+- **「机构无批量删除」后端侧已在本分支解决**：`OrgInfoServiceImp.deleteOrgInfo` 支持逗号串批量，并带下级机构与绑定用户双重前置保护。仍未解决的是 PC 侧——机构是五个管理模块里唯一没有 `rowSelection` 与批量删除按钮的，故只映射到 `RBAC-PC-ORG-001`。
+- **wave1 Risks 里「管理员仅可见本机构」原被记为产品限制**，本轮评审仍按限制对待，但补充了后果：前端完全不表达数据范围，管理员看到空列表时无法区分「下级机构没数据」与「没权限看下级」，故同时映射了前端条目。
 
 ## 6. 批次归类与阻塞项
 
