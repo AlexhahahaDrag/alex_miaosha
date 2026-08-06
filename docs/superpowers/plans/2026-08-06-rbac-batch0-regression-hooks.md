@@ -51,7 +51,7 @@
 
 **Steps:**
 
-- [ ] **Step 1 — 记录基线。** 执行并留档，确认改造前的数字是 16：
+- [x] **Step 1 — 记录基线。** 执行并留档，确认改造前的数字是 16：
 
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Java\jdk-17"
@@ -61,7 +61,7 @@ rg -n "Tests run:.*Failures" rbac-batch0-baseline.log | Select-Object -Last 1
 
   预期输出 `Tests run: 16, Failures: 0, Errors: 0, Skipped: 0`。`rbac-batch0-baseline.log` 属临时产物，任务结束前删除，不要提交。
 
-- [ ] **Step 2 — 改 `MenuPermissionFilterTest`（4 个用例）。** 在 `import java.util.List;` 之后插入两行：
+- [x] **Step 2 — 改 `MenuPermissionFilterTest`（4 个用例）。** 在 `import java.util.List;` 之后插入两行：
 
 ```java
 import org.junit.jupiter.api.Test;
@@ -72,20 +72,20 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
   给这 4 个方法逐个加 `@Test`：`testKeepsParentWithOnlyAllowedChildWhenParentPermissionDoesNotMatch`、`testDoesNotMutateOriginalChildrenWhenFiltering`、`testReturnsEmptyListWhenPermissionCodesAreEmpty`、`testKeepsMenuWhenOwnPermissionMatches`。删除文件末尾的私有 `assertSame` 与 `assertEquals` 两个方法（原 77-87 行），保留 `menu()` 工厂方法。
 
-- [ ] **Step 3 — 改 `UserPermissionContextServiceTest`（7 个用例）。** 同样加 `@Test` 与 `assertEquals` / `assertSame` 的静态导入，给下列 7 个方法加注解：`testTUserVoExposesPermissionContextAndPermissionCodes`、`testBuildContextMergesRolePermissionsAndUsesFirstOrg`、`testBuildContextKeepsAllMenusForSuperAdmin`、`testApplyPermissionContextSetsLoginResponseCompatibilityFields`、`testRefreshLoginPermissionContextRebuildsCachedUserContext`、`testCompleteLoginResponseWaitsForAvatarAndPermissionContext`、`testCompleteLoginResponseRestoresInterruptFlagWhenInterrupted`。删除私有 `assertSame` 与 `assertEquals`（原 242-253 行），保留 `proxy()`、`sleep()` 与 `MethodHandler` 接口。
+- [x] **Step 3 — 改 `UserPermissionContextServiceTest`（7 个用例）。** 同样加 `@Test` 与 `assertEquals` / `assertSame` 的静态导入，给下列 7 个方法加注解：`testTUserVoExposesPermissionContextAndPermissionCodes`、`testBuildContextMergesRolePermissionsAndUsesFirstOrg`、`testBuildContextKeepsAllMenusForSuperAdmin`、`testApplyPermissionContextSetsLoginResponseCompatibilityFields`、`testRefreshLoginPermissionContextRebuildsCachedUserContext`、`testCompleteLoginResponseWaitsForAvatarAndPermissionContext`、`testCompleteLoginResponseRestoresInterruptFlagWhenInterrupted`。删除私有 `assertSame` 与 `assertEquals`（原 242-253 行），保留 `proxy()`、`sleep()` 与 `MethodHandler` 接口。
 
-- [ ] **Step 4 — 改 `OrgUserAssignmentServiceTest`（4 个用例）。** 静态导入需要 `assertEquals` `assertSame` `assertTrue` `assertNotNull` `assertNull` `assertThrows` 六个。给 `testAssignSingleOrgInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignment`、`testAssignSingleOrgDoesNotSaveWhenInvalidatingOldAssignmentFails`、`testAssignSingleOrgDeclaresTransactionBoundary`、`testAssignSingleOrgHoldsUserLockUntilTransactionCallbackCompletes` 加 `@Test`（后两个带 `throws`，注解加在 `throws` 之前的方法声明上一行即可）。删除原 86-128 行的六个私有断言方法与原 139-141 行的 `ThrowingRunnable` 接口；**保留** `sleep()`（原 129-137 行）与 `TestableOrgUserInfoService` / `BlockingTransactionTemplate` / `BlockingOrgUserInfoService` 三个桩类。
+- [x] **Step 4 — 改 `OrgUserAssignmentServiceTest`（4 个用例）。** 静态导入需要 `assertEquals` `assertSame` `assertTrue` `assertNotNull` `assertNull` `assertThrows` 六个。给 `testAssignSingleOrgInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignment`、`testAssignSingleOrgDoesNotSaveWhenInvalidatingOldAssignmentFails`、`testAssignSingleOrgDeclaresTransactionBoundary`、`testAssignSingleOrgHoldsUserLockUntilTransactionCallbackCompletes` 加 `@Test`（后两个带 `throws`，注解加在 `throws` 之前的方法声明上一行即可）。删除原 86-128 行的六个私有断言方法与原 139-141 行的 `ThrowingRunnable` 接口；**保留** `sleep()`（原 129-137 行）与 `TestableOrgUserInfoService` / `BlockingTransactionTemplate` / `BlockingOrgUserInfoService` 三个桩类。
 
-- [ ] **Step 5 — 改 `RoleUserAssignmentServiceTest`（9 个用例）。** 静态导入需要 `assertEquals` `assertSame` `assertTrue` `assertNotNull` `assertThrows` 五个。给 9 个方法加 `@Test`：`testAssignRolesInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignments`、`testAssignRolesDeduplicatesRoleIdsBeforeSaving`、`testAssignRolesFiltersNullRoleIdsBeforeSaving`、`testAssignRolesWithOnlyNullRoleIdsOnlyInvalidatesOldActiveAssignments`、`testAssignRolesWithEmptyRoleIdsOnlyInvalidatesOldActiveAssignments`、`testAssignRolesDoesNotSaveWhenInvalidatingOldAssignmentFails`、`testAssignRolesDeclaresTransactionBoundary`、`testAssignUsersToRoleInvalidatesOldActiveUsersAndCreatesNewActiveAssignments`、`testAssignUsersToRoleDeduplicatesAndFiltersNullUserIds`。删除原 141-181 行的五个私有断言方法与 `ThrowingRunnable` 接口；**保留** `assertAssignment()`（原 135-139 行，它不与 JUnit 同名）与 `TestableRoleUserInfoService`。
+- [x] **Step 5 — 改 `RoleUserAssignmentServiceTest`（9 个用例）。** 静态导入需要 `assertEquals` `assertSame` `assertTrue` `assertNotNull` `assertThrows` 五个。给 9 个方法加 `@Test`：`testAssignRolesInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignments`、`testAssignRolesDeduplicatesRoleIdsBeforeSaving`、`testAssignRolesFiltersNullRoleIdsBeforeSaving`、`testAssignRolesWithOnlyNullRoleIdsOnlyInvalidatesOldActiveAssignments`、`testAssignRolesWithEmptyRoleIdsOnlyInvalidatesOldActiveAssignments`、`testAssignRolesDoesNotSaveWhenInvalidatingOldAssignmentFails`、`testAssignRolesDeclaresTransactionBoundary`、`testAssignUsersToRoleInvalidatesOldActiveUsersAndCreatesNewActiveAssignments`、`testAssignUsersToRoleDeduplicatesAndFiltersNullUserIds`。删除原 141-181 行的五个私有断言方法与 `ThrowingRunnable` 接口；**保留** `assertAssignment()`（原 135-139 行，它不与 JUnit 同名）与 `TestableRoleUserInfoService`。
 
-- [ ] **Step 6 — 跑通并分流失败。** 重跑 Step 1 的命令。期望 `Tests run: 40`（16 + 4 + 7 + 4 + 9）。若出现 Failures/Errors，按 Global Constraints 的分流规则处理：修测试或加 `@Disabled` 并登记，**不改生产代码**。四个类的 `@Test` 数量必须等于各自 `public void test*` 数量，用以下命令自检：
+- [x] **Step 6 — 跑通并分流失败。** 重跑 Step 1 的命令。期望 `Tests run: 40`（16 + 4 + 7 + 4 + 9）。若出现 Failures/Errors，按 Global Constraints 的分流规则处理：修测试或加 `@Disabled` 并登记，**不改生产代码**。四个类的 `@Test` 数量必须等于各自 `public void test*` 数量，用以下命令自检：
 
 ```powershell
 rg -c "@Test" alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/
 rg -c "public void test" alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/
 ```
 
-- [ ] **Step 7 — 清理与提交。** 删除 `rbac-batch0-baseline.log`。提交信息：`test(rbac): enable 24 dormant RBAC unit tests via JUnit 5 annotations`。
+- [x] **Step 7 — 清理与提交。** 删除 `rbac-batch0-baseline.log`。提交信息：`test(rbac): enable 24 dormant RBAC unit tests via JUnit 5 annotations`。
 
 **验收：** `Tests run: 40, Failures: 0, Errors: 0`（若有 `@Disabled` 则 Skipped 计数与登记条目数一致）；两条 `rg -c` 输出逐文件相等。
 
@@ -335,22 +335,22 @@ npm run graphify:update
 
 **Steps:**
 
-- [ ] **Step 1 — 修正三处数字。** 实测：改造前 `Tests run: 16`，四个休眠类的 `public void test*` 合计 24 个（Menu 4、UserPermissionContext 7、OrgUserAssignment 4、RoleUserAssignment 9），改造后应为 40。
+- [x] **Step 1 — 修正三处数字。** 实测：改造前 `Tests run: 16`，四个休眠类的 `public void test*` 合计 24 个（Menu 4、UserPermissionContext 7、OrgUserAssignment 4、RoleUserAssignment 9），改造后应为 40。
   - 第 366 行结论 2 的「约 16 个用例一个都不执行」→「24 个用例一个都不执行」。
   - 第 274 行 `RBAC-BE-RELATION-005` 验收字段里的「8」→「13」（OrgUserAssignment 4 + RoleUserAssignment 9）。
   - 第 402 行批次 0 验收里的「由 16 升至约 32」→「由 16 升至 40」。
 
-- [ ] **Step 2 — 更新阻塞项一状态。** 6.1 节末尾追加一句：已按方案 1（装 JDK 17 并令 `JAVA_HOME` 指向 `C:\Program Files\Java\jdk-17`）解除，实测 `BUILD SUCCESS` 且 `Tests run: 16`，批次 0 验收不再需要退化为纯静态断言。
+- [x] **Step 2 — 更新阻塞项一状态。** 6.1 节末尾追加一句：已按方案 1（装 JDK 17 并令 `JAVA_HOME` 指向 `C:\Program Files\Java\jdk-17`）解除，实测 `BUILD SUCCESS` 且 `Tests run: 16`，批次 0 验收不再需要退化为纯静态断言。
 
-- [ ] **Step 3 — 重跑门禁。** 数字改动不应影响门禁结论，确认仍为绿：
+- [x] **Step 3 — 重跑门禁。** 数字改动不应影响门禁结论，确认仍为绿：
 
 ```powershell
 node scripts/rbac-scorecard-check.mjs
 ```
 
-- [ ] **Step 4 — 追加执行记录。** 在本计划末尾「执行记录」小节填入：后端实测用例数、`@Disabled` 条目（若有）、PC 冒烟脚本是否跑通及原因、mobile vitest 安装结果。
+- [x] **Step 4 — 追加执行记录。** 在本计划末尾「执行记录」小节填入：后端实测用例数、`@Disabled` 条目（若有）、PC 冒烟脚本是否跑通及原因、mobile vitest 安装结果。
 
-- [ ] **Step 5 — 提交。** 提交信息：`docs(rbac): correct batch0 test counts with measured values`。
+- [x] **Step 5 — 提交。** 提交信息：`docs(rbac): correct batch0 test counts with measured values`。
 
 **验收：** 三处数字与实测一致；`node scripts/rbac-scorecard-check.mjs` 退出码 0；执行记录已填。
 
@@ -372,4 +372,20 @@ node scripts/rbac-scorecard-check.mjs
 
 ## 执行记录
 
-（执行者填写：后端实测用例数、`@Disabled` 条目、PC 冒烟脚本结果、mobile vitest 安装结果、遇到的偏差）
+### Task 1（后端，已完成，commit `a12a16a2`）
+
+- **实测用例数：改造前 16 → 改造后 40**，`Failures: 0, Errors: 0, Skipped: 0`，`BUILD SUCCESS`，全程耗时约 16 秒。四个类各自贡献：`MenuPermissionFilterTest` 4、`UserPermissionContextServiceTest` 7、`OrgUserAssignmentServiceTest` 4、`RoleUserAssignmentServiceTest` 9。
+- **无 `@Disabled` 条目。** 24 个休眠用例首次真实执行全部一次通过，说明它们此前只是没被 Surefire 收集，断言本身与生产代码一致，未暴露新的生产缺陷。分流规则未被触发。
+- **签名兼容性结论与计划预判一致**：所有调用点无需改动。特别核对了两处：`assertEquals(Boolean.TRUE, Thread.currentThread().isInterrupted(), msg)` 因 JUnit 5 没有 `boolean` 重载而走 `(Object, Object, String)` 并自动装箱，语义不变；`assertEquals(0, service.saveBatchCalls, msg)` 走原生型重载，拆箱比较，语义不变。
+- 保留的非断言工具方法与桩类未受影响：`menu()`、`assertAssignment()`、`proxy()` / `MethodHandler`、两处 `sleep()`、`Testable*` 与 `Blocking*` 五个内部类。
+- 提交时 git 提示 `RoleUserAssignmentServiceTest.java` 的 LF 将转为 CRLF，属本仓既有换行符策略，未做处理。
+
+### Task 6（评分卡回写，已完成）
+
+- 三处数字已改：登记册 `RBAC-BE-RELATION-005` 的「8 个用例」与验收「上升 8」均改为 13；结论 2 的「约 16 个用例」改为 24；批次 0 验收的「由 16 升至约 32」改为「由 16 升至 40」。
+- 6.1 节追加了阻塞项一的解除状态（方案 1，JDK 17），并记录改造前后两次实测数字。
+- 门禁复跑结果：`[pass] 全量 门禁通过: 矩阵 21 格, 登记册 67 条`，退出码 0。分数、严重级与批次归类均未改动。
+
+### Task 2–5（PC 与 mobile，待执行）
+
+（执行者填写：PC 冒烟脚本跑通情况、mobile vitest 安装结果、遇到的偏差）

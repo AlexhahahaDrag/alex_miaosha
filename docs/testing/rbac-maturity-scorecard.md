@@ -271,7 +271,7 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 | RBAC-BE-RELATION-002 | 换机构与改角色后不失效 permission_context 缓存 | BE | RELATION | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/service/impl/OrgUserInfoServiceImp.java:78-90 | 缓存 TTL 一小时，期间用户的数据权限仍按旧机构过滤，既可能越权也可能看不到本机构数据 | assignSingleOrg 与 assignRoles 成功后删除该用户的 permission_context | S | 单测：assign 后缓存键被删除 | 新发现 |
 | RBAC-BE-RELATION-003 | org-user 与 role-user 分页无数据权限 | BE | RELATION | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/mapper/OrgUserInfoMapper.java:1-27 backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/roleUserInfo/mapper/RoleUserInfoMapper.java:1-28 | 可枚举全部机构-用户与角色-用户绑定关系，间接泄漏组织结构 | 两个 mapper 的分页挂 @DataPermission | S | 集成测试：SQL 含过滤条件且跨机构行不可见 | 新发现 |
 | RBAC-BE-RELATION-004 | 历史失效关系行持续累积无清理机制 | BE | RELATION | D2 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/service/impl/OrgUserInfoServiceImp.java:78-90 | 频繁调岗后单用户堆积大量 status=0 行，分页与子查询逐步变慢 | 增加归档或定期清理任务，或改为只保留最近 N 条 | M | 压测或计数断言：调岗 100 次后有效行仍为 1 | role-assign-permissions Risks |
-| RBAC-BE-RELATION-005 | 两个关系测试类未挂 @Test，8 个用例不执行 | BE | RELATION | D5 | S3 | backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/OrgUserAssignmentServiceTest.java:18-60 backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/RoleUserAssignmentServiceTest.java:1-40 | 唯一有效机构约束与事务边界这两条本格最关键的保证毫无实际验证 | 补 @Test 并改用 JUnit 断言 | S | Surefire 实际执行用例数上升 8 | 新发现 |
+| RBAC-BE-RELATION-005 | 两个关系测试类未挂 @Test，13 个用例不执行 | BE | RELATION | D5 | S3 | backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/OrgUserAssignmentServiceTest.java:18-60 backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/RoleUserAssignmentServiceTest.java:1-40 | 唯一有效机构约束与事务边界这两条本格最关键的保证毫无实际验证 | 补 @Test 并改用 JUnit 断言 | S | Surefire 实际执行用例数上升 13 | 新发现 |
 | RBAC-BE-SCOPE-001 | 角色判定用子串包含，可被角色编码命名绕过 | BE | SCOPE | D1 | S1 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:92-96 | 名为 superviser 或 badmin 的普通角色会被判为超管或机构管理员，直接拿到全量数据 | 改为与角色编码常量精确相等匹配 | S | 单测：superviser 不被判为 super | 新发现 |
 | RBAC-BE-SCOPE-002 | ORG_ID scope 不含子机构，管理员看不到下级 | BE | SCOPE | D1,D2 | S3 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:155-160 | 多层机构下管理员无法管理下级机构数据，与机构树能力矛盾 | 支持按机构子树递归的 scope，需先确认产品是否要下级可见 | L | 集成测试：父机构管理员可见子机构行 | wave1 Risks（产品限制） |
 | RBAC-BE-SCOPE-003 | 详情查询与写操作完全不经过数据权限 | BE | SCOPE | D1 | S1 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:130-140 | handler 只作用于挂注解的方法，全部详情与写路径成为统一的越权缺口 | 建立注解覆盖清单并在测试中断言无遗漏方法 | M | 静态或反射测试：查询与写方法均已覆盖 | wave1 Non-goals |
@@ -365,7 +365,7 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 三条结论：
 
 1. **7 条 S1 全部在后端，且集中于同一个根因**：数据权限只覆盖了分页查询。`@DataPermission` 挂了 5 个 mapper 的 `getPage`，而所有详情查询与全部写操作都不经过 handler，加上角色判定用 `code.contains("admin")` 子串匹配，构成一条可复现的越权链路。前端两端 D1 分别为 5 分和 3 分，不代表整体安全——前端只做展示控制，安全边界在后端，而后端 D1 均值只有 1.29。
-2. **D5 是唯一三端一致薄弱的维度**（BE 1.57、PC 2.00、MB 0.00）。后端 7 个 RBAC 测试类里 4 个没挂 `@Test`，约 16 个用例一个都不执行，且恰好覆盖唯一有效机构约束、菜单过滤不污染缓存、权限上下文构建这三条最关键逻辑；PC 全站 RBAC 页面无一个 `data-testid`，冒烟脚本只能用文案和 `.ant-*` 类选择器；mobile 连 `tests/` 目录都不存在。这意味着 S1、S2 修完后没有任何手段证明修好了，也没有手段防止改回去。
+2. **D5 是唯一三端一致薄弱的维度**（BE 1.57、PC 2.00、MB 0.00）。后端 7 个 RBAC 测试类里 4 个没挂 `@Test`，24 个用例一个都不执行，且恰好覆盖唯一有效机构约束、菜单过滤不污染缓存、权限上下文构建这三条最关键逻辑；PC 全站 RBAC 页面无一个 `data-testid`，冒烟脚本只能用文案和 `.ant-*` 类选择器；mobile 连 `tests/` 目录都不存在。这意味着 S1、S2 修完后没有任何手段证明修好了，也没有手段防止改回去。
 3. **移动端和 PC 的差距不在页面数量而在权限模型**：mobile 有 7 个管理模块的完整 CRUD 骨架，但 `buildPermissionContext` 只产出 menuInfo/roleInfo/orgInfo，**完全没有权限码概念**，且 `pickPrimaryRole` 只取首个角色，因此页内无法做按钮级校验、多角色用户从源头就判断错误。此外关系配置要求手填 Long 型 ID、`/myself/info` 指向 17 行未完成残片、7 个管理页无一处符合自身 `.cursorrules` 的骨架屏与圆角基准。
 
 **关于跨端比较的口径**：PC 总分（71）明显高于 BE（45）与 MB（45），主要来自 PC 的 D1 满分——wave2 已落地 ID string 化、`v-permission` 指令与多角色权限码合并，恰好命中前端消费侧 5 条判据的全部。由于 BE 与前端用的是两套 D1 判据、BE 无 D4、前端 SCOPE 格有 N/A，**单格总分不做跨端排名**；跨端只在 4.2 的模块平均与 4.1 的单维度均值上解读。
@@ -399,7 +399,7 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 <!-- batches:start -->
 | 批次 | 条目 ID | 验收手段 |
 | --- | --- | --- |
-| 批次 0 | RBAC-BE-USER-004 RBAC-BE-MENU-003 RBAC-BE-RELATION-005 RBAC-PC-ORG-005 RBAC-PC-USER-003 RBAC-PC-ROLE-003 RBAC-PC-MENU-002 RBAC-PC-PERM-002 RBAC-PC-RELATION-002 RBAC-MB-SCOPE-002 RBAC-MB-USER-002 RBAC-MB-ORG-003 RBAC-MB-ROLE-002 RBAC-MB-MENU-003 RBAC-MB-PERM-003 RBAC-MB-RELATION-004 | 后端 Surefire 实际执行用例数由 16 升至约 32；grep 确认 PC 六个 RBAC 页面已有 data-testid 且冒烟脚本改用其定位；mobile tests 目录存在且一条命令跑通 |
+| 批次 0 | RBAC-BE-USER-004 RBAC-BE-MENU-003 RBAC-BE-RELATION-005 RBAC-PC-ORG-005 RBAC-PC-USER-003 RBAC-PC-ROLE-003 RBAC-PC-MENU-002 RBAC-PC-PERM-002 RBAC-PC-RELATION-002 RBAC-MB-SCOPE-002 RBAC-MB-USER-002 RBAC-MB-ORG-003 RBAC-MB-ROLE-002 RBAC-MB-MENU-003 RBAC-MB-PERM-003 RBAC-MB-RELATION-004 | 后端 Surefire 实际执行用例数由 16 升至 40；grep 确认 PC 六个 RBAC 页面已有 data-testid 且冒烟脚本改用其定位；mobile tests 目录存在且一条命令跑通 |
 | 批次 1 | RBAC-BE-USER-001 RBAC-BE-USER-002 RBAC-BE-ORG-001 RBAC-BE-ROLE-001 RBAC-BE-RELATION-001 RBAC-BE-SCOPE-001 RBAC-BE-SCOPE-003 | 自动化测试断言：他机构 id 查询返回空、跨机构写被拒、生成 SQL 含预期过滤片段、superviser 不被判为 super、源码无 main 打印密码 |
 | 批次 2 | RBAC-BE-ORG-002 RBAC-BE-ROLE-002 RBAC-BE-ROLE-003 RBAC-BE-MENU-001 RBAC-BE-MENU-002 RBAC-BE-PERM-001 RBAC-BE-PERM-002 RBAC-BE-PERM-003 RBAC-BE-RELATION-002 RBAC-BE-RELATION-003 RBAC-BE-SCOPE-004 RBAC-PC-MENU-001 RBAC-MB-SCOPE-001 | 单元测试加集成测试：唯一性与防环被拒、删除级联失效关系行、assign 后缓存键被删、空表单被前端拦下、双角色权限码为并集 |
 | 批次 3 | RBAC-BE-USER-003 RBAC-BE-ORG-003 RBAC-BE-ORG-004 RBAC-BE-MENU-004 RBAC-BE-PERM-004 RBAC-BE-RELATION-004 RBAC-BE-SCOPE-002 RBAC-PC-ORG-001 RBAC-PC-ORG-002 RBAC-PC-USER-001 RBAC-PC-ROLE-001 RBAC-PC-RELATION-001 RBAC-PC-SCOPE-001 RBAC-PC-SCOPE-002 RBAC-MB-USER-001 RBAC-MB-ORG-001 RBAC-MB-MENU-001 RBAC-MB-PERM-001 RBAC-MB-RELATION-001 RBAC-MB-RELATION-002 | Midscene 与 Playwright 用例通过，加静态检查：src/views/user 出现 components/rbac 引用、关系配置不再需要手填 ID、三端关系配置形态一致 |
@@ -419,6 +419,8 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 3. 把批次 0 的验收改为纯静态断言（每个测试类的 `@Test` 数量等于其 `public void test*` 方法数），不依赖实际执行。
 
 本轮 D5 的取证已全部改用静态 `@Test` 清点，评分不受此影响。
+
+**状态：已按方案 1 解除（2026-08-06）。** 装好 JDK 17 后以 `$env:JAVA_HOME="C:\Program Files\Java\jdk-17"` 跑 `mvn -pl alex_miaosha_user/user_boot -am test`，改造前实测 `BUILD SUCCESS` 且 `Tests run: 16`，与静态清点结论一致；批次 0 Task 1 完成后实测 `Tests run: 40, Failures: 0, Errors: 0, Skipped: 0`。因此批次 0 验收无需退化为纯静态断言，方案 2 与方案 3 不再需要。四个休眠测试类的 24 个用例首次真实执行**全部通过**，未发现需要 `@Disabled` 分流的生产代码缺陷——这些用例此前只是从未被 Surefire 收集。
 
 ### 6.2 阻塞项二：批次 3 的产品形态决策
 
