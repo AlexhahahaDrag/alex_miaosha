@@ -327,6 +327,44 @@ if (!argEnd) {
 	}
 }
 
+// ---------- 批次归属 ----------
+/** 批次与严重级的对应关系, 见 spec 第 8 节。批次 0 是前置项, 不绑严重级。 */
+const BATCH_SEVERITY = { '批次 1': 'S1', '批次 2': 'S2', '批次 3': 'S3', '批次 4': 'S4' };
+if (!argEnd) {
+	const assigned = new Map();
+	for (const cells of tableRows('batches')) {
+		if (cells.length < 3) {
+			errors.push(`批次表行列数不足 3: ${cells.join(' | ')}`);
+			continue;
+		}
+		const [batch, idsRaw, accept] = cells;
+		if (!accept) {
+			errors.push(`${batch} 未写验收手段`);
+		}
+		for (const id of idsRaw.split(/[,，\s]+/).filter(Boolean)) {
+			if (assigned.has(id)) {
+				errors.push(`${id} 被重复归入 ${assigned.get(id)} 与 ${batch}`);
+				continue;
+			}
+			assigned.set(id, batch);
+			const item = registry.find((entry) => entry.id === id);
+			if (!item) {
+				errors.push(`${batch} 引用了不存在的条目 ${id}`);
+				continue;
+			}
+			const expectSeverity = BATCH_SEVERITY[batch];
+			if (expectSeverity && item.severity !== expectSeverity) {
+				errors.push(`${id} 严重级 ${item.severity} 与 ${batch} 要求的 ${expectSeverity} 不符`);
+			}
+		}
+	}
+	for (const item of registry) {
+		if (!assigned.has(item.id)) {
+			errors.push(`${item.id} 未归入任何批次`);
+		}
+	}
+}
+
 // ---------- 输出 ----------
 const scopeLabel = argEnd ? `端 ${argEnd}` : '全量';
 for (const warn of new Set(warns)) {

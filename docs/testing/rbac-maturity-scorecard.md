@@ -4,7 +4,7 @@ Date: 2026-08-06
 Spec: `docs/superpowers/specs/2026-08-06-rbac-maturity-review-design.md`
 Plan: `docs/superpowers/plans/2026-08-06-rbac-maturity-review-execution.md`
 Branch: `develop-1.0-feature-org-manage`
-Status: 评审进行中
+Status: 评审完成（21 格已评分，67 条缺陷已登记并归入批次）
 
 门禁：`node scripts/rbac-scorecard-check.mjs`（分端推进时用 `--end BE|PC|MB`）。
 
@@ -394,4 +394,49 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 
 ## 6. 批次归类与阻塞项
 
-（Task 6 填）
+严格按严重级推进，不允许跨批次挑低成本项。批次 0 本身不修缺陷，只为后三批提供回归保护与定位抓手，故不受严重级一致性约束。
+
+<!-- batches:start -->
+| 批次 | 条目 ID | 验收手段 |
+| --- | --- | --- |
+| 批次 0 | RBAC-BE-USER-004 RBAC-BE-MENU-003 RBAC-BE-RELATION-005 RBAC-PC-ORG-005 RBAC-PC-USER-003 RBAC-PC-ROLE-003 RBAC-PC-MENU-002 RBAC-PC-PERM-002 RBAC-PC-RELATION-002 RBAC-MB-SCOPE-002 RBAC-MB-USER-002 RBAC-MB-ORG-003 RBAC-MB-ROLE-002 RBAC-MB-MENU-003 RBAC-MB-PERM-003 RBAC-MB-RELATION-004 | 后端 Surefire 实际执行用例数由 16 升至约 32；grep 确认 PC 六个 RBAC 页面已有 data-testid 且冒烟脚本改用其定位；mobile tests 目录存在且一条命令跑通 |
+| 批次 1 | RBAC-BE-USER-001 RBAC-BE-USER-002 RBAC-BE-ORG-001 RBAC-BE-ROLE-001 RBAC-BE-RELATION-001 RBAC-BE-SCOPE-001 RBAC-BE-SCOPE-003 | 自动化测试断言：他机构 id 查询返回空、跨机构写被拒、生成 SQL 含预期过滤片段、superviser 不被判为 super、源码无 main 打印密码 |
+| 批次 2 | RBAC-BE-ORG-002 RBAC-BE-ROLE-002 RBAC-BE-ROLE-003 RBAC-BE-MENU-001 RBAC-BE-MENU-002 RBAC-BE-PERM-001 RBAC-BE-PERM-002 RBAC-BE-PERM-003 RBAC-BE-RELATION-002 RBAC-BE-RELATION-003 RBAC-BE-SCOPE-004 RBAC-PC-MENU-001 RBAC-MB-SCOPE-001 | 单元测试加集成测试：唯一性与防环被拒、删除级联失效关系行、assign 后缓存键被删、空表单被前端拦下、双角色权限码为并集 |
+| 批次 3 | RBAC-BE-USER-003 RBAC-BE-ORG-003 RBAC-BE-ORG-004 RBAC-BE-MENU-004 RBAC-BE-PERM-004 RBAC-BE-RELATION-004 RBAC-BE-SCOPE-002 RBAC-PC-ORG-001 RBAC-PC-ORG-002 RBAC-PC-USER-001 RBAC-PC-ROLE-001 RBAC-PC-RELATION-001 RBAC-PC-SCOPE-001 RBAC-PC-SCOPE-002 RBAC-MB-USER-001 RBAC-MB-ORG-001 RBAC-MB-MENU-001 RBAC-MB-PERM-001 RBAC-MB-RELATION-001 RBAC-MB-RELATION-002 | Midscene 与 Playwright 用例通过，加静态检查：src/views/user 出现 components/rbac 引用、关系配置不再需要手填 ID、三端关系配置形态一致 |
+| 批次 4 | RBAC-BE-USER-005 RBAC-PC-ORG-003 RBAC-PC-ORG-004 RBAC-PC-USER-002 RBAC-PC-ROLE-002 RBAC-PC-PERM-001 RBAC-MB-ORG-002 RBAC-MB-ROLE-001 RBAC-MB-MENU-002 RBAC-MB-PERM-002 RBAC-MB-RELATION-003 | 静态扫描：三端源码无 U+FFFD 替换字符、无 console.log 残留；视觉检查：PC 有空态与骨架屏、mobile 管理页符合 16px 圆角与触觉基准 |
+<!-- batches:end -->
+
+批次容量：0 号 16 条、1 号 7 条、2 号 13 条、3 号 20 条、4 号 11 条，合计 67 条，与登记册条目数一致（门禁校验此项）。
+
+### 6.1 阻塞项一：本机跑不了后端测试
+
+`JAVA_HOME` 指向 `D:\Program Files (x86)\Java\JDK1.8_x32`（该目录不存在），本机实际可用的是 JDK 21，而仓库根 `pom.xml` 声明 Java 17 与 Lombok 1.18.24。用 JDK 21 跑 `mvn test` 会在 `alex_miaosha_common` 编译阶段抛 `NoSuchFieldError: JCTree$JCImport qualid`，这是 Lombok 1.18.24 不支持 JDK 21 的已知表现。
+
+仓库声明本身自洽（Java 17 + Lombok 1.18.24 是兼容组合），所以这不是仓库缺陷，未登记为条目。但它直接卡住批次 0 的验收——「Surefire 实际执行用例数上升」需要能跑 `mvn test`。**批次 0 开工前必须先解决其一**：
+
+1. 装 JDK 17 并把 `JAVA_HOME` 指向它（改动最小，与仓库声明一致）。
+2. 升 Lombok 到支持 JDK 21 的版本（会牵动全仓编译，超出本轮范围）。
+3. 把批次 0 的验收改为纯静态断言（每个测试类的 `@Test` 数量等于其 `public void test*` 方法数），不依赖实际执行。
+
+本轮 D5 的取证已全部改用静态 `@Test` 清点，评分不受此影响。
+
+### 6.2 阻塞项二：批次 3 的产品形态决策
+
+`tests/midscene/rbac/cases/stage1-smoke.json` 与 `docs/testing/rbac-stage1-midscene-test-design.md` 描述了一套目标 UI：用户页左侧机构树、机构 Drawer 契约、角色统计列、权限差异预览、独立的机构-用户与用户-角色配置页。这批资产已由前端仓 commit `3f3b605` 从 `codex/gift-management-module` 归位到本分支。
+
+**执行批次 3 前必须先确认该设计是否仍然采纳**，否则会出现照旧文档改完又不满意的返工，成本 L。需回答四个问题：
+
+1. PC 关系配置改为独立页面，还是保持内嵌在用户表单与角色抽屉？这直接决定 `RBAC-PC-RELATION-001` 与 `RBAC-MB-RELATION-001` 往哪个方向收敛。
+2. 用户页是否引入左侧机构树布局？决定 `RBAC-PC-USER-001` 之外是否还要动布局，以及后端 `RBAC-BE-ORG-003` 树接口的优先级。
+3. `src/components/rbac/*` 四个组件作为最终形态复用，还是重新设计？决定 `RBAC-PC-ORG-002` 与 `RBAC-PC-ROLE-001` 是接线工作还是重做工作。
+4. 移动端关系配置需要完整管理能力，还是只保留查看？决定 `RBAC-MB-RELATION-001` 是补选择器还是降级为只读。
+
+### 6.3 各批次的 plan 落盘位置
+
+| 批次 | plan 路径 |
+| --- | --- |
+| 批次 0 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch0-regression-hooks.md`（跨三仓，主 plan 落后端仓） |
+| 批次 1 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch1-s1.md`（纯后端） |
+| 批次 2 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch2-s2.md`（后端 11 条为主，PC 与 mobile 各 1 条） |
+| 批次 3 | 后端条目落后端仓，前端条目落各前端仓 `docs/superpowers/plans/` |
+| 批次 4 | 同批次 3 |
