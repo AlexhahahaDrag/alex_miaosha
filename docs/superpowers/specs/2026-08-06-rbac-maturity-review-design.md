@@ -49,6 +49,12 @@ RBAC 相关能力此前以「波次」方式推进，已落地三份 spec：
 
 两者冲突时以仓内文档为准，并在登记册中标注冲突点，供后续决策。
 
+### 4.1 stage1 资产的分支归位
+
+上表中 PC 的 stage1 契约与测试设计文档、以及 `src/components/rbac/*` 六个文件、`tests/midscene/rbac/cases/stage1-smoke.json`，原先只存在于 `codex/gift-management-module` 分支，在本评审分支上不可见。已按文件粒度取到本分支（前端仓 commit `3f3b605`，未携带任何 gift 业务代码），使基准线引用在本分支上可解析。
+
+因此「PC 侧 rbac 共享组件零引用」的准确表述是：**组件与其目标态文档此前被留在 gift 分支，org 分支拿不到**；归位后才成为「组件在库但尚未被任何页面引用」。评审时按后者计分。
+
 ## 5. 评判维度与评分标准
 
 ### 5.1 维度与权重
@@ -273,7 +279,7 @@ RBAC 相关能力此前以「波次」方式推进，已落地三份 spec：
 
 **backend**：五模块 CRUD 与分页齐备；单用户唯一有效机构（`assignSingleOrg`）含并发锁与编程式事务；用户多角色与角色批量授权已实现；权限上下文含 Redis 缓存。薄弱点集中在详情查询无数据权限、机构无唯一性与防环校验、`OrgUserInfo` CRUD 与 `assignSingleOrg` 双轨、角色判定用子串包含、无树接口、测试未挂 `@Test`。
 
-**PC**：五套 CRUD 列表 + Modal/部分 Drawer；权限树依赖 `src/compoments/menu-tree`；wave2 已落地 ID string 化、批量删除确认、用户筛选。薄弱点集中在 `src/components/rbac/*` 四个组件零引用、stage1 目标 UI 未落地、无空状态与骨架屏、无 `data-testid`、菜单详情校验规则为空对象。
+**PC**：五套 CRUD 列表 + Modal/部分 Drawer；权限树依赖 `src/compoments/menu-tree`；wave2 已落地 ID string 化、批量删除确认、用户筛选。薄弱点集中在 `src/components/rbac/*` 四个组件在库但零引用（详见 4.1）、stage1 目标 UI 未落地、无空状态与骨架屏、无 `data-testid`、菜单详情校验规则为空对象。
 
 **mobile**：8 组 CRUD 骨架 + 路由级 RBAC。薄弱点集中在页内无按钮级权限、`usePermission` 未落地、`buildPermissionContext` 仅取首个角色、关系类详情为手填 ID、多处模板字面量 bug 与乱码文案、无 `tests/` 目录。
 
