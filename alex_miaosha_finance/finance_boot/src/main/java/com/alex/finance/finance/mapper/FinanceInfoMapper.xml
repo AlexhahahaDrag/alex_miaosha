@@ -92,10 +92,10 @@
                     </if>
                 </foreach>
             </if>
-            <if test = "financeInfoVo.fromSource != null">
+            <if test = "financeInfoVo.fromSource != null and financeInfoVo.fromSource != ''">
                 and finance_info.from_source = #{financeInfoVo.fromSource}
             </if>
-            <if test = "financeInfoVo.incomeAndExpenses != null">
+            <if test = "financeInfoVo.incomeAndExpenses != null and financeInfoVo.incomeAndExpenses != ''">
                 and finance_info.income_and_expenses = #{financeInfoVo.incomeAndExpenses}
             </if>
             <if test = "financeInfoVo.belongTo != null">
