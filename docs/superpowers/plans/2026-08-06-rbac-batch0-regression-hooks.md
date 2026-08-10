@@ -386,6 +386,19 @@ node scripts/rbac-scorecard-check.mjs
 - 6.1 节追加了阻塞项一的解除状态（方案 1，JDK 17），并记录改造前后两次实测数字。
 - 门禁复跑结果：`[pass] 全量 门禁通过: 矩阵 21 格, 登记册 67 条`，退出码 0。分数、严重级与批次归类均未改动。
 
-### Task 2–5（PC 与 mobile，待执行）
+### Task 2–3（PC，代码已落地，冒烟待环境确认）
 
-（执行者填写：PC 冒烟脚本跑通情况、mobile vitest 安装结果、遇到的偏差）
+- PC 六个 RBAC 页面已有 `data-testid`（commit `09a0a6d`），冒烟脚本已优先 testid（commit `5bda0bb`）。
+- 2026-08-10 复跑：账号取自 front `.env`。首次因 Playwright `page.fill` 不同步 Ant Design Vue `loginForm`，9 条全 skip；改为 `pressSequentially` 后复跑结果 **passed=2 / failed=6 / skipped=1**（`RBAC-LOCAL-101` 用户分页、`RBAC-LOCAL-201` 角色分页通过；`rbac_readonly` 账号登录仍失败被 skip；其余失败集中在「打不开用户/机构/角色菜单入口」——属批次 3 目标态未接线，不是批次 0 范围）。
+- 偏差：登录页按钮文案是 `Log in`；真正阻塞曾是 Vue v-model 同步，不是超管/经理账号错误。
+
+### Task 4–5（mobile，已完成，待用户确认后提交）
+
+- **Task 4**：`vitest@4.1.10` 已在 `devDependencies`；新增 `vitest.config.ts`（独立配置，不加载 Vite 插件链）、`tests/permission/permission-context.test.ts`（3 个用例）、`package.json` 脚本 `test:unit`；`tsconfig.node.json` 纳入 `vitest.config.ts`。实测 `npm run test:unit` → `Tests 3 passed`。
+- **Task 5**：六个页面注入 `data-testid`：
+  - `orgInfo`：`rbac-org-search/row/row-delete`（挂在真实 `van-search`）
+  - `roleInfo` / `menuInfo` / `permissionInfo` / `orgUserInfo`：搜索框在源码里被注释，为满足「每页 ≥3 钩子」且不改业务逻辑，将 `rbac-*-search` 挂在外层 `<form>`，行与删除按钮挂在 `van-cell` / 删除 `van-button`
+  - `user/index`：`rbac-user-btn-theme/name/entry-profile/entry-security/entry-about/entry-feedback/btn-logout`
+- `rg -c data-testid` 六文件均 ≥3；改动文件 eslint 通过；`graphify update src` 已跑。
+- **未提交**（按用户要求：确认后再 commit）。
+- 本机已 `yarn run dev` 起 mobile：`http://localhost:2000/`。

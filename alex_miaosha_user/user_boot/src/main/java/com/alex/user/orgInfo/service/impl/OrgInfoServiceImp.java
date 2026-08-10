@@ -1,6 +1,11 @@
 package com.alex.user.orgInfo.service.impl;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.rbac.RbacRoleCodes;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
+import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
@@ -36,6 +41,8 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
 
     private final OrgUserInfoService orgUserInfoService;
 
+    private final UserUtils userUtils;
+
     @Override
     public Page<OrgInfoVo> getPage(Long pageNum, Long pageSize, OrgInfoVo orgInfoVo) {
         Page<OrgInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
@@ -49,6 +56,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
 
     @Override
     public Boolean addOrgInfo(OrgInfoVo orgInfoVo) {
+        validateOrgCodeAndHierarchy(orgInfoVo);
         OrgInfo orgInfo = new OrgInfo();
         BeanUtils.copyProperties(orgInfoVo, orgInfo);
         orgInfoMapper.insert(orgInfo);
@@ -57,6 +65,8 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
 
     @Override
     public Boolean updateOrgInfo(OrgInfoVo orgInfoVo) {
+        assertOrgAccessible(orgInfoVo == null ? null : orgInfoVo.getId());
+        validateOrgCodeAndHierarchy(orgInfoVo);
         OrgInfo orgInfo = new OrgInfo();
         BeanUtils.copyProperties(orgInfoVo, orgInfo);
         orgInfoMapper.updateById(orgInfo);
@@ -71,6 +81,10 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         List<Long> idArr = parseIds(ids);
         if (idArr.isEmpty()) {
             return true;
+        }
+        // Ownership first: deny out-of-scope orgs before child/bound-user guards.
+        for (Long orgId : idArr) {
+            assertOrgAccessible(orgId);
         }
         long childOrgCount = this.count(Wrappers.<OrgInfo>lambdaQuery()
                 .in(OrgInfo::getParentId, idArr)
@@ -88,6 +102,104 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         }
         orgInfoMapper.deleteBatchIds(idArr);
         return true;
+    }
+
+    /**
+     * RBAC-BE-ORG-002: orgCode uniqueness + parent existence + cycle prevention.
+     * Root parent is null or 0 (aligned with PC tree: !parentId || parentId === '0').
+     */
+    private void validateOrgCodeAndHierarchy(OrgInfoVo orgInfoVo) {
+        if (orgInfoVo == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构参数不能为空");
+        }
+        String orgCode = orgInfoVo.getOrgCode();
+        if (StringUtils.isEmpty(orgCode)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构编码不能为空");
+        }
+        Long selfId = orgInfoVo.getId();
+        long duplicateCount = orgInfoMapper.selectCount(Wrappers.<OrgInfo>lambdaQuery()
+                .eq(OrgInfo::getOrgCode, orgCode)
+                .ne(selfId != null, OrgInfo::getId, selfId));
+        if (duplicateCount > 0) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构编码已存在");
+        }
+
+        Long parentId = orgInfoVo.getParentId();
+        if (isRootParent(parentId)) {
+            return;
+        }
+        if (selfId != null && selfId.equals(parentId)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不能为自身");
+        }
+        OrgInfo parent = orgInfoMapper.selectById(parentId);
+        if (parent == null || isDeleted(parent)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不存在");
+        }
+        // Walk upward from parent; if self appears in the ancestor chain, a cycle would form.
+        Long cursor = parent.getParentId();
+        for (int depth = 0; depth < 64; depth++) {
+            if (isRootParent(cursor)) {
+                return;
+            }
+            if (selfId != null && selfId.equals(cursor)) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "机构父子关系不能成环");
+            }
+            OrgInfo ancestor = orgInfoMapper.selectById(cursor);
+            if (ancestor == null || isDeleted(ancestor)) {
+                return;
+            }
+            cursor = ancestor.getParentId();
+        }
+    }
+
+    private static boolean isRootParent(Long parentId) {
+        return parentId == null || parentId == 0L;
+    }
+
+    private static boolean isDeleted(OrgInfo orgInfo) {
+        return orgInfo.getIsDelete() != null && orgInfo.getIsDelete() != 0;
+    }
+
+    /**
+     * Write-path ownership guard: non-super users must pass a scoped queryOrgInfo
+     * before update/delete. Null means outside data scope — never silent success.
+     */
+    private void assertOrgAccessible(Long id) {
+        if (id == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构ID不能为空");
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            // I1 修复：登录上下文不可用时必须 fail-closed，不能默认放行。
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (isSuperAdminLogin(loginUser)) {
+            return;
+        }
+        OrgInfoVo visible = orgInfoMapper.queryOrgInfo(String.valueOf(id));
+        if (visible == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构");
+        }
+    }
+
+    private static boolean isSuperAdminLogin(TUserVo loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        UserPermissionContextVo context = loginUser.getPermissionContext();
+        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
+            return true;
+        }
+        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+        for (RoleInfoVo role : roles) {
+            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Long> parseIds(String ids) {

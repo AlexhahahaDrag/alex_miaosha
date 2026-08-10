@@ -3,6 +3,7 @@ package com.alex.user.rbac.service.impl;
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
+import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserPermissionContextServiceImpl implements UserPermissionContextService {
 
-    private static final String SUPER_ADMIN_ROLE_CODE = "super_super";
     private static final String PERMISSION_CONTEXT_CACHE_KEY = "permission_context";
 
     private final OrgUserInfoService orgUserInfoService;
@@ -135,7 +135,7 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
 
     private boolean hasSuperAdminRole(List<RoleInfoVo> roleList) {
         for (RoleInfoVo roleInfoVo : roleList) {
-            if (SUPER_ADMIN_ROLE_CODE.equals(roleInfoVo.getRoleCode())) {
+            if (RbacRoleCodes.SUPER.equals(roleInfoVo.getRoleCode())) {
                 return true;
             }
         }

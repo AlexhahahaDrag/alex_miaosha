@@ -62,7 +62,7 @@ public class OrgUserInfoController {
     @LogRestRequest(apiName = "新增用户公司信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "majf")
-    @ApiOperation(value = "新增用户公司信息表", notes = "新增用户公司信息表", response = Result.class)
+    @ApiOperation(value = "新增用户公司信息表", notes = "等价 assignSingleOrg：单用户唯一有效机构", response = Result.class)
     @PostMapping
     public Result<Boolean> add(@Validated({Insert.class}) @RequestBody OrgUserInfoVo orgUserInfoVo) {
         return Result.success(orgUserInfoService.addOrgUserInfo(orgUserInfoVo));
@@ -70,7 +70,7 @@ public class OrgUserInfoController {
 
     @LogRestRequest(apiName = "修改用户公司信息表")
     @ApiOperationSupport(order = 40, author = "majf")
-    @ApiOperation(value = "修改用户公司信息表", notes = "修改用户公司信息表", response = Result.class)
+    @ApiOperation(value = "修改用户公司信息表", notes = "status=有效时等价 assignSingleOrg，避免多有效机构", response = Result.class)
     @PutMapping
     public Result<Boolean> update(@Validated({Update.class}) @RequestBody OrgUserInfoVo orgUserInfoVo) {
         return Result.success(orgUserInfoService.updateOrgUserInfo(orgUserInfoVo));

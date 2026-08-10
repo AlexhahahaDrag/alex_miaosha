@@ -22,10 +22,12 @@ public interface TUserMapper extends BaseMapper<TUser> {
     @DataPermission(field = "id")
     Page<TUserVo> getPage(Page<TUserVo> page, @Param("tUserVo") TUserVo tUserVo);
 
+    @DataPermission(field = "id")
     TUserVo queryTUser(@Param("id") String id);
 
     @DataPermission(field = "id")
     List<TUserVo> getList(@Param("tUserVo") TUserVo tUserVo);
 
+    @DataPermission(field = "id")
     TUserVo getUserInfo(@Param("tUserVo") TUserVo tUserVo);
 }

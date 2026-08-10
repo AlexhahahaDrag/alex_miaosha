@@ -20,5 +20,6 @@ public interface OrgInfoMapper extends BaseMapper<OrgInfo> {
     @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
     Page<OrgInfoVo> getPage(Page<OrgInfoVo> page, @Param("orgInfoVo") OrgInfoVo orgInfoVo);
 
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
     OrgInfoVo queryOrgInfo(@Param("id") String id);
 }

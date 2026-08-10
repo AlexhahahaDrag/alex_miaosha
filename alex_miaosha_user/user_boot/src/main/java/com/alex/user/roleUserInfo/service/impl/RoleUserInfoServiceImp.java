@@ -6,6 +6,7 @@ import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
@@ -35,6 +36,9 @@ import java.util.Set;
 public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, RoleUserInfo> implements RoleUserInfoService {
 
     private final RoleUserInfoMapper roleUserInfoMapper;
+
+    // RBAC-BE-RELATION-002: assign 成功后主动失效受影响用户的 permission_context 缓存
+    private final PermissionContextCacheService permissionContextCacheService;
 
     @Override
     public Page<RoleUserInfoVo> getPage(Long pageNum, Long pageSize, RoleUserInfoVo roleUserInfoVo) {
@@ -89,6 +93,8 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
             }
         }
         if (roleIds == null || roleIds.isEmpty()) {
+            // RBAC-BE-RELATION-002: 角色被清空也是一种变更，同样要失效缓存
+            permissionContextCacheService.invalidate(userId);
             return true;
         }
         Set<Long> uniqueRoleIds = new LinkedHashSet<>();
@@ -98,6 +104,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
             }
         }
         if (uniqueRoleIds.isEmpty()) {
+            permissionContextCacheService.invalidate(userId);
             return true;
         }
         List<RoleUserInfo> newAssignments = new ArrayList<>();
@@ -111,6 +118,8 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
         if (!saveBatch(newAssignments)) {
             throw new SystemException(ResultEnum.SYSTEM_ERROR, "用户角色新关系保存失败:");
         }
+        // RBAC-BE-RELATION-002: 改角色成功后主动失效该用户的 permission_context 缓存
+        permissionContextCacheService.invalidate(userId);
         return true;
     }
 
@@ -123,13 +132,21 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
         List<RoleUserInfo> activeAssignments = list(Wrappers.<RoleUserInfo>lambdaQuery()
                 .eq(RoleUserInfo::getRoleId, String.valueOf(roleId))
                 .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
+        Set<Long> previousUserIds = new LinkedHashSet<>();
         for (RoleUserInfo roleUserInfo : activeAssignments) {
+            String previousUserId = roleUserInfo.getUserId();
+            if (previousUserId != null && !previousUserId.isEmpty()) {
+                previousUserIds.add(Long.valueOf(previousUserId));
+            }
             roleUserInfo.setStatus(SysConf.INVALID_STATUS);
             if (!updateById(roleUserInfo)) {
                 throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户旧关系失效失败:");
             }
         }
         if (userIds == null || userIds.isEmpty()) {
+            if (!previousUserIds.isEmpty()) {
+                permissionContextCacheService.invalidateAll(previousUserIds);
+            }
             return true;
         }
         Set<Long> uniqueUserIds = new LinkedHashSet<>();
@@ -139,6 +156,9 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
             }
         }
         if (uniqueUserIds.isEmpty()) {
+            if (!previousUserIds.isEmpty()) {
+                permissionContextCacheService.invalidateAll(previousUserIds);
+            }
             return true;
         }
         List<RoleUserInfo> newAssignments = new ArrayList<>();
@@ -152,6 +172,10 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
         if (!saveBatch(newAssignments)) {
             throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户新关系保存失败:");
         }
+        // RBAC-BE-RELATION-002/SCOPE-004: 失效被移除与被分配用户的 permission_context 缓存
+        Set<Long> affectedUserIds = new LinkedHashSet<>(previousUserIds);
+        affectedUserIds.addAll(uniqueUserIds);
+        permissionContextCacheService.invalidateAll(affectedUserIds);
         return true;
     }
 

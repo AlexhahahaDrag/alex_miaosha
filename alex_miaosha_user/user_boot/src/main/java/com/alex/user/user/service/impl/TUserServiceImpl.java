@@ -3,6 +3,7 @@ package com.alex.user.user.service.impl;
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.OnlineAdmin;
@@ -15,6 +16,7 @@ import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.LoginException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
@@ -23,8 +25,10 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.rbac.service.UserDeleteCleanupService;
 import com.alex.user.rbac.service.UserPermissionContextService;
+import com.alex.user.roleInfo.mapper.RoleInfoMapper;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.token.service.TokenRefreshService;
@@ -115,6 +119,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private final RoleUserInfoService roleUserInfoService;
 
+    // C2 修复：syncUserRbacAssignments 需要对请求体里的 roleIds 做归属校验，
+    // 复用已挂 @DataPermission 的 queryRoleInfo，而不是新起一套判断逻辑。
+    private final RoleInfoMapper roleInfoMapper;
+
     private final TokenRefreshService tokenRefreshService;
 
     private final OnlineUserService onlineUserService;
@@ -125,6 +133,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final UserPermissionContextService userPermissionContextService;
 
     private final UserDeleteCleanupService userDeleteCleanupService;
+
+    // RBAC-BE-RELATION-002: permission_context 主动失效统一走 helper（行为不变，去重）
+    private final PermissionContextCacheService permissionContextCacheService;
 
     @Autowired(required = false)
     private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
@@ -192,16 +203,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return map;
     }
 
-    public static void main(String[] args) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = "12345";
-        String pass = encoder.encode(password + "Bxh");
-        System.out.println(pass);
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TUser updateTUser(TUserVo tUserVo) {
+        assertUserAccessible(tUserVo == null ? null : tUserVo.getId());
         Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotEmpty(tUserVo.getUsername())) {
             map.put(SysConf.USERNAME, tUserVo.getUsername());
@@ -229,15 +234,89 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             orgUserInfoService.assignSingleOrg(userId, tUserVo.getOrgId());
         }
         if (tUserVo.getRoleIds() != null) {
+            // C2 修复：请求体里的 roleIds 此前完全不校验归属，机构管理员可在编辑用户时
+            // 顺手塞进 super_super 的角色 id 把目标用户变成超管。
+            assertRoleIdsGrantable(tUserVo.getRoleIds());
             roleUserInfoService.assignRoles(userId, tUserVo.getRoleIds());
         }
-        // 清理权限上下文缓存
-        try {
-            redisUtils.delete(LoginKey.loginKey, "permission_context:" + userId);
-            log.info("清理用户 {} 的权限上下文缓存", userId);
-        } catch (Exception e) {
-            log.error("清理用户权限上下文缓存异常，userId: {}", userId, e);
+        // 清理权限上下文缓存：统一走 PermissionContextCacheService（RBAC-BE-RELATION-002 helper）
+        permissionContextCacheService.invalidate(userId);
+        log.info("清理用户 {} 的权限上下文缓存", userId);
+    }
+
+    /**
+     * C2 修复：校验请求体中要授予的 roleIds 是否可授予。
+     * 1) 归属校验——非超管只能授予自己数据范围内可见的角色（复用已挂注解的 queryRoleInfo，
+     *    越权/不存在返回 null 即拒绝，文案含"无权"）；
+     * 2) 硬性规则——非超管一律不得授予 super_super 角色，即使该角色行恰好在其可见范围内。
+     * 超管登录不受限制。
+     */
+    private void assertRoleIdsGrantable(List<Long> roleIds) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            return;
         }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            // 与 assertUserAccessible 保持一致的 fail-closed 语义
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (isSuperAdminLogin(loginUser)) {
+            return;
+        }
+        for (Long roleId : roleIds) {
+            if (roleId == null) {
+                continue;
+            }
+            RoleInfoVo visible = roleInfoMapper.queryRoleInfo(String.valueOf(roleId));
+            if (visible == null) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权授予其他机构的角色");
+            }
+            if (RbacRoleCodes.SUPER.equals(visible.getRoleCode())) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权授予超级管理员角色");
+            }
+        }
+    }
+
+    /**
+     * Write-path ownership guard: non-super users must pass a scoped queryTUser
+     * before update/delete. Null means outside data scope — never silent success.
+     */
+    private void assertUserAccessible(Long id) {
+        if (id == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户ID不能为空");
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            // I1 修复：登录上下文不可用时必须 fail-closed，不能默认放行。
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (isSuperAdminLogin(loginUser)) {
+            return;
+        }
+        TUserVo visible = tUserMapper.queryTUser(String.valueOf(id));
+        if (visible == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构的用户");
+        }
+    }
+
+    private static boolean isSuperAdminLogin(TUserVo loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        UserPermissionContextVo context = loginUser.getPermissionContext();
+        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
+            return true;
+        }
+        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+        for (RoleInfoVo role : roles) {
+            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -252,6 +331,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .collect(Collectors.toList());
         if (idArr.isEmpty()) {
             return true;
+        }
+        for (String userId : idArr) {
+            assertUserAccessible(Long.valueOf(userId));
         }
         tUserMapper.deleteBatchIds(idArr);
         for (String userId : idArr) {

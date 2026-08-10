@@ -65,6 +65,18 @@
         </where>
     </select>
 
+    <!-- RBAC C1 fix (batch2 final review)：getListAll 与 getList SQL 完全一致，
+         但对应的 Java 接口方法未挂 @DataPermission，专供全量菜单树缓存路径使用，
+         避免全局 Redis 缓存 menu_all_tree 被按调用者数据范围截断后污染。 -->
+    <select id="getListAll" resultType="com.alex.api.user.menuInfo.vo.MenuInfoVo">
+        select <include refid="Base_Column_List"/> from t_menu_info
+        <where>
+            t_menu_info.is_delete = 0
+            <include refid="queryInfo"/>
+            order by t_menu_info.order_by
+        </where>
+    </select>
+
     <select id="queryMenuInfo" resultType="com.alex.api.user.menuInfo.vo.MenuInfoVo">
         select <include refid="Base_Column_List"/> from t_menu_info
         <where>

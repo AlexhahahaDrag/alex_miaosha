@@ -19,9 +19,10 @@ import java.util.List;
 @Mapper
 public interface PermissionInfoMapper extends BaseMapper<PermissionInfo> {
 
-    @DataPermission(table = "t_permission_info")
+    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
     Page<PermissionInfoVo> getPage(Page<PermissionInfoVo> page, @Param("permissionInfoVo") PermissionInfoVo permissionInfoVo);
 
+    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
     PermissionInfoVo queryPermissionInfo(@Param("id") Long id);
 
     List<PermissionInfoVo> getList(@Param("permissionInfoVo") PermissionInfoVo permissionInfoVo);

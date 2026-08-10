@@ -4,6 +4,7 @@ import com.alex.api.user.annotation.DataPermission;
 import com.alex.api.user.annotation.DataPermission.Scope;
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
@@ -26,7 +27,7 @@ public class DataPermissionScopeHandlerTest {
 
     @Test
     public void testSuperOrgIdLeavesWhereUnchanged() {
-        DataPermissionHandlerImpl handler = handler(user(1L, 20L, "super_admin"));
+        DataPermissionHandlerImpl handler = handler(user(1L, 20L, RbacRoleCodes.SUPER));
 
         Expression result = handler.getSqlSegment(null, ORG_ID_MS);
 
@@ -82,6 +83,22 @@ public class DataPermissionScopeHandlerTest {
         assertEquals("99", eq.getRightExpression().toString(), "right should be login user id");
     }
 
+    @Test
+    void superviser_must_not_be_treated_as_super() {
+        DataPermissionHandlerImpl handler = handler(user(1L, 20L, "superviser"));
+        Expression result = handler.getSqlSegment(null, ORG_ID_MS);
+        // 非超管必须追加过滤；超管才返回 null where
+        assertNotNull(result, "RBAC-BE-SCOPE-001: superviser must not bypass data permission");
+    }
+
+    @Test
+    void badmin_must_not_be_treated_as_admin() {
+        DataPermissionHandlerImpl handler = handler(user(1L, 20L, "badmin"));
+        Expression result = handler.getSqlSegment(null, USER_IDS_MS);
+        // admin 走机构成员 IN；普通用户走 self EqualsTo
+        assertTrue(result instanceof EqualsTo, "RBAC-BE-SCOPE-001: badmin must use user self-id filter");
+    }
+
     private static DataPermissionHandlerImpl handler(TUserVo loginUser) {
         return new DataPermissionHandlerImpl(new FakeUserUtils(loginUser));
     }
@@ -103,6 +120,12 @@ public class DataPermissionScopeHandlerTest {
     private static void assertNull(Object actual, String message) {
         if (actual != null) {
             throw new AssertionError(message + ", expected null, actual: " + actual);
+        }
+    }
+
+    private static void assertNotNull(Object actual, String message) {
+        if (actual == null) {
+            throw new AssertionError(message + ", expected non-null");
         }
     }
 

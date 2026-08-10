@@ -3,6 +3,7 @@ package com.alex.user.rbac;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.mapper.OrgUserInfoMapper;
 import com.alex.user.orgUserInfo.service.impl.OrgUserInfoServiceImp;
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -11,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +114,7 @@ public class OrgUserAssignmentServiceTest {
         private OrgUserInfo savedAssignment;
 
         private TestableOrgUserInfoService(OrgUserInfo activeAssignment) {
-            super((OrgUserInfoMapper) null, noOpTransactionTemplate());
+            super((OrgUserInfoMapper) null, noOpTransactionTemplate(), noOpCache());
             this.activeAssignments.add(activeAssignment);
         }
 
@@ -143,6 +145,24 @@ public class OrgUserAssignmentServiceTest {
         };
     }
 
+    /**
+     * These tests assert on the assignSingleOrg DB-write behavior; cache invalidation itself
+     * is covered separately by PermissionContextInvalidationTest, so a no-op stub is enough here.
+     */
+    private static PermissionContextCacheService noOpCache() {
+        return new PermissionContextCacheService() {
+            @Override
+            public void invalidate(Long userId) {
+                // no-op for this test's scope
+            }
+
+            @Override
+            public void invalidateAll(Collection<Long> userIds) {
+                // no-op for this test's scope
+            }
+        };
+    }
+
     private static class BlockingTransactionTemplate extends TransactionTemplate {
 
         private final AtomicInteger callbackEntries = new AtomicInteger();
@@ -169,7 +189,7 @@ public class OrgUserAssignmentServiceTest {
         private final AtomicInteger listCalls = new AtomicInteger();
 
         private BlockingOrgUserInfoService(TransactionTemplate transactionTemplate) {
-            super((OrgUserInfoMapper) null, transactionTemplate);
+            super((OrgUserInfoMapper) null, transactionTemplate, noOpCache());
         }
 
         @Override

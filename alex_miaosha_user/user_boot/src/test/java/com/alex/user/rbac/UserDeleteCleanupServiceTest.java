@@ -6,6 +6,8 @@ import com.alex.common.utils.redis.RedisUtils;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.mapper.OrgUserInfoMapper;
 import com.alex.user.orgUserInfo.service.impl.OrgUserInfoServiceImp;
+import com.alex.user.rbac.service.PermissionContextCacheService;
+import com.alex.user.rbac.service.impl.PermissionContextCacheServiceImpl;
 import com.alex.user.rbac.service.impl.UserDeleteCleanupServiceImpl;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper;
@@ -20,6 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +136,10 @@ public class UserDeleteCleanupServiceTest {
             TestableRoleUserInfoService roleService,
             TestableTUserLoginService loginService,
             RedisUtils redisUtils) {
-        return new UserDeleteCleanupServiceImpl(orgService, roleService, loginService, redisUtils);
+        // RBAC-BE-RELATION-002: clearPermissionContext now routes through the shared helper,
+        // wired here with the same RedisUtils double so existing assertions keep working.
+        PermissionContextCacheService permissionContextCacheService = new PermissionContextCacheServiceImpl(redisUtils);
+        return new UserDeleteCleanupServiceImpl(orgService, roleService, loginService, redisUtils, permissionContextCacheService);
     }
 
     private static OrgUserInfo orgAssignment(Long id, String userId, String orgId, String status) {
@@ -184,11 +190,30 @@ public class UserDeleteCleanupServiceTest {
         }
     }
 
+    /**
+     * These doubles only exercise OrgUserInfoServiceImp/RoleUserInfoServiceImp as fakes for
+     * cleanupAfterUserDeleted's own DB invalidation; assignSingleOrg/assignRoles are never
+     * called here, so cache invalidation is a no-op stub.
+     */
+    private static PermissionContextCacheService noOpCache() {
+        return new PermissionContextCacheService() {
+            @Override
+            public void invalidate(Long userId) {
+                // no-op for this test's scope
+            }
+
+            @Override
+            public void invalidateAll(Collection<Long> userIds) {
+                // no-op for this test's scope
+            }
+        };
+    }
+
     private static class TestableOrgUserInfoService extends OrgUserInfoServiceImp {
         private final List<OrgUserInfo> active = new ArrayList<>();
 
         private TestableOrgUserInfoService(OrgUserInfo... rows) {
-            super((OrgUserInfoMapper) null, (TransactionTemplate) null);
+            super((OrgUserInfoMapper) null, (TransactionTemplate) null, noOpCache());
             active.addAll(Arrays.asList(rows));
         }
 
@@ -207,7 +232,7 @@ public class UserDeleteCleanupServiceTest {
         private final List<RoleUserInfo> active = new ArrayList<>();
 
         private TestableRoleUserInfoService(RoleUserInfo... rows) {
-            super((RoleUserInfoMapper) null);
+            super((RoleUserInfoMapper) null, noOpCache());
             active.addAll(Arrays.asList(rows));
         }
 

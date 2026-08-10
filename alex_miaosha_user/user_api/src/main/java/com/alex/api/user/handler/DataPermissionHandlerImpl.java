@@ -1,6 +1,7 @@
 package com.alex.api.user.handler;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
@@ -89,11 +90,11 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         boolean isAdmin = false;
         boolean isUser = false;
         for (String code : roleCodes) {
-            if (code.contains("super")) {
+            if (RbacRoleCodes.SUPER.equals(code)) {
                 isSuper = true;
-            } else if (code.contains("admin")) {
+            } else if (RbacRoleCodes.ADMIN.equals(code)) {
                 isAdmin = true;
-            } else if (code.contains("user")) {
+            } else if (RbacRoleCodes.USER.equals(code)) {
                 isUser = true;
             }
         }

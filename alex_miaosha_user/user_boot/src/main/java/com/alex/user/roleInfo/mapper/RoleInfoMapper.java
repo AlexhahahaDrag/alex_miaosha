@@ -20,5 +20,6 @@ public interface RoleInfoMapper extends BaseMapper<RoleInfo> {
     @DataPermission(table = "t_role_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
     Page<RoleInfoVo> getPage(Page<RoleInfoVo> page, @Param("roleInfoVo") RoleInfoVo roleInfoVo);
 
+    @DataPermission(table = "t_role_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
     RoleInfoVo queryRoleInfo(@Param("id") String id);
 }

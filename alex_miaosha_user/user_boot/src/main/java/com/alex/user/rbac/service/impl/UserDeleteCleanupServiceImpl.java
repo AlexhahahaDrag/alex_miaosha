@@ -6,6 +6,7 @@ import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.rbac.service.UserDeleteCleanupService;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
@@ -31,6 +32,8 @@ public class UserDeleteCleanupServiceImpl implements UserDeleteCleanupService {
     private final RoleUserInfoService roleUserInfoService;
     private final TUserLoginService tUserLoginService;
     private final RedisUtils redisUtils;
+    // RBAC-BE-RELATION-002: permission_context 主动失效统一走 helper（行为不变，去重）
+    private final PermissionContextCacheService permissionContextCacheService;
 
     @Override
     public void cleanupAfterUserDeleted(String userId) {
@@ -66,9 +69,10 @@ public class UserDeleteCleanupServiceImpl implements UserDeleteCleanupService {
 
     private void clearPermissionContext(String userId) {
         try {
-            redisUtils.delete(LoginKey.loginKey, "permission_context:" + userId);
-        } catch (Exception e) {
-            log.error("清理用户权限上下文缓存异常，userId: {}", userId, e);
+            permissionContextCacheService.invalidate(Long.valueOf(userId));
+        } catch (NumberFormatException e) {
+            // 不应出现：userId 应始终来自 Long 主键序列化；容错跳过不阻断主流程
+            log.error("清理用户权限上下文缓存异常：userId 无法解析为 Long，userId: {}", userId, e);
         }
     }
 

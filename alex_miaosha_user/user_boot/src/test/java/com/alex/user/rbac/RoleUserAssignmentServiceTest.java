@@ -1,5 +1,6 @@
 package com.alex.user.rbac;
 
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper;
 import com.alex.user.roleUserInfo.service.impl.RoleUserInfoServiceImp;
@@ -163,7 +164,7 @@ public class RoleUserAssignmentServiceTest {
         private int saveBatchCalls;
 
         private TestableRoleUserInfoService(RoleUserInfo... activeAssignments) {
-            super((RoleUserInfoMapper) null);
+            super((RoleUserInfoMapper) null, noOpCache());
             this.activeAssignments.addAll(Arrays.asList(activeAssignments));
         }
 
@@ -184,5 +185,23 @@ public class RoleUserAssignmentServiceTest {
             savedAssignments.addAll(entityList);
             return true;
         }
+    }
+
+    /**
+     * These tests assert on the DB-write behavior of assignRoles/assignUsersToRole; cache
+     * invalidation itself is covered separately by PermissionContextInvalidationTest.
+     */
+    private static PermissionContextCacheService noOpCache() {
+        return new PermissionContextCacheService() {
+            @Override
+            public void invalidate(Long userId) {
+                // no-op for this test's scope
+            }
+
+            @Override
+            public void invalidateAll(Collection<Long> userIds) {
+                // no-op for this test's scope
+            }
+        };
     }
 }
