@@ -18,3 +18,4 @@
 - 数据权限控制（`DataPermissionHandlerImpl`）结合 `@DataPermission` 注解，利用 JSqlParser 插件进行 SQL 过滤：超级管理员角色不受限；机构管理员（admin）通过子查询在 `alex_user.t_org_user_info` 中关联其机构 ID 过滤；普通用户通过 `user_id` 精确限制。
 - 微服务在 Nacos 中的注册服务名分别为：用户微服务 `alex-miaosha@@alex-user-dev`（主端口 `30006`），OSS 存储微服务 `alex-miaosha@@alex-oss-dev`（主端口 `30009`）。
 - Redis 缓存了所有的登录态和共享菜单树（Key 类似 `LoginKey:login:in:menu_all_tree`），在前端/后端做菜单重组或过滤渲染时，严禁修改/污染原始 children 的内存结构以防止 Redis 缓存共享干扰。
+- 管理端菜单树 `GET/POST /menu-info/tree`（`MenuInfoServiceImp#getTree`）必须走带 `@DataPermission` 的 scoped `getList` 在内存拼 `children`，禁止调用 `getListAll`，禁止读写 `menu_all_tree`（该键仅服务登录全量缓存）。

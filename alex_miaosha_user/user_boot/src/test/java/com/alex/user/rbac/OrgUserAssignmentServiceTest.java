@@ -193,8 +193,15 @@ public class OrgUserAssignmentServiceTest {
         }
 
         @Override
-        public List<OrgUserInfo> list(Wrapper<OrgUserInfo> queryWrapper) {
+        protected List<OrgUserInfo> listActiveAssignments(Long userId) {
             listCalls.incrementAndGet();
+            return new ArrayList<>();
+        }
+
+        // RBAC-BE-RELATION-004: pruning queries a separate seam; keep it a no-op here so this
+        // test's listCalls counter stays a clean proxy for "entered core assignment" per call.
+        @Override
+        protected List<OrgUserInfo> listInvalidHistory(Long userId) {
             return new ArrayList<>();
         }
 

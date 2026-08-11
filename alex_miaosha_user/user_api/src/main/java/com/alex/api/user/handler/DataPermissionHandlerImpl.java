@@ -6,13 +6,13 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -25,16 +25,36 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     private final UserUtils userUtils;
+
+    /**
+     * RBAC-BE-SCOPE-002: 机构子孙节点查询，默认 {@link OrgSubtreeLookup#NOOP}（不扩展范围）。
+     */
+    private final OrgSubtreeLookup orgSubtreeLookup;
+
+    /**
+     * 兼容既有调用方（product/oss/finance boot 的 MybatisPlusConfig 仍以单参构造），
+     * 未接入机构子树能力时保持原有「仅本机构」语义。
+     */
+    public DataPermissionHandlerImpl(UserUtils userUtils) {
+        this(userUtils, OrgSubtreeLookup.NOOP);
+    }
+
+    public DataPermissionHandlerImpl(UserUtils userUtils, OrgSubtreeLookup orgSubtreeLookup) {
+        this.userUtils = userUtils;
+        this.orgSubtreeLookup = orgSubtreeLookup == null ? OrgSubtreeLookup.NOOP : orgSubtreeLookup;
+    }
 
     /**
      * 线程本地变量，防止在获取当前登录用户时触发其他 SQL 查询导致无限递归
@@ -103,7 +123,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             return getSuperWhere(where);
         }
         if (annotation.scope() == DataPermission.Scope.ORG_ID) {
-            return getOrgIdWhere(where, loginUser, annotation);
+            return getOrgIdWhere(where, loginUser, annotation, isAdmin);
         }
         if (isAdmin) {
             return getAdminWhere(where, loginUser, annotation);
@@ -155,20 +175,67 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     /**
-     * ORG_ID scope: filter by login user's org id (admin and normal user share same equals).
+     * ORG_ID scope: filter by login user's org id.
+     * - admin: selfOrgId ∪ 全部子孙机构 id（RBAC-BE-SCOPE-002），无子孙时退化为 equals。
+     * - user/default: 仍仅本机构 equals。
      * Missing org → impossible equals so no rows leak.
      */
-    private Expression getOrgIdWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
+    private Expression getOrgIdWhere(Expression where, TUserVo loginUser, DataPermission annotation, boolean isAdmin) {
         if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
             EqualsTo impossible = new EqualsTo();
             impossible.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
             impossible.setRightExpression(new LongValue(-1L));
             return where == null ? impossible : new AndExpression(where, impossible);
         }
-        EqualsTo eq = new EqualsTo();
-        eq.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
-        eq.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
-        return where == null ? eq : new AndExpression(where, eq);
+        Long selfOrgId = loginUser.getOrgInfoVo().getId();
+        Expression condition = isAdmin
+                ? buildOrgIdExpression(annotation, buildAdminOrgScopeIds(selfOrgId))
+                : buildOrgIdExpression(annotation, Collections.singletonList(selfOrgId));
+        return where == null ? condition : new AndExpression(where, condition);
+    }
+
+    /**
+     * 一次性查出 selfOrgId 的全部子孙机构 id（去重，保序），失败时降级为仅本机构。
+     */
+    private List<Long> buildAdminOrgScopeIds(Long selfOrgId) {
+        Set<Long> scopeIds = new LinkedHashSet<>();
+        scopeIds.add(selfOrgId);
+        try {
+            List<Long> descendants = orgSubtreeLookup.findDescendantOrgIds(selfOrgId);
+            if (descendants != null) {
+                for (Long id : descendants) {
+                    if (id != null) {
+                        scopeIds.add(id);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("查询机构子孙节点异常，降级为仅本机构：orgId={}", selfOrgId, e);
+        }
+        return new ArrayList<>(scopeIds);
+    }
+
+    /**
+     * 单个 id 退化为 EqualsTo，多个 id 使用 InExpression（保持与既有 JSQLParser 风格一致）。
+     */
+    private Expression buildOrgIdExpression(DataPermission annotation, List<Long> orgIds) {
+        Column column = new Column(new Table(annotation.table()), annotation.field());
+        if (orgIds.size() == 1) {
+            EqualsTo eq = new EqualsTo();
+            eq.setLeftExpression(column);
+            eq.setRightExpression(new LongValue(orgIds.get(0)));
+            return eq;
+        }
+        InExpression in = new InExpression();
+        in.setLeftExpression(column);
+        List<Expression> values = new ArrayList<>();
+        for (Long id : orgIds) {
+            values.add(new LongValue(id));
+        }
+        ExpressionList expressionList = new ExpressionList();
+        expressionList.setExpressions(values);
+        in.setRightItemsList(expressionList);
+        return in;
     }
 
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {

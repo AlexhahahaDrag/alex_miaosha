@@ -23,9 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -106,6 +110,55 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
             }
         }
         return result;
+    }
+
+    /**
+     * RBAC-BE-MENU-004: load scoped flat list via annotated {@code getList}, then assemble children.
+     * Isolated from login cache {@code menu_all_tree}: never calls {@code getListAll} / Redis write.
+     * Roots: parentId null/0, or parent not present in the scoped result (orphan promotion).
+     */
+    @Override
+    public List<MenuInfoVo> getTree(MenuInfoVo menuInfoVo) {
+        List<MenuInfoVo> list = menuInfoMapper.getList(menuInfoVo);
+        if (list == null || list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return buildMenuTree(list);
+    }
+
+    private static List<MenuInfoVo> buildMenuTree(List<MenuInfoVo> list) {
+        Map<Long, MenuInfoVo> byId = new HashMap<>(list.size() * 2);
+        Set<Long> ids = new HashSet<>(list.size() * 2);
+        for (MenuInfoVo node : list) {
+            if (node == null || node.getId() == null) {
+                continue;
+            }
+            node.setChildren(new ArrayList<>());
+            byId.put(node.getId(), node);
+            ids.add(node.getId());
+        }
+        List<MenuInfoVo> roots = new ArrayList<>();
+        for (MenuInfoVo node : list) {
+            if (node == null || node.getId() == null) {
+                continue;
+            }
+            Long parentId = node.getParentId();
+            if (isRootParent(parentId) || !ids.contains(parentId)) {
+                roots.add(node);
+                continue;
+            }
+            MenuInfoVo parent = byId.get(parentId);
+            if (parent != null) {
+                parent.getChildren().add(node);
+            } else {
+                roots.add(node);
+            }
+        }
+        return roots;
+    }
+
+    private static boolean isRootParent(Long parentId) {
+        return parentId == null || parentId == 0L;
     }
 
     /**

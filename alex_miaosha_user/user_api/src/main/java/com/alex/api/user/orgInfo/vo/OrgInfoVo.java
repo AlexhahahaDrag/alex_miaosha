@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * description:  机构表Vo
  * author:       alex
@@ -37,4 +39,7 @@ public class OrgInfoVo extends BaseVo<OrgInfoVo>{
 
     @ApiModelProperty(value = "父级机构名称")
     private String parentOrgName;
+
+    @ApiModelProperty(value = "子机构")
+    private List<OrgInfoVo> children;
 }

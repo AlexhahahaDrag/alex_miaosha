@@ -22,8 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +52,50 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
     public Page<OrgInfoVo> getPage(Long pageNum, Long pageSize, OrgInfoVo orgInfoVo) {
         Page<OrgInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         return orgInfoMapper.getPage(page, orgInfoVo);
+    }
+
+    /**
+     * RBAC-BE-ORG-003: load scoped flat list via annotated {@code getList}, then assemble children in memory.
+     * Roots: parentId null/0, or parent not present in the scoped result (orphan promotion).
+     */
+    @Override
+    public List<OrgInfoVo> getTree(OrgInfoVo orgInfoVo) {
+        List<OrgInfoVo> list = orgInfoMapper.getList(orgInfoVo);
+        if (list == null || list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return buildOrgTree(list);
+    }
+
+    private static List<OrgInfoVo> buildOrgTree(List<OrgInfoVo> list) {
+        Map<Long, OrgInfoVo> byId = new HashMap<>(list.size() * 2);
+        Set<Long> ids = new HashSet<>(list.size() * 2);
+        for (OrgInfoVo node : list) {
+            if (node == null || node.getId() == null) {
+                continue;
+            }
+            node.setChildren(new ArrayList<>());
+            byId.put(node.getId(), node);
+            ids.add(node.getId());
+        }
+        List<OrgInfoVo> roots = new ArrayList<>();
+        for (OrgInfoVo node : list) {
+            if (node == null || node.getId() == null) {
+                continue;
+            }
+            Long parentId = node.getParentId();
+            if (isRootParent(parentId) || !ids.contains(parentId)) {
+                roots.add(node);
+                continue;
+            }
+            OrgInfoVo parent = byId.get(parentId);
+            if (parent != null) {
+                parent.getChildren().add(node);
+            } else {
+                roots.add(node);
+            }
+        }
+        return roots;
     }
 
     @Override

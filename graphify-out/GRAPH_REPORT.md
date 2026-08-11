@@ -1,12 +1,12 @@
-# Graph Report - alex_miaosha  (2026-05-20)
+# Graph Report - F:\workplace\project\myself\backend\alex_miaosha  (2026-08-11)
 
 ## Corpus Check
-- 511 files · ~97,736 words
+- 537 files · ~338,698 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3025 nodes · 5055 edges · 183 communities detected
-- Extraction: 68% EXTRACTED · 32% INFERRED · 0% AMBIGUOUS · INFERRED: 1624 edges (avg confidence: 0.8)
+- 3264 nodes · 5733 edges · 312 communities detected
+- Extraction: 59% EXTRACTED · 41% INFERRED · 0% AMBIGUOUS · INFERRED: 2354 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -120,6 +120,10 @@
 - [[_COMMUNITY_Community 107|Community 107]]
 - [[_COMMUNITY_Community 108|Community 108]]
 - [[_COMMUNITY_Community 109|Community 109]]
+- [[_COMMUNITY_Community 110|Community 110]]
+- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
 - [[_COMMUNITY_Community 114|Community 114]]
 - [[_COMMUNITY_Community 115|Community 115]]
 - [[_COMMUNITY_Community 116|Community 116]]
@@ -138,8 +142,10 @@
 - [[_COMMUNITY_Community 129|Community 129]]
 - [[_COMMUNITY_Community 130|Community 130]]
 - [[_COMMUNITY_Community 131|Community 131]]
+- [[_COMMUNITY_Community 132|Community 132]]
 - [[_COMMUNITY_Community 133|Community 133]]
 - [[_COMMUNITY_Community 134|Community 134]]
+- [[_COMMUNITY_Community 135|Community 135]]
 - [[_COMMUNITY_Community 136|Community 136]]
 - [[_COMMUNITY_Community 137|Community 137]]
 - [[_COMMUNITY_Community 138|Community 138]]
@@ -166,6 +172,8 @@
 - [[_COMMUNITY_Community 159|Community 159]]
 - [[_COMMUNITY_Community 160|Community 160]]
 - [[_COMMUNITY_Community 161|Community 161]]
+- [[_COMMUNITY_Community 162|Community 162]]
+- [[_COMMUNITY_Community 163|Community 163]]
 - [[_COMMUNITY_Community 164|Community 164]]
 - [[_COMMUNITY_Community 165|Community 165]]
 - [[_COMMUNITY_Community 166|Community 166]]
@@ -193,1099 +201,1683 @@
 - [[_COMMUNITY_Community 188|Community 188]]
 - [[_COMMUNITY_Community 189|Community 189]]
 - [[_COMMUNITY_Community 190|Community 190]]
+- [[_COMMUNITY_Community 191|Community 191]]
+- [[_COMMUNITY_Community 192|Community 192]]
+- [[_COMMUNITY_Community 193|Community 193]]
+- [[_COMMUNITY_Community 194|Community 194]]
+- [[_COMMUNITY_Community 195|Community 195]]
+- [[_COMMUNITY_Community 196|Community 196]]
+- [[_COMMUNITY_Community 197|Community 197]]
+- [[_COMMUNITY_Community 198|Community 198]]
+- [[_COMMUNITY_Community 199|Community 199]]
+- [[_COMMUNITY_Community 200|Community 200]]
+- [[_COMMUNITY_Community 201|Community 201]]
+- [[_COMMUNITY_Community 202|Community 202]]
+- [[_COMMUNITY_Community 203|Community 203]]
+- [[_COMMUNITY_Community 204|Community 204]]
+- [[_COMMUNITY_Community 205|Community 205]]
+- [[_COMMUNITY_Community 206|Community 206]]
+- [[_COMMUNITY_Community 207|Community 207]]
+- [[_COMMUNITY_Community 208|Community 208]]
+- [[_COMMUNITY_Community 209|Community 209]]
+- [[_COMMUNITY_Community 210|Community 210]]
+- [[_COMMUNITY_Community 211|Community 211]]
+- [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 213|Community 213]]
+- [[_COMMUNITY_Community 214|Community 214]]
+- [[_COMMUNITY_Community 215|Community 215]]
+- [[_COMMUNITY_Community 216|Community 216]]
+- [[_COMMUNITY_Community 217|Community 217]]
+- [[_COMMUNITY_Community 218|Community 218]]
+- [[_COMMUNITY_Community 219|Community 219]]
+- [[_COMMUNITY_Community 220|Community 220]]
+- [[_COMMUNITY_Community 221|Community 221]]
+- [[_COMMUNITY_Community 222|Community 222]]
+- [[_COMMUNITY_Community 223|Community 223]]
+- [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
+- [[_COMMUNITY_Community 227|Community 227]]
+- [[_COMMUNITY_Community 228|Community 228]]
+- [[_COMMUNITY_Community 229|Community 229]]
+- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 231|Community 231]]
+- [[_COMMUNITY_Community 232|Community 232]]
+- [[_COMMUNITY_Community 233|Community 233]]
+- [[_COMMUNITY_Community 234|Community 234]]
+- [[_COMMUNITY_Community 235|Community 235]]
+- [[_COMMUNITY_Community 236|Community 236]]
+- [[_COMMUNITY_Community 237|Community 237]]
+- [[_COMMUNITY_Community 238|Community 238]]
+- [[_COMMUNITY_Community 239|Community 239]]
+- [[_COMMUNITY_Community 240|Community 240]]
+- [[_COMMUNITY_Community 241|Community 241]]
+- [[_COMMUNITY_Community 242|Community 242]]
+- [[_COMMUNITY_Community 243|Community 243]]
+- [[_COMMUNITY_Community 244|Community 244]]
+- [[_COMMUNITY_Community 245|Community 245]]
+- [[_COMMUNITY_Community 246|Community 246]]
+- [[_COMMUNITY_Community 247|Community 247]]
+- [[_COMMUNITY_Community 248|Community 248]]
+- [[_COMMUNITY_Community 249|Community 249]]
+- [[_COMMUNITY_Community 250|Community 250]]
+- [[_COMMUNITY_Community 251|Community 251]]
+- [[_COMMUNITY_Community 252|Community 252]]
+- [[_COMMUNITY_Community 253|Community 253]]
+- [[_COMMUNITY_Community 254|Community 254]]
+- [[_COMMUNITY_Community 255|Community 255]]
+- [[_COMMUNITY_Community 256|Community 256]]
+- [[_COMMUNITY_Community 257|Community 257]]
+- [[_COMMUNITY_Community 258|Community 258]]
+- [[_COMMUNITY_Community 259|Community 259]]
+- [[_COMMUNITY_Community 260|Community 260]]
+- [[_COMMUNITY_Community 261|Community 261]]
+- [[_COMMUNITY_Community 262|Community 262]]
+- [[_COMMUNITY_Community 263|Community 263]]
+- [[_COMMUNITY_Community 264|Community 264]]
+- [[_COMMUNITY_Community 265|Community 265]]
+- [[_COMMUNITY_Community 266|Community 266]]
+- [[_COMMUNITY_Community 267|Community 267]]
+- [[_COMMUNITY_Community 268|Community 268]]
+- [[_COMMUNITY_Community 269|Community 269]]
+- [[_COMMUNITY_Community 270|Community 270]]
+- [[_COMMUNITY_Community 271|Community 271]]
+- [[_COMMUNITY_Community 272|Community 272]]
+- [[_COMMUNITY_Community 273|Community 273]]
+- [[_COMMUNITY_Community 274|Community 274]]
+- [[_COMMUNITY_Community 275|Community 275]]
+- [[_COMMUNITY_Community 276|Community 276]]
+- [[_COMMUNITY_Community 277|Community 277]]
+- [[_COMMUNITY_Community 278|Community 278]]
+- [[_COMMUNITY_Community 279|Community 279]]
+- [[_COMMUNITY_Community 280|Community 280]]
+- [[_COMMUNITY_Community 281|Community 281]]
+- [[_COMMUNITY_Community 282|Community 282]]
+- [[_COMMUNITY_Community 283|Community 283]]
+- [[_COMMUNITY_Community 284|Community 284]]
+- [[_COMMUNITY_Community 285|Community 285]]
+- [[_COMMUNITY_Community 286|Community 286]]
+- [[_COMMUNITY_Community 287|Community 287]]
+- [[_COMMUNITY_Community 288|Community 288]]
+- [[_COMMUNITY_Community 289|Community 289]]
+- [[_COMMUNITY_Community 290|Community 290]]
+- [[_COMMUNITY_Community 291|Community 291]]
+- [[_COMMUNITY_Community 292|Community 292]]
+- [[_COMMUNITY_Community 293|Community 293]]
+- [[_COMMUNITY_Community 294|Community 294]]
+- [[_COMMUNITY_Community 295|Community 295]]
+- [[_COMMUNITY_Community 296|Community 296]]
+- [[_COMMUNITY_Community 297|Community 297]]
+- [[_COMMUNITY_Community 298|Community 298]]
+- [[_COMMUNITY_Community 299|Community 299]]
+- [[_COMMUNITY_Community 300|Community 300]]
+- [[_COMMUNITY_Community 301|Community 301]]
+- [[_COMMUNITY_Community 302|Community 302]]
+- [[_COMMUNITY_Community 303|Community 303]]
+- [[_COMMUNITY_Community 304|Community 304]]
+- [[_COMMUNITY_Community 305|Community 305]]
+- [[_COMMUNITY_Community 306|Community 306]]
+- [[_COMMUNITY_Community 307|Community 307]]
+- [[_COMMUNITY_Community 308|Community 308]]
+- [[_COMMUNITY_Community 309|Community 309]]
+- [[_COMMUNITY_Community 310|Community 310]]
+- [[_COMMUNITY_Community 311|Community 311]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `TableInfo` - 55 edges
-2. `StrategyConfig` - 54 edges
-3. `Info` - 49 edges
-4. `DateUtils` - 38 edges
-5. `Insert` - 38 edges
+2. `StrategyConfig` - 53 edges
+3. `Insert` - 48 edges
+4. `Info` - 46 edges
+5. `DateUtils` - 38 edges
 6. `getCode()` - 35 edges
 7. `AbstractTemplateEngine` - 34 edges
-8. `getValue()` - 31 edges
-9. `Builder` - 28 edges
-10. `Builder` - 26 edges
+8. `getValue()` - 33 edges
+9. `TUserServiceImpl` - 28 edges
+10. `Builder` - 27 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Vo` --implements--> `Serializable`  [EXTRACTED]
-  alex_generator\src\main\java\com\baomidou\mybatisplus\generator\config\builder\Vo.java →   _Bridges community 2 → community 10_
-- `CpnRedemptionRecordInfoServiceImp` --implements--> `CpnRedemptionRecordInfoService`  [EXTRACTED]
-  alex_miaosha_finance\finance_boot\src\main\java\com\alex\finance\cpnRedemptionRecordInfo\service\impl\CpnRedemptionRecordInfoServiceImp.java →   _Bridges community 0 → community 5_
-- `CpnUserCouponInfoServiceImp` --implements--> `CpnUserCouponInfoService`  [EXTRACTED]
-  alex_miaosha_finance\finance_boot\src\main\java\com\alex\finance\cpnUserCouponInfo\service\impl\CpnUserCouponInfoServiceImp.java →   _Bridges community 4 → community 5_
-- `PrepaidCardInfoTServiceImp` --implements--> `PrepaidCardInfoTService`  [EXTRACTED]
-  alex_miaosha_finance\finance_boot\src\main\java\com\alex\finance\prepaidCardInfoT\service\impl\PrepaidCardInfoTServiceImp.java →   _Bridges community 9 → community 5_
-- `WeChatServiceImpl` --implements--> `WeChatService`  [EXTRACTED]
-  alex_miaosha_finance\finance_boot\src\main\java\com\alex\finance\wechat\service\impl\WeChatServiceImpl.java →   _Bridges community 1 → community 14_
+- None detected - all connections are within the same source files.
 
 ## Communities
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (54): CloudController, CpnCouponInfoController, CpnRedemptionRecordInfoController, CpnRedemptionRecordInfoServiceImp, CpnUserCouponInfoController, FileInfo, FileInfoController, FileInfoService (+46 more)
+Nodes (51): AccountRecordInfoController, AccountRecordInfoServiceImp, AccountRecordNoticeJob, AiAnalyzeController, CpnCouponInfoController, CpnUserCouponInfoController, DictInfoController, FileInfoController (+43 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.02
-Nodes (54): AbstractGatewayFilterFactory, AccessLimitAspect, AiAnalyzeFallbackFactory, AsyncTaskConfig, AvoidRepeatableCommitAspect, BasePrefix, CodeUtils, CustomizeException (+46 more)
+Nodes (54): AccessLimitAspect, AiAnalyzeFallbackFactory, AsyncTaskConfig, AvoidRepeatableCommitAspect, CodeUtils, CustomizeException, Choice, DeepSeekChatCompletionResponse (+46 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.02
-Nodes (22): AbstractTemplateEngine, Client, ConfigBuilder, Controller, DetailTs, DetailVue, GlobalConfig, ITemplate (+14 more)
+Cohesion: 0.03
+Nodes (24): Insert, MenuDeleteGuardTest, MenuOwnershipGuardTest, OrgInfoServiceImp, OrgOwnershipGuardTest, OrgStructureValidationTest, OrgUserAssignGuardTest, SpyOrgUserInfoService (+16 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.01
-Nodes (20): BaseBuilder, BaseBuilder, Builder, Builder, Builder, Builder, GeneratorBuilder, Builder (+12 more)
+Nodes (22): BaseBuilder, Builder, Client, Builder, Controller, Builder, GeneratorBuilder, Builder (+14 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.03
-Nodes (22): CpnUserCouponInfoServiceImp, LuaUtils, OrgInfo, OrgInfoController, OrgInfoService, OrgInfoServiceImp, OrgInfoVo, BlockingOrgUserInfoService (+14 more)
+Cohesion: 0.02
+Nodes (16): AbstractTemplateEngine, ConfigBuilder, Builder, DetailTs, DetailVue, GlobalConfig, Builder, ListTs (+8 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.03
-Nodes (33): BaseVo, ConsumptionTrendPointVo, ContactsUserRelationVo, ContactsUserVo, CpnRedemptionRecordInfo, CpnRedemptionRecordInfoService, CpnRedemptionRecordInfoVo, CpnUserCouponInfo (+25 more)
+Cohesion: 0.02
+Nodes (17): AiEngineRouter, CpnCouponInfoServiceImp, AiStructuredResult, DeepSeekAiEngine, DeepSeekClient, DictInfoServiceImp, FinanceAnalysisServiceImpl, FinanceInfoServiceImp (+9 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.03
-Nodes (29): BeanUtils, Goods, GoodsController, GoodsDetailVo, GoodsDTO, GoodsManager, GoodsManagerImpl, GoodsService (+21 more)
+Nodes (6): Builder, PackageConfig, PathInfoHandler, Builder, TemplateConfig, WebSecurityConfig
 
 ### Community 7 - "Community 7"
-Cohesion: 0.04
-Nodes (19): RoleInfo, RoleUserAssignRequest, RoleInfoService, RoleInfoVo, RolePermissionInfo, RolePermissionInfoController, RolePermissionInfoService, RolePermissionInfoServiceImp (+11 more)
+Cohesion: 0.03
+Nodes (14): BeanUtils, CloudController, CpnRedemptionRecordInfoController, CpnRedemptionRecordInfoServiceImp, FileInfoServiceImp, Goods, GoodsMapper, GoodsServiceImpl (+6 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.03
-Nodes (18): GeneratorController, GeneratorService, GeneratorServiceImpl, SecurityUser, SecurityUserDetailsService, SecurityUserFactory, TUser, TUserLogin (+10 more)
+Cohesion: 0.06
+Nodes (10): setName(), MenuFullQueryCacheScopeTest, MenuInfoMapper, MenuTreeServiceTest, OrgTreeServiceTest, RelationPageDataPermissionTest, RoleUserAssignmentServiceTest, TestableRoleUserInfoService (+2 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.05
-Nodes (13): setName(), MenuPermissionFilterTest, PermissionInfo, PermissionInfoService, PermissionInfoServiceImp, PermissionInfoVo, PrepaidCardInfoTMapper, PrepaidCardInfoTServiceImp (+5 more)
+Cohesion: 0.03
+Nodes (17): AiApplication, ApiDocApplication, AutowiredBean, FinanceApplication, GatewayApplication, GeneratorApplication, MissionApplication, MonitorApplication (+9 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.04
-Nodes (26): AiAnalyzeController, AiAnalyzeReq, AiAnalyzeResp, AiAnalyzeService, AiAnalyzeServiceImpl, AiEngine, AiEngineRouter, AiProperties (+18 more)
+Nodes (9): EncryptionUtils, GeneratorController, GeneratorServiceImpl, SecurityUser, SecurityUserDetailsService, SecurityUserFactory, Test, UserApi (+1 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.04
-Nodes (6): SqlContextHolder, SqlResponseAdvice, StrategyConfig, SwaggerHandler, SwaggerResourceConfig, SwaggerResourcesProvider
+Nodes (11): CpnUserCouponInfoServiceImp, LuaUtils, BlockingOrgUserInfoService, BlockingTransactionTemplate, OrgUserAssignmentServiceTest, TestableOrgUserInfoService, OrgUserInfoServiceImp, FailingSaveOrgUserInfoService (+3 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.04
-Nodes (12): Content, CpnCouponInfo, CpnCouponInfoService, CpnCouponInfoServiceImp, CpnCouponInfoVo, DateUtils, JdProductService, JdProductServiceImpl (+4 more)
+Cohesion: 0.07
+Nodes (7): DataPermissionCoverageTest, DataPermissionHandlerImpl, DataPermissionScopeHandlerTest, FakeOrgSubtreeLookup, FakeUserUtils, Fixtures, OrgSubtreeLookupImplTest
 
 ### Community 13 - "Community 13"
-Cohesion: 0.04
-Nodes (4): Builder, PackageConfig, PathInfoHandler, TemplateConfig
+Cohesion: 0.08
+Nodes (2): DateUtils, JdProductServiceImpl
 
 ### Community 14 - "Community 14"
-Cohesion: 0.04
-Nodes (21): AccountCountInfoVo, AccountRecordInfo, AccountRecordInfoController, AccountRecordInfoService, AccountRecordInfoServiceImp, AccountRecordInfoVo, AccountRecordNoticeJob, MetaObjectHandler (+13 more)
+Cohesion: 0.1
+Nodes (3): PrepaidCardInfoTController, PrepaidCardInfoTMapper, PrepaidCardInfoTServiceImp
 
 ### Community 15 - "Community 15"
-Cohesion: 0.04
-Nodes (14): ShopFinance, ShopFinanceController, ShopFinanceService, ShopFinanceServiceImp, ShopFinanceVo, ShopOrder, ShopOrderController, ShopOrderDetail (+6 more)
+Cohesion: 0.13
+Nodes (5): MyMetaObjectHandler, ShopFinanceAnalysisServiceImpl, ShopFinanceNoticeJob, setValue(), UserUtils
 
 ### Community 16 - "Community 16"
-Cohesion: 0.04
-Nodes (13): AiApplication, ApiDocApplication, AutowiredBean, FinanceApplication, GatewayApplication, GeneratorApplication, MissionApplication, MonitorApplication (+5 more)
+Cohesion: 0.12
+Nodes (5): RecordingRedisUtils, TestableOrgUserInfoService, TestableRoleUserInfoService, TestableTUserLoginService, ThrowingRedisUtils
 
 ### Community 17 - "Community 17"
-Cohesion: 0.08
-Nodes (7): AESUtils, EncryptionUtils, GatewayFilter, GlobalFilter, Ordered, Test, WebMvcConfigurer
-
-### Community 18 - "Community 18"
-Cohesion: 0.1
-Nodes (6): DictInfo, DictInfoController, DictInfoService, DictInfoServiceImp, IExcelDictHandler, IExcelDictHandlerImpl
-
-### Community 19 - "Community 19"
-Cohesion: 0.07
-Nodes (10): AccessKey, BasePrefix, CommonKey, DictKey, GoodsKey, LoginKey, SeckillGoodsKey, SeckillKey (+2 more)
-
-### Community 20 - "Community 20"
-Cohesion: 0.12
-Nodes (5): ShopCart, ShopCartController, ShopCartService, ShopCartServiceImp, ShopCartVo
-
-### Community 21 - "Community 21"
 Cohesion: 0.13
-Nodes (5): PmsShopWantProduct, PmsShopWantProductController, PmsShopWantProductService, PmsShopWantProductServiceImp, PmsShopWantProductVo
-
-### Community 22 - "Community 22"
-Cohesion: 0.13
-Nodes (5): PmsAttr, PmsAttrController, PmsAttrService, PmsAttrServiceImp, PmsAttrVo
-
-### Community 23 - "Community 23"
-Cohesion: 0.13
-Nodes (5): PmsSkuInfo, PmsSkuInfoController, PmsSkuInfoService, PmsSkuInfoServiceImp, PmsSkuInfoVo
-
-### Community 24 - "Community 24"
-Cohesion: 0.19
-Nodes (4): AnalysisVo, BalanceVo, FinanceAnalysisService, FinanceAnalysisServiceImpl
-
-### Community 25 - "Community 25"
-Cohesion: 0.14
 Nodes (1): TUserService
 
-### Community 26 - "Community 26"
+### Community 18 - "Community 18"
 Cohesion: 0.17
 Nodes (1): ShopFinanceMapper
 
-### Community 27 - "Community 27"
+### Community 19 - "Community 19"
 Cohesion: 0.18
 Nodes (1): DictInfoService
 
-### Community 28 - "Community 28"
+### Community 20 - "Community 20"
 Cohesion: 0.18
 Nodes (1): GoodsService
 
-### Community 29 - "Community 29"
+### Community 21 - "Community 21"
 Cohesion: 0.18
 Nodes (1): OssApi
 
-### Community 30 - "Community 30"
+### Community 22 - "Community 22"
 Cohesion: 0.18
 Nodes (1): PmsShopProductService
 
-### Community 31 - "Community 31"
+### Community 23 - "Community 23"
 Cohesion: 0.22
 Nodes (1): SwaggerConfig
 
-### Community 32 - "Community 32"
-Cohesion: 0.22
-Nodes (2): CachingConfigurerSupport, RedisConfig
-
-### Community 33 - "Community 33"
+### Community 24 - "Community 24"
 Cohesion: 0.2
 Nodes (1): CpnCouponInfoService
 
-### Community 34 - "Community 34"
+### Community 25 - "Community 25"
 Cohesion: 0.2
 Nodes (1): CpnUserCouponInfoService
 
-### Community 35 - "Community 35"
+### Community 26 - "Community 26"
 Cohesion: 0.2
 Nodes (1): PrepaidCardInfoTService
 
-### Community 36 - "Community 36"
+### Community 27 - "Community 27"
 Cohesion: 0.2
 Nodes (1): PrepaidConsumeRecordTService
 
-### Community 37 - "Community 37"
+### Community 28 - "Community 28"
 Cohesion: 0.2
 Nodes (1): FileInfoService
 
-### Community 38 - "Community 38"
+### Community 29 - "Community 29"
+Cohesion: 0.2
+Nodes (1): RoleUserInfoService
+
+### Community 30 - "Community 30"
+Cohesion: 0.22
+Nodes (1): RedisConfig
+
+### Community 31 - "Community 31"
 Cohesion: 0.22
 Nodes (1): CpnUserCouponInfoApi
 
-### Community 39 - "Community 39"
+### Community 32 - "Community 32"
 Cohesion: 0.22
 Nodes (1): FinanceInfoService
 
-### Community 40 - "Community 40"
+### Community 33 - "Community 33"
 Cohesion: 0.22
 Nodes (1): ShopFinanceAnalysisService
 
-### Community 41 - "Community 41"
+### Community 34 - "Community 34"
 Cohesion: 0.22
 Nodes (1): ShopStockService
 
-### Community 42 - "Community 42"
-Cohesion: 0.25
-Nodes (1): AccountRecordInfoService
+### Community 35 - "Community 35"
+Cohesion: 0.22
+Nodes (1): MenuInfoService
 
-### Community 43 - "Community 43"
+### Community 36 - "Community 36"
+Cohesion: 0.22
+Nodes (1): OrgUserInfoService
+
+### Community 37 - "Community 37"
+Cohesion: 0.22
+Nodes (1): RoleInfoService
+
+### Community 38 - "Community 38"
+Cohesion: 0.22
+Nodes (1): RolePermissionInfoService
+
+### Community 39 - "Community 39"
 Cohesion: 0.25
 Nodes (1): MybatisPlusConfig
 
-### Community 44 - "Community 44"
+### Community 40 - "Community 40"
 Cohesion: 0.25
 Nodes (1): CpnRedemptionRecordInfoService
 
-### Community 45 - "Community 45"
+### Community 41 - "Community 41"
 Cohesion: 0.25
 Nodes (1): ShopCartService
 
-### Community 46 - "Community 46"
+### Community 42 - "Community 42"
 Cohesion: 0.25
 Nodes (1): ShopOrderService
 
-### Community 47 - "Community 47"
+### Community 43 - "Community 43"
 Cohesion: 0.25
 Nodes (1): ShopOrderDetailService
 
-### Community 48 - "Community 48"
+### Community 44 - "Community 44"
 Cohesion: 0.25
 Nodes (1): ShopStockAttrsService
 
-### Community 49 - "Community 49"
+### Community 45 - "Community 45"
 Cohesion: 0.25
 Nodes (1): ShopStockBatchService
 
-### Community 50 - "Community 50"
+### Community 46 - "Community 46"
 Cohesion: 0.25
 Nodes (1): PmsBrandService
 
-### Community 51 - "Community 51"
+### Community 47 - "Community 47"
 Cohesion: 0.25
 Nodes (1): PmsShopWantProductService
 
-### Community 52 - "Community 52"
+### Community 48 - "Community 48"
 Cohesion: 0.25
-Nodes (1): MenuInfoService
+Nodes (1): RoleInfoApi
 
-### Community 53 - "Community 53"
+### Community 49 - "Community 49"
+Cohesion: 0.25
+Nodes (1): OrgInfoService
+
+### Community 50 - "Community 50"
 Cohesion: 0.25
 Nodes (1): PermissionInfoService
 
-### Community 54 - "Community 54"
-Cohesion: 0.25
-Nodes (1): RoleInfoService
-
-### Community 55 - "Community 55"
-Cohesion: 0.25
-Nodes (1): RolePermissionInfoService
-
-### Community 56 - "Community 56"
+### Community 51 - "Community 51"
 Cohesion: 0.29
 Nodes (1): ShopFinanceApi
 
-### Community 57 - "Community 57"
+### Community 52 - "Community 52"
 Cohesion: 0.29
 Nodes (1): ShopStockApi
 
-### Community 58 - "Community 58"
+### Community 53 - "Community 53"
 Cohesion: 0.29
 Nodes (1): CpnCouponInfoApi
 
-### Community 59 - "Community 59"
+### Community 54 - "Community 54"
 Cohesion: 0.29
 Nodes (1): CpnRedemptionRecordInfoApi
 
-### Community 60 - "Community 60"
+### Community 55 - "Community 55"
 Cohesion: 0.29
 Nodes (1): PersonalGiftApi
 
-### Community 61 - "Community 61"
+### Community 56 - "Community 56"
 Cohesion: 0.29
 Nodes (1): PrepaidCardInfoTApi
 
-### Community 62 - "Community 62"
+### Community 57 - "Community 57"
 Cohesion: 0.29
 Nodes (1): PrepaidConsumeRecordTApi
 
-### Community 63 - "Community 63"
+### Community 58 - "Community 58"
 Cohesion: 0.29
 Nodes (1): ShopCartApi
 
-### Community 64 - "Community 64"
+### Community 59 - "Community 59"
 Cohesion: 0.29
 Nodes (1): ShopOrderApi
 
-### Community 65 - "Community 65"
+### Community 60 - "Community 60"
 Cohesion: 0.29
 Nodes (1): ShopOrderDetailApi
 
-### Community 66 - "Community 66"
+### Community 61 - "Community 61"
 Cohesion: 0.29
 Nodes (1): ShopStockAttrsApi
 
-### Community 67 - "Community 67"
+### Community 62 - "Community 62"
 Cohesion: 0.29
 Nodes (1): ShopStockBatchApi
 
-### Community 68 - "Community 68"
+### Community 63 - "Community 63"
 Cohesion: 0.29
 Nodes (1): PrepaidConsumeRecordTMapper
 
-### Community 69 - "Community 69"
+### Community 64 - "Community 64"
 Cohesion: 0.29
 Nodes (1): ShopFinanceService
 
-### Community 70 - "Community 70"
+### Community 65 - "Community 65"
 Cohesion: 0.29
 Nodes (1): PmsAttrApi
 
-### Community 71 - "Community 71"
+### Community 66 - "Community 66"
 Cohesion: 0.29
 Nodes (1): PmsShopProductMapper
 
-### Community 72 - "Community 72"
+### Community 67 - "Community 67"
 Cohesion: 0.29
 Nodes (1): PmsAttrService
 
-### Community 73 - "Community 73"
+### Community 68 - "Community 68"
 Cohesion: 0.29
 Nodes (1): PmsCategoryService
 
-### Community 74 - "Community 74"
+### Community 69 - "Community 69"
 Cohesion: 0.29
 Nodes (1): PmsSkuInfoService
 
-### Community 75 - "Community 75"
+### Community 70 - "Community 70"
 Cohesion: 0.29
 Nodes (1): OrgInfoApi
 
-### Community 76 - "Community 76"
+### Community 71 - "Community 71"
 Cohesion: 0.29
 Nodes (1): OrgUserInfoApi
 
-### Community 77 - "Community 77"
+### Community 72 - "Community 72"
 Cohesion: 0.29
 Nodes (1): PermissionInfoApi
 
-### Community 78 - "Community 78"
-Cohesion: 0.29
-Nodes (1): RoleInfoApi
-
-### Community 79 - "Community 79"
+### Community 73 - "Community 73"
 Cohesion: 0.29
 Nodes (1): RolePermissionInfoApi
 
-### Community 80 - "Community 80"
+### Community 74 - "Community 74"
 Cohesion: 0.29
 Nodes (1): RoleUserInfoApi
 
-### Community 81 - "Community 81"
-Cohesion: 0.29
-Nodes (1): OrgInfoService
-
-### Community 82 - "Community 82"
+### Community 75 - "Community 75"
 Cohesion: 0.29
 Nodes (1): TUserLoginService
 
-### Community 83 - "Community 83"
+### Community 76 - "Community 76"
 Cohesion: 0.4
-Nodes (2): FeignConfig, RequestInterceptor
+Nodes (1): IExcelDictHandlerImpl
 
-### Community 84 - "Community 84"
+### Community 77 - "Community 77"
+Cohesion: 0.33
+Nodes (1): ImportPersonalGiftInfoVo
+
+### Community 78 - "Community 78"
+Cohesion: 0.33
+Nodes (1): ImportFinanceInfoVo
+
+### Community 79 - "Community 79"
+Cohesion: 0.33
+Nodes (1): ImportShopStockInfoVo
+
+### Community 80 - "Community 80"
 Cohesion: 0.33
 Nodes (1): FinanceAnalysisMapper
 
-### Community 85 - "Community 85"
+### Community 81 - "Community 81"
 Cohesion: 0.33
 Nodes (1): FinanceAnalysisService
 
-### Community 86 - "Community 86"
+### Community 82 - "Community 82"
 Cohesion: 0.33
 Nodes (1): MinioFileService
 
-### Community 87 - "Community 87"
+### Community 83 - "Community 83"
 Cohesion: 0.33
 Nodes (1): MenuInfoApi
 
-### Community 88 - "Community 88"
+### Community 84 - "Community 84"
 Cohesion: 0.33
 Nodes (1): TUserMapper
 
-### Community 89 - "Community 89"
+### Community 85 - "Community 85"
 Cohesion: 0.4
 Nodes (1): AiEngine
 
-### Community 90 - "Community 90"
+### Community 86 - "Community 86"
+Cohesion: 0.4
+Nodes (1): FeignConfig
+
+### Community 87 - "Community 87"
 Cohesion: 0.4
 Nodes (1): LocalDateTimeFormatConfig
 
-### Community 91 - "Community 91"
+### Community 88 - "Community 88"
 Cohesion: 0.4
 Nodes (1): AccountRecordInfoMapper
 
-### Community 92 - "Community 92"
+### Community 89 - "Community 89"
 Cohesion: 0.5
 Nodes (1): PushConfigure
 
-### Community 93 - "Community 93"
+### Community 90 - "Community 90"
 Cohesion: 0.4
 Nodes (1): CpnCouponInfoMapper
 
-### Community 94 - "Community 94"
+### Community 91 - "Community 91"
 Cohesion: 0.4
 Nodes (1): CpnRedemptionRecordInfoMapper
 
-### Community 95 - "Community 95"
+### Community 92 - "Community 92"
 Cohesion: 0.4
 Nodes (1): CpnUserCouponInfoMapper
 
-### Community 96 - "Community 96"
+### Community 93 - "Community 93"
 Cohesion: 0.4
 Nodes (1): DictInfoMapper
 
-### Community 97 - "Community 97"
+### Community 94 - "Community 94"
 Cohesion: 0.4
 Nodes (1): FinanceInfoMapper
 
-### Community 98 - "Community 98"
+### Community 95 - "Community 95"
 Cohesion: 0.4
 Nodes (1): ShopCartMapper
 
-### Community 99 - "Community 99"
+### Community 96 - "Community 96"
 Cohesion: 0.4
 Nodes (1): ShopStockMapper
 
-### Community 100 - "Community 100"
+### Community 97 - "Community 97"
 Cohesion: 0.4
 Nodes (1): ShopStockAnalysisMapper
 
-### Community 101 - "Community 101"
+### Community 98 - "Community 98"
 Cohesion: 0.4
 Nodes (1): ShopStockAnalysisService
 
-### Community 102 - "Community 102"
+### Community 99 - "Community 99"
 Cohesion: 0.4
 Nodes (1): WeChatService
 
-### Community 103 - "Community 103"
+### Community 100 - "Community 100"
+Cohesion: 0.4
+Nodes (1): SeckillController
+
+### Community 101 - "Community 101"
 Cohesion: 0.4
 Nodes (1): SeckillGoodsManager
 
-### Community 104 - "Community 104"
+### Community 102 - "Community 102"
 Cohesion: 0.4
 Nodes (1): SeckillService
 
-### Community 105 - "Community 105"
+### Community 103 - "Community 103"
 Cohesion: 0.4
 Nodes (1): PmsShopWantProductMapper
 
-### Community 106 - "Community 106"
+### Community 104 - "Community 104"
 Cohesion: 0.4
-Nodes (1): MenuInfoMapper
+Nodes (1): OrgInfoMapper
 
-### Community 107 - "Community 107"
+### Community 105 - "Community 105"
+Cohesion: 0.4
+Nodes (1): OrgUserInfoMapper
+
+### Community 106 - "Community 106"
 Cohesion: 0.4
 Nodes (1): PermissionInfoMapper
 
-### Community 108 - "Community 108"
+### Community 107 - "Community 107"
 Cohesion: 0.4
 Nodes (1): RolePermissionInfoMapper
 
+### Community 108 - "Community 108"
+Cohesion: 0.4
+Nodes (1): RoleUserInfoMapper
+
 ### Community 109 - "Community 109"
+Cohesion: 0.67
+Nodes (1): AiAnalyzeServiceImpl
+
+### Community 110 - "Community 110"
 Cohesion: 0.5
 Nodes (1): BaseEnum
 
+### Community 111 - "Community 111"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 112 - "Community 112"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 113 - "Community 113"
+Cohesion: 0.5
+Nodes (0): 
+
 ### Community 114 - "Community 114"
 Cohesion: 0.5
-Nodes (1): ShopOrderMapper
+Nodes (0): 
 
 ### Community 115 - "Community 115"
 Cohesion: 0.5
-Nodes (1): ShopOrderDetailMapper
+Nodes (1): BasePrefix
 
 ### Community 116 - "Community 116"
 Cohesion: 0.5
-Nodes (1): ShopStockAttrsMapper
+Nodes (1): ShopOrderMapper
 
 ### Community 117 - "Community 117"
 Cohesion: 0.5
-Nodes (1): OrderService
+Nodes (1): ShopOrderDetailMapper
 
 ### Community 118 - "Community 118"
 Cohesion: 0.5
-Nodes (1): SeckillGoodsService
+Nodes (1): ShopStockAttrsMapper
 
 ### Community 119 - "Community 119"
 Cohesion: 0.5
-Nodes (1): FileInfoMapper
+Nodes (1): GoodsController
 
 ### Community 120 - "Community 120"
 Cohesion: 0.5
-Nodes (1): PmsAttrMapper
+Nodes (1): OrderService
 
 ### Community 121 - "Community 121"
 Cohesion: 0.5
-Nodes (1): PmsBrandMapper
+Nodes (1): SeckillGoodsService
 
 ### Community 122 - "Community 122"
 Cohesion: 0.5
-Nodes (1): PmsCategoryMapper
+Nodes (1): FileInfoMapper
 
 ### Community 123 - "Community 123"
 Cohesion: 0.5
-Nodes (1): PmsSkuInfoMapper
+Nodes (1): PmsAttrMapper
 
 ### Community 124 - "Community 124"
 Cohesion: 0.5
-Nodes (1): OrgInfoMapper
+Nodes (1): PmsBrandMapper
 
 ### Community 125 - "Community 125"
 Cohesion: 0.5
-Nodes (1): RoleInfoMapper
+Nodes (1): PmsCategoryMapper
 
 ### Community 126 - "Community 126"
 Cohesion: 0.5
-Nodes (1): TUserLoginMapper
+Nodes (1): PmsSkuInfoMapper
 
 ### Community 127 - "Community 127"
-Cohesion: 0.67
-Nodes (1): GeneratorService
+Cohesion: 0.5
+Nodes (1): PermissionContextCacheService
 
 ### Community 128 - "Community 128"
-Cohesion: 0.67
-Nodes (1): AiAnalyzeApi
+Cohesion: 0.5
+Nodes (1): RoleInfoMapper
 
 ### Community 129 - "Community 129"
-Cohesion: 0.67
-Nodes (2): DeepSeekChatCompletionRequest, Message
+Cohesion: 0.5
+Nodes (1): TUserLoginMapper
 
 ### Community 130 - "Community 130"
 Cohesion: 0.67
-Nodes (1): AiHttpConfig
+Nodes (1): GeneratorService
 
 ### Community 131 - "Community 131"
 Cohesion: 0.67
-Nodes (1): AiAnalyzeService
+Nodes (1): AiAnalyzeApi
+
+### Community 132 - "Community 132"
+Cohesion: 0.67
+Nodes (2): DeepSeekChatCompletionRequest, Message
 
 ### Community 133 - "Community 133"
 Cohesion: 0.67
-Nodes (1): AsyncExecutorConfig
+Nodes (1): AiHttpConfig
 
 ### Community 134 - "Community 134"
 Cohesion: 0.67
-Nodes (1): CustomizationBean
+Nodes (1): AiAnalyzeService
+
+### Community 135 - "Community 135"
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 136 - "Community 136"
 Cohesion: 0.67
-Nodes (1): FinanceApi
+Nodes (1): BaseVo
 
 ### Community 137 - "Community 137"
 Cohesion: 0.67
-Nodes (1): WechatAccountConfig
+Nodes (1): AsyncExecutorConfig
 
 ### Community 138 - "Community 138"
 Cohesion: 0.67
-Nodes (1): XxlProperties
+Nodes (1): CustomizationBean
 
 ### Community 139 - "Community 139"
 Cohesion: 0.67
-Nodes (1): UserVerifyHandler
+Nodes (1): Long2StringSerializer
 
 ### Community 140 - "Community 140"
 Cohesion: 0.67
-Nodes (1): RainbowUtil
+Nodes (0): 
 
 ### Community 141 - "Community 141"
 Cohesion: 0.67
-Nodes (1): GlobalCorsConfig
+Nodes (1): AccessKey
 
 ### Community 142 - "Community 142"
 Cohesion: 0.67
-Nodes (1): WebFluxWithOpenFeignConfig
+Nodes (1): CommonKey
 
 ### Community 143 - "Community 143"
 Cohesion: 0.67
-Nodes (1): OrderMapper
+Nodes (1): DictKey
 
 ### Community 144 - "Community 144"
 Cohesion: 0.67
-Nodes (1): WelcomeService
+Nodes (1): GoodsKey
 
 ### Community 145 - "Community 145"
 Cohesion: 0.67
-Nodes (1): OssFallbackFactory
+Nodes (1): LoginKey
 
 ### Community 146 - "Community 146"
 Cohesion: 0.67
-Nodes (1): ShopProductService
+Nodes (1): SeckillGoodsKey
 
 ### Community 147 - "Community 147"
 Cohesion: 0.67
-Nodes (1): JdProductService
+Nodes (1): SeckillKey
 
 ### Community 148 - "Community 148"
 Cohesion: 0.67
-Nodes (1): MenuInfoFallbackFactory
+Nodes (1): ShopStockKey
 
 ### Community 149 - "Community 149"
 Cohesion: 0.67
-Nodes (1): OrgInfoFallbackFactory
+Nodes (1): UserKey
 
 ### Community 150 - "Community 150"
 Cohesion: 0.67
-Nodes (1): OrgUserInfoFallbackFactory
+Nodes (1): FinanceApi
 
 ### Community 151 - "Community 151"
 Cohesion: 0.67
-Nodes (1): PermissionInfoFallbackFactory
+Nodes (1): WechatAccountConfig
 
 ### Community 152 - "Community 152"
 Cohesion: 0.67
-Nodes (1): RoleInfoFallbackFactory
+Nodes (1): XxlProperties
 
 ### Community 153 - "Community 153"
 Cohesion: 0.67
-Nodes (1): RolePermissionInfoFallbackFactory
+Nodes (1): UserVerifyHandler
 
 ### Community 154 - "Community 154"
 Cohesion: 0.67
-Nodes (1): RoleUserInfoFallbackFactory
+Nodes (1): RainbowUtil
 
 ### Community 155 - "Community 155"
 Cohesion: 0.67
-Nodes (1): UserFallbackFactory
+Nodes (1): GlobalCorsConfig
 
 ### Community 156 - "Community 156"
 Cohesion: 0.67
-Nodes (1): ExecutorConfig
+Nodes (1): WebFluxWithOpenFeignConfig
 
 ### Community 157 - "Community 157"
 Cohesion: 0.67
-Nodes (1): UserPermissionContextService
+Nodes (1): OrderController
 
 ### Community 158 - "Community 158"
-Cohesion: 1.0
-Nodes (1): DatabaseConfig
+Cohesion: 0.67
+Nodes (1): OrderMapper
 
 ### Community 159 - "Community 159"
-Cohesion: 1.0
-Nodes (1): GeneratorConfig
+Cohesion: 0.67
+Nodes (1): WelcomeService
 
 ### Community 160 - "Community 160"
-Cohesion: 1.0
-Nodes (1): MenuSearchInfo
+Cohesion: 0.67
+Nodes (1): OssFallbackFactory
 
 ### Community 161 - "Community 161"
-Cohesion: 1.0
-Nodes (1): PermissionSearchInfo
+Cohesion: 0.67
+Nodes (1): ShopProductService
+
+### Community 162 - "Community 162"
+Cohesion: 0.67
+Nodes (1): JdProductService
+
+### Community 163 - "Community 163"
+Cohesion: 0.67
+Nodes (1): OrgSubtreeLookup
 
 ### Community 164 - "Community 164"
-Cohesion: 1.0
-Nodes (1): DeepSeekProperties
+Cohesion: 0.67
+Nodes (1): MenuInfoFallbackFactory
 
 ### Community 165 - "Community 165"
-Cohesion: 1.0
-Nodes (1): EncryptionProperties
+Cohesion: 0.67
+Nodes (1): OrgInfoFallbackFactory
 
 ### Community 166 - "Community 166"
-Cohesion: 1.0
-Nodes (1): AuthConstant
+Cohesion: 0.67
+Nodes (1): OrgUserInfoFallbackFactory
 
 ### Community 167 - "Community 167"
-Cohesion: 1.0
-Nodes (1): MessageConf
+Cohesion: 0.67
+Nodes (1): PermissionInfoFallbackFactory
 
 ### Community 168 - "Community 168"
-Cohesion: 1.0
-Nodes (1): RedisConstants
+Cohesion: 0.67
+Nodes (1): RbacRoleCodes
 
 ### Community 169 - "Community 169"
-Cohesion: 1.0
-Nodes (1): SeckillMessage
+Cohesion: 0.67
+Nodes (1): RoleInfoFallbackFactory
 
 ### Community 170 - "Community 170"
-Cohesion: 1.0
-Nodes (1): Delete
+Cohesion: 0.67
+Nodes (1): RolePermissionInfoFallbackFactory
 
 ### Community 171 - "Community 171"
-Cohesion: 1.0
-Nodes (1): Update
+Cohesion: 0.67
+Nodes (1): RoleUserInfoFallbackFactory
 
 ### Community 172 - "Community 172"
-Cohesion: 1.0
-Nodes (1): ContactsUserImportVo
+Cohesion: 0.67
+Nodes (1): UserFallbackFactory
 
 ### Community 173 - "Community 173"
-Cohesion: 1.0
-Nodes (1): UserRoleSetVo
+Cohesion: 0.67
+Nodes (1): ExecutorConfig
 
 ### Community 174 - "Community 174"
-Cohesion: 1.0
-Nodes (1): CpnCouponInfoImportVo
+Cohesion: 0.67
+Nodes (1): UserDeleteCleanupService
 
 ### Community 175 - "Community 175"
-Cohesion: 1.0
-Nodes (1): CommonMapper
+Cohesion: 0.67
+Nodes (1): UserPermissionContextService
 
 ### Community 176 - "Community 176"
 Cohesion: 1.0
-Nodes (1): Weather
+Nodes (1): DatabaseConfig
 
 ### Community 177 - "Community 177"
 Cohesion: 1.0
-Nodes (1): WeChatController
+Nodes (1): GeneratorConfig
 
 ### Community 178 - "Community 178"
 Cohesion: 1.0
-Nodes (1): GatewayAudience
+Nodes (1): MenuSearchInfo
 
 ### Community 179 - "Community 179"
 Cohesion: 1.0
-Nodes (1): RateLimiterConfiguration
+Nodes (1): PermissionSearchInfo
 
 ### Community 180 - "Community 180"
 Cohesion: 1.0
-Nodes (1): GoodsManager
+Nodes (0): 
 
 ### Community 181 - "Community 181"
 Cohesion: 1.0
-Nodes (1): OrderManager
+Nodes (0): 
 
 ### Community 182 - "Community 182"
 Cohesion: 1.0
-Nodes (1): RabbitMQConstants
+Nodes (1): AiAnalyzeReq
 
 ### Community 183 - "Community 183"
 Cohesion: 1.0
-Nodes (1): ImageServiceImpl
+Nodes (1): AiAnalyzeResp
 
 ### Community 184 - "Community 184"
 Cohesion: 1.0
-Nodes (1): OrderApi
+Nodes (1): AiProperties
 
 ### Community 185 - "Community 185"
 Cohesion: 1.0
-Nodes (1): GarageProperties
+Nodes (1): DeepSeekProperties
 
 ### Community 186 - "Community 186"
 Cohesion: 1.0
-Nodes (1): MinioProperties
+Nodes (1): SysConf
 
 ### Community 187 - "Community 187"
 Cohesion: 1.0
-Nodes (1): ObjectItem
+Nodes (1): BaseEntity
 
 ### Community 188 - "Community 188"
 Cohesion: 1.0
-Nodes (1): OnlineAdmin
+Nodes (1): EncryptionProperties
 
 ### Community 189 - "Community 189"
 Cohesion: 1.0
-Nodes (1): Audience
+Nodes (1): AuthConstant
 
 ### Community 190 - "Community 190"
 Cohesion: 1.0
+Nodes (1): MessageConf
+
+### Community 191 - "Community 191"
+Cohesion: 1.0
+Nodes (1): RedisConstants
+
+### Community 192 - "Community 192"
+Cohesion: 1.0
+Nodes (1): SeckillMessage
+
+### Community 193 - "Community 193"
+Cohesion: 1.0
+Nodes (1): GoodsDTO
+
+### Community 194 - "Community 194"
+Cohesion: 1.0
+Nodes (1): OrderDTO
+
+### Community 195 - "Community 195"
+Cohesion: 1.0
+Nodes (1): SeckillGoodsDTO
+
+### Community 196 - "Community 196"
+Cohesion: 1.0
+Nodes (1): WelcomeVo
+
+### Community 197 - "Community 197"
+Cohesion: 1.0
+Nodes (1): Delete
+
+### Community 198 - "Community 198"
+Cohesion: 1.0
+Nodes (1): Update
+
+### Community 199 - "Community 199"
+Cohesion: 1.0
+Nodes (1): CheckContactsVo
+
+### Community 200 - "Community 200"
+Cohesion: 1.0
+Nodes (1): ContactsUserImportVo
+
+### Community 201 - "Community 201"
+Cohesion: 1.0
+Nodes (1): ContactsUserVo
+
+### Community 202 - "Community 202"
+Cohesion: 1.0
+Nodes (1): ContactsUserRelationVo
+
+### Community 203 - "Community 203"
+Cohesion: 1.0
+Nodes (1): UserRoleSetVo
+
+### Community 204 - "Community 204"
+Cohesion: 1.0
+Nodes (1): CpnCouponInfoImportVo
+
+### Community 205 - "Community 205"
+Cohesion: 1.0
+Nodes (1): CpnCouponInfoVo
+
+### Community 206 - "Community 206"
+Cohesion: 1.0
+Nodes (1): CpnRedemptionRecordInfoVo
+
+### Community 207 - "Community 207"
+Cohesion: 1.0
+Nodes (1): CpnUserCouponInfoVo
+
+### Community 208 - "Community 208"
+Cohesion: 1.0
+Nodes (1): CpnUserCouponRedeemReq
+
+### Community 209 - "Community 209"
+Cohesion: 1.0
+Nodes (1): ContactsGiftRecordVo
+
+### Community 210 - "Community 210"
+Cohesion: 1.0
+Nodes (1): PersonalGiftOccasionDistributionVo
+
+### Community 211 - "Community 211"
+Cohesion: 1.0
+Nodes (1): PersonalGiftStatisticVo
+
+### Community 212 - "Community 212"
+Cohesion: 1.0
+Nodes (1): PersonalGiftTrendVo
+
+### Community 213 - "Community 213"
+Cohesion: 1.0
+Nodes (1): PersonalGiftVo
+
+### Community 214 - "Community 214"
+Cohesion: 1.0
+Nodes (1): PrepaidCardConsumeVo
+
+### Community 215 - "Community 215"
+Cohesion: 1.0
+Nodes (1): PrepaidCardInfoTVo
+
+### Community 216 - "Community 216"
+Cohesion: 1.0
+Nodes (1): PrepaidDashboardOverviewVo
+
+### Community 217 - "Community 217"
+Cohesion: 1.0
+Nodes (1): ConsumptionTrendPointVo
+
+### Community 218 - "Community 218"
+Cohesion: 1.0
+Nodes (1): PrepaidConsumeRecordTVo
+
+### Community 219 - "Community 219"
+Cohesion: 1.0
+Nodes (1): ShopCartVo
+
+### Community 220 - "Community 220"
+Cohesion: 1.0
+Nodes (1): ShopOrderVo
+
+### Community 221 - "Community 221"
+Cohesion: 1.0
+Nodes (1): ShopOrderDetailVo
+
+### Community 222 - "Community 222"
+Cohesion: 1.0
+Nodes (1): ShopStockAmountVo
+
+### Community 223 - "Community 223"
+Cohesion: 1.0
+Nodes (1): ShopStockAnalysisVo
+
+### Community 224 - "Community 224"
+Cohesion: 1.0
+Nodes (1): ShopStockAttrsVo
+
+### Community 225 - "Community 225"
+Cohesion: 1.0
+Nodes (1): ShopStockBatchVo
+
+### Community 226 - "Community 226"
+Cohesion: 1.0
+Nodes (1): AccountCountInfoVo
+
+### Community 227 - "Community 227"
+Cohesion: 1.0
+Nodes (1): AccountRecordInfoVo
+
+### Community 228 - "Community 228"
+Cohesion: 1.0
+Nodes (1): DictInfoVo
+
+### Community 229 - "Community 229"
+Cohesion: 1.0
+Nodes (1): FinanceInfoVo
+
+### Community 230 - "Community 230"
+Cohesion: 1.0
+Nodes (1): AnalysisVo
+
+### Community 231 - "Community 231"
+Cohesion: 1.0
+Nodes (1): BalanceVo
+
+### Community 232 - "Community 232"
+Cohesion: 1.0
+Nodes (1): ShopFinanceVo
+
+### Community 233 - "Community 233"
+Cohesion: 1.0
+Nodes (1): ShopFinanceAnalysisVo
+
+### Community 234 - "Community 234"
+Cohesion: 1.0
+Nodes (1): ShopFinanceChainYearVo
+
+### Community 235 - "Community 235"
+Cohesion: 1.0
+Nodes (1): ShopStockVo
+
+### Community 236 - "Community 236"
+Cohesion: 1.0
+Nodes (1): AccountRecordInfo
+
+### Community 237 - "Community 237"
+Cohesion: 1.0
+Nodes (1): CommonMapper
+
+### Community 238 - "Community 238"
+Cohesion: 1.0
+Nodes (1): Weather
+
+### Community 239 - "Community 239"
+Cohesion: 1.0
+Nodes (1): CpnCouponInfo
+
+### Community 240 - "Community 240"
+Cohesion: 1.0
+Nodes (1): CpnRedemptionRecordInfo
+
+### Community 241 - "Community 241"
+Cohesion: 1.0
+Nodes (1): CpnUserCouponInfo
+
+### Community 242 - "Community 242"
+Cohesion: 1.0
+Nodes (1): DictInfo
+
+### Community 243 - "Community 243"
+Cohesion: 1.0
+Nodes (1): FinanceInfo
+
+### Community 244 - "Community 244"
+Cohesion: 1.0
+Nodes (1): PrepaidCardInfoT
+
+### Community 245 - "Community 245"
+Cohesion: 1.0
+Nodes (1): PrepaidConsumeRecordT
+
+### Community 246 - "Community 246"
+Cohesion: 1.0
+Nodes (1): ShopCart
+
+### Community 247 - "Community 247"
+Cohesion: 1.0
+Nodes (1): ShopFinance
+
+### Community 248 - "Community 248"
+Cohesion: 1.0
+Nodes (1): ShopOrder
+
+### Community 249 - "Community 249"
+Cohesion: 1.0
+Nodes (1): ShopOrderDetail
+
+### Community 250 - "Community 250"
+Cohesion: 1.0
+Nodes (1): ShopStock
+
+### Community 251 - "Community 251"
+Cohesion: 1.0
+Nodes (1): ShopStockAttrs
+
+### Community 252 - "Community 252"
+Cohesion: 1.0
+Nodes (1): ShopStockBatch
+
+### Community 253 - "Community 253"
+Cohesion: 1.0
+Nodes (1): WeChatController
+
+### Community 254 - "Community 254"
+Cohesion: 1.0
+Nodes (1): GatewayAudience
+
+### Community 255 - "Community 255"
+Cohesion: 1.0
+Nodes (1): RateLimiterConfiguration
+
+### Community 256 - "Community 256"
+Cohesion: 1.0
+Nodes (1): GoodsManager
+
+### Community 257 - "Community 257"
+Cohesion: 1.0
+Nodes (1): OrderManager
+
+### Community 258 - "Community 258"
+Cohesion: 1.0
+Nodes (1): GoodsManagerImpl
+
+### Community 259 - "Community 259"
+Cohesion: 1.0
+Nodes (1): OrderManagerImpl
+
+### Community 260 - "Community 260"
+Cohesion: 1.0
+Nodes (1): Order
+
+### Community 261 - "Community 261"
+Cohesion: 1.0
+Nodes (1): SeckillGoods
+
+### Community 262 - "Community 262"
+Cohesion: 1.0
+Nodes (1): GoodsDetailVo
+
+### Community 263 - "Community 263"
+Cohesion: 1.0
+Nodes (1): OrderDetailVo
+
+### Community 264 - "Community 264"
+Cohesion: 1.0
+Nodes (1): RabbitMQConstants
+
+### Community 265 - "Community 265"
+Cohesion: 1.0
+Nodes (1): ImageServiceImpl
+
+### Community 266 - "Community 266"
+Cohesion: 1.0
+Nodes (1): OrderApi
+
+### Community 267 - "Community 267"
+Cohesion: 1.0
+Nodes (1): FileInfoVo
+
+### Community 268 - "Community 268"
+Cohesion: 1.0
+Nodes (1): GarageProperties
+
+### Community 269 - "Community 269"
+Cohesion: 1.0
+Nodes (1): MinioProperties
+
+### Community 270 - "Community 270"
+Cohesion: 1.0
+Nodes (1): FileInfo
+
+### Community 271 - "Community 271"
+Cohesion: 1.0
+Nodes (1): ObjectItem
+
+### Community 272 - "Community 272"
+Cohesion: 1.0
+Nodes (1): PmsAttrVo
+
+### Community 273 - "Community 273"
+Cohesion: 1.0
+Nodes (1): PmsBrandVo
+
+### Community 274 - "Community 274"
+Cohesion: 1.0
+Nodes (1): PmsCategoryVo
+
+### Community 275 - "Community 275"
+Cohesion: 1.0
+Nodes (1): PmsShopProductVo
+
+### Community 276 - "Community 276"
+Cohesion: 1.0
+Nodes (1): PmsShopWantProductVo
+
+### Community 277 - "Community 277"
+Cohesion: 1.0
+Nodes (1): PmsSkuInfoVo
+
+### Community 278 - "Community 278"
+Cohesion: 1.0
+Nodes (1): Content
+
+### Community 279 - "Community 279"
+Cohesion: 1.0
+Nodes (1): PmsAttr
+
+### Community 280 - "Community 280"
+Cohesion: 1.0
+Nodes (1): PmsBrand
+
+### Community 281 - "Community 281"
+Cohesion: 1.0
+Nodes (1): PmsCategory
+
+### Community 282 - "Community 282"
+Cohesion: 1.0
+Nodes (1): PmsShopProduct
+
+### Community 283 - "Community 283"
+Cohesion: 1.0
+Nodes (1): PmsShopWantProduct
+
+### Community 284 - "Community 284"
+Cohesion: 1.0
+Nodes (1): PmsSkuInfo
+
+### Community 285 - "Community 285"
+Cohesion: 1.0
+Nodes (1): OrgInfoVo
+
+### Community 286 - "Community 286"
+Cohesion: 1.0
+Nodes (1): OrgUserInfoVo
+
+### Community 287 - "Community 287"
+Cohesion: 1.0
+Nodes (1): PermissionInfoVo
+
+### Community 288 - "Community 288"
+Cohesion: 1.0
+Nodes (1): RoleInfoVo
+
+### Community 289 - "Community 289"
+Cohesion: 1.0
+Nodes (1): RolePermissionAssignRequest
+
+### Community 290 - "Community 290"
+Cohesion: 1.0
+Nodes (1): RolePermissionInfoVo
+
+### Community 291 - "Community 291"
+Cohesion: 1.0
+Nodes (1): RoleUserInfoVo
+
+### Community 292 - "Community 292"
+Cohesion: 1.0
+Nodes (1): TUserLoginVo
+
+### Community 293 - "Community 293"
+Cohesion: 1.0
+Nodes (1): OnlineAdmin
+
+### Community 294 - "Community 294"
+Cohesion: 1.0
+Nodes (1): TUserVo
+
+### Community 295 - "Community 295"
+Cohesion: 1.0
+Nodes (1): UserPermissionContextVo
+
+### Community 296 - "Community 296"
+Cohesion: 1.0
+Nodes (1): MenuInfo
+
+### Community 297 - "Community 297"
+Cohesion: 1.0
+Nodes (1): OrgInfo
+
+### Community 298 - "Community 298"
+Cohesion: 1.0
+Nodes (1): OrgUserInfo
+
+### Community 299 - "Community 299"
+Cohesion: 1.0
+Nodes (1): PermissionInfo
+
+### Community 300 - "Community 300"
+Cohesion: 1.0
+Nodes (1): RoleInfo
+
+### Community 301 - "Community 301"
+Cohesion: 1.0
+Nodes (1): RolePermissionInfo
+
+### Community 302 - "Community 302"
+Cohesion: 1.0
+Nodes (1): RoleUserInfo
+
+### Community 303 - "Community 303"
+Cohesion: 1.0
+Nodes (1): TUserLogin
+
+### Community 304 - "Community 304"
+Cohesion: 1.0
+Nodes (1): TUser
+
+### Community 305 - "Community 305"
+Cohesion: 1.0
+Nodes (1): Audience
+
+### Community 306 - "Community 306"
+Cohesion: 1.0
 Nodes (1): SeckillInterceptor
 
+### Community 307 - "Community 307"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 308 - "Community 308"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 309 - "Community 309"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 310 - "Community 310"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 311 - "Community 311"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
-- **41 isolated node(s):** `DatabaseConfig`, `GeneratorConfig`, `MenuSearchInfo`, `PermissionSearchInfo`, `DeepSeekChatCompletionRequest` (+36 more)
+- **135 isolated node(s):** `DatabaseConfig`, `GeneratorConfig`, `MenuSearchInfo`, `PermissionSearchInfo`, `AiAnalyzeReq` (+130 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 25`** (14 nodes): `TUserService.java`, `TUserService`, `.addOnLineAdmin()`, `.addTUser()`, `.authToken()`, `.deleteTUser()`, `.getAuthRequest()`, `.getList()`, `.getPage()`, `.getUserByUsername()`, `.login()`, `.logout()`, `.queryTUser()`, `.updateTUser()`
+- **Thin community `Community 176`** (2 nodes): `DatabaseConfig`, `DatabaseConfig.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (12 nodes): `ShopFinanceMapper.java`, `ShopFinanceMapper`, `.getAllShopStockInfo()`, `.getBenefitInfo()`, `.getChainAndYear()`, `.getCurShopFinanceInfo()`, `.getDayShopFinanceInfo()`, `.getMonthShopFinanceInfo()`, `.getPage()`, `.getPayWayInfo()`, `.getShopNameInfo()`, `.queryShopFinance()`
+- **Thin community `Community 177`** (2 nodes): `GeneratorConfig.java`, `GeneratorConfig`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (11 nodes): `DictInfoService.java`, `DictInfoService`, `.addDictInfo()`, `.deleteDictInfo()`, `.getPage()`, `.initDictRedis()`, `.listByBelong()`, `.queryDictInfo()`, `.queryDictInfoByTypeCode()`, `.queryDictInfoByTypeName()`, `.updateDictInfo()`
+- **Thin community `Community 178`** (2 nodes): `MenuSearchInfo.java`, `MenuSearchInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (11 nodes): `GoodsService.java`, `GoodsService`, `.create()`, `.delete()`, `.deletes()`, `.findGoods()`, `.getDetail()`, `.getGoodsList()`, `.selectById()`, `.update()`, `.updateUsingById()`
+- **Thin community `Community 179`** (2 nodes): `PermissionSearchInfo.java`, `PermissionSearchInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (11 nodes): `OssApi.java`, `OssApi`, `.add()`, `.addBatch()`, `.addThumbnail()`, `.delete()`, `.fileDownload()`, `.getFileInfo()`, `.getPage()`, `.query()`, `.update()`
+- **Thin community `Community 180`** (2 nodes): `OutputFile.java`, `OutputFile()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (11 nodes): `PmsShopProductService.java`, `PmsShopProductService`, `.addPmsShopProduct()`, `.deletePmsShopProduct()`, `.getCompareInfo()`, `.getNewestProductPage()`, `.getPage()`, `.getProductHisInfo()`, `.queryPmsShopProduct()`, `.updateCompareInfo()`, `.updatePmsShopProduct()`
+- **Thin community `Community 181`** (2 nodes): `TemplateType.java`, `TemplateType()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (10 nodes): `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig.java`, `SwaggerConfig`, `.apiInfo()`, `.buildDocket()`
+- **Thin community `Community 182`** (2 nodes): `AiAnalyzeReq`, `AiAnalyzeReq.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (10 nodes): `RedisConfig.java`, `CachingConfigurerSupport`, `RedisConfig`, `.hashOperations()`, `.listOperations()`, `.redisTemplate()`, `.setOperations()`, `.valueOperations()`, `.wiselyKeyGenerator()`, `.zSetOperations()`
+- **Thin community `Community 183`** (2 nodes): `AiAnalyzeResp`, `AiAnalyzeResp.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (10 nodes): `CpnCouponInfoService.java`, `CpnCouponInfoService`, `.addCpnCouponInfo()`, `.deleteCpnCouponInfo()`, `.downloadTemplate()`, `.getList()`, `.getPage()`, `.importCpnCouponInfo()`, `.queryCpnCouponInfo()`, `.updateCpnCouponInfo()`
+- **Thin community `Community 184`** (2 nodes): `AiProperties`, `AiProperties.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (10 nodes): `CpnUserCouponInfoService.java`, `CpnUserCouponInfoService`, `.addCpnUserCouponInfo()`, `.cancelRedeem()`, `.deleteCpnUserCouponInfo()`, `.getList()`, `.getPage()`, `.queryCpnUserCouponInfo()`, `.redeem()`, `.updateCpnUserCouponInfo()`
+- **Thin community `Community 185`** (2 nodes): `DeepSeekProperties`, `DeepSeekProperties.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (10 nodes): `PrepaidCardInfoTService.java`, `PrepaidCardInfoTService`, `.addPrepaidCardInfoT()`, `.consumeAndRecharge()`, `.dashboardOverview()`, `.deletePrepaidCardInfoT()`, `.getList()`, `.getPage()`, `.queryPrepaidCardInfoT()`, `.updatePrepaidCardInfoT()`
+- **Thin community `Community 186`** (2 nodes): `SysConf.java`, `SysConf`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (10 nodes): `PrepaidConsumeRecordTService.java`, `PrepaidConsumeRecordTService`, `.addPrepaidConsumeRecordT()`, `.aggregateTrendByDay()`, `.deletePrepaidConsumeRecordT()`, `.getList()`, `.getPage()`, `.queryPrepaidConsumeRecordT()`, `.sumExpenseAndRecharge()`, `.updatePrepaidConsumeRecordT()`
+- **Thin community `Community 187`** (2 nodes): `BaseEntity`, `BaseEntity.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (10 nodes): `FileInfoService.java`, `FileInfoService`, `.addBatchFileInfo()`, `.addFileInfo()`, `.deleteFileInfo()`, `.fileDownload()`, `.getFileInfo()`, `.getPage()`, `.queryFileInfo()`, `.updateFileInfo()`
+- **Thin community `Community 188`** (2 nodes): `EncryptionProperties`, `EncryptionProperties.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (9 nodes): `CpnUserCouponInfoApi.java`, `CpnUserCouponInfoApi`, `.addCpnUserCouponInfo()`, `.cancelRedeem()`, `.deleteCpnUserCouponInfo()`, `.getCpnUserCouponInfoPage()`, `.queryCpnUserCouponInfo()`, `.redeem()`, `.updateCpnUserCouponInfo()`
+- **Thin community `Community 189`** (2 nodes): `AuthConstant`, `AuthConstant.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (9 nodes): `FinanceInfoService.java`, `FinanceInfoService`, `.addFinanceInfo()`, `.deleteFinanceInfo()`, `.getList()`, `.getPage()`, `.importFinance()`, `.queryFinanceInfo()`, `.updateFinanceInfo()`
+- **Thin community `Community 190`** (2 nodes): `MessageConf.java`, `MessageConf`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (9 nodes): `ShopFinanceAnalysisService.java`, `ShopFinanceAnalysisService`, `.getBenefitInfo()`, `.getChainAndYear()`, `.getCurShopFinanceInfo()`, `.getDayShopFinanceInfo()`, `.getMonthShopFinanceInfo()`, `.getPayWayInfo()`, `.getShopNameInfo()`
+- **Thin community `Community 191`** (2 nodes): `RedisConstants.java`, `RedisConstants`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (9 nodes): `ShopStockService.java`, `ShopStockService`, `.addShopStock()`, `.deleteShopStock()`, `.getPage()`, `.getShopList()`, `.importShopStockInfo()`, `.queryShopStock()`, `.updateShopStock()`
+- **Thin community `Community 192`** (2 nodes): `SeckillMessage.java`, `SeckillMessage`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (8 nodes): `AccountRecordInfoService`, `.addAccountRecordInfo()`, `.deleteAccountRecordInfo()`, `.getPage()`, `.queryAccountRecordInfo()`, `.queryRemindRecordInfo()`, `.updateAccountRecordInfo()`, `AccountRecordInfoService.java`
+- **Thin community `Community 193`** (2 nodes): `GoodsDTO.java`, `GoodsDTO`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (8 nodes): `MybatisPlusConfig.java`, `MybatisPlusConfig.java`, `MybatisPlusConfig.java`, `MybatisPlusConfig.java`, `MybatisPlusConfig.java`, `MybatisPlusConfig`, `.mybatisPlusInterceptor()`, `.performanceInterceptor()`
+- **Thin community `Community 194`** (2 nodes): `OrderDTO.java`, `OrderDTO`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (8 nodes): `CpnRedemptionRecordInfoService.java`, `CpnRedemptionRecordInfoService`, `.addCpnRedemptionRecordInfo()`, `.deleteCpnRedemptionRecordInfo()`, `.getList()`, `.getPage()`, `.queryCpnRedemptionRecordInfo()`, `.updateCpnRedemptionRecordInfo()`
+- **Thin community `Community 195`** (2 nodes): `SeckillGoodsDTO.java`, `SeckillGoodsDTO`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (8 nodes): `ShopCartService.java`, `ShopCartService`, `.addShopCart()`, `.deleteShopCart()`, `.getPage()`, `.list()`, `.queryShopCart()`, `.updateShopCart()`
+- **Thin community `Community 196`** (2 nodes): `WelcomeVo.java`, `WelcomeVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (8 nodes): `ShopOrderService.java`, `ShopOrderService`, `.addShopOrder()`, `.deleteShopOrder()`, `.getPage()`, `.queryShopOrder()`, `.submitOrder()`, `.updateShopOrder()`
+- **Thin community `Community 197`** (2 nodes): `Delete`, `Delete.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (8 nodes): `ShopOrderDetailService.java`, `ShopOrderDetailService`, `.addShopOrderDetail()`, `.batchUpdateShopOrderDetail()`, `.deleteShopOrderDetail()`, `.getPage()`, `.queryShopOrderDetail()`, `.updateShopOrderDetail()`
+- **Thin community `Community 198`** (2 nodes): `Update.java`, `Update`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (8 nodes): `ShopStockAttrsService.java`, `ShopStockAttrsService`, `.addShopStockAttrs()`, `.deleteShopStockAttrs()`, `.deleteShopStockAttrsByStockId()`, `.getPage()`, `.queryShopStockAttrs()`, `.updateShopStockAttrs()`
+- **Thin community `Community 199`** (2 nodes): `CheckContactsVo`, `CheckContactsVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (8 nodes): `ShopStockBatchService.java`, `ShopStockBatchService`, `.addShopStockBatch()`, `.deleteShopStockBatch()`, `.getList()`, `.getPage()`, `.queryShopStockBatch()`, `.updateShopStockBatch()`
+- **Thin community `Community 200`** (2 nodes): `ContactsUserImportVo`, `ContactsUserImportVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (8 nodes): `PmsBrandService.java`, `PmsBrandService`, `.addPmsBrand()`, `.deletePmsBrand()`, `.getPage()`, `.queryPmsBrand()`, `.test()`, `.updatePmsBrand()`
+- **Thin community `Community 201`** (2 nodes): `ContactsUserVo`, `ContactsUserVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (8 nodes): `PmsShopWantProductService.java`, `PmsShopWantProductService`, `.addPmsShopWantProduct()`, `.deletePmsShopWantProduct()`, `.getList()`, `.getPage()`, `.queryPmsShopWantProduct()`, `.updatePmsShopWantProduct()`
+- **Thin community `Community 202`** (2 nodes): `ContactsUserRelationVo`, `ContactsUserRelationVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (8 nodes): `MenuInfoService.java`, `MenuInfoService`, `.addMenuInfo()`, `.deleteMenuInfo()`, `.getList()`, `.getPage()`, `.queryMenuInfo()`, `.updateMenuInfo()`
+- **Thin community `Community 203`** (2 nodes): `UserRoleSetVo.java`, `UserRoleSetVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (8 nodes): `PermissionInfoService.java`, `PermissionInfoService`, `.addPermissionInfo()`, `.deletePermissionInfo()`, `.getList()`, `.getPage()`, `.queryPermissionInfo()`, `.updatePermissionInfo()`
+- **Thin community `Community 204`** (2 nodes): `CpnCouponInfoImportVo`, `CpnCouponInfoImportVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (8 nodes): `RoleInfoService.java`, `RoleInfoService`, `.addRoleInfo()`, `.assignUsers()`, `.deleteRoleInfo()`, `.getPage()`, `.queryRoleInfo()`, `.updateRoleInfo()`
+- **Thin community `Community 205`** (2 nodes): `CpnCouponInfoVo`, `CpnCouponInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (8 nodes): `RolePermissionInfoService.java`, `RolePermissionInfoService`, `.addRolePermissionInfo()`, `.deleteRolePermissionInfo()`, `.getList()`, `.getPage()`, `.queryRolePermissionInfo()`, `.updateRolePermissionInfo()`
+- **Thin community `Community 206`** (2 nodes): `CpnRedemptionRecordInfoVo`, `CpnRedemptionRecordInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (7 nodes): `ShopFinanceApi.java`, `ShopFinanceApi`, `.addShopFinance()`, `.deleteShopFinance()`, `.getShopFinancePage()`, `.queryShopFinance()`, `.updateShopFinance()`
+- **Thin community `Community 207`** (2 nodes): `CpnUserCouponInfoVo`, `CpnUserCouponInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (7 nodes): `ShopStockApi.java`, `ShopStockApi`, `.addShopStock()`, `.deleteShopStock()`, `.getShopStockPage()`, `.queryShopStock()`, `.updateShopStock()`
+- **Thin community `Community 208`** (2 nodes): `CpnUserCouponRedeemReq`, `CpnUserCouponRedeemReq.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (7 nodes): `CpnCouponInfoApi.java`, `CpnCouponInfoApi`, `.addCpnCouponInfo()`, `.deleteCpnCouponInfo()`, `.getCpnCouponInfoPage()`, `.queryCpnCouponInfo()`, `.updateCpnCouponInfo()`
+- **Thin community `Community 209`** (2 nodes): `ContactsGiftRecordVo`, `ContactsGiftRecordVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (7 nodes): `CpnRedemptionRecordInfoApi.java`, `CpnRedemptionRecordInfoApi`, `.addCpnRedemptionRecordInfo()`, `.deleteCpnRedemptionRecordInfo()`, `.getCpnRedemptionRecordInfoPage()`, `.queryCpnRedemptionRecordInfo()`, `.updateCpnRedemptionRecordInfo()`
+- **Thin community `Community 210`** (2 nodes): `PersonalGiftOccasionDistributionVo.java`, `PersonalGiftOccasionDistributionVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (7 nodes): `PersonalGiftApi.java`, `PersonalGiftApi`, `.addPersonalGift()`, `.deletePersonalGift()`, `.getPersonalGiftPage()`, `.queryPersonalGift()`, `.updatePersonalGift()`
+- **Thin community `Community 211`** (2 nodes): `PersonalGiftStatisticVo.java`, `PersonalGiftStatisticVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (7 nodes): `PrepaidCardInfoTApi.java`, `PrepaidCardInfoTApi`, `.addPrepaidCardInfoT()`, `.deletePrepaidCardInfoT()`, `.getPrepaidCardInfoTPage()`, `.queryPrepaidCardInfoT()`, `.updatePrepaidCardInfoT()`
+- **Thin community `Community 212`** (2 nodes): `PersonalGiftTrendVo.java`, `PersonalGiftTrendVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (7 nodes): `PrepaidConsumeRecordTApi.java`, `PrepaidConsumeRecordTApi`, `.addPrepaidConsumeRecordT()`, `.deletePrepaidConsumeRecordT()`, `.getPrepaidConsumeRecordTPage()`, `.queryPrepaidConsumeRecordT()`, `.updatePrepaidConsumeRecordT()`
+- **Thin community `Community 213`** (2 nodes): `PersonalGiftVo.java`, `PersonalGiftVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (7 nodes): `ShopCartApi.java`, `ShopCartApi`, `.addShopCart()`, `.deleteShopCart()`, `.getShopCartPage()`, `.queryShopCart()`, `.updateShopCart()`
+- **Thin community `Community 214`** (2 nodes): `PrepaidCardConsumeVo.java`, `PrepaidCardConsumeVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (7 nodes): `ShopOrderApi.java`, `ShopOrderApi`, `.addShopOrder()`, `.deleteShopOrder()`, `.getShopOrderPage()`, `.queryShopOrder()`, `.updateShopOrder()`
+- **Thin community `Community 215`** (2 nodes): `PrepaidCardInfoTVo.java`, `PrepaidCardInfoTVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (7 nodes): `ShopOrderDetailApi.java`, `ShopOrderDetailApi`, `.addShopOrderDetail()`, `.deleteShopOrderDetail()`, `.getShopOrderDetailPage()`, `.queryShopOrderDetail()`, `.updateShopOrderDetail()`
+- **Thin community `Community 216`** (2 nodes): `PrepaidDashboardOverviewVo.java`, `PrepaidDashboardOverviewVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (7 nodes): `ShopStockAttrsApi.java`, `ShopStockAttrsApi`, `.addShopStockAttrs()`, `.deleteShopStockAttrs()`, `.getShopStockAttrsPage()`, `.queryShopStockAttrs()`, `.updateShopStockAttrs()`
+- **Thin community `Community 217`** (2 nodes): `ConsumptionTrendPointVo`, `ConsumptionTrendPointVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (7 nodes): `ShopStockBatchApi.java`, `ShopStockBatchApi`, `.addShopStockBatch()`, `.deleteShopStockBatch()`, `.getShopStockBatchPage()`, `.queryShopStockBatch()`, `.updateShopStockBatch()`
+- **Thin community `Community 218`** (2 nodes): `PrepaidConsumeRecordTVo.java`, `PrepaidConsumeRecordTVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (7 nodes): `PrepaidConsumeRecordTMapper.java`, `PrepaidConsumeRecordTMapper`, `.aggregateTrendByDay()`, `.getList()`, `.getPage()`, `.queryPrepaidConsumeRecordT()`, `.sumExpenseAndRecharge()`
+- **Thin community `Community 219`** (2 nodes): `ShopCartVo.java`, `ShopCartVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (7 nodes): `ShopFinanceService.java`, `ShopFinanceService`, `.addShopFinance()`, `.deleteShopFinance()`, `.getPage()`, `.queryShopFinance()`, `.updateShopFinance()`
+- **Thin community `Community 220`** (2 nodes): `ShopOrderVo.java`, `ShopOrderVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (7 nodes): `PmsAttrApi.java`, `PmsAttrApi`, `.addPmsAttr()`, `.deletePmsAttr()`, `.getPmsAttrPage()`, `.queryPmsAttr()`, `.updatePmsAttr()`
+- **Thin community `Community 221`** (2 nodes): `ShopOrderDetailVo.java`, `ShopOrderDetailVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (7 nodes): `PmsShopProductMapper.java`, `PmsShopProductMapper`, `.getCompareInfo()`, `.getNewestProductPage()`, `.getPage()`, `.getProductHisInfo()`, `.queryPmsShopProduct()`
+- **Thin community `Community 222`** (2 nodes): `ShopStockAmountVo.java`, `ShopStockAmountVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (7 nodes): `PmsAttrService.java`, `PmsAttrService`, `.addPmsAttr()`, `.deletePmsAttr()`, `.getPage()`, `.queryPmsAttr()`, `.updatePmsAttr()`
+- **Thin community `Community 223`** (2 nodes): `ShopStockAnalysisVo.java`, `ShopStockAnalysisVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (7 nodes): `PmsCategoryService.java`, `PmsCategoryService`, `.addPmsCategory()`, `.deletePmsCategory()`, `.getPage()`, `.queryPmsCategory()`, `.updatePmsCategory()`
+- **Thin community `Community 224`** (2 nodes): `ShopStockAttrsVo.java`, `ShopStockAttrsVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (7 nodes): `PmsSkuInfoService.java`, `PmsSkuInfoService`, `.addPmsSkuInfo()`, `.deletePmsSkuInfo()`, `.getPage()`, `.queryPmsSkuInfo()`, `.updatePmsSkuInfo()`
+- **Thin community `Community 225`** (2 nodes): `ShopStockBatchVo.java`, `ShopStockBatchVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (7 nodes): `OrgInfoApi.java`, `OrgInfoApi`, `.addOrgInfo()`, `.deleteOrgInfo()`, `.getOrgInfoPage()`, `.queryOrgInfo()`, `.updateOrgInfo()`
+- **Thin community `Community 226`** (2 nodes): `AccountCountInfoVo`, `AccountCountInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (7 nodes): `OrgUserInfoApi.java`, `OrgUserInfoApi`, `.addOrgUserInfo()`, `.deleteOrgUserInfo()`, `.getOrgUserInfoPage()`, `.queryOrgUserInfo()`, `.updateOrgUserInfo()`
+- **Thin community `Community 227`** (2 nodes): `AccountRecordInfoVo`, `AccountRecordInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (7 nodes): `PermissionInfoApi.java`, `PermissionInfoApi`, `.addPermissionInfo()`, `.deletePermissionInfo()`, `.getPermissionInfoPage()`, `.queryPermissionInfo()`, `.updatePermissionInfo()`
+- **Thin community `Community 228`** (2 nodes): `DictInfoVo`, `DictInfoVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (7 nodes): `RoleInfoApi.java`, `RoleInfoApi`, `.addRoleInfo()`, `.deleteRoleInfo()`, `.getRoleInfoPage()`, `.queryRoleInfo()`, `.updateRoleInfo()`
+- **Thin community `Community 229`** (2 nodes): `FinanceInfoVo.java`, `FinanceInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (7 nodes): `RolePermissionInfoApi.java`, `RolePermissionInfoApi`, `.addRolePermissionInfo()`, `.deleteRolePermissionInfo()`, `.getRolePermissionInfoPage()`, `.queryRolePermissionInfo()`, `.updateRolePermissionInfo()`
+- **Thin community `Community 230`** (2 nodes): `AnalysisVo`, `AnalysisVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (7 nodes): `RoleUserInfoApi.java`, `RoleUserInfoApi`, `.addRoleUserInfo()`, `.deleteRoleUserInfo()`, `.getRoleUserInfoPage()`, `.queryRoleUserInfo()`, `.updateRoleUserInfo()`
+- **Thin community `Community 231`** (2 nodes): `BalanceVo`, `BalanceVo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (7 nodes): `OrgInfoService.java`, `OrgInfoService`, `.addOrgInfo()`, `.deleteOrgInfo()`, `.getPage()`, `.queryOrgInfo()`, `.updateOrgInfo()`
+- **Thin community `Community 232`** (2 nodes): `ShopFinanceVo.java`, `ShopFinanceVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (7 nodes): `TUserLoginService.java`, `TUserLoginService`, `.addTUserLogin()`, `.deleteTUserLogin()`, `.getPage()`, `.queryTUserLogin()`, `.updateTUserLogin()`
+- **Thin community `Community 233`** (2 nodes): `ShopFinanceAnalysisVo.java`, `ShopFinanceAnalysisVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (6 nodes): `FeignConfig.java`, `FeignConfig`, `.apply()`, `.level()`, `.requestContextListener()`, `RequestInterceptor`
+- **Thin community `Community 234`** (2 nodes): `ShopFinanceChainYearVo.java`, `ShopFinanceChainYearVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (6 nodes): `FinanceAnalysisMapper.java`, `FinanceAnalysisMapper`, `.getBalance()`, `.getDayExpense()`, `.getIncomeAndExpense()`, `.getMonthExpense()`
+- **Thin community `Community 235`** (2 nodes): `ShopStockVo.java`, `ShopStockVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (6 nodes): `FinanceAnalysisService.java`, `FinanceAnalysisService`, `.getBalance()`, `.getDayExpense()`, `.getIncomeAndExpense()`, `.getMonthExpense()`
+- **Thin community `Community 236`** (2 nodes): `AccountRecordInfo`, `AccountRecordInfo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (6 nodes): `MinioFileService.java`, `MinioFileService`, `.deleteFile()`, `.fileDownload()`, `.preview()`, `.uploadFile()`
+- **Thin community `Community 237`** (2 nodes): `CommonMapper`, `CommonMapper.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (6 nodes): `MenuInfoApi.java`, `MenuInfoApi`, `.deleteMenuInfo()`, `.getMenuInfoPage()`, `.queryMenuInfo()`, `.updateMenuInfo()`
+- **Thin community `Community 238`** (2 nodes): `Weather.java`, `Weather`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (6 nodes): `TUserMapper.java`, `TUserMapper`, `.getList()`, `.getPage()`, `.getUserInfo()`, `.queryTUser()`
+- **Thin community `Community 239`** (2 nodes): `CpnCouponInfo`, `CpnCouponInfo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (5 nodes): `AiEngine`, `.analyze()`, `.isEnabled()`, `.key()`, `AiEngine.java`
+- **Thin community `Community 240`** (2 nodes): `CpnRedemptionRecordInfo`, `CpnRedemptionRecordInfo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (5 nodes): `LocalDateTimeFormatConfig.java`, `LocalDateTimeFormatConfig`, `.localDateTimeDeserializer()`, `.localDateTimeSerializer()`, `.objectMapper()`
+- **Thin community `Community 241`** (2 nodes): `CpnUserCouponInfo`, `CpnUserCouponInfo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (5 nodes): `AccountRecordInfoMapper`, `.getPage()`, `.queryAccountRecordInfo()`, `.queryRemindRecordInfo()`, `AccountRecordInfoMapper.java`
+- **Thin community `Community 242`** (2 nodes): `DictInfo`, `DictInfo.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (5 nodes): `PushConfigure.java`, `PushConfigure`, `.PushConfigure()`, `.wxMpConfigStorage()`, `.wxMpService()`
+- **Thin community `Community 243`** (2 nodes): `FinanceInfo.java`, `FinanceInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (5 nodes): `CpnCouponInfoMapper.java`, `CpnCouponInfoMapper`, `.getList()`, `.getPage()`, `.queryCpnCouponInfo()`
+- **Thin community `Community 244`** (2 nodes): `PrepaidCardInfoT.java`, `PrepaidCardInfoT`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (5 nodes): `CpnRedemptionRecordInfoMapper.java`, `CpnRedemptionRecordInfoMapper`, `.getList()`, `.getPage()`, `.queryCpnRedemptionRecordInfo()`
+- **Thin community `Community 245`** (2 nodes): `PrepaidConsumeRecordT.java`, `PrepaidConsumeRecordT`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (5 nodes): `CpnUserCouponInfoMapper.java`, `CpnUserCouponInfoMapper`, `.getList()`, `.getPage()`, `.queryCpnUserCouponInfo()`
+- **Thin community `Community 246`** (2 nodes): `ShopCart.java`, `ShopCart`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (5 nodes): `DictInfoMapper.java`, `DictInfoMapper`, `.getPage()`, `.listByBelong()`, `.queryDictInfo()`
+- **Thin community `Community 247`** (2 nodes): `ShopFinance.java`, `ShopFinance`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (5 nodes): `FinanceInfoMapper.java`, `FinanceInfoMapper`, `.getList()`, `.getPage()`, `.queryFinanceInfo()`
+- **Thin community `Community 248`** (2 nodes): `ShopOrder.java`, `ShopOrder`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (5 nodes): `ShopCartMapper.java`, `ShopCartMapper`, `.getPage()`, `.list()`, `.queryShopCart()`
+- **Thin community `Community 249`** (2 nodes): `ShopOrderDetail.java`, `ShopOrderDetail`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (5 nodes): `ShopStockMapper.java`, `ShopStockMapper`, `.getPage()`, `.getShopList()`, `.queryShopStock()`
+- **Thin community `Community 250`** (2 nodes): `ShopStock.java`, `ShopStock`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (5 nodes): `ShopStockAnalysisMapper.java`, `ShopStockAnalysisMapper`, `.getAllAmountInfo()`, `.getAllShopStockInfo()`, `.getCashAmountInfo()`
+- **Thin community `Community 251`** (2 nodes): `ShopStockAttrs.java`, `ShopStockAttrs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (5 nodes): `ShopStockAnalysisService.java`, `ShopStockAnalysisService`, `.getAllAmountInfo()`, `.getAllShopStockInfo()`, `.getCashAmountInfo()`
+- **Thin community `Community 252`** (2 nodes): `ShopStockBatch.java`, `ShopStockBatch`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (5 nodes): `WeChatService.java`, `WeChatService`, `.getToken()`, `.sentMessage()`, `.sentShopFinanceMessage()`
+- **Thin community `Community 253`** (2 nodes): `WeChatController.java`, `WeChatController`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (5 nodes): `SeckillGoodsManager.java`, `SeckillGoodsManager`, `.addSeckillGoods()`, `.deleteSeckillGoods()`, `.updateSeckillGoods()`
+- **Thin community `Community 254`** (2 nodes): `GatewayAudience.java`, `GatewayAudience`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (5 nodes): `SeckillService.java`, `SeckillService`, `.doSeckill()`, `.getSeckillPath()`, `.seckillResult()`
+- **Thin community `Community 255`** (2 nodes): `RateLimiterConfiguration.java`, `RateLimiterConfiguration`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (5 nodes): `PmsShopWantProductMapper.java`, `PmsShopWantProductMapper`, `.getList()`, `.getPage()`, `.queryPmsShopWantProduct()`
+- **Thin community `Community 256`** (2 nodes): `GoodsManager.java`, `GoodsManager`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (5 nodes): `MenuInfoMapper.java`, `MenuInfoMapper`, `.getList()`, `.getPage()`, `.queryMenuInfo()`
+- **Thin community `Community 257`** (2 nodes): `OrderManager.java`, `OrderManager`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (5 nodes): `PermissionInfoMapper.java`, `PermissionInfoMapper`, `.getList()`, `.getPage()`, `.queryPermissionInfo()`
+- **Thin community `Community 258`** (2 nodes): `GoodsManagerImpl.java`, `GoodsManagerImpl`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (5 nodes): `RolePermissionInfoMapper.java`, `RolePermissionInfoMapper`, `.getList()`, `.getPage()`, `.queryRolePermissionInfo()`
+- **Thin community `Community 259`** (2 nodes): `OrderManagerImpl.java`, `OrderManagerImpl`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (4 nodes): `BaseEnum.java`, `BaseEnum`, `.getCode()`, `.getValue()`
+- **Thin community `Community 260`** (2 nodes): `Order.java`, `Order`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (4 nodes): `ShopOrderMapper.java`, `ShopOrderMapper`, `.getPage()`, `.queryShopOrder()`
+- **Thin community `Community 261`** (2 nodes): `SeckillGoods.java`, `SeckillGoods`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (4 nodes): `ShopOrderDetailMapper.java`, `ShopOrderDetailMapper`, `.getPage()`, `.queryShopOrderDetail()`
+- **Thin community `Community 262`** (2 nodes): `GoodsDetailVo.java`, `GoodsDetailVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (4 nodes): `ShopStockAttrsMapper.java`, `ShopStockAttrsMapper`, `.getPage()`, `.queryShopStockAttrs()`
+- **Thin community `Community 263`** (2 nodes): `OrderDetailVo.java`, `OrderDetailVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (4 nodes): `OrderService.java`, `OrderService`, `.findByOrderId()`, `.getOrderList()`
+- **Thin community `Community 264`** (2 nodes): `RabbitMQConstants.java`, `RabbitMQConstants`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (4 nodes): `SeckillGoodsService.java`, `SeckillGoodsService`, `.findSeckill()`, `.reduceStock()`
+- **Thin community `Community 265`** (2 nodes): `ImageServiceImpl.java`, `ImageServiceImpl`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (4 nodes): `FileInfoMapper.java`, `FileInfoMapper`, `.getPage()`, `.queryFileInfo()`
+- **Thin community `Community 266`** (2 nodes): `OrderApi.java`, `OrderApi`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (4 nodes): `PmsAttrMapper.java`, `PmsAttrMapper`, `.getPage()`, `.queryPmsAttr()`
+- **Thin community `Community 267`** (2 nodes): `FileInfoVo.java`, `FileInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (4 nodes): `PmsBrandMapper.java`, `PmsBrandMapper`, `.getPage()`, `.queryPmsBrand()`
+- **Thin community `Community 268`** (2 nodes): `GarageProperties.java`, `GarageProperties`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (4 nodes): `PmsCategoryMapper.java`, `PmsCategoryMapper`, `.getPage()`, `.queryPmsCategory()`
+- **Thin community `Community 269`** (2 nodes): `MinioProperties.java`, `MinioProperties`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (4 nodes): `PmsSkuInfoMapper.java`, `PmsSkuInfoMapper`, `.getPage()`, `.queryPmsSkuInfo()`
+- **Thin community `Community 270`** (2 nodes): `FileInfo.java`, `FileInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (4 nodes): `OrgInfoMapper.java`, `OrgInfoMapper`, `.getPage()`, `.queryOrgInfo()`
+- **Thin community `Community 271`** (2 nodes): `ObjectItem.java`, `ObjectItem`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (4 nodes): `RoleInfoMapper.java`, `RoleInfoMapper`, `.getPage()`, `.queryRoleInfo()`
+- **Thin community `Community 272`** (2 nodes): `PmsAttrVo.java`, `PmsAttrVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (4 nodes): `TUserLoginMapper.java`, `TUserLoginMapper`, `.getPage()`, `.queryTUserLogin()`
+- **Thin community `Community 273`** (2 nodes): `PmsBrandVo.java`, `PmsBrandVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (3 nodes): `GeneratorService.java`, `GeneratorService`, `.generator()`
+- **Thin community `Community 274`** (2 nodes): `PmsCategoryVo.java`, `PmsCategoryVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (3 nodes): `AiAnalyzeApi`, `.analyze()`, `AiAnalyzeApi.java`
+- **Thin community `Community 275`** (2 nodes): `PmsShopProductVo.java`, `PmsShopProductVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (3 nodes): `DeepSeekChatCompletionRequest.java`, `DeepSeekChatCompletionRequest`, `Message`
+- **Thin community `Community 276`** (2 nodes): `PmsShopWantProductVo.java`, `PmsShopWantProductVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (3 nodes): `AiHttpConfig`, `.aiRestTemplate()`, `AiHttpConfig.java`
+- **Thin community `Community 277`** (2 nodes): `PmsSkuInfoVo.java`, `PmsSkuInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (3 nodes): `AiAnalyzeService`, `.analyze()`, `AiAnalyzeService.java`
+- **Thin community `Community 278`** (2 nodes): `Content`, `Content.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (3 nodes): `AsyncExecutorConfig.java`, `AsyncExecutorConfig`, `.myExecutor()`
+- **Thin community `Community 279`** (2 nodes): `PmsAttr.java`, `PmsAttr`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (3 nodes): `CustomizationBean.java`, `CustomizationBean`, `.customize()`
+- **Thin community `Community 280`** (2 nodes): `PmsBrand.java`, `PmsBrand`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (3 nodes): `FinanceApi.java`, `FinanceApi`, `.getList()`
+- **Thin community `Community 281`** (2 nodes): `PmsCategory.java`, `PmsCategory`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (3 nodes): `WechatAccountConfig.java`, `WechatAccountConfig.java`, `WechatAccountConfig`
+- **Thin community `Community 282`** (2 nodes): `PmsShopProduct.java`, `PmsShopProduct`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (3 nodes): `XxlProperties.java`, `XxlProperties.java`, `XxlProperties`
+- **Thin community `Community 283`** (2 nodes): `PmsShopWantProduct.java`, `PmsShopWantProduct`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (3 nodes): `UserVerifyHandler.java`, `UserVerifyHandler`, `.verifyHandler()`
+- **Thin community `Community 284`** (2 nodes): `PmsSkuInfo.java`, `PmsSkuInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (3 nodes): `RainbowUtil.java`, `RainbowUtil`, `.getRainbow()`
+- **Thin community `Community 285`** (2 nodes): `OrgInfoVo.java`, `OrgInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (3 nodes): `GlobalCorsConfig.java`, `GlobalCorsConfig`, `.corsWebFilter()`
+- **Thin community `Community 286`** (2 nodes): `OrgUserInfoVo.java`, `OrgUserInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (3 nodes): `WebFluxWithOpenFeignConfig.java`, `WebFluxWithOpenFeignConfig`, `.messageConverters()`
+- **Thin community `Community 287`** (2 nodes): `PermissionInfoVo.java`, `PermissionInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (3 nodes): `OrderMapper.java`, `OrderMapper`, `.findPage()`
+- **Thin community `Community 288`** (2 nodes): `RoleInfoVo.java`, `RoleInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (3 nodes): `WelcomeService.java`, `WelcomeService`, `.welcomeCount()`
+- **Thin community `Community 289`** (2 nodes): `RolePermissionAssignRequest.java`, `RolePermissionAssignRequest`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (3 nodes): `OrderFallbackFactory.java`, `OssFallbackFactory`, `.create()`
+- **Thin community `Community 290`** (2 nodes): `RolePermissionInfoVo.java`, `RolePermissionInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (3 nodes): `ShopProductService.java`, `ShopProductService`, `.getShopProduct()`
+- **Thin community `Community 291`** (2 nodes): `RoleUserInfoVo.java`, `RoleUserInfoVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (3 nodes): `JdProductService.java`, `JdProductService`, `.parse()`
+- **Thin community `Community 292`** (2 nodes): `TUserLoginVo.java`, `TUserLoginVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (3 nodes): `MenuInfoFallbackFactory.java`, `MenuInfoFallbackFactory`, `.create()`
+- **Thin community `Community 293`** (2 nodes): `OnlineAdmin.java`, `OnlineAdmin`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (3 nodes): `OrgInfoFallbackFactory.java`, `OrgInfoFallbackFactory`, `.create()`
+- **Thin community `Community 294`** (2 nodes): `TUserVo.java`, `TUserVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (3 nodes): `OrgUserInfoFallbackFactory.java`, `OrgUserInfoFallbackFactory`, `.create()`
+- **Thin community `Community 295`** (2 nodes): `UserPermissionContextVo.java`, `UserPermissionContextVo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (3 nodes): `PermissionInfoFallbackFactory.java`, `PermissionInfoFallbackFactory`, `.create()`
+- **Thin community `Community 296`** (2 nodes): `MenuInfo.java`, `MenuInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (3 nodes): `RoleInfoFallbackFactory.java`, `RoleInfoFallbackFactory`, `.create()`
+- **Thin community `Community 297`** (2 nodes): `OrgInfo.java`, `OrgInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (3 nodes): `RolePermissionInfoFallbackFactory.java`, `RolePermissionInfoFallbackFactory`, `.create()`
+- **Thin community `Community 298`** (2 nodes): `OrgUserInfo.java`, `OrgUserInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (3 nodes): `RoleUserInfoFallbackFactory.java`, `RoleUserInfoFallbackFactory`, `.create()`
+- **Thin community `Community 299`** (2 nodes): `PermissionInfo.java`, `PermissionInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (3 nodes): `UserFallbackFactory.java`, `UserFallbackFactory`, `.create()`
+- **Thin community `Community 300`** (2 nodes): `RoleInfo.java`, `RoleInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (3 nodes): `ExecutorConfig.java`, `ExecutorConfig`, `.taskExecutor()`
+- **Thin community `Community 301`** (2 nodes): `RolePermissionInfo.java`, `RolePermissionInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (3 nodes): `UserPermissionContextService.java`, `UserPermissionContextService`, `.buildContext()`
+- **Thin community `Community 302`** (2 nodes): `RoleUserInfo.java`, `RoleUserInfo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (2 nodes): `DatabaseConfig.java`, `DatabaseConfig`
+- **Thin community `Community 303`** (2 nodes): `TUserLogin.java`, `TUserLogin`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (2 nodes): `GeneratorConfig.java`, `GeneratorConfig`
+- **Thin community `Community 304`** (2 nodes): `TUser.java`, `TUser`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (2 nodes): `MenuSearchInfo.java`, `MenuSearchInfo`
+- **Thin community `Community 305`** (2 nodes): `Audience`, `Audience.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (2 nodes): `PermissionSearchInfo.java`, `PermissionSearchInfo`
+- **Thin community `Community 306`** (2 nodes): `SeckillInterceptor.java`, `SeckillInterceptor`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (2 nodes): `DeepSeekProperties.java`, `DeepSeekProperties`
+- **Thin community `Community 307`** (1 nodes): `AvoidRepeatableCommit.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (2 nodes): `EncryptionProperties.java`, `EncryptionProperties`
+- **Thin community `Community 308`** (1 nodes): `LogRestRequest.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (2 nodes): `AuthConstant.java`, `AuthConstant`
+- **Thin community `Community 309`** (1 nodes): `SeckillLimit.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (2 nodes): `MessageConf.java`, `MessageConf`
+- **Thin community `Community 310`** (1 nodes): `AccessLimit.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (2 nodes): `RedisConstants.java`, `RedisConstants`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (2 nodes): `SeckillMessage.java`, `SeckillMessage`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (2 nodes): `Delete.java`, `Delete`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (2 nodes): `Update.java`, `Update`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (2 nodes): `ContactsUserImportVo.java`, `ContactsUserImportVo`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (2 nodes): `UserRoleSetVo.java`, `UserRoleSetVo`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (2 nodes): `CpnCouponInfoImportVo.java`, `CpnCouponInfoImportVo`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (2 nodes): `CommonMapper.java`, `CommonMapper`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (2 nodes): `Weather.java`, `Weather`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (2 nodes): `WeChatController.java`, `WeChatController`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (2 nodes): `GatewayAudience.java`, `GatewayAudience`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (2 nodes): `RateLimiterConfiguration.java`, `RateLimiterConfiguration`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (2 nodes): `GoodsManager.java`, `GoodsManager`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (2 nodes): `OrderManager.java`, `OrderManager`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (2 nodes): `RabbitMQConstants.java`, `RabbitMQConstants`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (2 nodes): `ImageServiceImpl.java`, `ImageServiceImpl`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (2 nodes): `OrderApi.java`, `OrderApi`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (2 nodes): `GarageProperties.java`, `GarageProperties`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (2 nodes): `MinioProperties.java`, `MinioProperties`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (2 nodes): `ObjectItem.java`, `ObjectItem`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (2 nodes): `OnlineAdmin.java`, `OnlineAdmin`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (2 nodes): `Audience.java`, `Audience`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (2 nodes): `SeckillInterceptor.java`, `SeckillInterceptor`
+- **Thin community `Community 311`** (1 nodes): `DataPermission.java`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `StringUtils` connect `Community 1` to `Community 8`, `Community 2`, `Community 4`, `Community 7`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
-- **Why does `Builder` connect `Community 13` to `Community 3`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Are the 48 inferred relationships involving `Info` (e.g. with `.judgeStockAndDecrStock()` and `.get()`) actually correct?**
-  _`Info` has 48 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `TableInfo` connect `Community 4` to `Community 1`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `StrategyConfig` connect `Community 1` to `Community 10`, `Community 3`, `Community 4`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `DictInfoServiceImp` connect `Community 5` to `Community 0`, `Community 76`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Are the 47 inferred relationships involving `Insert` (e.g. with `.addAccountRecordInfo()` and `.addCpnCouponInfo()`) actually correct?**
+  _`Insert` has 47 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 45 inferred relationships involving `Info` (e.g. with `.judgeStockAndDecrStock()` and `.get()`) actually correct?**
+  _`Info` has 45 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DatabaseConfig`, `GeneratorConfig`, `MenuSearchInfo` to the rest of the system?**
-  _41 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _135 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.01 - nodes in this community are weakly interconnected._
-- **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.02 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.02 - nodes in this community are weakly interconnected._

@@ -433,6 +433,8 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 3. `src/components/rbac/*` 四个组件作为最终形态复用，还是重新设计？决定 `RBAC-PC-ORG-002` 与 `RBAC-PC-ROLE-001` 是接线工作还是重做工作。
 4. 移动端关系配置需要完整管理能力，还是只保留查看？决定 `RBAC-MB-RELATION-001` 是补选择器还是降级为只读。
 
+**状态：已锁定（2026-08-11）。** 决策见 `docs/superpowers/specs/2026-08-11-rbac-batch3-product-design.md`：PC 补独立关系页；用户页要左树；复用 `components/rbac` 接线不重做；mobile 完整管理（picker）；机构管理员 ORG_ID 含子机构。实现计划：`docs/superpowers/plans/2026-08-11-rbac-batch3-s3.md`。
+
 ### 6.3 各批次的 plan 落盘位置
 
 | 批次 | plan 路径 |
@@ -442,3 +444,23 @@ D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条�
 | 批次 2 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch2-s2.md`（后端 11 条为主，PC 与 mobile 各 1 条） |
 | 批次 3 | 后端条目落后端仓，前端条目落各前端仓 `docs/superpowers/plans/` |
 | 批次 4 | 同批次 3 |
+
+## 7. 批次 3 验收执行记录（2026-08-11，Task 16）
+
+**说明：** 本节只回填实测数字与静态验收结论；**§2 评分矩阵未复评改分**。
+
+| 指标 | 批次 0 基线 | 批次 3 验收实测 |
+| --- | --- | --- |
+| BE `com.alex.user.rbac.**` Surefire | 40（批次 0 完成后） | **150**，Failures=0，Errors=0，Skipped=0（33 类） |
+| PC `npm run test:unit` | 无 / 未建立 | **6** passed（2 files：`permission-context`、`data-scope-hint`） |
+| MB `npm run test:unit` | 3（批次 0 Task 4） | **10** passed（2 files） |
+| PC `components/rbac` 被 views 引用 | 0（库零引用） | **3** 处（orgUserInfo、roleUserInfo、authorizationDetail） |
+| MB 关系详情手填 Long 主路径 | 有（登记册 RBAC-MB-RELATION-001） | **无**（picker + readonly） |
+| PC 冒烟 `test:rbac:smoke:local` | 环境性失败 / 部分通过 | **0/9**（`ERR_CONNECTION_REFUSED` @ localhost:3000，dev 未起） |
+| PC midscene `test:midscene:local` | 同左 | **0/9**（同上，断言未放宽） |
+| PC `npm run lint` | 未作为批次 0 门禁 | **44 error** / 92 warning（全仓既有债） |
+| MB `npm run lint` | — | **0 error** / 4 warning |
+
+**批次 3 完成判据（plan）静态对齐：** 用户 status、org/menu tree、admin 子树 scope、Org 删除守卫 / Perm 回归 / 关系 prune 均有对应 `@Test` 且本次 Surefire 全绿；PC 独立关系页 + scope 提示 + rbac 接线已落地；MB 个人信息 / picker / 树 / 启停已落地。
+
+**待环境复验：** 起 PC dev + 后端 + 测试账号后重跑 smoke/midscene，目标 9/9 绿后再考虑上调 PC D5 与批次 3 验收行状态。

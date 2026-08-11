@@ -20,6 +20,12 @@ public interface MenuInfoService extends IService<MenuInfo> {
 
     List<MenuInfoVo> getList(MenuInfoVo menuInfoVo);
 
+    /**
+     * RBAC-BE-MENU-004: admin menu tree via scoped {@code getList} (+{@code @DataPermission}).
+     * Must not use {@code getListAll} or write the shared {@code menu_all_tree} Redis key.
+     */
+    List<MenuInfoVo> getTree(MenuInfoVo menuInfoVo);
+
     MenuInfoVo queryMenuInfo(String id);
 
     MenuInfoVo addMenuInfo(MenuInfoVo menuInfoVo);

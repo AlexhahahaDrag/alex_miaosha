@@ -1,6 +1,7 @@
 package com.alex.user.config;
 
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
+import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.user.UserUtils;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -29,11 +30,14 @@ public class MybatisPlusConfig {
 
     private final UserUtils userUtils;
 
+    // RBAC-BE-SCOPE-002: 机构管理员 ORG_ID scope 扩展到子孙机构，需要真实子树查询实现。
+    private final OrgSubtreeLookup orgSubtreeLookup;
+
     // 最新版
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils)));
+        interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils, orgSubtreeLookup)));
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;

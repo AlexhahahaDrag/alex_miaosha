@@ -61,6 +61,27 @@ public class MenuInfoController {
         return Result.success(menuInfoService.getList(menuInfoVo));
     }
 
+    @LogRestRequest(apiName = "获取菜单树")
+    @ApiOperationSupport(order = 16, author = "alex")
+    @ApiOperation(value = "获取菜单树", notes = "按 parentId 组装 children，复用数据权限过滤；可选 status；与登录态 menu_all_tree 隔离", response = Result.class)
+    @GetMapping(value = "/tree")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "状态过滤(可选)", name = "status", dataTypeClass = String.class)
+    })
+    public Result<List<MenuInfoVo>> getTree(@RequestParam(value = "status", required = false) String status) {
+        MenuInfoVo filter = new MenuInfoVo();
+        filter.setStatus(status);
+        return Result.success(menuInfoService.getTree(filter));
+    }
+
+    @LogRestRequest(apiName = "获取菜单树(POST)")
+    @ApiOperationSupport(order = 17, author = "alex")
+    @ApiOperation(value = "获取菜单树(POST)", notes = "body 可带 status 等过滤条件；走 scoped getList，不写 menu_all_tree", response = Result.class)
+    @PostMapping(value = "/tree")
+    public Result<List<MenuInfoVo>> getTreePost(@RequestBody(required = false) MenuInfoVo menuInfoVo) {
+        return Result.success(menuInfoService.getTree(menuInfoVo));
+    }
+
     @LogRestRequest(apiName = "获取菜单管理表详情")
     @ApiOperationSupport(order = 20, author = "alex")
     @ApiOperation(value = "获取菜单管理表详情", notes = "获取菜单管理表详情", response = Result.class)

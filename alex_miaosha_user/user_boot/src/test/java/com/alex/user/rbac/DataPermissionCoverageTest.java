@@ -40,6 +40,7 @@ public class DataPermissionCoverageTest {
     void orgInfoMapperQueryMethodsHaveDataPermission() throws NoSuchMethodException {
         assertHasDataPermission(OrgInfoMapper.class, "queryOrgInfo", String.class);
         assertHasDataPermission(OrgInfoMapper.class, "getPage", Page.class, OrgInfoVo.class);
+        assertHasDataPermission(OrgInfoMapper.class, "getList", OrgInfoVo.class);
     }
 
     @Test

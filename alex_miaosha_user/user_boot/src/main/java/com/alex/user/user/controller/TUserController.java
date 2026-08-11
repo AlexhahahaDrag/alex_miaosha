@@ -84,6 +84,35 @@ public class TUserController {
         return Result.success(tUserService.updateTUser(tUserVo));
     }
 
+    /**
+     * RBAC-BE-USER-003: 用户启停专用接口。
+     * 支持 query 或 body 传入 id/status；仅更新 status，不改其它字段。
+     */
+    @LogRestRequest(apiName = "更新用户状态")
+    @ApiOperationSupport(order = 45, author = "alex")
+    @ApiOperation(value = "更新用户状态", notes = "仅更新用户启停状态（1/0）", response = Result.class)
+    @PutMapping("/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "用户ID", name = "id", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "状态(1有效/0无效)", name = "status", dataTypeClass = String.class)
+    })
+    public Result<Boolean> updateStatus(@RequestParam(value = "id", required = false) String id,
+                                        @RequestParam(value = "status", required = false) String status,
+                                        @RequestBody(required = false) TUserVo body) {
+        String resolvedId = id;
+        String resolvedStatus = status;
+        if (body != null) {
+            if ((resolvedId == null || resolvedId.isEmpty()) && body.getId() != null) {
+                resolvedId = String.valueOf(body.getId());
+            }
+            if ((resolvedStatus == null || resolvedStatus.isEmpty()) && body.getStatus() != null) {
+                resolvedStatus = body.getStatus();
+            }
+        }
+        Long userId = resolvedId == null || resolvedId.isEmpty() ? null : Long.valueOf(resolvedId);
+        return Result.success(tUserService.updateUserStatus(userId, resolvedStatus));
+    }
+
     @LogRestRequest(apiName = "刪除管理员表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除管理员表", notes = "刪除管理员表", response = Result.class)

@@ -18,10 +18,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,6 +43,8 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
     // RBAC-BE-RELATION-002: assign 成功后主动失效该用户的 permission_context 缓存
     private final PermissionContextCacheService permissionContextCacheService;
     private final Map<Long, Object> assignSingleOrgLocks = new ConcurrentHashMap<>();
+    // RBAC-BE-RELATION-004: 每个用户最多保留最近 N 条失效历史行，更早的清理掉，避免无限堆积
+    private static final int MAX_INACTIVE_HISTORY = 5;
 
     @Override
     public Page<OrgUserInfoVo> getPage(Long pageNum, Long pageSize, OrgUserInfoVo orgUserInfoVo) {
@@ -159,9 +165,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
     }
 
     private Boolean doAssignSingleOrg(Long userId, Long orgId, String summary) {
-        List<OrgUserInfo> activeAssignments = list(Wrappers.<OrgUserInfo>lambdaQuery()
-                .eq(OrgUserInfo::getUserId, String.valueOf(userId))
-                .eq(OrgUserInfo::getStatus, SysConf.VALID_STATUS));
+        List<OrgUserInfo> activeAssignments = listActiveAssignments(userId);
         for (OrgUserInfo orgUserInfo : activeAssignments) {
             orgUserInfo.setStatus(SysConf.INVALID_STATUS);
             if (!updateById(orgUserInfo)) {
@@ -180,7 +184,47 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
         }
         // RBAC-BE-RELATION-002: 换机构成功后主动失效缓存，避免 1 小时 TTL 内数据权限仍按旧机构过滤
         permissionContextCacheService.invalidate(userId);
+        // RBAC-BE-RELATION-004: assign 成功后清理该用户堆积的失效历史行，只保留最近 N 条
+        pruneInactiveHistory(userId);
         return true;
+    }
+
+    protected List<OrgUserInfo> listActiveAssignments(Long userId) {
+        return list(Wrappers.<OrgUserInfo>lambdaQuery()
+                .eq(OrgUserInfo::getUserId, String.valueOf(userId))
+                .eq(OrgUserInfo::getStatus, SysConf.VALID_STATUS));
+    }
+
+    protected List<OrgUserInfo> listInvalidHistory(Long userId) {
+        return list(Wrappers.<OrgUserInfo>lambdaQuery()
+                .eq(OrgUserInfo::getUserId, String.valueOf(userId))
+                .eq(OrgUserInfo::getStatus, SysConf.INVALID_STATUS));
+    }
+
+    /**
+     * RBAC-BE-RELATION-004: 对该 userId 的失效（status=0）行按 createTime 倒序，
+     * 只保留最近 {@link #MAX_INACTIVE_HISTORY} 条，更早的物理删除（entity 上有 {@code @TableLogic}，
+     * 底层实际按逻辑删处理，与 {@code deleteBatchIds} 在本代码库其它删除口子的语义一致）。
+     * 有效行数量不受影响，始终由 assignSingleOrg 自身逻辑保证 ≤1。
+     */
+    private void pruneInactiveHistory(Long userId) {
+        List<OrgUserInfo> invalidRows = listInvalidHistory(userId);
+        if (invalidRows == null || invalidRows.size() <= MAX_INACTIVE_HISTORY) {
+            return;
+        }
+        List<OrgUserInfo> newestFirst = new ArrayList<>(invalidRows);
+        newestFirst.sort(Comparator
+                .comparing(OrgUserInfo::getCreateTime, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(OrgUserInfo::getId, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .reversed());
+        List<Long> staleIds = newestFirst.stream()
+                .skip(MAX_INACTIVE_HISTORY)
+                .map(OrgUserInfo::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!staleIds.isEmpty()) {
+            orgUserInfoMapper.deleteBatchIds(staleIds);
+        }
     }
 
     @Override

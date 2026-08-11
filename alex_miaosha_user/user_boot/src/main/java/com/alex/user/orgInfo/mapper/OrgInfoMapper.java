@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * description:  机构表mapper
  * author:       alex
@@ -19,6 +21,13 @@ public interface OrgInfoMapper extends BaseMapper<OrgInfo> {
 
     @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
     Page<OrgInfoVo> getPage(Page<OrgInfoVo> page, @Param("orgInfoVo") OrgInfoVo orgInfoVo);
+
+    /**
+     * RBAC-BE-ORG-003: scoped list for in-memory tree assembly.
+     * Must keep {@code @DataPermission} so tree never bypasses data scope.
+     */
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
+    List<OrgInfoVo> getList(@Param("orgInfoVo") OrgInfoVo orgInfoVo);
 
     @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
     OrgInfoVo queryOrgInfo(@Param("id") String id);

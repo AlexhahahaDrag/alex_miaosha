@@ -42,6 +42,7 @@ import com.alex.utils.IpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -224,6 +225,29 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         tUserMapper.updateById(tUser);
         syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
+    }
+
+    /**
+     * RBAC-BE-USER-003: 专用启停接口——只写 status，避免走完整编辑表单误改其它字段。
+     * UpdateWrapper 保证 SET 子句仅含 status；归属校验与 updateTUser 共用 assertUserAccessible。
+     * 使用列名（非 lambda）以便单测无需初始化 MyBatis-Plus TableInfo 缓存。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateUserStatus(Long id, String status) {
+        assertUserAccessible(id);
+        if (!SysConf.VALID_STATUS.equals(status) && !SysConf.INVALID_STATUS.equals(status)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "状态只能为1或0");
+        }
+        UpdateWrapper<TUser> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", id).set("status", status);
+        int rows = tUserMapper.update(null, wrapper);
+        if (rows > 0) {
+            permissionContextCacheService.invalidate(id);
+            log.info("用户 {} 状态更新为 {}，已失效 permission_context", id, status);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     private void syncUserRbacAssignments(Long userId, TUserVo tUserVo) {
