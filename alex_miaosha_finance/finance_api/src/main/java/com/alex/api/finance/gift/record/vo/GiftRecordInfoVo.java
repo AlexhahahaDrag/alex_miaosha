@@ -2,6 +2,7 @@ package com.alex.api.finance.gift.record.vo;
 
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "GiftRecordInfoVo", description = "gift record vo")
 public class GiftRecordInfoVo extends BaseVo<GiftRecordInfoVo> {
 

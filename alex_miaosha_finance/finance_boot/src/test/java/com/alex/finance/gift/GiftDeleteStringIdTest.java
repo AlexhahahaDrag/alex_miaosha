@@ -115,7 +115,8 @@ class GiftDeleteStringIdTest {
             super(
                     new GiftDataScopeSupport(loginUserUtils()),
                     mock(GiftEventTypeOptionService.class),
-                    mock(GiftRecordInfoService.class));
+                    mock(GiftRecordInfoService.class),
+                    mock(GiftPersonInfoMapper.class));
         }
 
         @Override

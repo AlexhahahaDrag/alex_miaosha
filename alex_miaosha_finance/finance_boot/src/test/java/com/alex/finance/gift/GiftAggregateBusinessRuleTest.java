@@ -175,7 +175,8 @@ class GiftAggregateBusinessRuleTest {
             super(
                     new GiftDataScopeSupport(mock(UserUtils.class)),
                     mock(GiftEventTypeOptionService.class),
-                    mock(GiftRecordInfoService.class));
+                    mock(GiftRecordInfoService.class),
+                    mock(GiftPersonInfoMapper.class));
         }
 
         @Override

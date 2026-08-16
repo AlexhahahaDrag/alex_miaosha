@@ -113,7 +113,8 @@ class GiftOwnershipTest {
             super(
                     new GiftDataScopeSupport(userUtils),
                     mock(GiftEventTypeOptionService.class),
-                    mock(GiftRecordInfoService.class));
+                    mock(GiftRecordInfoService.class),
+                    mock(GiftPersonInfoMapper.class));
         }
 
         @Override

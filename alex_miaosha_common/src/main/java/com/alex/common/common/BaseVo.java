@@ -2,6 +2,7 @@ package com.alex.common.common;
 
 import com.alex.common.config.Long2StringSerializer;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseVo<T extends Model<T>> extends Model<T> {
 
     @ApiModelProperty(value = "id")

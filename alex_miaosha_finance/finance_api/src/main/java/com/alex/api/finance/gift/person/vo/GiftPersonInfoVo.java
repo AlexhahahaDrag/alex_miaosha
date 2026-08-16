@@ -3,6 +3,7 @@ package com.alex.api.finance.gift.person.vo;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.common.common.BaseVo;
 import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,6 +14,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "GiftPersonInfoVo", description = "gift person vo")
 public class GiftPersonInfoVo extends BaseVo<GiftPersonInfoVo> {
 

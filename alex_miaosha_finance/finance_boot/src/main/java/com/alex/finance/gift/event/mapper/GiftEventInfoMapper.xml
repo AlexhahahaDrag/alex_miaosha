@@ -23,7 +23,7 @@
         </if>
     </sql>
 
-    <sql id="voColumns">
+    <sql id="entityColumns">
         e.id,
         e.org_id,
         e.user_id,
@@ -36,9 +36,24 @@
         e.update_time
     </sql>
 
+    <sql id="voColumns">
+        e.id,
+        e.org_id,
+        e.user_id,
+        e.event_name,
+        e.event_type,
+        e.event_time,
+        e.host_person_id,
+        p.person_name AS host_person_name,
+        e.remark,
+        e.create_time,
+        e.update_time
+    </sql>
+
     <select id="getPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
+        LEFT JOIN gift_person_info_t p ON p.id = e.host_person_id AND p.is_delete = 0
         <where>
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
@@ -49,6 +64,7 @@
     <select id="getList" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
         SELECT <include refid="voColumns"/>
         FROM gift_event_info_t e
+        LEFT JOIN gift_person_info_t p ON p.id = e.host_person_id AND p.is_delete = 0
         <where>
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
@@ -57,7 +73,7 @@
     </select>
 
     <select id="listEntities" resultType="com.alex.finance.gift.event.entity.GiftEventInfo">
-        SELECT <include refid="voColumns"/>
+        SELECT <include refid="entityColumns"/>
         FROM gift_event_info_t e
         <where>
             <include refid="baseConditions"/>
@@ -79,6 +95,7 @@
                 ELSE 'FINISHED'
             END AS event_status
         FROM gift_event_info_t e
+        LEFT JOIN gift_person_info_t p ON p.id = e.host_person_id AND p.is_delete = 0
         LEFT JOIN (
             SELECT
                 r.event_id,

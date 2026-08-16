@@ -12,6 +12,8 @@ import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.event.service.GiftEventInfoService;
 import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
+import com.alex.finance.gift.person.entity.GiftPersonInfo;
+import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
@@ -37,6 +39,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftEventTypeOptionService giftEventTypeOptionService;
     private final GiftRecordInfoService giftRecordInfoService;
+    private final GiftPersonInfoMapper giftPersonInfoMapper;
 
     @Override
     public Page<GiftEventInfoVo> getPage(Long pageNum, Long pageSize, GiftEventQuery query) {
@@ -190,6 +193,12 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         }
         GiftEventInfoVo vo = new GiftEventInfoVo();
         BeanUtils.copyProperties(entity, vo);
+        if (entity.getHostPersonId() != null && giftPersonInfoMapper != null) {
+            GiftPersonInfo person = giftPersonInfoMapper.selectById(entity.getHostPersonId());
+            if (person != null) {
+                vo.setHostPersonName(person.getPersonName());
+            }
+        }
         return enrichEventTypeOption(vo);
     }
 
