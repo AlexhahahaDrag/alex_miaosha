@@ -229,9 +229,10 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public List<GiftPersonInfoVo> listOrgMemberOptions(String keyword) {
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+        boolean isSuper = giftDataScopeSupport.isSuper(loginUser);
         Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
         List<Long> memberUserIds = resolveOrgMemberUserIds(loginUser, orgId);
-        Map<Long, GiftPersonInfo> existingByBindUserId = listOrgMemberPersons(orgId, memberUserIds);
+        Map<Long, GiftPersonInfo> existingByBindUserId = listOrgMemberPersons(orgId, memberUserIds, isSuper);
         return memberUserIds.stream()
                 .map(userId -> {
                     GiftPersonInfo existing = existingByBindUserId.get(userId);
@@ -247,10 +248,23 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     }
 
     private List<Long> resolveOrgMemberUserIds(TUserVo loginUser, Long orgId) {
+        if (giftDataScopeSupport.isSuper(loginUser)) {
+            // 超级管理员：查询系统内全部用户
+            Result<List<TUserVo>> userListRes = userApi.getList(new TUserVo());
+            if (userListRes != null && userListRes.getData() != null) {
+                return userListRes.getData().stream()
+                        .map(TUserVo::getId)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList());
+            }
+            return List.of(loginUser.getId());
+        }
         if (orgId == null) {
             return List.of(loginUser.getId());
         }
-        if (giftDataScopeSupport.isSuper(loginUser) || giftDataScopeSupport.isAdmin(loginUser)) {
+        if (giftDataScopeSupport.isAdmin(loginUser)) {
+            // 家庭组管理员：查询当前机构（家庭组）下全部有效成员
             OrgUserInfoVo query = new OrgUserInfoVo();
             query.setOrgId(String.valueOf(orgId));
             query.setStatus("1");
@@ -276,15 +290,19 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     }
 
     /** 批量查询已建档的家庭组成员亲友（key=bindUserId；同一成员多行时保留最早一行，等价原 LIMIT 1 语义）。 */
-    private Map<Long, GiftPersonInfo> listOrgMemberPersons(Long orgId, List<Long> memberUserIds) {
+    private Map<Long, GiftPersonInfo> listOrgMemberPersons(Long orgId, List<Long> memberUserIds, boolean isSuper) {
         if (memberUserIds == null || memberUserIds.isEmpty()) {
             return Map.of();
         }
-        List<GiftPersonInfo> persons = list(Wrappers.<GiftPersonInfo>lambdaQuery()
-                .eq(GiftPersonInfo::getIsDelete, 0)
-                .in(GiftPersonInfo::getBindUserId, memberUserIds)
-                .eq(orgId != null, GiftPersonInfo::getOrgId, orgId)
-                .isNull(orgId == null, GiftPersonInfo::getOrgId));
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GiftPersonInfo> wrapper =
+                Wrappers.<GiftPersonInfo>lambdaQuery()
+                        .eq(GiftPersonInfo::getIsDelete, 0)
+                        .in(GiftPersonInfo::getBindUserId, memberUserIds);
+        if (!isSuper) {
+            wrapper.eq(orgId != null, GiftPersonInfo::getOrgId, orgId)
+                    .isNull(orgId == null, GiftPersonInfo::getOrgId);
+        }
+        List<GiftPersonInfo> persons = list(wrapper);
         Map<Long, GiftPersonInfo> byBindUserId = new java.util.LinkedHashMap<>();
         for (GiftPersonInfo person : persons) {
             byBindUserId.putIfAbsent(person.getBindUserId(), person);

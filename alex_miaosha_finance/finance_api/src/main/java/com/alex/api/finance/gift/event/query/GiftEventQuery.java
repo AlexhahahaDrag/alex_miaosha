@@ -1,5 +1,6 @@
 package com.alex.api.finance.gift.event.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "GiftEventQuery", description = "gift event query")
 public class GiftEventQuery implements Serializable {
 
@@ -20,6 +22,9 @@ public class GiftEventQuery implements Serializable {
 
     @ApiModelProperty(value = "event type")
     private String eventType;
+
+    @ApiModelProperty(value = "event status")
+    private String eventStatus;
 
     @ApiModelProperty(value = "event time start")
     private LocalDateTime eventTimeStart;
