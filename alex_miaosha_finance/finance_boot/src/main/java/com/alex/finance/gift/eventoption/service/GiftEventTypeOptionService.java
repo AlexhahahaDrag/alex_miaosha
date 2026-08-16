@@ -17,4 +17,6 @@ public interface GiftEventTypeOptionService extends IService<GiftEventTypeOption
     void rememberCustomEventType(Long orgId, Long userId, String eventType);
 
     GiftRecordRecommendAmountVo getRecommendAmount(Long personId, String eventType, String direction);
+
+    boolean updateOption(GiftEventTypeOption option);
 }

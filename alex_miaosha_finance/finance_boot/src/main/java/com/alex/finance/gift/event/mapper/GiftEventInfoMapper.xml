@@ -108,18 +108,15 @@
         ) agg ON agg.event_id = e.id
         LEFT JOIN (
             SELECT
-                pr.event_id,
-                COUNT(DISTINCT pr.person_id) AS participant_count
-            FROM (
-                SELECT r.event_id, r.giver_person_id AS person_id
-                FROM gift_record_info_t r
-                WHERE r.event_id IS NOT NULL AND r.giver_person_id IS NOT NULL AND r.is_delete = 0
-                UNION ALL
-                SELECT r.event_id, r.receiver_person_id AS person_id
-                FROM gift_record_info_t r
-                WHERE r.event_id IS NOT NULL AND r.receiver_person_id IS NOT NULL AND r.is_delete = 0
-            ) pr
-            GROUP BY pr.event_id
+                r.event_id,
+                COUNT(DISTINCT CASE 
+                    WHEN r.direction = 'RECEIVE' THEN r.giver_person_id 
+                    ELSE r.receiver_person_id 
+                END) AS participant_count
+            FROM gift_record_info_t r
+            WHERE r.event_id IS NOT NULL
+              AND r.is_delete = 0
+            GROUP BY r.event_id
         ) participants ON participants.event_id = e.id
         <where>
             <include refid="baseConditions"/>

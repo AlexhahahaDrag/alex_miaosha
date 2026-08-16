@@ -164,7 +164,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         Set<Long> participantIds = records.stream()
-                .flatMap(record -> java.util.stream.Stream.of(record.getGiverPersonId(), record.getReceiverPersonId()))
+                .map(record -> "RECEIVE".equals(record.getDirection()) ? record.getGiverPersonId() : record.getReceiverPersonId())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         vo.setGiveAmount(giveAmount);

@@ -81,7 +81,7 @@ class GiftAggregateBusinessRuleTest {
 
         GiftEventBusinessVo row = service.getBusinessPage(1L, 10L, null).getRecords().get(0);
 
-        assertEquals(3L, row.getParticipantCount());
+        assertEquals(2L, row.getParticipantCount());
         assertEquals(new BigDecimal("500.00"), row.getTotalAmount());
         assertEquals(new BigDecimal("200.00"), row.getGiveAmount());
         assertEquals(new BigDecimal("300.00"), row.getReceiveAmount());

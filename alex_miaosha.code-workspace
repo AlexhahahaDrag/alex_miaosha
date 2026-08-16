@@ -10,5 +10,7 @@
 			"path": "../alex_miaosha_mobile"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.debug.settings.onBuildFailureProceed": true
+	}
 }

@@ -122,6 +122,6 @@ public class GiftEventInfoController {
     @ApiOperation(value = "更新事由类型词典选项", response = Result.class)
     @PutMapping(value = "/event-type-option")
     public Result<Boolean> updateEventTypeOption(@RequestBody GiftEventTypeOption option) {
-        return Result.success(giftEventTypeOptionService.updateById(option));
+        return Result.success(giftEventTypeOptionService.updateOption(option));
     }
 }

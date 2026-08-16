@@ -28,12 +28,22 @@
                o.category AS category,
                o.icon AS icon,
                o.status AS status,
-               o.use_count AS useCount,
+               (
+                   SELECT COUNT(1)
+                   FROM gift_event_info_t e
+                   WHERE e.is_delete = 0
+                     <if test="orgId != null">
+                         AND e.org_id = #{orgId}
+                     </if>
+                     AND (
+                         (o.option_type = 'SYSTEM' AND (e.event_type = o.event_code OR e.event_type = o.event_label))
+                         OR (o.option_type = 'CUSTOM' AND e.event_type = o.event_label)
+                     )
+               ) AS useCount,
                o.default_amount AS defaultAmount,
                o.sort_order AS sortOrder
         FROM gift_event_type_option_t o
         WHERE o.is_delete = 0
-          AND o.status = 1
           AND (
               (o.option_type = 'SYSTEM' AND o.user_id = 0)
               OR (o.option_type = 'CUSTOM' AND o.org_id = #{orgId})
