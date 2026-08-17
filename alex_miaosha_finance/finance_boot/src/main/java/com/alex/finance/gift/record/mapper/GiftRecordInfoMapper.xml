@@ -89,7 +89,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY r.pay_time DESC
+        ORDER BY r.pay_time DESC, r.id DESC
     </select>
 
     <!-- 列表查询（返回 VO，含联表，不分页） -->
@@ -134,7 +134,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY r.pay_time DESC
+        ORDER BY r.pay_time DESC, r.id DESC
     </select>
 
     <!-- 实体列表查询（返回 Entity，用于内部聚合计算） -->
@@ -165,7 +165,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY r.pay_time DESC
+        ORDER BY r.pay_time DESC, r.id DESC
     </select>
 
     <!-- 汇总指定收礼记录下所有回礼金额 -->

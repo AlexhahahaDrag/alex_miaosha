@@ -76,7 +76,8 @@
         p.relation_grade,
         p.remark,
         p.create_time,
-        p.update_time
+        p.update_time,
+        p.operate_time
     </sql>
 
     <select id="getPage" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoVo">
@@ -86,7 +87,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY p.create_time DESC
+        ORDER BY p.operate_time DESC, p.id DESC
     </select>
 
     <select id="getList" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoVo">
@@ -96,7 +97,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY p.create_time DESC
+        ORDER BY p.operate_time DESC, p.id DESC
     </select>
 
     <select id="listEntities" resultType="com.alex.finance.gift.person.entity.GiftPersonInfo">
@@ -106,7 +107,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY p.create_time DESC
+        ORDER BY p.operate_time DESC, p.id DESC
     </select>
 
     <!-- 礼金聚合在 SQL 层完成，分页由 MyBatis-Plus 在数据库执行 -->
@@ -153,7 +154,7 @@
             <include refid="baseConditions"/>
             <include refid="queryConditions"/>
         </where>
-        ORDER BY p.create_time DESC
+        ORDER BY p.operate_time DESC, p.id DESC
     </select>
 
     <select id="listDistinctCustomRelationTypes" resultType="java.lang.String">
