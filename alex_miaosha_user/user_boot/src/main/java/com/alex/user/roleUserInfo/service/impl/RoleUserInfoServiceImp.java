@@ -78,7 +78,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        roleUserInfoMapper.deleteBatchIds(idArr);
+        roleUserInfoMapper.deleteByIds(idArr);
         return true;
     }
 

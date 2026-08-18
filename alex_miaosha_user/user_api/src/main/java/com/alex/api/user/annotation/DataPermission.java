@@ -8,18 +8,22 @@ public @interface DataPermission {
 
     String table() default "t_user";
 
+    /**
+     * 表别名（例如 SQL 中 FROM gift_person_info_t p 时配置 alias = "p"）。
+     * 有别名时优先使用别名，无别名时使用 table()。
+     */
+    String alias() default "";
+
     String[] where() default {};
 
+    /** 用户维度字段，如 user_id / operator / belong_to；{@link DataPermissionScope#ORG_ID} 时表示机构列 */
     String field() default "operator";
 
     /**
-     * USER_IDS: admin uses org-member user id subquery; user uses self id.
-     * ORG_ID: admin/user filter by login user's org id.
+     * 机构维度字段；{@link DataPermissionScope#ORG_SHARED} 时优先使用。
+     * 表无 org 字段时请显式置为 {@code ""}，将退化为 {@link #field()} 的机构成员子查询。
      */
-    Scope scope() default Scope.USER_IDS;
+    String orgField() default "org_id";
 
-    enum Scope {
-        USER_IDS,
-        ORG_ID
-    }
+    DataPermissionScope scope() default DataPermissionScope.USER_OWNER;
 }

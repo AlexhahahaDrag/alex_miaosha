@@ -30,7 +30,7 @@
         <withJansi>true</withJansi>
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
+            <charset>${console.encoding:-UTF-8}</charset>
         </encoder>
     </appender>
 

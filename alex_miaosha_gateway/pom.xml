@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Trigger VS Code Maven reload -->
     <parent>
         <artifactId>alex_miaosha</artifactId>
         <groupId>com.alex</groupId>
@@ -28,6 +29,12 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -74,6 +81,8 @@
                     <!-- 指定该Main Class为全局的唯一入口 -->
                     <mainClass>com.alex.gateway.GatewayApplication</mainClass>
                     <layout>ZIP</layout>
+                    <!-- 强制 UTF-8，解决命令行启动时 Nacos 中文注释解析报错 -->
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>

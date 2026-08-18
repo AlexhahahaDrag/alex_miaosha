@@ -19,7 +19,7 @@ import java.util.List;
 public interface CpnCouponInfoMapper extends BaseMapper<CpnCouponInfo> {
 
     @DataPermission(table = "cpn_coupon_info_t")
-    Page<CpnCouponInfoVo> getPage(Page<CpnCouponInfoVo> page, @Param("cpnCouponInfoVo") CpnCouponInfoVo cpnCouponInfoVo);
+    Page<CpnCouponInfoVo> getPage(@Param("page") Page<CpnCouponInfoVo> page, @Param("cpnCouponInfoVo") CpnCouponInfoVo cpnCouponInfoVo);
 
     List<CpnCouponInfoVo> getList(@Param("cpnCouponInfoVo") CpnCouponInfoVo cpnCouponInfoVo);
 

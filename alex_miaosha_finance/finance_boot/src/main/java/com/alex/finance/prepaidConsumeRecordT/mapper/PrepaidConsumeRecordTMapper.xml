@@ -37,43 +37,8 @@
         prepaid_consume_record_t.is_delete,
         prepaid_consume_record_t.card_id, prepaid_consume_record_t.order_no, prepaid_consume_record_t.amount, prepaid_consume_record_t.balance_after, prepaid_consume_record_t.merchant_name, prepaid_consume_record_t.consume_time, prepaid_consume_record_t.`description`
     </sql>
-
-    <select id="getPage" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
-        select <include refid="Base_Column_List"/>,
-            prepaid_card_info_t.card_name as card_name,
-            if(prepaid_consume_record_t.amount >= 0, '充值', '消费') as type
-            from prepaid_consume_record_t
-             join prepaid_card_info_t
-               on prepaid_consume_record_t.card_id = prepaid_card_info_t.id
-              and prepaid_card_info_t.is_delete = 0
-        <where>
-            prepaid_consume_record_t.is_delete = 0
-            <include refid="queryInfo"/>
-            and prepaid_consume_record_t.is_delete = 0
-        </where>
-        order by prepaid_consume_record_t.operate_time desc
-    </select>
-
-    <select id="getList" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
-        select <include refid="Base_Column_List"/>from prepaid_consume_record_t
-        <where>
-            prepaid_consume_record_t.is_delete = 0
-            <include refid="queryInfo"/>
-            and prepaid_consume_record_t.is_delete = 0
-        </where>
-        order by prepaid_consume_record_t.operate_time desc
-    </select>
-
-    <select id="queryPrepaidConsumeRecordT"
-            resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
-        select <include refid="Base_Column_List"/> from prepaid_consume_record_t
-        <where>
-            prepaid_consume_record_t.id = #{id}
-            and prepaid_consume_record_t.is_delete = 0
-        </where>
-    </select>
-
-     <sql id="queryInfo">
+    <!-- 查询条件 -->
+    <sql id="queryInfo">
         <if test="prepaidConsumeRecordTVo != null">
           <if test="prepaidConsumeRecordTVo.cardId != null">
             and prepaid_consume_record_t.card_id = #{prepaidConsumeRecordTVo.cardId}
@@ -112,6 +77,42 @@
           </if>
         </if>
      </sql>
+
+
+    <select id="getPage" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/>,
+            prepaid_card_info_t.card_name as card_name,
+            if(prepaid_consume_record_t.amount >= 0, '充值', '消费') as type
+            from prepaid_consume_record_t
+             join prepaid_card_info_t
+               on prepaid_consume_record_t.card_id = prepaid_card_info_t.id
+              and prepaid_card_info_t.is_delete = 0
+        <where>
+            prepaid_consume_record_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+        order by prepaid_consume_record_t.operate_time desc
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/>from prepaid_consume_record_t
+        <where>
+            prepaid_consume_record_t.is_delete = 0
+            <include refid="queryInfo"/>
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+        order by prepaid_consume_record_t.operate_time desc
+    </select>
+
+    <select id="queryPrepaidConsumeRecordT"
+            resultType="com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo">
+        select <include refid="Base_Column_List"/> from prepaid_consume_record_t
+        <where>
+            prepaid_consume_record_t.id = #{id}
+            and prepaid_consume_record_t.is_delete = 0
+        </where>
+    </select>
 
     <!-- 趋势统计：按天聚合充值与消费（消费取绝对值） -->
     <select id="aggregateTrendByDay" resultType="java.util.Map">

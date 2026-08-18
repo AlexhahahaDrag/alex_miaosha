@@ -1,6 +1,7 @@
 package com.alex.api.user.handler;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
@@ -12,22 +13,23 @@ import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
+import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SubSelect;
+import net.sf.jsqlparser.statement.select.SelectItem;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -97,46 +99,28 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             return where;
         }
 
-        // 判断当前用户角色决定权限
-        List<RoleInfoVo> roleList = loginUser.getRoleInfoVoList();
-        List<String> roleCodes = new ArrayList<>();
-        if (roleList != null) {
-            roleList.stream()
-                    .filter(role -> role != null && role.getRoleCode() != null)
-                    .map(RoleInfoVo::getRoleCode)
-                    .forEach(roleCodes::add);
-        }
-        boolean isSuper = false;
-        boolean isAdmin = false;
-        boolean isUser = false;
-        for (String code : roleCodes) {
-            if (RbacRoleCodes.SUPER.equals(code)) {
-                isSuper = true;
-            } else if (RbacRoleCodes.ADMIN.equals(code)) {
-                isAdmin = true;
-            } else if (RbacRoleCodes.USER.equals(code)) {
-                isUser = true;
-            }
-        }
-
-        if (isSuper) {
+        RoleFlags roleFlags = resolveRoleFlags(loginUser);
+        if (roleFlags.isSuper()) {
             return getSuperWhere(where);
         }
-        if (annotation.scope() == DataPermission.Scope.ORG_ID) {
-            return getOrgIdWhere(where, loginUser, annotation, isAdmin);
+
+        DataPermissionScope scope = annotation.scope();
+        if (scope == DataPermissionScope.ORG_ID) {
+            return getOrgIdWhere(where, loginUser, annotation, roleFlags.isAdmin());
         }
-        if (isAdmin) {
+        if (scope == DataPermissionScope.ORG_SHARED) {
+            return getOrgSharedWhere(where, loginUser, annotation, roleFlags.isAdmin());
+        }
+
+        if (roleFlags.isAdmin()) {
             return getAdminWhere(where, loginUser, annotation);
         }
-        if (isUser || roleCodes.isEmpty()) {
+        if (roleFlags.isUser() || roleFlags.isEmpty()) {
             return getUserWhere(where, loginUser, annotation);
         }
         return getDefaultWhere(where, loginUser, annotation);
     }
 
-    /**
-     * 获取指定 mappedStatementId 的 DataPermission 注解（带高性能 ConcurrentHashMap 缓存）
-     */
     private DataPermission getDataPermission(String mappedStatementId) {
         if (mappedStatementId == null) {
             return null;
@@ -168,35 +152,48 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     private Expression getUserWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        EqualsTo useEqualsTo = new EqualsTo();
-        useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
-        useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-        return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+        return appendFieldEquals(where, resolveTargetTable(annotation), annotation.field(), loginUser.getId());
     }
 
     /**
-     * ORG_ID scope: filter by login user's org id.
-     * - admin: selfOrgId ∪ 全部子孙机构 id（RBAC-BE-SCOPE-002），无子孙时退化为 equals。
-     * - user/default: 仍仅本机构 equals。
-     * Missing org → impossible equals so no rows leak.
+     * ORG_ID scope: filter by login user's org id on {@link DataPermission#field()}.
+     * admin: selfOrgId ∪ 全部子孙机构；user: 仅本机构。
      */
     private Expression getOrgIdWhere(Expression where, TUserVo loginUser, DataPermission annotation, boolean isAdmin) {
-        if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
+        Long selfOrgId = resolveLoginOrgId(loginUser);
+        if (selfOrgId == null) {
             EqualsTo impossible = new EqualsTo();
-            impossible.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
+            impossible.setLeftExpression(new Column(new Table(resolveTargetTable(annotation)), annotation.field()));
             impossible.setRightExpression(new LongValue(-1L));
             return where == null ? impossible : new AndExpression(where, impossible);
         }
-        Long selfOrgId = loginUser.getOrgInfoVo().getId();
         Expression condition = isAdmin
-                ? buildOrgIdExpression(annotation, buildAdminOrgScopeIds(selfOrgId))
-                : buildOrgIdExpression(annotation, Collections.singletonList(selfOrgId));
+                ? buildIdListExpression(resolveTargetTable(annotation), annotation.field(), buildAdminOrgScopeIds(selfOrgId))
+                : buildIdListExpression(resolveTargetTable(annotation), annotation.field(), Collections.singletonList(selfOrgId));
         return where == null ? condition : new AndExpression(where, condition);
     }
 
-    /**
-     * 一次性查出 selfOrgId 的全部子孙机构 id（去重，保序），失败时降级为仅本机构。
-     */
+    private Expression getOrgSharedWhere(Expression where, TUserVo loginUser, DataPermission annotation, boolean isAdmin) {
+        Long orgId = resolveLoginOrgId(loginUser);
+        if (orgId == null) {
+            log.warn("家庭组共享模式未解析到机构，降级为个人数据权限：userId={}", loginUser.getId());
+            return getUserWhere(where, loginUser, annotation);
+        }
+        if (StringUtils.hasText(annotation.orgField())) {
+            List<Long> orgIds = isAdmin ? buildAdminOrgScopeIds(orgId) : Collections.singletonList(orgId);
+            Expression condition = buildIdListExpression(resolveTargetTable(annotation), annotation.orgField(), orgIds);
+            return where == null ? condition : new AndExpression(where, condition);
+        }
+        return appendOrgMembersIn(where, annotation, orgId);
+    }
+
+    private String resolveTargetTable(DataPermission annotation) {
+        if (annotation != null && StringUtils.hasText(annotation.alias())) {
+            return annotation.alias().trim();
+        }
+        return annotation != null ? annotation.table() : "";
+    }
+
     private List<Long> buildAdminOrgScopeIds(Long selfOrgId) {
         Set<Long> scopeIds = new LinkedHashSet<>();
         scopeIds.add(selfOrgId);
@@ -215,54 +212,46 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         return new ArrayList<>(scopeIds);
     }
 
-    /**
-     * 单个 id 退化为 EqualsTo，多个 id 使用 InExpression（保持与既有 JSQLParser 风格一致）。
-     */
-    private Expression buildOrgIdExpression(DataPermission annotation, List<Long> orgIds) {
-        Column column = new Column(new Table(annotation.table()), annotation.field());
-        if (orgIds.size() == 1) {
+    private Expression buildIdListExpression(String tableName, String fieldName, List<Long> ids) {
+        Column column = new Column(new Table(tableName), fieldName);
+        if (ids.size() == 1) {
             EqualsTo eq = new EqualsTo();
             eq.setLeftExpression(column);
-            eq.setRightExpression(new LongValue(orgIds.get(0)));
+            eq.setRightExpression(new LongValue(ids.get(0)));
             return eq;
         }
         InExpression in = new InExpression();
         in.setLeftExpression(column);
         List<Expression> values = new ArrayList<>();
-        for (Long id : orgIds) {
+        for (Long id : ids) {
             values.add(new LongValue(id));
         }
-        ExpressionList expressionList = new ExpressionList();
-        expressionList.setExpressions(values);
-        in.setRightItemsList(expressionList);
+        in.setRightExpression(new ParenthesedExpressionList<>(values));
         return in;
     }
 
     private Expression getAdminWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        if (loginUser == null || loginUser.getOrgInfoVo() == null || loginUser.getOrgInfoVo().getId() == null) {
-            log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser != null ? loginUser.getId() : "unknown");
+        Long orgId = resolveLoginOrgId(loginUser);
+        if (orgId == null) {
+            log.warn("管理员未关联所属机构，降级为个人数据权限：userId={}", loginUser.getId());
             return getUserWhere(where, loginUser, annotation);
         }
+        return appendOrgMembersIn(where, annotation, orgId);
+    }
 
-        InExpression useEqualsTo = new InExpression();
-        useEqualsTo.setLeftExpression(new Column(new Table(annotation.table()), annotation.field()));
-        // 构建子查询
-        SubSelect subSelect = new SubSelect();
+    private Expression appendOrgMembersIn(Expression where, DataPermission annotation, Long orgId) {
+        InExpression inExpression = new InExpression();
+        inExpression.setLeftExpression(new Column(new Table(resolveTargetTable(annotation)), annotation.field()));
+
         PlainSelect plainSelect = new PlainSelect();
+        plainSelect.addSelectItems(new SelectItem<>(new Column("user_id")));
 
-        // 构建子查询中的 SELECT 部分
-        SelectExpressionItem selectItem = new SelectExpressionItem();
-        selectItem.setExpression(new Column("user_id"));
-        plainSelect.addSelectItems(selectItem);
-
-        // 构建子查询中的 FROM 部分
         Table table = new Table("alex_user.t_org_user_info");
         plainSelect.setFromItem(table);
 
-        // WHERE: org_id = ? AND status = '1' AND is_delete = 0
         EqualsTo orgIdCondition = new EqualsTo();
         orgIdCondition.setLeftExpression(new Column("org_id"));
-        orgIdCondition.setRightExpression(new LongValue(loginUser.getOrgInfoVo().getId()));
+        orgIdCondition.setRightExpression(new LongValue(orgId));
 
         EqualsTo statusCondition = new EqualsTo();
         statusCondition.setLeftExpression(new Column("status"));
@@ -278,13 +267,18 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         );
         plainSelect.setWhere(whereCondition);
 
-        // 将 PlainSelect 对象设置为 SubSelect 的 SelectBody
-        subSelect.setSelectBody(plainSelect);
+        ParenthesedSelect subSelect = new ParenthesedSelect();
+        subSelect.setSelect(plainSelect);
+        inExpression.setRightExpression(subSelect);
 
-        // 设置右表达式为子查询
-        useEqualsTo.setRightExpression(subSelect);
+        return where == null ? inExpression : new AndExpression(where, inExpression);
+    }
 
-        return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+    private Expression appendFieldEquals(Expression where, String tableName, String fieldName, Long value) {
+        EqualsTo equalsTo = new EqualsTo();
+        equalsTo.setLeftExpression(new Column(new Table(tableName), fieldName));
+        equalsTo.setRightExpression(new LongValue(value));
+        return where == null ? equalsTo : new AndExpression(where, equalsTo);
     }
 
     private Expression getSuperWhere(Expression where) {
@@ -292,9 +286,43 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
     }
 
     private Expression getDefaultWhere(Expression where, TUserVo loginUser, DataPermission annotation) {
-        EqualsTo useEqualsTo = new EqualsTo();
-        useEqualsTo.setLeftExpression(new Column(annotation.field()));
-        useEqualsTo.setRightExpression(new LongValue(loginUser.getId()));
-        return where == null ? useEqualsTo : new AndExpression(where, useEqualsTo);
+        return appendFieldEquals(where, resolveTargetTable(annotation), annotation.field(), loginUser.getId());
+    }
+
+    private Long resolveLoginOrgId(TUserVo loginUser) {
+        if (loginUser == null) {
+            return null;
+        }
+        if (loginUser.getOrgInfoVo() != null && loginUser.getOrgInfoVo().getId() != null) {
+            return loginUser.getOrgInfoVo().getId();
+        }
+        return loginUser.getOrgId();
+    }
+
+    private RoleFlags resolveRoleFlags(TUserVo loginUser) {
+        List<RoleInfoVo> roleList = loginUser.getRoleInfoVoList();
+        List<String> roleCodes = new ArrayList<>();
+        if (roleList != null) {
+            roleList.stream()
+                    .filter(role -> role != null && role.getRoleCode() != null)
+                    .map(RoleInfoVo::getRoleCode)
+                    .forEach(roleCodes::add);
+        }
+        boolean isSuper = false;
+        boolean isAdmin = false;
+        boolean isUser = false;
+        for (String code : roleCodes) {
+            if (RbacRoleCodes.SUPER.equals(code)) {
+                isSuper = true;
+            } else if (RbacRoleCodes.ADMIN.equals(code)) {
+                isAdmin = true;
+            } else if (RbacRoleCodes.USER.equals(code)) {
+                isUser = true;
+            }
+        }
+        return new RoleFlags(isSuper, isAdmin, isUser, roleCodes.isEmpty());
+    }
+
+    private record RoleFlags(boolean isSuper, boolean isAdmin, boolean isUser, boolean isEmpty) {
     }
 }

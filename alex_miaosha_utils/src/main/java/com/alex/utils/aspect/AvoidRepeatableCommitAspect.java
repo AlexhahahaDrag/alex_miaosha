@@ -54,11 +54,10 @@ public class AvoidRepeatableCommitAspect {
         String name = method.getName();
         Object[] args = point.getArgs();
         StringBuilder ipKey = new StringBuilder(String.format("%s#%s", className, name));
-        //转换成 hashCode
+        //转换成 hashCode（optional 入参可能为 null，不能直接 hashCode）
         if (args != null) {
-            for(Object arg :args) {
-                ipKey.append(arg.hashCode());
-                log.info("{}", arg.hashCode());
+            for (Object arg : args) {
+                ipKey.append(arg == null ? "null" : arg.hashCode());
             }
         }
         int hashCode = Math.abs(ipKey.toString().hashCode());

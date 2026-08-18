@@ -15,7 +15,6 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * description:  garage模板类
@@ -51,7 +49,6 @@ public class GarageTemplate implements InitializingBean {
 
     private MinioClient minioClient;
 
-    @Autowired
     public GarageTemplate(GarageProperties garageProperties) {
         Assert.notNull(garageProperties, "GarageProperties must not be null!");
         this.garageProperties = garageProperties;
@@ -214,7 +211,7 @@ public class GarageTemplate implements InitializingBean {
 
     public Map<String, String> removeObjects(String bucketName, List<String> objects) throws Exception {
         Map<String, String> resultMap = new HashMap<>();
-        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).collect(Collectors.toList());
+        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).toList();
         Iterable<Result<DeleteError>> results = minioClient.removeObjects(
                 RemoveObjectsArgs.builder()
                         .bucket(bucketName)

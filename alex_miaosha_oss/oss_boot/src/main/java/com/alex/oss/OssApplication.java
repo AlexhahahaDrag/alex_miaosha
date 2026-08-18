@@ -26,6 +26,11 @@ import org.springframework.context.annotation.ComponentScan;
 public class OssApplication {
 
     public static void main(String[] args) {
+        // 必须在最前面设置
+        System.setProperty(
+                "JM.SNAPSHOT.PATH",
+                "D:\\"
+        );
         SpringApplication.run(OssApplication.class, args);
     }
 

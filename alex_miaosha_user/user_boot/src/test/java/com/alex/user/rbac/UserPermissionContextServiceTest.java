@@ -52,7 +52,8 @@ public class UserPermissionContextServiceTest {
                 orgService(userId, Arrays.asList(firstOrg, secondOrg)),
                 roleService(userId, Arrays.asList(firstRole, secondRole)),
                 menuService(Collections.emptyList()),
-                Runnable::run
+                Runnable::run,
+                null
         );
 
         UserPermissionContextVo context = service.buildContext(userId);
@@ -79,7 +80,8 @@ public class UserPermissionContextServiceTest {
                 orgService(userId, Collections.emptyList()),
                 roleService(userId, Collections.singletonList(superRole)),
                 menuService(allMenus),
-                Runnable::run
+                Runnable::run,
+                null
         );
 
         UserPermissionContextVo context = service.buildContext(userId);
@@ -148,9 +150,8 @@ public class UserPermissionContextServiceTest {
             assertEquals(userId, requestedUserId, "cached login should rebuild context for redis user id");
             return freshContext;
         };
-        TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null, null,
-                null, null, null, null, null, null, Runnable::run, contextService, null, null);
-
+        TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null,
+                null, null, null, null, null, null, Runnable::run, contextService, null, null, null);
         TUserVo refreshedUser = service.refreshLoginPermissionContext(cachedUser);
 
         assertSame(cachedUser, refreshedUser, "cached login should keep using the redis user object");

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FallbackController {
 
     @RequestMapping(value = "/defaultFallback")
-    public Result fallback() {
+    public Result<ResultEnum> fallback() {
         return Result.error(ResultEnum.SYSTEM_UP_ERROR);
     }
 }

@@ -29,8 +29,7 @@ public class MobileDetailTs implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
-        return data;
+        return new HashMap<>();
     }
 
     public static class Builder extends BaseBuilder {

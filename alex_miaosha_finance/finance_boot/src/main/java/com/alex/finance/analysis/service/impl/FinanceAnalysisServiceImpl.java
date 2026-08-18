@@ -56,9 +56,9 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
         BigDecimal yoyTotal = BigDecimal.ZERO;
 
         Map<String, AnalysisVo> momMap = momList == null ? new HashMap<>() : 
-            momList.stream().collect(Collectors.toMap(AnalysisVo::getTypeCode, vo -> vo, (v1, v2) -> v1));
+            momList.stream().collect(Collectors.toMap(vo -> vo.getTypeCode(), vo -> vo, (v1, v2) -> v1));
         Map<String, AnalysisVo> yoyMap = yoyList == null ? new HashMap<>() : 
-            yoyList.stream().collect(Collectors.toMap(AnalysisVo::getTypeCode, vo -> vo, (v1, v2) -> v1));
+            yoyList.stream().collect(Collectors.toMap(vo -> vo.getTypeCode(), vo -> vo, (v1, v2) -> v1));
 
         for (AnalysisVo vo : currentList) {
             BigDecimal currentAmount = vo.getAmount() == null ? BigDecimal.ZERO : vo.getAmount();
@@ -106,7 +106,7 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
             return current.compareTo(BigDecimal.ZERO) == 0 ? "0.0%" : (current.compareTo(BigDecimal.ZERO) > 0 ? "+100%" : "-100%");
         }
         BigDecimal change = current.subtract(previous);
-        BigDecimal trend = change.divide(previous.abs(), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal trend = change.divide(previous.abs(), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         String prefix = trend.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "";
         return prefix + trend.setScale(1, RoundingMode.HALF_UP) + "%";
     }

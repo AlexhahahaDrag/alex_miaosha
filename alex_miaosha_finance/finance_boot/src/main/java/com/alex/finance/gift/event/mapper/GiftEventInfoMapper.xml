@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.gift.event.mapper.GiftEventInfoMapper">
+
+    <sql id="baseConditions">
+        e.is_delete = 0
+    </sql>
+
+    <sql id="queryConditions">
+        <if test="query != null">
+            <if test="query.keyword != null and query.keyword != ''">
+                AND e.event_name LIKE CONCAT('%', #{query.keyword}, '%')
+            </if>
+            <if test="query.eventType != null and query.eventType != ''">
+                AND e.event_type = #{query.eventType}
+            </if>
+            <if test="query.eventTimeStart != null">
+                AND e.event_time &gt;= #{query.eventTimeStart}
+            </if>
+            <if test="query.eventTimeEnd != null">
+                AND e.event_time &lt;= #{query.eventTimeEnd}
+            </if>
+        </if>
+    </sql>
+
+    <sql id="voColumns">
+        e.id,
+        e.org_id,
+        e.user_id,
+        e.event_name,
+        e.event_type,
+        e.event_time,
+        e.host_person_id,
+        e.remark,
+        e.create_time,
+        e.update_time
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_event_info_t e
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.gift.event.vo.GiftEventInfoVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_event_info_t e
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="listEntities" resultType="com.alex.finance.gift.event.entity.GiftEventInfo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_event_info_t e
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="getBusinessPage" resultType="com.alex.api.finance.gift.event.vo.GiftEventBusinessVo">
+        SELECT
+            <include refid="voColumns"/>,
+            IFNULL(agg.give_amount, 0) AS give_amount,
+            IFNULL(agg.receive_amount, 0) AS receive_amount,
+            IFNULL(agg.give_amount, 0) + IFNULL(agg.receive_amount, 0) AS total_amount,
+            IFNULL(participants.participant_count, 0) AS participant_count,
+            IF(e.remark IS NOT NULL AND e.remark != '', e.remark, '-') AS location_text,
+            CASE
+                WHEN e.event_time IS NOT NULL AND e.event_time &gt; NOW() THEN 'PENDING'
+                ELSE 'FINISHED'
+            END AS event_status
+        FROM gift_event_info_t e
+        LEFT JOIN (
+            SELECT
+                r.event_id,
+                SUM(CASE WHEN r.direction IN ('GIVE', 'RETURN') THEN IFNULL(r.amount, 0) ELSE 0 END) AS give_amount,
+                SUM(CASE WHEN r.direction = 'RECEIVE' THEN IFNULL(r.amount, 0) ELSE 0 END) AS receive_amount
+            FROM gift_record_info_t r
+            WHERE r.event_id IS NOT NULL
+              AND r.is_delete = 0
+            GROUP BY r.event_id
+        ) agg ON agg.event_id = e.id
+        LEFT JOIN (
+            SELECT
+                pr.event_id,
+                COUNT(DISTINCT pr.person_id) AS participant_count
+            FROM (
+                SELECT r.event_id, r.giver_person_id AS person_id
+                FROM gift_record_info_t r
+                WHERE r.event_id IS NOT NULL AND r.giver_person_id IS NOT NULL AND r.is_delete = 0
+                UNION ALL
+                SELECT r.event_id, r.receiver_person_id AS person_id
+                FROM gift_record_info_t r
+                WHERE r.event_id IS NOT NULL AND r.receiver_person_id IS NOT NULL AND r.is_delete = 0
+            ) pr
+            GROUP BY pr.event_id
+        ) participants ON participants.event_id = e.id
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY e.event_time DESC
+    </select>
+
+    <select id="listDistinctCustomEventTypes" resultType="java.lang.String">
+        SELECT DISTINCT e.event_type
+        FROM gift_event_info_t e
+        WHERE e.org_id = #{orgId}
+          AND e.is_delete = 0
+          AND e.event_type IS NOT NULL
+          AND e.event_type != ''
+          AND e.event_type NOT IN (
+              SELECT o.event_code
+              FROM gift_event_type_option_t o
+              WHERE o.user_id = 0
+                AND o.option_type = 'SYSTEM'
+                AND o.is_delete = 0
+                AND o.event_code IS NOT NULL
+          )
+    </select>
+
+</mapper>

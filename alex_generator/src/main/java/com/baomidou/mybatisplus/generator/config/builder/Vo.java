@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.generator.IFill;
 import com.baomidou.mybatisplus.generator.ITemplate;
 import com.baomidou.mybatisplus.generator.config.INameConvert;
 import com.baomidou.mybatisplus.generator.config.INameConvert.DefaultNameConvert;
@@ -24,12 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
+
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Vo implements ITemplate, Serializable {
+public class Vo implements ITemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(Vo.class);
     private INameConvert nameConvert;
     private String superVoClass;
@@ -45,7 +44,6 @@ public class Vo implements ITemplate, Serializable {
     private String versionPropertyName;
     private String logicDeleteColumnName;
     private String logicDeletePropertyName;
-    private final List<IFill> tableFillList;
     private NamingStrategy naming;
     private NamingStrategy columnNaming;
     private boolean activeRecord;
@@ -56,7 +54,6 @@ public class Vo implements ITemplate, Serializable {
         this.superVoColumns = new HashSet<>();
         this.ignoreColumns = new HashSet<>();
         this.serialVersionUID = true;
-        this.tableFillList = new ArrayList<>();
         this.naming = NamingStrategy.underline_to_camel;
         this.columnNaming = null;
         this.converterFileName = (voName) -> voName;
@@ -74,7 +71,9 @@ public class Vo implements ITemplate, Serializable {
                 if (tableField != null && StringUtils.isNotBlank(tableField.value())) {
                     return tableField.value();
                 } else {
-                    return null != this.columnNaming && this.columnNaming != NamingStrategy.no_change ? StringUtils.camelToUnderline(field.getName()) : field.getName();
+                    return null != this.columnNaming && this.columnNaming != NamingStrategy.no_change
+                            ? StringUtils.camelToUnderline(field.getName())
+                            : field.getName();
                 }
             }
         }).collect(Collectors.toSet()));
@@ -218,16 +217,6 @@ public class Vo implements ITemplate, Serializable {
 
         public Builder addIgnoreColumns(@NotNull String... ignoreColumns) {
             this.vo.ignoreColumns.addAll(Arrays.asList(ignoreColumns));
-            return this;
-        }
-
-        public Builder addTableFills(@NotNull IFill... tableFill) {
-            this.vo.tableFillList.addAll(Arrays.asList(tableFill));
-            return this;
-        }
-
-        public Builder addTableFills(@NotNull List<IFill> tableFillList) {
-            this.vo.tableFillList.addAll(tableFillList);
             return this;
         }
 

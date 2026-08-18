@@ -43,6 +43,29 @@
         t_shop_stock_batch.purchase_date
     </sql>
 
+    <sql id="queryInfo">
+        <if test = "shopStockBatchVo != null">
+          <if test = "shopStockBatchVo.batchCode != null">
+            and t_shop_stock_batch.batch_code like concat('%', #{shopStockBatchVo.batchCode}, '%')
+          </if>
+          <if test = "shopStockBatchVo.batchName != null">
+            and t_shop_stock_batch.batch_name like concat('%', #{shopStockBatchVo.batchName}, '%')
+          </if>
+          <if test = "shopStockBatchVo.isValid != null">
+            and t_shop_stock_batch.is_valid like concat('%', #{shopStockBatchVo.isValid}, '%')
+          </if>
+          <if test = "shopStockBatchVo.description != null">
+            and t_shop_stock_batch.description like concat('%', #{shopStockBatchVo.description}, '%')
+          </if>
+          <if test = "shopStockBatchVo.title != null">
+            and (t_shop_stock_batch.batch_code like concat('%', #{shopStockBatchVo.title}, '%')
+                or t_shop_stock_batch.batch_name like concat('%', #{shopStockBatchVo.title}, '%')
+                or t_shop_stock_batch.description like concat('%', #{shopStockBatchVo.title}, '%'))
+          </if>
+        </if>
+     </sql>
+
+
     <select id="getPage" resultType="com.alex.api.finance.shopStockBatch.vo.ShopStockBatchVo">
         select <include refid="Base_Column_List"/>, dict_info.type_name as purchase_place_name
         from t_shop_stock_batch
@@ -71,7 +94,7 @@
             and is_valid = '1'
             and is_delete = 0
             <if test="id != null">
-                and id != #{id}
+                and id != ${excludeId}
             </if>
         </where>
     </select>
@@ -89,26 +112,4 @@
         </where>
         order by t_shop_stock_batch.operate_time desc
     </select>
-
-     <sql id="queryInfo">
-        <if test = "shopStockBatchVo != null">
-          <if test = "shopStockBatchVo.batchCode != null">
-            and t_shop_stock_batch.batch_code like concat('%', #{shopStockBatchVo.batchCode}, '%')
-          </if>
-          <if test = "shopStockBatchVo.batchName != null">
-            and t_shop_stock_batch.batch_name like concat('%', #{shopStockBatchVo.batchName}, '%')
-          </if>
-          <if test = "shopStockBatchVo.isValid != null">
-            and t_shop_stock_batch.is_valid like concat('%', #{shopStockBatchVo.isValid}, '%')
-          </if>
-          <if test = "shopStockBatchVo.description != null">
-            and t_shop_stock_batch.description like concat('%', #{shopStockBatchVo.description}, '%')
-          </if>
-          <if test = "shopStockBatchVo.title != null">
-            and (t_shop_stock_batch.batch_code like concat('%', #{shopStockBatchVo.title}, '%')
-                or t_shop_stock_batch.batch_name like concat('%', #{shopStockBatchVo.title}, '%')
-                or t_shop_stock_batch.description like concat('%', #{shopStockBatchVo.title}, '%'))
-          </if>
-        </if>
-     </sql>
 </mapper>

@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan({"com.alex.finance.*.mapper"})
+@MapperScan({"com.alex.finance.**.mapper"})
 @RequiredArgsConstructor
 public class MybatisPlusConfig {
 
@@ -38,7 +38,6 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         // 添加乐观锁拦截器
-        // TODO: 2025/6/2 测试乐观锁 
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         return interceptor;
     }

@@ -83,12 +83,12 @@
                 )
             </if>
             <if test = "financeInfoVo.amountSearch != null and financeInfoVo.amountSearch.size > 0">
-                <foreach collection="financeInfoVo.amount" index="index" item="item" >
-                    <if test="index == 0 and item != null">
-                        and finance_info.amount >= #{item}
+                <foreach collection="financeInfoVo.amount" index="index" item="amountBound" >
+                    <if test="index == 0 and amountBound != null">
+                        and finance_info.amount >= #{amountBound}
                     </if>
-                    <if test="index == 1 and item != null">
-                        and finance_info.amount &lt;= #{item}
+                    <if test="index == 1 and amountBound != null">
+                        and finance_info.amount &lt;= #{amountBound}
                     </if>
                 </foreach>
             </if>

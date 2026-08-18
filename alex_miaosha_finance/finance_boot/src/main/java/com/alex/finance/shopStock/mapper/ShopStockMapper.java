@@ -20,7 +20,7 @@ import java.util.List;
 public interface ShopStockMapper extends BaseMapper<ShopStock> {
 
     @DataPermission(table = "t_shop_stock")
-    Page<ShopStockVo> getPage(Page<ShopStockVo> page, @Param("shopStockVo") ShopStockVo shopStockVo);
+    Page<ShopStockVo> getPage(@Param("page") Page<ShopStockVo> page, @Param("shopStockVo") ShopStockVo shopStockVo);
 
     ShopStockVo queryShopStock(@Param("id") Long id);
 

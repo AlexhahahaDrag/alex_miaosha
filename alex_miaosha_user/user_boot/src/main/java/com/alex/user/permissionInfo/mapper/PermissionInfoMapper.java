@@ -1,6 +1,7 @@
 package com.alex.user.permissionInfo.mapper;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.user.permissionInfo.entity.PermissionInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -19,10 +20,10 @@ import java.util.List;
 @Mapper
 public interface PermissionInfoMapper extends BaseMapper<PermissionInfo> {
 
-    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
+    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermissionScope.USER_IDS)
     Page<PermissionInfoVo> getPage(Page<PermissionInfoVo> page, @Param("permissionInfoVo") PermissionInfoVo permissionInfoVo);
 
-    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
+    @DataPermission(table = "t_permission_info", field = "operator", scope = DataPermissionScope.USER_IDS)
     PermissionInfoVo queryPermissionInfo(@Param("id") Long id);
 
     List<PermissionInfoVo> getList(@Param("permissionInfoVo") PermissionInfoVo permissionInfoVo);

@@ -7,7 +7,6 @@ import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.exception.SystemException;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.PermissionContextCacheService;
@@ -56,8 +55,6 @@ public class UserOwnershipGuardTest {
     @Mock
     private OssApi ossApi;
     @Mock
-    private MenuInfoService menuInfoService;
-    @Mock
     private UserUtils userUtils;
     @Mock
     private OrgUserInfoService orgUserInfoService;
@@ -88,7 +85,6 @@ public class UserOwnershipGuardTest {
                 jwtTokenUtils,
                 audience,
                 ossApi,
-                menuInfoService,
                 userUtils,
                 orgUserInfoService,
                 roleUserInfoService,
@@ -98,7 +94,8 @@ public class UserOwnershipGuardTest {
                 asyncTaskExecutor,
                 userPermissionContextService,
                 userDeleteCleanupService,
-                permissionContextCacheService
+                permissionContextCacheService,
+                null
         );
     }
 

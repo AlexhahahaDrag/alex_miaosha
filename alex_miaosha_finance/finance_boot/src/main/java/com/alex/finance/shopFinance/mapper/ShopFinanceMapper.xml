@@ -45,27 +45,7 @@
         t_shop_finance.sale_num, t_shop_finance.shop_order_id,
         t_shop_finance.shop_stock_id
     </sql>
-
-    <select id="getPage" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
-        select<include refid="Base_Column_List"/>from t_shop_finance
-        <where>
-            t_shop_finance.is_delete = 0
-            <include refid="queryInfo"/>
-        </where>
-        order by t_shop_finance.operate_time desc
-    </select>
-
-    <select id="queryShopFinance" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
-        select
-        <include refid="Base_Column_List"/>
-        from t_shop_finance
-        <where>
-            t_shop_finance.id = #{id}
-            and t_shop_finance.is_delete = 0
-        </where>
-    </select>
-
-    <sql id="queryInfo">
+<sql id="queryInfo">
         <if test="shopFinanceVo != null">
             <if test="shopFinanceVo.shopName != null">
                 and t_shop_finance.shop_name like concat('%', #{shopFinanceVo.shopName}, '%')
@@ -105,6 +85,26 @@
             </if>
         </if>
     </sql>
+
+
+    <select id="getPage" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
+        select<include refid="Base_Column_List"/>from t_shop_finance
+        <where>
+            t_shop_finance.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+        order by t_shop_finance.operate_time desc
+    </select>
+
+    <select id="queryShopFinance" resultType="com.alex.api.finance.vo.shopFinance.ShopFinanceVo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_shop_finance
+        <where>
+            t_shop_finance.id = #{id}
+            and t_shop_finance.is_delete = 0
+        </where>
+    </select>
 
     <sql id="roleInfo">
         <if test="roleCode != null">

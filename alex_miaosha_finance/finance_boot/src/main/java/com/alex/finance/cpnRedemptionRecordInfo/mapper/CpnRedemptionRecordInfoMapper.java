@@ -19,7 +19,7 @@ import java.util.List;
 public interface CpnRedemptionRecordInfoMapper extends BaseMapper<CpnRedemptionRecordInfo> {
 
     @DataPermission(table = "cpn_redemption_record_info_t")
-    Page<CpnRedemptionRecordInfoVo> getPage(Page<CpnRedemptionRecordInfoVo> page, @Param("cpnRedemptionRecordInfoVo") CpnRedemptionRecordInfoVo cpnRedemptionRecordInfoVo);
+    Page<CpnRedemptionRecordInfoVo> getPage(@Param("page") Page<CpnRedemptionRecordInfoVo> page, @Param("cpnRedemptionRecordInfoVo") CpnRedemptionRecordInfoVo cpnRedemptionRecordInfoVo);
 
     List<CpnRedemptionRecordInfoVo> getList(@Param("cpnRedemptionRecordInfoVo") CpnRedemptionRecordInfoVo cpnRedemptionRecordInfoVo);
 

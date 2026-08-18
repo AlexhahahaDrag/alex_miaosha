@@ -18,8 +18,9 @@ import java.util.List;
 public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
     @DataPermission(table = "finance_info", field = "belong_to")
-    Page<FinanceInfoVo> getPage(Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
+    Page<FinanceInfoVo> getPage(@Param("page") Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
+    @DataPermission(table = "finance_info", field = "belong_to")
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(@Param("id") String id);

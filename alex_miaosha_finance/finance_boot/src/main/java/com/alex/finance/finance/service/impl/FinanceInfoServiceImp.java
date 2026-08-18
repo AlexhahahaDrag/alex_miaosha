@@ -57,7 +57,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                         finance -> {
                             TUserVo tUserVo = userMap.get(finance.getBelongTo());
                             finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
-                        }).collect(Collectors.toList()))
+                        }).toList())
                 .orElse(null);
         if (result != null) {
             result.setRecords(financeInfoVos);
@@ -96,7 +96,12 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (StringUtils.isEmpty(ids)) {
             return true;
         }
-        financeInfoMapper.deleteBatchIds(Arrays.asList(ids.split(",")));
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::valueOf)
+                .toList();
+        financeInfoMapper.deleteByIds(idList);
         return true;
     }
 
@@ -114,7 +119,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                     FinanceInfo financeInfo = new FinanceInfo();
                     BeanUtils.copyProperties(item, financeInfo);
                     return financeInfo;
-                }).collect(Collectors.toList());
+                }).toList();
         this.saveBatch(financeList);
         return true;
     }

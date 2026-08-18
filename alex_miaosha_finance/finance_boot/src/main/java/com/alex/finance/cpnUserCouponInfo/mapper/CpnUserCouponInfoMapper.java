@@ -24,7 +24,8 @@ public interface CpnUserCouponInfoMapper extends BaseMapper<CpnUserCouponInfo> {
      * - 消费券名：对应 VO.couponName，匹配消费券表 coupon_name
      */
     @DataPermission(table = "cpn_user_coupon_info_t")
-    Page<CpnUserCouponInfoVo> getPage(Page<CpnUserCouponInfoVo> page, @Param("cpnUserCouponInfoVo") CpnUserCouponInfoVo cpnUserCouponInfoVo);
+    Page<CpnUserCouponInfoVo> getPage(@Param("page") Page<CpnUserCouponInfoVo> page,
+                                      @Param("cpnUserCouponInfoVo") CpnUserCouponInfoVo cpnUserCouponInfoVo);
 
     List<CpnUserCouponInfoVo> getList(@Param("cpnUserCouponInfoVo") CpnUserCouponInfoVo cpnUserCouponInfoVo);
 

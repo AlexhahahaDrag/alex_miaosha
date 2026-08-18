@@ -24,9 +24,11 @@ logging:
 
 xxl:
   job:
+    # 本地/开发环境关闭，避免连不上 admin 持续刷 Connect timed out
+    enabled: false
     executor:
-      appname: xxl-finance-dev
-      logretentiondays: 30
+      appName: xxl-finance-dev
+      logRetentionDays: 30
       port: 8008
       logPath: D:\logs\alex
       accessToken: asdfghjkl

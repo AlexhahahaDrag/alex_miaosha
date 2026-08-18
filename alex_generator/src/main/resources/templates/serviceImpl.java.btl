@@ -69,7 +69,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.deleteBatchIds(idArr);
+        ${strutil.toLowerCase(strutil.subStringTo(table.mapperName, 0, 1)) + strutil.subString (table.mapperName, 1)}.deleteByIds(idArr);
         return true;
     }
 }

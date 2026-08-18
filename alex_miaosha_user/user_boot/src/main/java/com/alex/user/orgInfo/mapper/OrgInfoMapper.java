@@ -1,6 +1,7 @@
 package com.alex.user.orgInfo.mapper;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.user.orgInfo.entity.OrgInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -19,16 +20,16 @@ import java.util.List;
 @Mapper
 public interface OrgInfoMapper extends BaseMapper<OrgInfo> {
 
-    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermissionScope.ORG_ID)
     Page<OrgInfoVo> getPage(Page<OrgInfoVo> page, @Param("orgInfoVo") OrgInfoVo orgInfoVo);
 
     /**
      * RBAC-BE-ORG-003: scoped list for in-memory tree assembly.
      * Must keep {@code @DataPermission} so tree never bypasses data scope.
      */
-    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermissionScope.ORG_ID)
     List<OrgInfoVo> getList(@Param("orgInfoVo") OrgInfoVo orgInfoVo);
 
-    @DataPermission(table = "t_org_info", field = "id", scope = DataPermission.Scope.ORG_ID)
+    @DataPermission(table = "t_org_info", field = "id", scope = DataPermissionScope.ORG_ID)
     OrgInfoVo queryOrgInfo(@Param("id") String id);
 }

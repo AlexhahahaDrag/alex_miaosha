@@ -7,7 +7,6 @@ import com.alex.common.exception.FinanceException;
 import com.alex.finance.shopStockBatch.entity.ShopStockBatch;
 import com.alex.finance.shopStockBatch.mapper.ShopStockBatchMapper;
 import com.alex.finance.shopStockBatch.service.ShopStockBatchService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +18,15 @@ import java.util.List;
 
 /**
  * <p>
- * description:  商店库存批次表服务实现类
- * author:       alex
- * createDate:   2024-05-10 17:30:40
- * version:      1.0.0
+ * description: 商店库存批次表服务实现类
+ * author: alex
+ * createDate: 2024-05-10 17:30:40
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
-public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, ShopStockBatch> implements ShopStockBatchService {
+public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, ShopStockBatch>
+        implements ShopStockBatchService {
 
     private final ShopStockBatchMapper shopStockBatchMapper;
 
@@ -67,11 +67,11 @@ public class ShopStockBatchServiceImp extends ServiceImpl<ShopStockBatchMapper, 
 
     @Override
     public Boolean deleteShopStockBatch(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopStockBatchMapper.deleteBatchIds(idArr);
+        shopStockBatchMapper.deleteByIds(idArr);
         return true;
     }
 

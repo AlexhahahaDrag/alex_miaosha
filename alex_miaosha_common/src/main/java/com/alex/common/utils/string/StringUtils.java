@@ -4,42 +4,37 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
- *description:  对字符串的转换的一些操作
- *author:       alex
- *createDate:   2021/7/4 20:58
- *version:      1.0.0
+ * description: 对字符串的转换的一些操作
+ * author: alex
+ * createDate: 2021/7/4 20:58
+ * version: 1.0.0
  */
 @Slf4j
 public class StringUtils {
 
-    //集群号
-    private static int machineId = 1;
-
-    //下划线正则
+    // 下划线正则
     private static final Pattern CAMLE_PATTERN = Pattern.compile("_(\\w)");
 
-    //大写字母正则
+    // 大写字母正则
     private static final Pattern UNDER_LINE_PATTERN = Pattern.compile("[A-Z]");
 
-    //设置最大重复数
-    private static final int MAX_COUNT = 4;
     /**
      * @param str
-     * description:  下划线转驼峰
-     * author:       alex
-     * return:       java.lang.StringBuffer
-    */
+     *            description: 下划线转驼峰
+     *            author: alex
+     *            return: java.lang.StringBuffer
+     */
     public static String camel(String str) {
         Matcher matcher = CAMLE_PATTERN.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        while(matcher.find()) {
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
             matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
         }
         matcher.appendTail(sb);
@@ -48,14 +43,14 @@ public class StringUtils {
 
     /**
      * @param str
-     * description:  驼峰转下划线
-     * author:       alex
-     * return:       java.lang.StringBuffer
-    */
+     *            description: 驼峰转下划线
+     *            author: alex
+     *            return: java.lang.StringBuffer
+     */
     public static String underline(String str) {
         Matcher matcher = UNDER_LINE_PATTERN.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        while(matcher.find()) {
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
             matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
         }
         matcher.appendTail(sb);
@@ -75,13 +70,12 @@ public class StringUtils {
         return lnum;
     }
 
-
     /**
      * 转换成Boolean类型
      *
      * @param str
      * @param defaultData
-     * return
+     *                    return
      */
     public static Boolean getBoolean(String str, Boolean defaultData) {
         Boolean lnum = defaultData;
@@ -102,7 +96,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * return
+     *                    return
      */
     public static int getInt(String str, Integer defaultData) {
         int inum = defaultData;
@@ -122,7 +116,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * return
+     *                    return
      */
     public static double getDouble(String str, Double defaultData) {
         double dnum = defaultData;
@@ -142,7 +136,7 @@ public class StringUtils {
      *
      * @param str
      * @param defaultData
-     * return
+     *                    return
      */
     public static float getFloat(String str, Float defaultData) {
         float dnum = defaultData;
@@ -161,60 +155,60 @@ public class StringUtils {
      * 判断字符串是否为空
      *
      * @param s
-     * return
+     *          return
      */
-    public static Boolean isEmpty(String s) {
+    public static boolean isEmpty(String s) {
         if (s == null || s.length() <= 0) {
             return true;
         }
         return false;
     }
-    
+
     /**
      * @param str
-     * description:  判断非空字符串  
-     * author:       alex
-     * return:       boolean
-    */
+     *            description: 判断非空字符串
+     *            author: alex
+     *            return: boolean
+     */
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
     }
-    
+
     /**
      * @param str
-     * description:  判断字符串是否为空（空格也算作空值）  
-     * author:       alex
-     * return:       boolean
-    */
+     *            description: 判断字符串是否为空（空格也算作空值）
+     *            author: alex
+     *            return: boolean
+     */
     public static boolean isBlank(String str) {
         int strLen;
-        if(str == null || (strLen = str.length()) == 0) {
+        if (str == null || (strLen = str.length()) == 0) {
             return true;
         }
         for (int i = 0; i < strLen; i++) {
-            if(!Character.isWhitespace(str.charAt(i))) {
+            if (!Character.isWhitespace(str.charAt(i))) {
                 return false;
             }
         }
         return true;
     }
-    
+
     /**
      * @param str
-     * description:  判断字符串不为空    
-     * author:       alex
-     * return:       boolean
-    */
+     *            description: 判断字符串不为空
+     *            author: alex
+     *            return: boolean
+     */
     public static boolean isNotBlank(String str) {
         return !isBlank(str);
     }
-    
+
     /**
      * @param str
-     * description:  判断是否为数字    
-     * author:       alex
-     * return:       boolean
-    */
+     *            description: 判断是否为数字
+     *            author: alex
+     *            return: boolean
+     */
     public static boolean isNumeric(String str) {
         try {
             Long.valueOf(str);
@@ -229,7 +223,7 @@ public class StringUtils {
      *
      * @param str
      * @param searchChar
-     * return
+     *                   return
      */
     public static boolean contains(String str, String searchChar) {
         if (isEmpty(str)) {
@@ -243,7 +237,7 @@ public class StringUtils {
      *
      * @param str
      * @param start
-     * return
+     *              return
      */
     public static String substring(String str, int start) {
         if (str == null) {
@@ -264,19 +258,19 @@ public class StringUtils {
 
     /**
      * @param content
-     * description: 判断评论是否有效   
-     * author:       alex
-     * return:       boolean
-    */
+     *                description: 判断评论是否有效
+     *                author: alex
+     *                return: boolean
+     */
     public static boolean isCommentSpam(String content) {
         return content == null;
     }
 
     /**
-     * description:  获取32位的uuid
-     * author:       alex
-     * return:       java.lang.String
-    */
+     * description: 获取32位的uuid
+     * author: alex
+     * return: java.lang.String
+     */
     public static String getUUID() {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         log.info("获取32位的uuid: {}", uuid);
@@ -286,13 +280,13 @@ public class StringUtils {
     /**
      * @param str
      * @param code
-     * description:  根据给定字符串切割字符串
-     * author:       alex
-     * return:       java.util.List<java.lang.String>
-    */
+     *             description: 根据给定字符串切割字符串
+     *             author: alex
+     *             return: java.util.List<java.lang.String>
+     */
     public static List<String> splitStringByCode(String str, String code) {
         if (str == null) {
-            return null;
+            return Collections.emptyList();
         }
         return Arrays.asList(str.split(code));
     }
@@ -300,25 +294,25 @@ public class StringUtils {
     /**
      * @param str
      * @param code
-     * description:  根据给定字符串切割字符串
-     * author:       alex
-     * return:       java.util.List<java.lang.String>
+     *             description: 根据给定字符串切割字符串
+     *             author: alex
+     *             return: java.util.List<java.lang.String>
      */
     public static List<Long> splitLongByCode(String str, String code) {
         if (str == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<String> res = splitStringByCode(str, code);
-        return res.stream().map(item -> Long.parseLong(item)).collect(Collectors.toList());
+        return res.stream().map(Long::parseLong).toList();
     }
 
     /**
      * @param collection
-     * description:  校验ids列表不为空
-     * author:       alex
-     * return:       boolean
-    */
+     *                   description: 校验ids列表不为空
+     *                   author: alex
+     *                   return: boolean
+     */
     public static boolean checkIdList(Collection<String> collection) {
-        return collection != null && collection.size() > 0;
+        return collection != null && !collection.isEmpty();
     }
 }

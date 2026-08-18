@@ -39,24 +39,7 @@
         t_shop_order_detail.operate_time,
         t_shop_order_detail.order_id, t_shop_order_detail.shop_name, t_shop_order_detail.shop_code, t_shop_order_detail.sale_amount, t_shop_order_detail.is_valid, t_shop_order_detail.sale_date, t_shop_order_detail.pay_way, t_shop_order_detail.sale_num, t_shop_order_detail.shop_stock_id
     </sql>
-
-    <select id="getPage" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
-        select <include refid="Base_Column_List"/>from t_shop_order_detail
-        <where>
-            t_shop_order_detail.is_delete = 0
-            <include refid="queryInfo"/>
-        </where>
-    </select>
-
-    <select id="queryShopOrderDetail" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
-        select <include refid="Base_Column_List"/> from t_shop_order_detail
-        <where>
-            t_shop_order_detail.id = #{id}
-            and t_shop_order_detail.is_delete = 0
-        </where>
-    </select>
-
-     <sql id="queryInfo">
+    <sql id="queryInfo">
         <if test = "shopOrderDetailVo != null">
           <if test = "shopOrderDetailVo.orderId != null">
             and t_shop_order_detail.order_id = #{shopOrderDetailVo.orderId}
@@ -87,4 +70,20 @@
           </if>
         </if>
      </sql>
-</mapper>
+
+
+    <select id="getPage" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
+        select <include refid="Base_Column_List"/>from t_shop_order_detail
+        <where>
+            t_shop_order_detail.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
+    <select id="queryShopOrderDetail" resultType="com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo">
+        select <include refid="Base_Column_List"/> from t_shop_order_detail
+        <where>
+            t_shop_order_detail.id = #{id}
+            and t_shop_order_detail.is_delete = 0
+        </where>
+    </select></mapper>

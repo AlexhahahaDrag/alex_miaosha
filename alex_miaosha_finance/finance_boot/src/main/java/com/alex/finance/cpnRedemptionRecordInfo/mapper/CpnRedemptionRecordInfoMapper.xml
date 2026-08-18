@@ -45,6 +45,32 @@
         cpn_redemption_record_info_t.merchant_id,
         cpn_redemption_record_info_t.remarks
     </sql>
+    <sql id="queryInfo">
+        <if test = "cpnRedemptionRecordInfoVo != null">
+          <if test = "cpnRedemptionRecordInfoVo.userCouponId != null">
+            and cpn_redemption_record_info_t.user_coupon_id = #{cpnRedemptionRecordInfoVo.userCouponId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.userId != null">
+            and cpn_redemption_record_info_t.user_id = #{cpnRedemptionRecordInfoVo.userId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.orderId != null">
+            and cpn_redemption_record_info_t.order_id = #{cpnRedemptionRecordInfoVo.orderId}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionQuantity != null">
+            and cpn_redemption_record_info_t.redemption_quantity = #{cpnRedemptionRecordInfoVo.redemptionQuantity}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionValue != null">
+            and cpn_redemption_record_info_t.redemption_value = #{cpnRedemptionRecordInfoVo.redemptionValue}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.redemptionTime != null">
+            and cpn_redemption_record_info_t.redemption_time = #{cpnRedemptionRecordInfoVo.redemptionTime}
+          </if>
+          <if test = "cpnRedemptionRecordInfoVo.merchantId != null">
+            and cpn_redemption_record_info_t.merchant_id = #{cpnRedemptionRecordInfoVo.merchantId}
+          </if>
+        </if>
+     </sql>
+
 
     <select id="getPage" resultType="com.alex.api.finance.cpnRedemptionRecordInfo.vo.CpnRedemptionRecordInfoVo">
         select
@@ -81,31 +107,4 @@
             cpn_redemption_record_info_t.id = #{id}
             and cpn_redemption_record_info_t.is_delete = 0
         </where>
-    </select>
-
-     <sql id="queryInfo">
-        <if test = "cpnRedemptionRecordInfoVo != null">
-          <if test = "cpnRedemptionRecordInfoVo.userCouponId != null">
-            and cpn_redemption_record_info_t.user_coupon_id = #{cpnRedemptionRecordInfoVo.userCouponId}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.userId != null">
-            and cpn_redemption_record_info_t.user_id = #{cpnRedemptionRecordInfoVo.userId}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.orderId != null">
-            and cpn_redemption_record_info_t.order_id = #{cpnRedemptionRecordInfoVo.orderId}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.redemptionQuantity != null">
-            and cpn_redemption_record_info_t.redemption_quantity = #{cpnRedemptionRecordInfoVo.redemptionQuantity}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.redemptionValue != null">
-            and cpn_redemption_record_info_t.redemption_value = #{cpnRedemptionRecordInfoVo.redemptionValue}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.redemptionTime != null">
-            and cpn_redemption_record_info_t.redemption_time = #{cpnRedemptionRecordInfoVo.redemptionTime}
-          </if>
-          <if test = "cpnRedemptionRecordInfoVo.merchantId != null">
-            and cpn_redemption_record_info_t.merchant_id = #{cpnRedemptionRecordInfoVo.merchantId}
-          </if>
-        </if>
-     </sql>
-</mapper>
+    </select></mapper>

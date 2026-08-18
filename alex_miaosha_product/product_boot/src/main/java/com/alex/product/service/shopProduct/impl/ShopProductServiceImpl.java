@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class ShopProductServiceImpl implements ShopProductService {
                     List<String> jdList = productList.parallelStream()
                             .filter(item -> SourceType.JD.getCode().equals(item.getSource()))
                             .map(this::getStr)
-                            .collect(Collectors.toList());
+                            .toList();
                     if (jdList.isEmpty()) {
                         break;
                     }
@@ -51,7 +50,7 @@ public class ShopProductServiceImpl implements ShopProductService {
                     List<String> tbList = productList.parallelStream()
                             .filter(item -> SourceType.TB.getCode().equals(item.getSource()))
                             .map(this::getStr)
-                            .collect(Collectors.toList());
+                            .toList();
                     if (tbList.isEmpty()) {
                         break;
                     }
@@ -65,7 +64,7 @@ public class ShopProductServiceImpl implements ShopProductService {
                 BeanUtils.copyProperties(item, pmsShopProduct);
                 pmsShopProduct.setPrice(Optional.of(item).map(a -> new BigDecimal(a.getPrice())).orElse(null));
                 return pmsShopProduct;
-            }).collect(Collectors.toList());
+            }).toList();
             pmsShopProductService.saveBatch(collect);
         }
         return result;

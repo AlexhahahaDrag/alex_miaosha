@@ -69,7 +69,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        accountRecordInfoMapper.deleteBatchIds(idArr);
+        accountRecordInfoMapper.deleteByIds(idArr);
         return true;
     }
 

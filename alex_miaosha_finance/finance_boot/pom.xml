@@ -51,6 +51,11 @@
 
         <dependency>
             <groupId>com.alex</groupId>
+            <artifactId>oss_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
             <artifactId>finance_api</artifactId>
         </dependency>
 
@@ -69,6 +74,12 @@
             <artifactId>xxl-job-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -80,6 +91,8 @@
                     <!-- 指定该Main Class为全局的唯一入口 -->
                     <mainClass>com.alex.finance.FinanceApplication</mainClass>
                     <layout>ZIP</layout>
+                    <!-- 强制 UTF-8，解决命令行启动时 Nacos 中文注释解析报错 -->
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>

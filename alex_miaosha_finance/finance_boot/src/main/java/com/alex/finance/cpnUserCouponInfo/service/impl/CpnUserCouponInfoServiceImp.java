@@ -86,7 +86,7 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        cpnUserCouponInfoMapper.deleteBatchIds(idArr);
+        cpnUserCouponInfoMapper.deleteByIds(idArr);
         return true;
     }
 

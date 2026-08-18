@@ -18,7 +18,7 @@ import java.util.List;
 @Mapper
 public interface DictInfoMapper extends BaseMapper<DictInfo> {
 
-    Page<DictInfoVo> getPage(Page<DictInfoVo> page, @Param("dictInfoVo") DictInfoVo dictInfoVo);
+    Page<DictInfoVo> getPage(@Param("page") Page<DictInfoVo> page, @Param("dictInfoVo") DictInfoVo dictInfoVo);
 
     DictInfoVo queryDictInfo(@Param("id") String id);
 

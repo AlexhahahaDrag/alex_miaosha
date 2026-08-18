@@ -59,7 +59,8 @@ public class JdProductServiceImpl implements JdProductService {
             String name = element.getElementsByClass("p-name").eq(0).text();
             String shop = element.getElementsByClass("p-shop").eq(0).text();
             String icons = element.getElementsByClass("p-icons").eq(0).text();
-            String skuId = Optional.of(productUrl).map(i -> i.substring(i.indexOf("com/") + 4, i.length() - 12)).orElse(null);
+            String skuId = Optional.of(productUrl).map(i -> i.substring(i.indexOf("com/") + 4, i.length() - 12))
+                    .orElse(null);
             Content content = Content.builder()
                     .image(img)
                     .name(name)
@@ -78,10 +79,11 @@ public class JdProductServiceImpl implements JdProductService {
 
     /**
      * @param keyword
-     * description: 获取淘宝信息
-     * author:      alex
-     * return:      java.util.List<com.alex.api.product.vo.product.jd.Content>
-    */
+     *                description: 获取淘宝信息
+     *                author: alex
+     *                return:
+     *                java.util.List<com.alex.api.product.vo.product.jd.Content>
+     */
     // TODO: 2023/5/25 获取淘宝信息
     private List<Content> parseTB(String keyword) throws IOException {
         return Lists.newArrayList();

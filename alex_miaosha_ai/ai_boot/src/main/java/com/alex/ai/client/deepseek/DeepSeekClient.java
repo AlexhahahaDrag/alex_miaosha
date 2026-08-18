@@ -6,7 +6,6 @@ import com.alex.ai.config.AiProperties;
 import com.alex.ai.config.DeepSeekProperties;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -27,13 +26,17 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class DeepSeekClient {
 
-    @Qualifier("aiRestTemplate")
     private final RestTemplate restTemplate;
 
     private final ObjectMapper objectMapper;
+
+    public DeepSeekClient(@Qualifier("aiRestTemplate") RestTemplate restTemplate,
+                          ObjectMapper objectMapper) {
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     public String chat(AiAnalyzeReq req, AiProperties aiProperties) {
         DeepSeekProperties props = aiProperties == null ? null : aiProperties.getDeepseek();

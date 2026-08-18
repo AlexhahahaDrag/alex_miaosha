@@ -67,7 +67,7 @@ public class PrepaidConsumeRecordTServiceImp extends ServiceImpl<PrepaidConsumeR
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        prepaidConsumeRecordTMapper.deleteBatchIds(idArr);
+        prepaidConsumeRecordTMapper.deleteByIds(idArr);
         return true;
     }
 

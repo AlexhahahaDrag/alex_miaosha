@@ -23,7 +23,7 @@ import java.util.List;
 public interface ShopFinanceMapper extends BaseMapper<ShopFinance> {
 
     @DataPermission(table = "t_shop_finance")
-    Page<ShopFinanceVo> getPage(Page<ShopFinanceVo> page, @Param("shopFinanceVo") ShopFinanceVo shopFinanceVo);
+    Page<ShopFinanceVo> getPage(@Param("page") Page<ShopFinanceVo> page, @Param("shopFinanceVo") ShopFinanceVo shopFinanceVo);
 
     ShopFinanceVo queryShopFinance(@Param("id") Long id);
 

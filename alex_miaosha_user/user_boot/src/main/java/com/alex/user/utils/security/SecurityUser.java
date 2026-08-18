@@ -5,8 +5,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.io.Serial;
+import java.util.Collection;
 
 /**
  *description:  springSecurity中的用户实体类
@@ -16,9 +16,6 @@ import java.io.Serial;
  */
 public class SecurityUser implements UserDetails {
 
-    /**
-     *
-     */
     @Serial
     private static final long serialVersionUID = 1L;
 

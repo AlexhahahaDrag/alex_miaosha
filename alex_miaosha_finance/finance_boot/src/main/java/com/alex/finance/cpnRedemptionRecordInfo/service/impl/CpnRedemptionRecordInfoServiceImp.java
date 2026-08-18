@@ -64,7 +64,7 @@ public class CpnRedemptionRecordInfoServiceImp extends ServiceImpl<CpnRedemption
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        cpnRedemptionRecordInfoMapper.deleteBatchIds(idArr);
+        cpnRedemptionRecordInfoMapper.deleteByIds(idArr);
         return true;
     }
 }

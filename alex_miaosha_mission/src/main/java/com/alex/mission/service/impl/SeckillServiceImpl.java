@@ -15,7 +15,6 @@ import com.alex.mission.pojo.entity.Order;
 import com.alex.mission.pojo.entity.SeckillGoods;
 import com.alex.mission.rabbitmq.ackmodel.manual.ManualAckPublisher;
 import com.alex.mission.service.SeckillService;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,14 +82,11 @@ public class SeckillServiceImpl implements SeckillService {
     @Transactional
     public Result<Integer> doSeckill(Long goodsId, String path, HttpServletRequest request) {
         long userId = 0L;
-        // TODO: 2022/8/30 验证重复秒杀 
         //验证path
 //        checkPath(goodsId, path, userId);
         //校验是否超卖
-        // TODO: 2022/8/18 校验超卖的解决方案 
         isCountOver(goodsId);
         //使用幂等机制，根据用户号和商品id生成订单。防止重复秒杀
-        // TODO: 2022/8/13 生成订单方式 
         Long orderId = goodsId * 1000000 + userId;
         Order order = orderManager.getOne(Wrappers.<Order>lambdaQuery().eq(Order::getId, orderId));
         if (order != null) {
@@ -154,11 +150,11 @@ public class SeckillServiceImpl implements SeckillService {
      * createDate:  2022/7/14 10:08
      * return:      void
      */
-    private void checkPath(Long goodsId, String path, Long userId) {
-        if (!checkPath(userId, goodsId, path)) {
-            throw new SeckillException(ResultEnum.REQUIRE_ILLEGAL.getCode(), ResultEnum.REQUIRE_ILLEGAL.getValue());
-        }
-    }
+    // private void checkPath(Long goodsId, String path, Long userId) {
+    //     if (!checkPath(userId, goodsId, path)) {
+    //         throw new SeckillException(ResultEnum.REQUIRE_ILLEGAL.getCode(), ResultEnum.REQUIRE_ILLEGAL.getValue());
+    //     }
+    // }
 
     /**
      * @param goodsId
@@ -168,7 +164,6 @@ public class SeckillServiceImpl implements SeckillService {
      * return:      void
      */
     private void isCountOver(Long goodsId) {
-        // TODO: 2022/8/13 判断是否超卖方法 
         if (!localOverMap.get(goodsId)) {
             throw new SeckillException(ResultEnum.SECKILL_OVER.getCode(), ResultEnum.SECKILL_OVER.getValue());
         }
@@ -212,13 +207,13 @@ public class SeckillServiceImpl implements SeckillService {
      * createDate:  2022/7/14 10:10
      * return:      boolean
      */
-    private boolean checkPath(Long userId, Long goodsId, String path) {
-        if (userId == null || StringUtils.isEmpty(path)) {
-            return false;
-        }
-        String redisPath = redisUtils.get(SeckillKey.getSeckillPath, userId + "_" + goodsId, String.class);
-        return path.equals(redisPath);
-    }
+    // private boolean checkPath(Long userId, Long goodsId, String path) {
+    //     if (userId == null || StringUtils.isEmpty(path)) {
+    //         return false;
+    //     }
+    //     String redisPath = redisUtils.get(SeckillKey.getSeckillPath, userId + "_" + goodsId, String.class);
+    //     return path.equals(redisPath);
+    // }
 
     /**
      * @param goodsId
@@ -243,7 +238,6 @@ public class SeckillServiceImpl implements SeckillService {
         if (userId == null || goodsId == null) {
             return null;
         }
-        // TODO: 2022/8/25 判断秒杀是否开始
         Object stock = redisUtils.get(SeckillGoodsKey.seckillCount, "" + goodsId);
         if (stock == null) {
             throw new SeckillException(ResultEnum.SECKILL_NO_START);

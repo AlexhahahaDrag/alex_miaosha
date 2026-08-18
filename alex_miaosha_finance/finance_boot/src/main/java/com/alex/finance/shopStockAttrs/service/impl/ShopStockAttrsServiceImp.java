@@ -62,7 +62,7 @@ public class ShopStockAttrsServiceImp extends ServiceImpl<ShopStockAttrsMapper, 
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        shopStockAttrsMapper.deleteBatchIds(idArr);
+        shopStockAttrsMapper.deleteByIds(idArr);
         return true;
     }
 

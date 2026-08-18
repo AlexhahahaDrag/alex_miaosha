@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 /**
  * <p>
  * description:  角色信息表服务实现类
@@ -98,7 +97,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                     BeanUtils.copyProperties(item, vo);
                     return vo;
                 })
-                .collect(Collectors.toList());
+                .toList();
         roleInfoVo.setRoleUserInfoVoList(roleUserInfoVoList);
         return roleInfoVo;
     }

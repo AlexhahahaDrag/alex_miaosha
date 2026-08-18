@@ -21,7 +21,7 @@ import java.util.Map;
 public interface PrepaidConsumeRecordTMapper extends BaseMapper<PrepaidConsumeRecordT> {
 
     @DataPermission(table = "prepaid_consume_record_t")
-    Page<PrepaidConsumeRecordTVo> getPage(Page<PrepaidConsumeRecordTVo> page, @Param("prepaidConsumeRecordTVo") PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
+    Page<PrepaidConsumeRecordTVo> getPage(@Param("page") Page<PrepaidConsumeRecordTVo> page, @Param("prepaidConsumeRecordTVo") PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
 
     List<PrepaidConsumeRecordTVo> getList(@Param("prepaidConsumeRecordTVo") PrepaidConsumeRecordTVo prepaidConsumeRecordTVo);
 

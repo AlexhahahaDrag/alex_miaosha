@@ -1,6 +1,7 @@
 package com.alex.user.menuInfo.mapper;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.user.menuInfo.entity.MenuInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -19,10 +20,10 @@ import java.util.List;
 @Mapper
 public interface MenuInfoMapper extends BaseMapper<MenuInfo> {
 
-    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
+    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermissionScope.USER_IDS)
     Page<MenuInfoVo> getPage(Page<MenuInfoVo> page, @Param("menuInfoVo") MenuInfoVo menuInfoVo);
 
-    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
+    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermissionScope.USER_IDS)
     List<MenuInfoVo> getList(@Param("menuInfoVo") MenuInfoVo menuInfoVo);
 
     /**
@@ -34,6 +35,6 @@ public interface MenuInfoMapper extends BaseMapper<MenuInfo> {
      */
     List<MenuInfoVo> getListAll(@Param("menuInfoVo") MenuInfoVo menuInfoVo);
 
-    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermission.Scope.USER_IDS)
+    @DataPermission(table = "t_menu_info", field = "operator", scope = DataPermissionScope.USER_IDS)
     MenuInfoVo queryMenuInfo(@Param("id") String id);
 }

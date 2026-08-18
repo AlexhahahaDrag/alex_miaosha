@@ -55,7 +55,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final static String YES_INFO = "1";
 
     @Override
-    public Boolean generator(String moduleName, String javaPathName, String javaPath, String[] tableNames, String[] tableNameInfo, String author) throws Exception {
+    public Boolean generator(String moduleName, String javaPathName, String javaPath, String[] tableNames,
+            String[] tableNameInfo, String author) throws Exception {
         for (int i = 0; i < tableNames.length; i++) {
             executeGenerate(tableNames[i], moduleName, javaPathName, author, javaPath, tableNameInfo[i]);
         }
@@ -63,12 +64,14 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private void executeGenerate(String tableName, String moduleName, String javaPathName,
-                                 String author, String javaPath, String fileNameInfo) {
+            String author, String javaPath, String fileNameInfo) {
         String separator = FileSystems.getDefault().getSeparator();
         String base = "/src/main/";
-        String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath() : System.getProperty("user.dir");
+        String basePath = StringUtils.isNotBlank(generatorConfig.getJavaPath()) ? generatorConfig.getJavaPath()
+                : System.getProperty("user.dir");
         String innerModule = moduleName.substring(moduleName.lastIndexOf('_') + 1);
-        String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot" + getPath(base, separator);
+        String projectPath = basePath + separator + moduleName + separator + innerModule + "_boot"
+                + getPath(base, separator);
         // 表名规范化：去掉前缀 t_ 以及后缀 _t，再转为驼峰（用于生成目录/文件名）
         String normalizedTableName = tableName;
         if (StringUtils.isNotBlank(generatorConfig.getTablePrefix()) &&
@@ -77,17 +80,20 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
         if (StringUtils.isNotBlank(generatorConfig.getTableSuffix()) &&
                 normalizedTableName.endsWith(generatorConfig.getTableSuffix())) {
-            normalizedTableName = normalizedTableName.substring(0, normalizedTableName.length() - generatorConfig.getTableSuffix().length());
+            normalizedTableName = normalizedTableName.substring(0,
+                    normalizedTableName.length() - generatorConfig.getTableSuffix().length());
         }
         String fileName = StringUtils.camel(normalizedTableName);
-        String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api" + getPath(base, separator);
+        String clientPathProject = basePath + separator + moduleName + separator + innerModule + "_api"
+                + getPath(base, separator);
         String boot = javaPath + ".";
         String api = "api." + javaPath + ".";
         List<IFill> list = Lists.newArrayList();
         DataSourceConfig.Builder dataSourceConfig = dataSourceConfig(databaseConfig);
         Map<OutputFile, String> pathMap = pathMap(fileName, normalizedTableName,
                 separator, javaPath, projectPath, clientPathProject);
-        FastAutoGenerator fastAutoGenerator = fastAutoGenerator(dataSourceConfig, projectPath, author, boot, fileName, api, pathMap, tableName, javaPath, list);
+        FastAutoGenerator fastAutoGenerator = fastAutoGenerator(dataSourceConfig, projectPath, author, boot, fileName,
+                api, pathMap, tableName, javaPath, list);
         fastAutoGenerator.execute();// 使用Freemarker引擎模板，默认的是Velocity引擎模板
         // 插入菜单数据到菜单表中
         addMenu(javaPath, javaPathName, fileName, fileNameInfo);
@@ -102,10 +108,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         Result<List<MenuInfoVo>> result = userApi.getMenuInfoList(query);
         List<MenuInfoVo> menuInfoList = result.getData();
         MenuSearchInfo moduleMenuInfo = findMenuInfo(menuInfoList, javaPath);
-        MenuSearchInfo menuInfo = findMenuInfo(moduleMenuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName);
-        MenuSearchInfo detailMenuInfo = findMenuInfo(menuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName + DETAIL);
+        MenuSearchInfo menuInfo = findMenuInfo(
+                moduleMenuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(), fileName);
+        MenuSearchInfo detailMenuInfo = findMenuInfo(
+                menuInfo.getMenuInfoVo() == null ? null : moduleMenuInfo.getMenuInfoVo().getChildren(),
+                fileName + DETAIL);
         if (!moduleMenuInfo.getMenuExists()) {
-            MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
+            MenuInfoVo addModualMenuInfoVo = addMenuInfo(getMenuInfo(javaPath, null, null, null,
+                    "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName),
                     moduleMenuInfo.getOrderBy(), javaPathName, null, NO_INFO, NO_INFO, javaPath));
             moduleMenuInfo.setMenuInfoVo(addModualMenuInfoVo);
         }
@@ -117,8 +127,10 @@ public class GeneratorServiceImpl implements GeneratorService {
         } else {
             menuInfo.setMenuInfoVo(addMenuInfo(addMenuInfo));
         }
-        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/" + fileName + "Detail", moduleMenuInfo.getMenuInfoVo().getId(),
-                null, detailMenuInfo.getOrderBy(), fileNameInfo + "详情", fileName + "/" + fileName + "Detail", YES_INFO, NO_INFO, javaPath + ":" + fileName + ":" + "detail");
+        MenuInfoVo addChildMenuInfo = getMenuInfo(javaPath, fileName + DETAIL, fileName + "/" + fileName + "Detail",
+                moduleMenuInfo.getMenuInfoVo().getId(),
+                null, detailMenuInfo.getOrderBy(), fileNameInfo + "详情", fileName + "/" + fileName + "Detail", YES_INFO,
+                NO_INFO, javaPath + ":" + fileName + ":" + "detail");
         if (detailMenuInfo.getMenuExists()) {
             addChildMenuInfo.setId(detailMenuInfo.getMenuInfoVo().getId());
             menuInfo.setMenuInfoVo(updateMenuInfo(addChildMenuInfo));
@@ -129,9 +141,9 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     /**
      * param menuInfoList
-     * param menuName     description: 根据菜单名称查询菜单信息
-     * author:      majf
-     * return:      com.alex.generator.vo.MenuSearchInfo
+     * param menuName description: 根据菜单名称查询菜单信息
+     * author: majf
+     * return: com.alex.generator.vo.MenuSearchInfo
      */
     private MenuSearchInfo findMenuInfo(List<MenuInfoVo> menuInfoList, String menuName) {
         MenuSearchInfo menuSearchInfo = new MenuSearchInfo();
@@ -151,8 +163,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         return menuSearchInfo;
     }
 
-    private MenuInfoVo getMenuInfo(String moduleName, String fileName, String path, Long parentId, String redirect, Integer orderBy,
-                                   String title, String component, String hideInMenu, String showInHome, String permissionCode) {
+    private MenuInfoVo getMenuInfo(String moduleName, String fileName, String path, Long parentId, String redirect,
+            Integer orderBy,
+            String title, String component, String hideInMenu, String showInHome, String permissionCode) {
         MenuInfoVo menuInfoVo = new MenuInfoVo();
         menuInfoVo.setName(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         menuInfoVo.setPath("/" + moduleName + (StringUtils.isEmpty(path) ? "" : "/" + path));
@@ -190,20 +203,26 @@ public class GeneratorServiceImpl implements GeneratorService {
         Result<List<PermissionInfoVo>> result = userApi.getPermissionInfoList(query);
         List<PermissionInfoVo> menuInfoList = result.getData();
         PermissionSearchInfo moduleMenuInfo = findPermissionInfo(menuInfoList, javaPath);
-        PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName);
-        PermissionSearchInfo detailMenuInfo = findPermissionInfo(menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName + ":" + "detail");
+        PermissionSearchInfo menuInfo = findPermissionInfo(moduleMenuInfo.getPermissionInfoVo() == null ? null
+                : moduleMenuInfo.getPermissionInfoVo().getChildren(), javaPath + ":" + fileName);
+        PermissionSearchInfo detailMenuInfo = findPermissionInfo(
+                menuInfo.getPermissionInfoVo() == null ? null : moduleMenuInfo.getPermissionInfoVo().getChildren(),
+                javaPath + ":" + fileName + ":" + "detail");
         if (!moduleMenuInfo.getPermissionExists()) {
-            PermissionInfoVo addPermissionInfoVo = addPermissionInfo(getPermissionInfo(javaPath, null, null, null, "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName)));
+            PermissionInfoVo addPermissionInfoVo = addPermissionInfo(getPermissionInfo(javaPath, null, null, null,
+                    "/" + javaPath + (StringUtils.isEmpty(fileName) ? "" : "/" + fileName)));
             moduleMenuInfo.setPermissionInfoVo(addPermissionInfoVo);
         }
-        PermissionInfoVo addPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName, fileName, moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo);
+        PermissionInfoVo addPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName, fileName,
+                moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo);
         if (menuInfo.getPermissionExists()) {
             addPermissionInfo.setId(menuInfo.getPermissionInfoVo().getId());
             menuInfo.setPermissionInfoVo(updatePermissionInfo(addPermissionInfo));
         } else {
             menuInfo.setPermissionInfoVo(addPermissionInfo(addPermissionInfo));
         }
-        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail", fileName + "/" + fileName + "Detail",
+        PermissionInfoVo addChildPermissionInfo = getPermissionInfo(javaPath, javaPath + ":" + fileName + ":detail",
+                fileName + "/" + fileName + "Detail",
                 moduleMenuInfo.getPermissionInfoVo().getId(), fileNameInfo + "详情");
         if (detailMenuInfo.getPermissionExists()) {
             addChildPermissionInfo.setId(detailMenuInfo.getPermissionInfoVo().getId());
@@ -217,8 +236,8 @@ public class GeneratorServiceImpl implements GeneratorService {
      * param permissionInfoList
      * param permissionCode
      * description: 根据菜单名称查询菜单信息
-     * author:      majf
-     * return:      com.alex.generator.vo.MenuSearchInfo
+     * author: majf
+     * return: com.alex.generator.vo.MenuSearchInfo
      */
     private PermissionSearchInfo findPermissionInfo(List<PermissionInfoVo> permissionInfoList, String permissionCode) {
         PermissionSearchInfo permissionSearchInfo = new PermissionSearchInfo();
@@ -234,7 +253,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         return permissionSearchInfo;
     }
 
-    private PermissionInfoVo getPermissionInfo(String moduleName, String fileName, String path, Long parentId, String title) {
+    private PermissionInfoVo getPermissionInfo(String moduleName, String fileName, String path, Long parentId,
+            String title) {
         PermissionInfoVo permissionInfoVo = new PermissionInfoVo();
         permissionInfoVo.setPermissionCode(StringUtils.isEmpty(fileName) ? moduleName : fileName);
         permissionInfoVo.setOptions("/" + moduleName + (StringUtils.isEmpty(path) ? "" : "/" + path));
@@ -255,11 +275,11 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private Map<OutputFile, String> pathMap(String fileName,
-                                            String fileOriginalName,
-                                            String separator,
-                                            String javaPath,
-                                            String projectPath,
-                                            String clientPathProject) {
+            String fileOriginalName,
+            String separator,
+            String javaPath,
+            String projectPath,
+            String clientPathProject) {
         // 统一“先算 basePath，再派生子目录”的写法，减少重复字符串拼接，便于后续维护扩展
         String bootDir = "/java/com/alex" + separator + javaPath;
         String apiDir = "/java/com/alex" + separator + "api" + separator + javaPath;
@@ -298,7 +318,8 @@ public class GeneratorServiceImpl implements GeneratorService {
         String vueModuleRoot = vueRoot + separator + fileOriginalNameKebab;
         String tsModuleApiRoot = vueModuleRoot + separator + "api";
         String mobileModuleRoot = mobileTsTsRoot + separator + fileOriginalNameKebab;
-        String mobileDetailRoot = mobileVueRoot + separator + fileOriginalNameKebab + separator + fileOriginalNameKebab + "-detail";
+        String mobileDetailRoot = mobileVueRoot + separator + fileOriginalNameKebab + separator + fileOriginalNameKebab
+                + "-detail";
         Map<OutputFile, String> pathMap = new HashMap<>();
         pathMap.put(OutputFile.mapperXml, mapperPath + separator);
         pathMap.put(OutputFile.service, servicePath + separator);
@@ -319,7 +340,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private DataSourceConfig.Builder dataSourceConfig(DatabaseConfig databaseConfig) {
-        return new DataSourceConfig.Builder(databaseConfig.getUrl(), databaseConfig.getUsername(), databaseConfig.getPassword())
+        return new DataSourceConfig.Builder(databaseConfig.getUrl(), databaseConfig.getUsername(),
+                databaseConfig.getPassword())
                 .dbQuery(new MySqlQuery())
                 .typeConvert(new MySqlTypeConvert())
                 .keyWordsHandler(new MySqlKeyWordsHandler());
@@ -330,9 +352,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     private FastAutoGenerator fastAutoGenerator(DataSourceConfig.Builder dataSourceConfig, String projectPath,
-                                                String author, String boot, String fileName, String api,
-                                                Map<OutputFile, String> pathMap, String tableName,
-                                                String javaPath, List<IFill> list) {
+            String author, String boot, String fileName, String api,
+            Map<OutputFile, String> pathMap, String tableName,
+            String javaPath, List<IFill> list) {
         FastAutoGenerator fastAutoGenerator = FastAutoGenerator.create(dataSourceConfig);
         fastAutoGenerator.globalConfig(builder -> {
             builder.outputDir(projectPath + "\\java")
@@ -386,14 +408,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .enableRemoveIsPrefix()
                 .enableTableFieldAnnotation()
                 .enableActiveRecord()
-//                            .versionColumnName("version")
-//                            .versionPropertyName("version")
+                // .versionColumnName("version")
+                // .versionPropertyName("version")
                 .logicDeleteColumnName(generatorConfig.getLogicDeleteColumnName())
                 .logicDeletePropertyName(generatorConfig.getLogicDeletePropertyName())
-//                            .naming(NamingStrategy.no_change)
+                // .naming(NamingStrategy.no_change)
                 .columnNaming(NamingStrategy.underline_to_camel)
                 .addSuperEntityColumns(generatorConfig.getSuperEntityColumns())
-////                            .addIgnoreColumns("age")
+                // .addIgnoreColumns("age")
                 .addTableFills(list)
                 .controllerBuilder()
                 .formatFileName("%sController")
@@ -415,15 +437,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .disableSerialVersionUID()
                 .enableTableFieldAnnotation()
                 .columnNaming(NamingStrategy.underline_to_camel)
-                .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())//设置 super 类字段
-                .addIgnoreColumns("") //设置忽略字段
-                .addTableFills(list)
+                .addSuperVoColumns(generatorConfig.getAddSuperVoColumns())// 设置 super 类字段
+                .addIgnoreColumns("") // 设置忽略字段
                 .enableActiveRecord()
-                //配置 client
+                // 配置 client
                 .clientBuilder()
                 .formatClientFileName("%sApi")
                 .enableRestStyle()
-                //配置 ts
+                // 配置 ts
                 .tsTsBuilder()
                 .formatTsTsFileName("index")
                 .listVueBuilder()
@@ -444,14 +465,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .build());
         fastAutoGenerator.injectionConfig(builder -> builder.beforeOutputFile((tableInfo, objectMap) -> {
             // ConfigBuilder config = (ConfigBuilder) objectMap.get("config");
-            //配置other模板及类名
+            // 配置other模板及类名
         }).customMap(Collections.singletonMap("javaPath", javaPath)));
         fastAutoGenerator.templateEngine(new BeetlTemplateEngine());
         return fastAutoGenerator;
     }
 
     private static String getPath(String add, String separator) {
-        if (StringUtils.isEmpty(add)) {
+        if (StringUtils.isBlank(add)) {
             return "";
         }
         StringBuilder sb = new StringBuilder();

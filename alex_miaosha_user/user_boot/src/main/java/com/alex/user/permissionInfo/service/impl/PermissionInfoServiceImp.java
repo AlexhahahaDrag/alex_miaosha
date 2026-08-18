@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +37,15 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- * description:  权限信息表服务实现类
- * author:       majf
- * createDate:   2024-01-16 15:43:56
- * version:      1.0.0
+ * description: 权限信息表服务实现类
+ * author: majf
+ * createDate: 2024-01-16 15:43:56
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
-public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, PermissionInfo> implements PermissionInfoService {
+public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, PermissionInfo>
+        implements PermissionInfoService {
 
     private final PermissionInfoMapper permissionInfoMapper;
 
@@ -169,14 +171,14 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     public List<PermissionInfoVo> getList(PermissionInfoVo permissionInfoVo) {
         List<PermissionInfoVo> list = permissionInfoMapper.getList(permissionInfoVo);
         if (list == null || list.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
         Map<Long, List<PermissionInfoVo>> menuMap = list.stream()
                 .filter(item -> item.getParentId() != null)
                 .collect(Collectors.groupingBy(PermissionInfoVo::getParentId));
         return list.stream().filter(item -> item.getParentId() == null)
                 .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

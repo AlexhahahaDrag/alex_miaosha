@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BaseEntity<T extends Model<T>> extends Model<T> implements Serializable {
+public class BaseEntity<T extends Model<T>> extends Model<T> {
 
     @ApiModelProperty(value = "id")
     @TableId(type = IdType.ASSIGN_ID)

@@ -20,16 +20,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -91,15 +87,15 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public boolean delete(Long id) {
-        Goods goods = goodsMapper.selectById(id);
-        if (StringUtils.isNotEmpty(goods.getGoodsImg())) {
-            try {
-                URL url = new URL(goods.getGoodsImg());
-//                imageScalaKit.delete(url.getPath().replaceFirst("/", ""));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
+        // Goods goods = goodsMapper.selectById(id);
+//         if (StringUtils.isNotEmpty(goods.getGoodsImg())) {
+//             try {
+//                 URL url = new URL(goods.getGoodsImg());
+// //                imageScalaKit.delete(url.getPath().replaceFirst("/", ""));
+//             } catch (MalformedURLException e) {
+//                 e.printStackTrace();
+//             }
+//         }
         //删除缓存
         redisUtils.delete(GoodsKey.goodsKey, "" + id);
         redisUtils.delete(SeckillGoodsKey.seckillCount, "" + id);
@@ -173,7 +169,7 @@ public class GoodsServiceImpl implements GoodsService {
         if (keys == null || keys.isEmpty()) {
             return null;
         }
-        return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).collect(Collectors.toList());
+        return keys.parallelStream().map(item -> getGoodsDetailVoResult(item.getId(), item).getData()).toList();
     }
 
     private Result<GoodsDetailVo> getGoodsDetailVoResult(Long goodsId, GoodsDTO goods) {

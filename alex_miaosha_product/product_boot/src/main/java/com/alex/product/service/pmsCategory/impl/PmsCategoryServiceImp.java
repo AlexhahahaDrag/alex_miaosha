@@ -60,7 +60,7 @@ public class PmsCategoryServiceImp extends ServiceImpl<PmsCategoryMapper, PmsCat
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsCategoryMapper.deleteBatchIds(idArr);
+        pmsCategoryMapper.deleteByIds(idArr);
         return true;
     }
 }

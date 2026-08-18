@@ -1,6 +1,5 @@
 package com.alex.mission.service.impl;
 
-import com.alex.common.obj.SeckillMessage;
 import com.alex.common.pojo.vo.WelcomeVo;
 import com.alex.mission.manager.GoodsManager;
 import com.alex.mission.manager.OrderManager;

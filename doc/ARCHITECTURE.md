@@ -282,3 +282,42 @@ flowchart TB
 ---
 
 *文档更新日期：2026-05-07 · 基于项目实际代码与原架构设计图*
+
+---
+
+## 7. 礼尚往来管理架构补充
+
+礼尚往来管理属于 `alex_miaosha_finance` 业务域，运行在 `finance_boot` 服务内，继续复用现有网关鉴权、用户体系、组织体系、RBAC 权限体系、MyBatis Plus 与统一返回结构。
+
+### 7.1 模块分层
+
+```text
+Controller -> Service -> Mapper -> MySQL
+DTO / Query / VO 作为接口边界
+Entity 仅用于持久化层，统一 extends BaseEntity<T>
+```
+
+Controller 禁止直接返回 Entity；业务接口均使用 DTO、Query、VO 分层承载参数和响应。Service 层使用 `LambdaQueryWrapper`、`LambdaUpdateWrapper`、`Page`、`IService`、`ServiceImpl`，避免字符串字段 SQL 和大量 XML。
+
+### 7.2 数据模型
+
+```mermaid
+flowchart LR
+    Org["org_id 数据隔离"] --> Person["gift_person_info_t 亲友（含 relation_type 关系）"]
+    Person --> Event["gift_event_info_t 事由"]
+    Event --> Record["gift_record_info_t 礼金记录"]
+    Record --> Return["direction=RETURN 回礼记录"]
+```
+
+`gift_record_info_t` 同时承载随礼、收礼、回礼三类流水。回礼通过 `direction = RETURN`、`related_record_id` 与原收礼记录建立关联，通过 `returned_flag` 标记原记录是否已回礼。这样页面和统计口径保持一张流水表，避免回礼记录与礼金记录在查询、权限、导出上的重复实现。
+
+### 7.3 权限与隔离
+
+- 菜单权限：`gift:dashboard`、`gift:person`、`gift:event`、`gift:record`、`gift:return`、`gift:analysis`。
+- 按钮权限：`gift:view`、`gift:add`、`gift:edit`、`gift:delete`、`gift:export`。
+- 数据权限：通过 `org_id` 隔离个人账本、家庭账本、企业账本；需要用户级边界时使用 `user_id`。
+- 超级管理员：沿用现有前端路由与后端权限逻辑，不依赖业务角色授权。
+
+### 7.4 性能设计
+
+礼金记录按 10w+ 数据量设计，列表接口使用分页查询和组合索引，统计接口按组织、时间、方向聚合。高频统计可接入 Redis 缓存，缓存键必须包含 `org_id` 与统计维度，避免跨组织污染。

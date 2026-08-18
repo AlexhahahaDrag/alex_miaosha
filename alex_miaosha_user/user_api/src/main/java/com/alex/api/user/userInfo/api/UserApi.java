@@ -25,7 +25,9 @@ public interface UserApi {
     @PostMapping(value = "list")
     Result<List<TUserVo>> getList(@RequestBody TUserVo tUserVo);
 
-    // TODO: 2023/2/21 测试token携带未生效问题 
+    @GetMapping
+    Result<TUserVo> queryUser(@RequestParam(value = "id") String id);
+
     @GetMapping(value = "getUserInfo")
     TUserVo getUserByUsername(@RequestParam("username") String username);
 

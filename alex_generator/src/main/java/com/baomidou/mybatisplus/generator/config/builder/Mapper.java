@@ -63,7 +63,7 @@ public class Mapper implements ITemplate {
 
     @NotNull
     public Map<String, Object> renderData(@NotNull TableInfo tableInfo) {
-        Map<String, Object> data = new HashMap();
+        Map<String, Object> data = new HashMap<>();
         boolean enableCache = this.cache != null;
         data.put("enableCache", enableCache);
         data.put("mapperAnnotation", this.mapperAnnotation);

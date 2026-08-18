@@ -44,7 +44,7 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
         List<Long> fileIdList = records.parallelStream()
                 .map(PmsBrandVo::getLogo)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         try {
             Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
             if ("200".equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
@@ -101,7 +101,7 @@ public class PmsBrandServiceImp extends ServiceImpl<PmsBrandMapper, PmsBrand> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        pmsBrandMapper.deleteBatchIds(idArr);
+        pmsBrandMapper.deleteByIds(idArr);
         return true;
     }
 

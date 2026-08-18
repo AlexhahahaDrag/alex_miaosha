@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -62,15 +61,19 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException,
+            IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException,
+            InternalException {
         FileInfoVo fileInfoVo = fileInfoMapper.queryFileInfo(id);
         if (fileInfoVo != null) {
             if (StringUtils.isNotBlank(fileInfoVo.getUrl())) {
-                String url = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(), fileInfoVo.getUrl());
+                String url = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(),
+                        fileInfoVo.getUrl());
                 fileInfoVo.setPreUrl(url);
             }
             if (StringUtils.isNotBlank(fileInfoVo.getThumbnailUrl())) {
-                String thumbnailUrl = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(), fileInfoVo.getThumbnailUrl());
+                String thumbnailUrl = getFileService(fileInfoVo.getFileSystem()).preview(fileInfoVo.getBucketName(),
+                        fileInfoVo.getThumbnailUrl());
                 fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
             }
         }
@@ -78,7 +81,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo addFileInfo(String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
+    public FileInfoVo addFileInfo(String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
+            throws Exception {
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
@@ -86,13 +90,13 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         FileInfo fileInfo = new FileInfo();
         BeanUtils.copyProperties(uploadFile, fileInfo);
         fileInfoMapper.insert(fileInfo);
-        BeanUtils.copyProperties(fileInfo, uploadFile);
-        return uploadFile;
+        return queryFileInfo(fileInfo.getId());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws Exception {
+    public List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail,
+            boolean isNormal) throws Exception {
         if (multipartFiles == null || multipartFiles.isEmpty()) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
@@ -109,7 +113,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
+    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
+            throws Exception {
         FileInfo fileInfo = this.getById(id);
         FileInfoVo uploadFile = null;
         if (file != null) {
@@ -128,7 +133,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
-        fileInfoMapper.deleteBatchIds(idArr);
+        fileInfoMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -138,7 +143,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         return getFileService(fileInfo.getFileSystem()).fileDownload(fileInfo);
     }
 
-    private FileInfoVo uploadFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception {
+    private FileInfoVo uploadFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
+            throws Exception {
         return getFileService(null).uploadFile(file, type, isThumbnail, isNormal);
     }
 
@@ -147,6 +153,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (fileIdList == null || fileIdList.isEmpty()) {
             return Lists.newArrayList();
         }
+        @SuppressWarnings("null")
         LambdaQueryWrapper<FileInfo> query = Wrappers.<FileInfo>lambdaQuery().in(FileInfo::getId, fileIdList);
         List<FileInfo> fileInfos = fileInfoMapper.selectList(query);
         if (fileInfos == null || fileInfos.isEmpty()) {
@@ -161,13 +168,14 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
                     fileInfoVo.setPreUrl(url);
                 }
                 if (StringUtils.isNotBlank(item.getThumbnailUrl())) {
-                    String thumbnailUrl = getFileService(item.getFileSystem()).preview(item.getBucketName(), item.getThumbnailUrl());
+                    String thumbnailUrl = getFileService(item.getFileSystem()).preview(item.getBucketName(),
+                            item.getThumbnailUrl());
                     fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
                 }
             } catch (Exception e) {
                 log.info("文件预览失败，文件ID：{}, 错误信息：{}", item.getId(), e.getMessage());
             }
             return fileInfoVo;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

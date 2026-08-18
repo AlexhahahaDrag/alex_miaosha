@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.finance.gift.person.mapper.GiftPersonInfoMapper">
+
+    <sql id="baseConditions">
+        p.is_delete = 0
+    </sql>
+
+    <sql id="queryConditions">
+        <if test="query != null">
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (
+                    p.person_name LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR p.phone LIKE CONCAT('%', #{query.keyword}, '%')
+                )
+            </if>
+            <if test="query.relationType != null and query.relationType != ''">
+                AND p.relation_type = #{query.relationType}
+            </if>
+            <if test="query.relationGrade != null and query.relationGrade != ''">
+                AND p.relation_grade = #{query.relationGrade}
+            </if>
+            <if test="query.relationStatus != null and query.relationStatus != ''">
+                <choose>
+                    <when test="query.relationStatus == 'ACTIVE'">
+                        AND (
+                            SELECT MAX(r.pay_time)
+                            FROM gift_record_info_t r
+                            WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                              AND r.is_delete = 0
+                        ) &gt;= DATE_SUB(NOW(), INTERVAL 90 DAY)
+                    </when>
+                    <when test="query.relationStatus == 'GENERAL'">
+                        AND (
+                            SELECT MAX(r.pay_time)
+                            FROM gift_record_info_t r
+                            WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                              AND r.is_delete = 0
+                        ) BETWEEN DATE_SUB(NOW(), INTERVAL 180 DAY) AND DATE_SUB(NOW(), INTERVAL 90 DAY)
+                    </when>
+                    <when test="query.relationStatus == 'DISTANT'">
+                        AND (
+                            (
+                                SELECT MAX(r.pay_time)
+                                FROM gift_record_info_t r
+                                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                                  AND r.is_delete = 0
+                            ) &lt; DATE_SUB(NOW(), INTERVAL 180 DAY)
+                            OR NOT EXISTS (
+                                SELECT 1 FROM gift_record_info_t r
+                                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                                  AND r.is_delete = 0
+                            )
+                        )
+                    </when>
+                </choose>
+            </if>
+            <if test="query.personScope == 'CONTACT'">
+                AND p.bind_user_id IS NULL
+            </if>
+            <if test="query.personScope == 'ORG_MEMBER'">
+                AND p.bind_user_id IS NOT NULL
+            </if>
+        </if>
+    </sql>
+
+    <sql id="voColumns">
+        p.id,
+        p.org_id,
+        p.user_id,
+        p.bind_user_id,
+        p.person_name,
+        p.phone,
+        p.avatar,
+        p.relation_type,
+        p.relation_grade,
+        p.remark,
+        p.create_time,
+        p.update_time
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="getList" resultType="com.alex.api.finance.gift.person.vo.GiftPersonInfoVo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="listEntities" resultType="com.alex.finance.gift.person.entity.GiftPersonInfo">
+        SELECT <include refid="voColumns"/>
+        FROM gift_person_info_t p
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <!-- 礼金聚合在 SQL 层完成，分页由 MyBatis-Plus 在数据库执行 -->
+    <select id="getBusinessPage" resultType="com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo">
+        SELECT
+            <include refid="voColumns"/>,
+            IFNULL(agg.total_give_amount, 0) AS total_give_amount,
+            IFNULL(agg.total_receive_amount, 0) AS total_receive_amount,
+            IFNULL(agg.total_receive_amount, 0) - IFNULL(agg.total_give_amount, 0) AS net_amount,
+            GREATEST(IFNULL(agg.total_receive_amount, 0) - IFNULL(agg.total_give_amount, 0), 0) AS pending_return_amount,
+            (
+                SELECT r.pay_time
+                FROM gift_record_info_t r
+                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                  AND r.is_delete = 0
+                ORDER BY r.pay_time IS NULL, r.pay_time DESC, r.id DESC
+                LIMIT 1
+            ) AS latest_record_time,
+            (
+                SELECT r.direction
+                FROM gift_record_info_t r
+                WHERE (r.giver_person_id = p.id OR r.receiver_person_id = p.id)
+                  AND r.is_delete = 0
+                ORDER BY r.pay_time IS NULL, r.pay_time DESC, r.id DESC
+                LIMIT 1
+            ) AS latest_direction
+        FROM gift_person_info_t p
+        LEFT JOIN (
+            SELECT
+                pr.person_id,
+                SUM(CASE WHEN pr.direction IN ('GIVE', 'RETURN') THEN IFNULL(pr.amount, 0) ELSE 0 END) AS total_give_amount,
+                SUM(CASE WHEN pr.direction = 'RECEIVE' THEN IFNULL(pr.amount, 0) ELSE 0 END) AS total_receive_amount
+            FROM (
+                SELECT p_agg.id AS person_id, r.direction, r.amount
+                FROM gift_person_info_t p_agg
+                INNER JOIN gift_record_info_t r
+                    ON (r.giver_person_id = p_agg.id OR r.receiver_person_id = p_agg.id)
+                    AND r.is_delete = 0
+                WHERE p_agg.is_delete = 0
+            ) pr
+            GROUP BY pr.person_id
+        ) agg ON agg.person_id = p.id
+        <where>
+            <include refid="baseConditions"/>
+            <include refid="queryConditions"/>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="listDistinctCustomRelationTypes" resultType="java.lang.String">
+        SELECT DISTINCT p.relation_type
+        FROM gift_person_info_t p
+        WHERE p.user_id = #{userId}
+          AND p.is_delete = 0
+          AND p.relation_type IS NOT NULL
+          AND p.relation_type != ''
+          AND p.relation_type NOT IN (
+              SELECT o.relation_code
+              FROM gift_person_relation_option_t o
+              WHERE o.user_id = 0
+                AND o.option_type = 'SYSTEM'
+                AND o.is_delete = 0
+                AND o.relation_code IS NOT NULL
+          )
+    </select>
+
+    <!-- 关系类型分布聚合（analysis relation-distribution 下沉 SQL），空关系归入 OTHER -->
+    <select id="countRelationDistribution" resultType="com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo">
+        SELECT
+            COALESCE(NULLIF(p.relation_type, ''), 'OTHER') AS relation_type,
+            COUNT(1) AS count
+        FROM gift_person_info_t p
+        WHERE p.is_delete = 0
+        GROUP BY COALESCE(NULLIF(p.relation_type, ''), 'OTHER')
+        ORDER BY count DESC
+    </select>
+
+</mapper>

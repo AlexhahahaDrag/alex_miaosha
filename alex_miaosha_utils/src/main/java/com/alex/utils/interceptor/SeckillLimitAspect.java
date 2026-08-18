@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-// TODO: 2022/7/15 判断效果与 SeckillInterceptor是否一致
 public class SeckillLimitAspect {
 
     private final RedisUtils redisUtils;
@@ -58,7 +57,6 @@ public class SeckillLimitAspect {
         //得到类名的方法
         String ipKey = String.format("%s#%s", className, name);
         //转换成 hashCode
-        int hashCode = Math.abs(ipKey.hashCode());
         AccessKey accessKey = AccessKey.withExpire;
         log.info("ipKey={}, requestURI={},key={}", ipKey, requestURI, accessKey);
         // TODO: 2022/8/25 添加ip信息

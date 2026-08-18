@@ -44,6 +44,52 @@
         cpn_coupon_info_t.min_spend,
         cpn_coupon_info_t.payment_status
     </sql>
+    <sql id="queryInfo">
+    <if test = "cpnCouponInfoVo != null">
+      <if test = "cpnCouponInfoVo.id != null">
+        and cpn_coupon_info_t.id = #{cpnCouponInfoVo.id}
+      </if>
+      <if test = "cpnCouponInfoVo.couponName != null and cpnCouponInfoVo.couponName != ''">
+        and cpn_coupon_info_t.coupon_name like concat('%', #{cpnCouponInfoVo.couponName}, '%')
+      </if>
+      <if test = "cpnCouponInfoVo.totalQuantity != null">
+        and cpn_coupon_info_t.total_quantity = #{cpnCouponInfoVo.totalQuantity}
+      </if>
+      <if test = "cpnCouponInfoVo.startDate != null">
+        and cpn_coupon_info_t.start_date = #{cpnCouponInfoVo.startDate}
+      </if>
+      <if test = "cpnCouponInfoVo.endDate != null">
+        and cpn_coupon_info_t.end_date = #{cpnCouponInfoVo.endDate}
+      </if>
+      <if test = "cpnCouponInfoVo.unitValue != null">
+        and cpn_coupon_info_t.unit_value = #{cpnCouponInfoVo.unitValue}
+      </if>
+      <if test = "cpnCouponInfoVo.minSpend != null">
+        and cpn_coupon_info_t.min_spend = #{cpnCouponInfoVo.minSpend}
+      </if>
+      <!-- AI Agent：支付状态查询条件（1：已支付，0：未支付） -->
+      <if test = "cpnCouponInfoVo.paymentStatus != null">
+        and cpn_coupon_info_t.payment_status = #{cpnCouponInfoVo.paymentStatus}
+      </if>
+      <!-- AI Agent：仅查询有效的、未核销完成的数据（还有剩余数量 + 未过期） -->
+      <if test = "cpnCouponInfoVo.onlyValidAndNotFullyRedeemed != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed == true">
+        and cpn_coupon_info_t.total_quantity > (
+          select ifnull(sum(case when uci.`status` = 'USED' then ifnull(uci.redemption_quantity, 1) else 0 end), 0)
+          from cpn_user_coupon_info_t uci
+          where uci.coupon_id = cpn_coupon_info_t.id and uci.is_delete = 0
+        )
+        and cpn_coupon_info_t.end_date > now()
+      </if>
+      <!-- AI Agent：创建时间区间过滤 -->
+      <if test = "cpnCouponInfoVo.createTimeStart != null and cpnCouponInfoVo.createTimeStart != ''">
+        and cpn_coupon_info_t.create_time &gt;= #{cpnCouponInfoVo.createTimeStart}
+      </if>
+      <if test = "cpnCouponInfoVo.createTimeEnd != null and cpnCouponInfoVo.createTimeEnd != ''">
+        and cpn_coupon_info_t.create_time &lt;= concat(#{cpnCouponInfoVo.createTimeEnd}, ' 23:59:59')
+      </if>
+    </if>
+  </sql>
+
 
     <select id="getPage" resultType="com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo">
         select
@@ -127,51 +173,4 @@
             cpn_coupon_info_t.id = #{id}
             and cpn_coupon_info_t.is_delete = 0
         </where>
-    </select>
-
-  <sql id="queryInfo">
-    <if test = "cpnCouponInfoVo != null">
-      <if test = "cpnCouponInfoVo.id != null">
-        and cpn_coupon_info_t.id = #{cpnCouponInfoVo.id}
-      </if>
-      <if test = "cpnCouponInfoVo.couponName != null and cpnCouponInfoVo.couponName != ''">
-        and cpn_coupon_info_t.coupon_name like concat('%', #{cpnCouponInfoVo.couponName}, '%')
-      </if>
-      <if test = "cpnCouponInfoVo.totalQuantity != null">
-        and cpn_coupon_info_t.total_quantity = #{cpnCouponInfoVo.totalQuantity}
-      </if>
-      <if test = "cpnCouponInfoVo.startDate != null">
-        and cpn_coupon_info_t.start_date = #{cpnCouponInfoVo.startDate}
-      </if>
-      <if test = "cpnCouponInfoVo.endDate != null">
-        and cpn_coupon_info_t.end_date = #{cpnCouponInfoVo.endDate}
-      </if>
-      <if test = "cpnCouponInfoVo.unitValue != null">
-        and cpn_coupon_info_t.unit_value = #{cpnCouponInfoVo.unitValue}
-      </if>
-      <if test = "cpnCouponInfoVo.minSpend != null">
-        and cpn_coupon_info_t.min_spend = #{cpnCouponInfoVo.minSpend}
-      </if>
-      <!-- AI Agent：支付状态查询条件（1：已支付，0：未支付） -->
-      <if test = "cpnCouponInfoVo.paymentStatus != null">
-        and cpn_coupon_info_t.payment_status = #{cpnCouponInfoVo.paymentStatus}
-      </if>
-      <!-- AI Agent：仅查询有效的、未核销完成的数据（还有剩余数量 + 未过期） -->
-      <if test = "cpnCouponInfoVo.onlyValidAndNotFullyRedeemed != null and cpnCouponInfoVo.onlyValidAndNotFullyRedeemed == true">
-        and cpn_coupon_info_t.total_quantity > (
-          select ifnull(sum(case when uci.`status` = 'USED' then ifnull(uci.redemption_quantity, 1) else 0 end), 0)
-          from cpn_user_coupon_info_t uci
-          where uci.coupon_id = cpn_coupon_info_t.id and uci.is_delete = 0
-        )
-        and cpn_coupon_info_t.end_date > now()
-      </if>
-      <!-- AI Agent：创建时间区间过滤 -->
-      <if test = "cpnCouponInfoVo.createTimeStart != null and cpnCouponInfoVo.createTimeStart != ''">
-        and cpn_coupon_info_t.create_time &gt;= #{cpnCouponInfoVo.createTimeStart}
-      </if>
-      <if test = "cpnCouponInfoVo.createTimeEnd != null and cpnCouponInfoVo.createTimeEnd != ''">
-        and cpn_coupon_info_t.create_time &lt;= concat(#{cpnCouponInfoVo.createTimeEnd}, ' 23:59:59')
-      </if>
-    </if>
-  </sql>
-</mapper>
+    </select></mapper>

@@ -17,6 +17,26 @@
         account_record_info.id,
         account_record_info.`name`, account_record_info.avli_date, account_record_info.amount, account_record_info.`account`, account_record_info.is_send
     </sql>
+    <sql id="queryInfo">
+        <if test = "accountRecordInfoVo != null">
+          <if test = "accountRecordInfoVo.name != null">
+            and name like concat('%', #{accountRecordInfoVo.name}, '%')
+          </if>
+          <if test = "accountRecordInfoVo.avliDate != null">
+            and avli_date = #{accountRecordInfoVo.avliDate}
+          </if>
+          <if test = "accountRecordInfoVo.amount != null">
+            and amount = #{accountRecordInfoVo.amount}
+          </if>
+          <if test = "accountRecordInfoVo.account != null">
+            and account like concat('%', #{accountRecordInfoVo.account}, '%')
+          </if>
+          <if test = "accountRecordInfoVo.isSend != null">
+            and is_send = #{accountRecordInfoVo.isSend}
+          </if>
+        </if>
+     </sql>
+
 
     <select id="getPage" resultType="com.alex.api.finance.vo.accountRecordInfo.AccountRecordInfoVo">
         select <include refid="Base_Column_List"/>,
@@ -50,25 +70,4 @@
         where avli_date >= now()
           AND avli_date &lt; DATE_ADD( now(), INTERVAL #{dif} DAY )
         group by account_record_info.account, dict_info.type_name
-    </select>
-
-     <sql id="queryInfo">
-        <if test = "accountRecordInfoVo != null">
-          <if test = "accountRecordInfoVo.name != null">
-            and name like concat('%', #{accountRecordInfoVo.name}, '%')
-          </if>
-          <if test = "accountRecordInfoVo.avliDate != null">
-            and avli_date = #{accountRecordInfoVo.avliDate}
-          </if>
-          <if test = "accountRecordInfoVo.amount != null">
-            and amount = #{accountRecordInfoVo.amount}
-          </if>
-          <if test = "accountRecordInfoVo.account != null">
-            and account like concat('%', #{accountRecordInfoVo.account}, '%')
-          </if>
-          <if test = "accountRecordInfoVo.isSend != null">
-            and is_send = #{accountRecordInfoVo.isSend}
-          </if>
-        </if>
-     </sql>
-</mapper>
+    </select></mapper>

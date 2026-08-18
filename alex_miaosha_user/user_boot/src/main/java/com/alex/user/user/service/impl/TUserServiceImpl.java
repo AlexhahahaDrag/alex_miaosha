@@ -22,7 +22,6 @@ import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.PermissionContextCacheService;
@@ -47,6 +46,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
@@ -56,7 +56,7 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatMpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,10 +75,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -112,8 +109,6 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Value(value = "${defaultPassword}")
     private String defaultPassword;
 
-    private final MenuInfoService menuInfoService;
-
     private final UserUtils userUtils;
 
     private final OrgUserInfoService orgUserInfoService;
@@ -138,8 +133,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     // RBAC-BE-RELATION-002: permission_context 主动失效统一走 helper（行为不变，去重）
     private final PermissionContextCacheService permissionContextCacheService;
 
-    @Autowired(required = false)
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final ObjectProvider<ObjectMapper> objectMapper;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
@@ -163,7 +157,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
             user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
             user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList() :
-                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).collect(Collectors.toList()));
+                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
         }
         return user;
     }
@@ -398,7 +392,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         
         Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
         // 如果登录错误超过5次限制，抛出异常
-        if (StringUtils.isNotEmpty(limitCount) && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
+        if (limitCount != null && !limitCount.isBlank()
+                && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
             throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
         // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture 闭包内，我们可直接在主线程安全使用它
@@ -442,7 +437,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         stopWatch.start("2.数据库查询用户");
-        TUser admin = null;
+        TUser admin;
 
         // 1. 优先使用 username 精确查询（此字段拥有索引 user_uesrname_index 与 t_username_status_IDX，查询极其高效）
         LambdaQueryWrapper<TUser> queryByUsername = Wrappers.<TUser>lambdaQuery()
@@ -530,7 +525,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
         stopWatch.start("8.Redis缓存写入");
         try {
-            String userJson = objectMapper.writeValueAsString(tUserVo);
+            ObjectMapper mapper = objectMapper.getIfAvailable();
+            if (mapper == null) {
+                throw new IllegalStateException("ObjectMapper bean is not available");
+            }
+            String userJson = mapper.writeValueAsString(tUserVo);
             final String finalUserJson = userJson;
             final String finalWriteIp = ip;
             
@@ -554,8 +553,42 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         result.put(SysConf.ADMIN, tUserVo);
-        log.info("登录成功，耗时：{}, {} 毫秒", stopWatch.prettyPrint(), stopWatch.getTotalTimeMillis());
+        log.info("登录成功，耗时：\n{}, {} 秒", formatStopWatchInSeconds(stopWatch),
+                formatNanosToSeconds(stopWatch.getTotalTimeNanos()));
         return result;
+    }
+
+    private static String formatStopWatchInSeconds(StopWatch stopWatch) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("StopWatch '").append(stopWatch.getId()).append("': running time = ")
+                .append(formatNanosToSeconds(stopWatch.getTotalTimeNanos())).append(" s");
+        if (stopWatch.getTaskCount() > 0) {
+            sb.append('\n');
+            sb.append("---------------------------------------------\n");
+            sb.append("s          %     Task name\n");
+            sb.append("---------------------------------------------\n");
+            long totalNanos = stopWatch.getTotalTimeNanos();
+            for (StopWatch.TaskInfo task : stopWatch.getTaskInfo()) {
+                long taskNanos = task.getTimeNanos();
+                int percent = totalNanos > 0 ? (int) Math.round(100.0 * taskNanos / totalNanos) : 0;
+                sb.append(String.format("%11s", formatNanosToSeconds(taskNanos)))
+                        .append("  ")
+                        .append(String.format("%03d", percent))
+                        .append("%  ")
+                        .append(task.getTaskName())
+                        .append('\n');
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String formatNanosToSeconds(long nanos) {
+        long seconds = nanos / 1_000_000_000L;
+        long remainder = nanos % 1_000_000_000L;
+        if (seconds == 0) {
+            return String.format("0.%09d", remainder);
+        }
+        return String.format("%d.%09d", seconds, remainder);
     }
 
     public TUserVo refreshLoginPermissionContext(TUserVo userVo) {
@@ -572,7 +605,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             try {
                 // 设置最大800毫秒的超时时间，防止微服务冷启动或RPC调用挂起阻塞登录接口
                 avatarFuture.get(800, TimeUnit.MILLISECONDS);
-            } catch (java.util.concurrent.TimeoutException e) {
+            } catch (TimeoutException e) {
                 log.warn("获取用户头像信息超时，进行熔断降级，跳过头像URL装配");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -827,7 +860,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         List<Long> fileIdList = records.parallelStream()
                 .map(TUserVo::getAvatar)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         if (fileIdList.isEmpty()) {
             return;
         }
