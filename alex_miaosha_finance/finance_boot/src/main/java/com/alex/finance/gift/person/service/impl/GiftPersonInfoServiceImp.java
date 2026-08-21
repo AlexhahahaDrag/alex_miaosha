@@ -96,9 +96,35 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         LocalDateTime ninetyDaysAgo = now.minusDays(90);
         LocalDateTime oneEightyDaysAgo = now.minusDays(180);
 
+        BigDecimal positiveBalanceSum = BigDecimal.ZERO;
+        BigDecimal negativeBalanceSum = BigDecimal.ZERO;
+
         for (GiftPersonInfoVo person : people) {
-            java.util.Optional<GiftRecordInfoVo> latest = records.stream()
+            // 仅针对外部往来亲友统计余额与活跃度（排除我方内部经办人账户，避免重复双向计算）
+            if (person.getBindUserId() != null) {
+                continue;
+            }
+
+            List<GiftRecordInfoVo> personRecords = records.stream()
                     .filter(r -> personInRecord(r, person.getId()))
+                    .toList();
+
+            BigDecimal personReceive = personRecords.stream()
+                    .filter(record -> "RECEIVE".equals(record.getDirection()))
+                    .map(this::amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal personGive = personRecords.stream()
+                    .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                    .map(this::amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal personNet = personReceive.subtract(personGive);
+            if (personNet.compareTo(BigDecimal.ZERO) > 0) {
+                positiveBalanceSum = positiveBalanceSum.add(personNet);
+            } else if (personNet.compareTo(BigDecimal.ZERO) < 0) {
+                negativeBalanceSum = negativeBalanceSum.add(personNet.abs());
+            }
+
+            java.util.Optional<GiftRecordInfoVo> latest = personRecords.stream()
                     .max(java.util.Comparator.comparing(GiftRecordInfoVo::getPayTime,
                             java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder())));
 
@@ -133,6 +159,10 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         return new GiftPersonSummaryVo()
                 .setPersonCount(personCount)
                 .setNetAmount(netAmount)
+                .setTotalReceiveAmount(receiveSum)
+                .setTotalGiveAmount(giveSum)
+                .setPositiveBalanceSum(positiveBalanceSum)
+                .setNegativeBalanceSum(negativeBalanceSum)
                 .setActiveCount(activeCount)
                 .setPendingMaintenanceCount(pendingMaintenanceCount)
                 .setYearTotalAmount(yearTotalAmount)

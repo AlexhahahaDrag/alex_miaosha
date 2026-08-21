@@ -160,10 +160,20 @@
     <select id="listDistinctCustomRelationTypes" resultType="java.lang.String">
         SELECT DISTINCT p.relation_type
         FROM gift_person_info_t p
-        WHERE p.user_id = #{userId}
-          AND p.is_delete = 0
+        WHERE p.is_delete = 0
           AND p.relation_type IS NOT NULL
           AND p.relation_type != ''
+          <choose>
+              <when test="isSuper">
+                  <!-- 超管不限用户或机构 -->
+              </when>
+              <when test="orgId != null">
+                  AND (p.org_id = #{orgId} OR p.user_id = #{userId})
+              </when>
+              <otherwise>
+                  AND p.user_id = #{userId}
+              </otherwise>
+          </choose>
           AND p.relation_type NOT IN (
               SELECT o.relation_code
               FROM gift_person_relation_option_t o

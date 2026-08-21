@@ -20,6 +20,18 @@ public class GiftPersonSummaryVo {
     @ApiModelProperty(value = "net amount")
     private BigDecimal netAmount = BigDecimal.ZERO;
 
+    @ApiModelProperty(value = "total receive amount")
+    private BigDecimal totalReceiveAmount = BigDecimal.ZERO;
+
+    @ApiModelProperty(value = "total give amount")
+    private BigDecimal totalGiveAmount = BigDecimal.ZERO;
+
+    @ApiModelProperty(value = "positive balance sum")
+    private BigDecimal positiveBalanceSum = BigDecimal.ZERO;
+
+    @ApiModelProperty(value = "negative balance sum")
+    private BigDecimal negativeBalanceSum = BigDecimal.ZERO;
+
     @ApiModelProperty(value = "active count")
     private Long activeCount = 0L;
 

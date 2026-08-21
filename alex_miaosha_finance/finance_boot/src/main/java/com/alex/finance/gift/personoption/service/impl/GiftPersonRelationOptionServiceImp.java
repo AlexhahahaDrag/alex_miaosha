@@ -3,6 +3,7 @@ package com.alex.finance.gift.personoption.service.impl;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationItemVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionRowVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionsVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.personoption.entity.GiftPersonRelationOption;
@@ -36,14 +37,19 @@ public class GiftPersonRelationOptionServiceImp
 
     @Override
     public GiftPersonRelationOptionsVo listRelationOptions(Long personId) {
-        Long ownerUserId = resolveOwnerUserId(personId);
-        backfillFromPersonHistory(ownerUserId);
-        return toRelationOptionsVo(getBaseMapper().listRelationOptionRows(ownerUserId));
+        TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+        boolean isSuper = giftDataScopeSupport.isSuper(loginUser);
+        Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
+        Long ownerUserId = personId != null ? resolveOwnerUserId(personId) : loginUser.getId();
+
+        backfillFromPersonHistory(ownerUserId, orgId, isSuper);
+        return toRelationOptionsVo(getBaseMapper().listRelationOptionRows(ownerUserId, orgId, isSuper));
     }
 
     private GiftPersonRelationOptionsVo toRelationOptionsVo(List<GiftPersonRelationOptionRowVo> rows) {
         List<GiftPersonRelationItemVo> presets = new ArrayList<>();
         List<GiftPersonRelationItemVo> customs = new ArrayList<>();
+        java.util.Set<String> customNames = new java.util.HashSet<>();
         if (rows != null) {
             for (GiftPersonRelationOptionRowVo row : rows) {
                 GiftPersonRelationItemVo item = new GiftPersonRelationItemVo()
@@ -54,7 +60,9 @@ public class GiftPersonRelationOptionServiceImp
                     continue;
                 }
                 if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
-                    customs.add(item);
+                    if (row.getRelationLabel() != null && customNames.add(row.getRelationLabel().trim())) {
+                        customs.add(item);
+                    }
                 }
             }
         }
@@ -76,20 +84,35 @@ public class GiftPersonRelationOptionServiceImp
             return option.getRelationCode();
         }
         if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
-            if (ownerUserId == null || !ownerUserId.equals(option.getUserId())) {
-                throw GiftExceptions.forbidden("无权使用该自定义关系");
+            TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+            if (giftDataScopeSupport.isSuper(loginUser)) {
+                return option.getRelationLabel();
             }
-            return option.getRelationLabel();
+            Long myOrgId = giftDataScopeSupport.loginOrgId(loginUser);
+            if (myOrgId != null && myOrgId.equals(option.getOrgId())) {
+                return option.getRelationLabel();
+            }
+            if (ownerUserId != null && ownerUserId.equals(option.getUserId())) {
+                return option.getRelationLabel();
+            }
+            if (loginUser.getId().equals(option.getUserId())) {
+                return option.getRelationLabel();
+            }
+            throw GiftExceptions.forbidden("无权使用该自定义关系");
         }
         throw GiftExceptions.param("关系选项类型不合法");
     }
 
     @Override
     public Long findRelationOptionId(Long userId, String relationType) {
-        if (!StringUtils.hasText(relationType) || userId == null) {
+        if (!StringUtils.hasText(relationType)) {
             return null;
         }
-        return getBaseMapper().findOptionIdByRelationType(userId, relationType.trim());
+        TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+        boolean isSuper = giftDataScopeSupport.isSuper(loginUser);
+        Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
+        Long targetUserId = userId != null ? userId : loginUser.getId();
+        return getBaseMapper().findOptionIdByRelationType(targetUserId, orgId, isSuper, relationType.trim());
     }
 
     @Override
@@ -116,21 +139,22 @@ public class GiftPersonRelationOptionServiceImp
         return person.getUserId();
     }
 
-    private void backfillFromPersonHistory(Long userId) {
-        List<String> labels = giftPersonInfoMapper.listDistinctCustomRelationTypes(userId);
+    private void backfillFromPersonHistory(Long userId, Long orgId, boolean isSuper) {
+        List<String> labels = giftPersonInfoMapper.listDistinctCustomRelationTypes(userId, orgId, isSuper);
         if (labels == null || labels.isEmpty()) {
             return;
         }
-        GiftPersonInfo sample = giftPersonInfoMapper.selectOne(new LambdaQueryWrapper<GiftPersonInfo>()
-                .eq(GiftPersonInfo::getUserId, userId)
-                .eq(GiftPersonInfo::getIsDelete, 0)
-                .last("LIMIT 1"));
-        Long orgId = sample == null
-                ? giftDataScopeSupport.loginOrgId(giftDataScopeSupport.requireLoginUser())
-                : sample.getOrgId();
+        Long targetOrgId = orgId;
+        if (targetOrgId == null) {
+            GiftPersonInfo sample = giftPersonInfoMapper.selectOne(new LambdaQueryWrapper<GiftPersonInfo>()
+                    .eq(GiftPersonInfo::getUserId, userId)
+                    .eq(GiftPersonInfo::getIsDelete, 0)
+                    .last("LIMIT 1"));
+            targetOrgId = sample == null ? null : sample.getOrgId();
+        }
         for (String label : labels) {
             if (StringUtils.hasText(label)) {
-                upsertLabelIfAbsent(userId, orgId, label.trim());
+                upsertLabelIfAbsent(userId, targetOrgId, label.trim());
             }
         }
     }

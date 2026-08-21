@@ -14,9 +14,13 @@ public interface GiftPersonRelationOptionMapper extends BaseMapper<GiftPersonRel
 
     List<GiftPersonRelationItemVo> listSystemPresets();
 
-    List<GiftPersonRelationOptionRowVo> listRelationOptionRows(@Param("userId") Long userId);
+    List<GiftPersonRelationOptionRowVo> listRelationOptionRows(@Param("userId") Long userId,
+                                                               @Param("orgId") Long orgId,
+                                                               @Param("isSuper") boolean isSuper);
 
     Long findOptionIdByRelationType(@Param("userId") Long userId,
+                                    @Param("orgId") Long orgId,
+                                    @Param("isSuper") boolean isSuper,
                                     @Param("relationType") String relationType);
 
     int countSystemByRelationCode(@Param("relationCode") String relationCode);

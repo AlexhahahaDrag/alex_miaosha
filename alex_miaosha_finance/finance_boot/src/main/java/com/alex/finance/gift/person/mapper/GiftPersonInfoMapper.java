@@ -29,7 +29,9 @@ public interface GiftPersonInfoMapper extends BaseMapper<GiftPersonInfo> {
     @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<GiftPersonBusinessVo> getBusinessPage(Page<GiftPersonBusinessVo> page, @Param("query") GiftPersonQuery query);
 
-    List<String> listDistinctCustomRelationTypes(@Param("userId") Long userId);
+    List<String> listDistinctCustomRelationTypes(@Param("userId") Long userId,
+                                                 @Param("orgId") Long orgId,
+                                                 @Param("isSuper") boolean isSuper);
 
     /** 关系类型分布 SQL 聚合（analysis 用，避免全量拉亲友内存分组） */
     @DataPermission(table = "gift_person_info_t", alias = "p", field = "user_id", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)

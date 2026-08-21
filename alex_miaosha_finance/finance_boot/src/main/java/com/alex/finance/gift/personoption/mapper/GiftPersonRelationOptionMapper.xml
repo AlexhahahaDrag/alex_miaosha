@@ -21,7 +21,20 @@
         WHERE o.is_delete = 0
           AND (
               (o.option_type = 'SYSTEM' AND o.user_id = 0)
-              OR (o.option_type = 'CUSTOM' AND o.user_id = #{userId})
+              OR (
+                  o.option_type = 'CUSTOM'
+                  <choose>
+                      <when test="isSuper">
+                          <!-- 超管可见所有自定义关系 -->
+                      </when>
+                      <when test="orgId != null">
+                          AND (o.org_id = #{orgId} OR o.user_id = #{userId})
+                      </when>
+                      <otherwise>
+                          AND o.user_id = #{userId}
+                      </otherwise>
+                  </choose>
+              )
           )
         ORDER BY
             CASE o.option_type WHEN 'SYSTEM' THEN 0 ELSE 1 END,
@@ -36,7 +49,21 @@
         WHERE o.is_delete = 0
           AND (
               (o.option_type = 'SYSTEM' AND o.user_id = 0 AND o.relation_code = #{relationType})
-              OR (o.option_type = 'CUSTOM' AND o.user_id = #{userId} AND o.relation_label = #{relationType})
+              OR (
+                  o.option_type = 'CUSTOM'
+                  AND o.relation_label = #{relationType}
+                  <choose>
+                      <when test="isSuper">
+                          <!-- 超管匹配全系统自定义关系 -->
+                      </when>
+                      <when test="orgId != null">
+                          AND (o.org_id = #{orgId} OR o.user_id = #{userId})
+                      </when>
+                      <otherwise>
+                          AND o.user_id = #{userId}
+                      </otherwise>
+                  </choose>
+              )
           )
         ORDER BY o.last_used_time DESC
         LIMIT 1
