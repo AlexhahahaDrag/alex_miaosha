@@ -144,6 +144,23 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         Page<GiftPersonBusinessVo> page = getBaseMapper().getBusinessPage(
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
+        if (page.getRecords() != null) {
+            LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
+            LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
+            for (GiftPersonBusinessVo vo : page.getRecords()) {
+                if (vo.getLatestRecordTime() != null) {
+                    if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
+                        vo.setRelationStatus("ACTIVE");
+                    } else if (vo.getLatestRecordTime().isBefore(oneEightyDaysAgo)) {
+                        vo.setRelationStatus("DISTANT");
+                    } else {
+                        vo.setRelationStatus("GENERAL");
+                    }
+                } else {
+                    vo.setRelationStatus("DISTANT");
+                }
+            }
+        }
         fillAvatarUrls(page.getRecords());
         return page;
     }
