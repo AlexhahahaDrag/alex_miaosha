@@ -83,6 +83,12 @@ public class GlobalExceptionHandler {
         return Result.error(e.getCode(), e.getMsg());
     }
 
+    @ExceptionHandler(AiException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result<String> handle(AiException e) {
+        log.error("AI异常:{}", e.getMsg(), e);
+        return Result.error(e.getCode(), e.getMsg());
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -4,28 +4,27 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * AI Agent：
- * AI 服务配置
- *
- * 说明：
- * - engine 用于选择默认引擎（deepseek / rule-based）
- * - deepseek 用于配置 DeepSeek OpenAI 兼容接口
+ * AI 服务配置。
+ * <p>engine 可选：sensenova / deepseek / rule-based
  */
 @Data
 @ConfigurationProperties(prefix = "ai")
 public class AiProperties {
 
     /**
-     * AI Agent：默认引擎
-     * - deepseek：优先调用 DeepSeek（需要配置 apiKey）
-     * - rule-based：仅使用本地规则引擎
+     * 默认引擎：sensenova / deepseek / rule-based
      */
     private String engine = "rule-based";
 
-    /**
-     * AI Agent：DeepSeek 配置
-     */
+    private Fallback fallback = new Fallback();
+
     private DeepSeekProperties deepseek = new DeepSeekProperties();
+
+    private SenseNovaProperties sensenova = new SenseNovaProperties();
+
+    @Data
+    public static class Fallback {
+        /** 对应 ai.fallback.enabled，默认 true */
+        private boolean enabled = true;
+    }
 }
-
-

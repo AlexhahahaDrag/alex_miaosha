@@ -90,6 +90,9 @@ public enum ResultEnum implements BaseEnum {
 
     SYSTEM_UP_ERROR("500", "系统更新中，请稍后尝试！"),
 
+    AI_ENGINE_UNAVAILABLE("500701", "AI 引擎不可用"),
+    AI_ENGINE_CALL_FAILED("500702", "AI 引擎调用失败"),
+
     test("11", "11")
     ;
 

@@ -4,6 +4,8 @@ import com.alex.ai.config.AiProperties;
 import com.alex.ai.engine.impl.RuleBasedAiEngine;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.AiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,35 +30,56 @@ public class AiEngineRouter {
     private final List<AiEngine> engines;
 
     public AiAnalyzeResp analyze(AiAnalyzeReq req, String requestId, long start) {
-        String desiredKey = pickFirstNotBlank(req == null ? null : req.getEngine(), aiProperties == null ? null : aiProperties.getEngine());
+        String desiredKey = pickFirstNotBlank(req == null ? null : req.getEngine(),
+                aiProperties == null ? null : aiProperties.getEngine());
         AiEngine desiredEngine = findEngineOrNull(desiredKey);
 
-        // AI Agent：找不到/不可用则走默认兜底
+        // 找不到/不可用
         if (desiredEngine == null || !desiredEngine.isEnabled(aiProperties)) {
-            return ruleBasedAiEngine.analyze(req, requestId, start);
+            if (isFallbackEnabled()) {
+                return ruleBasedAiEngine.analyze(req, requestId, start);
+            }
+            String key = desiredKey == null ? "" : desiredKey;
+            throw new AiException(ResultEnum.AI_ENGINE_UNAVAILABLE.getCode(),
+                    ResultEnum.AI_ENGINE_UNAVAILABLE.getValue() + ": " + key);
         }
 
-        // AI Agent：如果目标本身就是 rule-based，直接执行
+        // 目标本身就是 rule-based，直接执行
         if (ruleBasedAiEngine.key().equalsIgnoreCase(desiredEngine.key())) {
             return ruleBasedAiEngine.analyze(req, requestId, start);
         }
 
-        // AI Agent：非 rule-based 引擎执行失败 -> 回退 rule-based（保持原行为）
+        // 非 rule-based 引擎执行失败
         try {
             return desiredEngine.analyze(req, requestId, start);
         } catch (Exception e) {
-            log.error("AI 引擎调用失败，将回退规则引擎。engine={}, requestId={}, err={}",
-                    desiredEngine.key(), requestId, e.getMessage(), e);
+            String engineKey = desiredEngine.key() == null ? "" : desiredEngine.key();
+            log.error("AI 引擎调用失败。engine={}, requestId={}, err={}",
+                    engineKey, requestId, e.getMessage(), e);
+            if (!isFallbackEnabled()) {
+                String detail = e.getMessage() == null || e.getMessage().isBlank()
+                        ? ResultEnum.AI_ENGINE_CALL_FAILED.getValue()
+                        : e.getMessage();
+                throw new AiException(ResultEnum.AI_ENGINE_CALL_FAILED.getCode(), detail);
+            }
             AiAnalyzeResp fallback = ruleBasedAiEngine.analyze(req, requestId, start);
             fallback.setEngine("rule-based(fallback)");
-            // AI Agent：保持原有语义（DeepSeek 失败时提示 DeepSeek）
-            if ("deepseek".equalsIgnoreCase(desiredEngine.key())) {
-                fallback.setSummary("DeepSeek 调用失败，已回退规则引擎。");
-            } else {
-                fallback.setSummary("AI 引擎调用失败，已回退规则引擎。");
-            }
+            String displayName = AiEngineType.fromKey(engineKey)
+                    .map(AiEngineType::getDisplayName)
+                    .orElse(null);
+            fallback.setSummary(displayName != null
+                    ? displayName + " 调用失败，已回退规则引擎。"
+                    : "AI 引擎调用失败，已回退规则引擎。");
             return fallback;
         }
+    }
+
+    private boolean isFallbackEnabled() {
+        // fallback 缺失时按规格默认 enabled=true
+        if (aiProperties == null || aiProperties.getFallback() == null) {
+            return true;
+        }
+        return aiProperties.getFallback().isEnabled();
     }
 
     private AiEngine findEngineOrNull(String key) {
@@ -81,5 +104,3 @@ public class AiEngineRouter {
         return b;
     }
 }
-
-

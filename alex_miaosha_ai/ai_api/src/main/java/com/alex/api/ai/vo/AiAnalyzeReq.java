@@ -32,7 +32,7 @@ public class AiAnalyzeReq implements Serializable {
      * AI Agent：
      * 以下字段用于在“调用方”按需覆盖服务端默认配置（向后兼容：不传则走服务端默认）
      */
-    @ApiModelProperty(value = "指定引擎（可选：deepseek / rule-based），优先级高于服务端默认配置")
+    @ApiModelProperty(value = "指定引擎（可选：sensenova / deepseek / rule-based），优先级高于服务端默认配置")
     private String engine;
 
     @ApiModelProperty(value = "指定模型（可选，例如：deepseek-chat / deepseek-reasoner）")

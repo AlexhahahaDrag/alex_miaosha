@@ -8,43 +8,38 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DataPermissionInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.aop.interceptor.PerformanceMonitorInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- *description:  
- *author:       alex
- *createDate:   2020/11/7 10:50
- *version:      1.0.0
- */
 @Configuration
 @EnableTransactionManagement
 @MapperScan("com.alex.user.*.mapper")
-@RequiredArgsConstructor
 public class MybatisPlusConfig {
 
-    private final UserUtils userUtils;
-
-    // RBAC-BE-SCOPE-002: 机构管理员 ORG_ID scope 扩展到子孙机构，需要真实子树查询实现。
-    private final OrgSubtreeLookup orgSubtreeLookup;
-
-    // 最新版
+    /**
+     * OrgSubtreeLookup 必须 {@code @Lazy}：真实实现依赖 OrgInfoMapper，
+     * 若在创建 sqlSessionFactory / interceptor 时强初始化，会形成循环依赖。
+     */
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(
+            UserUtils userUtils,
+            @Lazy OrgSubtreeLookup orgSubtreeLookup) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils, orgSubtreeLookup)));
+        interceptor.addInnerInterceptor(
+                new DataPermissionInterceptor(
+                        new DataPermissionHandlerImpl(userUtils, orgSubtreeLookup)));
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;
     }
 
     @Bean
-    @Profile({"dev","test"})// 设置 dev test 环境开启
+    @Profile({"dev", "test"})
     public PerformanceMonitorInterceptor performanceInterceptor() {
         return new PerformanceMonitorInterceptor();
     }

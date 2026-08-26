@@ -39,6 +39,9 @@ spring:
           - data-id: ${nacos.minio}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
+          - data-id: ${nacos.ai-config}.${nacos.file-extension}
+            group: ${nacos.group}
+            refresh: true
       discovery:
         server-addr: ${nacos.url}
         namespace: ${nacos.namaspace}
@@ -63,3 +66,4 @@ nacos:
   wechat: wechat
   xxl: xxl
   minio: minio
+  ai-config: ai-config

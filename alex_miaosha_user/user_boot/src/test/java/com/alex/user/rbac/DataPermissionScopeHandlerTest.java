@@ -138,7 +138,7 @@ public class DataPermissionScopeHandlerTest {
     }
 
     private static DataPermissionHandlerImpl handler(TUserVo loginUser) {
-        return new DataPermissionHandlerImpl(new FakeUserUtils(loginUser));
+        return new DataPermissionHandlerImpl(new FakeUserUtils(loginUser), OrgSubtreeLookup.NOOP);
     }
 
     private static DataPermissionHandlerImpl handler(TUserVo loginUser, OrgSubtreeLookup orgSubtreeLookup) {

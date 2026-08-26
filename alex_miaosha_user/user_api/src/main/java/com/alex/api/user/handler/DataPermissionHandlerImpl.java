@@ -7,16 +7,21 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.expression.Alias;
+import net.sf.jsqlparser.expression.CastExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.ExistsExpression;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.create.table.ColDataType;
 import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
@@ -35,28 +40,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     private final UserUtils userUtils;
 
     /**
-     * RBAC-BE-SCOPE-002: 机构子孙节点查询，默认 {@link OrgSubtreeLookup#NOOP}（不扩展范围）。
+     * RBAC-BE-SCOPE-002: 机构子孙节点查询。
+     * 无真实实现的服务注入 {@link OrgSubtreeLookup#NOOP}（见 OrgSubtreeLookupConfiguration）。
      */
     private final OrgSubtreeLookup orgSubtreeLookup;
-
-    /**
-     * 兼容既有调用方（product/oss/finance boot 的 MybatisPlusConfig 仍以单参构造），
-     * 未接入机构子树能力时保持原有「仅本机构」语义。
-     */
-    public DataPermissionHandlerImpl(UserUtils userUtils) {
-        this(userUtils, OrgSubtreeLookup.NOOP);
-    }
-
-    public DataPermissionHandlerImpl(UserUtils userUtils, OrgSubtreeLookup orgSubtreeLookup) {
-        this.userUtils = userUtils;
-        this.orgSubtreeLookup = orgSubtreeLookup == null ? OrgSubtreeLookup.NOOP : orgSubtreeLookup;
-    }
 
     /**
      * 线程本地变量，防止在获取当前登录用户时触发其他 SQL 查询导致无限递归
@@ -110,6 +104,9 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         }
         if (scope == DataPermissionScope.ORG_SHARED) {
             return getOrgSharedWhere(where, loginUser, annotation, roleFlags.isAdmin());
+        }
+        if (scope == DataPermissionScope.ROLE_ORG_BOUND) {
+            return getRoleOrgBoundWhere(where, loginUser, annotation, roleFlags.isAdmin());
         }
 
         if (roleFlags.isAdmin()) {
@@ -185,6 +182,93 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             return where == null ? condition : new AndExpression(where, condition);
         }
         return appendOrgMembersIn(where, annotation, orgId);
+    }
+
+    /**
+     * ROLE_ORG_BOUND: non-super sees roles with a valid binding whose org_id ∈ S
+     * (admin: self ∪ descendants; user: self only). Super already short-circuited.
+     */
+    private Expression getRoleOrgBoundWhere(Expression where, TUserVo loginUser, DataPermission annotation, boolean isAdmin) {
+        Long selfOrgId = resolveLoginOrgId(loginUser);
+        if (selfOrgId == null) {
+            log.warn("ROLE_ORG_BOUND 未解析到登录机构，降级为不可见：userId={}", loginUser.getId());
+            EqualsTo impossible = new EqualsTo();
+            impossible.setLeftExpression(new LongValue(1L));
+            impossible.setRightExpression(new LongValue(0L));
+            return where == null ? impossible : new AndExpression(where, impossible);
+        }
+        List<Long> scopeIds = isAdmin
+                ? buildAdminOrgScopeIds(selfOrgId)
+                : Collections.singletonList(selfOrgId);
+        Expression exists = buildRoleOrgBoundExists(resolveTargetTable(annotation), scopeIds);
+        return where == null ? exists : new AndExpression(where, exists);
+    }
+
+    /**
+     * EXISTS (
+     *   SELECT 1 FROM alex_user.t_role_org_info roi
+     *   WHERE roi.is_delete = 0 AND roi.status = '1'
+     *     AND roi.role_id = CAST(&lt;table&gt;.id AS CHAR)
+     *     AND roi.org_id IN (...S as strings...)
+     * )
+     */
+    private Expression buildRoleOrgBoundExists(String roleTable, List<Long> orgScopeIds) {
+        PlainSelect plainSelect = new PlainSelect();
+        plainSelect.addSelectItems(new SelectItem<>(new LongValue(1L)));
+
+        Table roiTable = new Table("alex_user.t_role_org_info");
+        roiTable.setAlias(new Alias("roi", false));
+        plainSelect.setFromItem(roiTable);
+
+        EqualsTo deleteCondition = new EqualsTo();
+        deleteCondition.setLeftExpression(new Column("roi.is_delete"));
+        deleteCondition.setRightExpression(new LongValue(0L));
+
+        EqualsTo statusCondition = new EqualsTo();
+        statusCondition.setLeftExpression(new Column("roi.status"));
+        statusCondition.setRightExpression(new StringValue("1"));
+
+        EqualsTo roleIdCondition = new EqualsTo();
+        roleIdCondition.setLeftExpression(new Column("roi.role_id"));
+        CastExpression castRoleId = new CastExpression();
+        castRoleId.setLeftExpression(new Column(new Table(roleTable), "id"));
+        castRoleId.setColDataType(new ColDataType("CHAR"));
+        castRoleId.setUseCastKeyword(true);
+        roleIdCondition.setRightExpression(castRoleId);
+
+        Expression orgScopeCondition = buildStringIdListExpression("roi", "org_id", orgScopeIds);
+
+        Expression whereCondition = new AndExpression(
+                new AndExpression(new AndExpression(deleteCondition, statusCondition), roleIdCondition),
+                orgScopeCondition
+        );
+        plainSelect.setWhere(whereCondition);
+
+        ParenthesedSelect subSelect = new ParenthesedSelect();
+        subSelect.setSelect(plainSelect);
+
+        ExistsExpression exists = new ExistsExpression();
+        exists.setRightExpression(subSelect);
+        return exists;
+    }
+
+    /** org_id / role_id 等 varchar 列：IN/Equals 使用字符串字面量。 */
+    private Expression buildStringIdListExpression(String tableOrAlias, String fieldName, List<Long> ids) {
+        Column column = new Column(tableOrAlias + "." + fieldName);
+        if (ids.size() == 1) {
+            EqualsTo eq = new EqualsTo();
+            eq.setLeftExpression(column);
+            eq.setRightExpression(new StringValue(String.valueOf(ids.get(0))));
+            return eq;
+        }
+        InExpression in = new InExpression();
+        in.setLeftExpression(column);
+        List<Expression> values = new ArrayList<>();
+        for (Long id : ids) {
+            values.add(new StringValue(String.valueOf(id)));
+        }
+        in.setRightExpression(new ParenthesedExpressionList<>(values));
+        return in;
     }
 
     private String resolveTargetTable(DataPermission annotation) {

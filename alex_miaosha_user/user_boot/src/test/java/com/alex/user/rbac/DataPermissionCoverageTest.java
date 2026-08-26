@@ -1,6 +1,7 @@
 package com.alex.user.rbac;
 
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -47,6 +49,8 @@ public class DataPermissionCoverageTest {
     void roleInfoMapperQueryMethodsHaveDataPermission() throws NoSuchMethodException {
         assertHasDataPermission(RoleInfoMapper.class, "queryRoleInfo", String.class);
         assertHasDataPermission(RoleInfoMapper.class, "getPage", Page.class, RoleInfoVo.class);
+        assertRoleOrgBoundScope(RoleInfoMapper.class, "queryRoleInfo", String.class);
+        assertRoleOrgBoundScope(RoleInfoMapper.class, "getPage", Page.class, RoleInfoVo.class);
     }
 
     @Test
@@ -91,5 +95,15 @@ public class DataPermissionCoverageTest {
         Method method = mapperClass.getMethod(methodName, paramTypes);
         assertNotNull(method.getAnnotation(DataPermission.class),
                 () -> mapperClass.getSimpleName() + "#" + methodName + " must declare @DataPermission");
+    }
+
+    private static void assertRoleOrgBoundScope(Class<?> mapperClass, String methodName, Class<?>... paramTypes)
+            throws NoSuchMethodException {
+        Method method = mapperClass.getMethod(methodName, paramTypes);
+        DataPermission ann = method.getAnnotation(DataPermission.class);
+        assertNotNull(ann);
+        assertEquals(DataPermissionScope.ROLE_ORG_BOUND, ann.scope(),
+                () -> mapperClass.getSimpleName() + "#" + methodName + " must use ROLE_ORG_BOUND");
+        assertEquals("t_role_info", ann.table());
     }
 }

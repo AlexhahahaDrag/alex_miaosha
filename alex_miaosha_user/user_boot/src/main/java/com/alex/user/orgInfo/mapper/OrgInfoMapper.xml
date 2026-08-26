@@ -71,25 +71,26 @@
         </where>
     </select>
 
+     <!-- 自连接 par_info 后两侧同名列多，条件必须带主表前缀，否则 MySQL 报 Column ambiguous -->
      <sql id="queryInfo">
         <if test = "orgInfoVo != null">
           <if test = "orgInfoVo.orgCode != null">
-            and org_code like concat('%', #{orgInfoVo.orgCode}, '%')
+            and t_org_info.org_code like concat('%', #{orgInfoVo.orgCode}, '%')
           </if>
           <if test = "orgInfoVo.orgName != null">
-            and org_name like concat('%', #{orgInfoVo.orgName}, '%')
+            and t_org_info.org_name like concat('%', #{orgInfoVo.orgName}, '%')
           </if>
           <if test = "orgInfoVo.orgShortName != null">
-            and org_short_name like concat('%', #{orgInfoVo.orgShortName}, '%')
+            and t_org_info.org_short_name like concat('%', #{orgInfoVo.orgShortName}, '%')
           </if>
           <if test = "orgInfoVo.parentId != null">
-            and parent_id = #{orgInfoVo.parentId}
+            and t_org_info.parent_id = #{orgInfoVo.parentId}
           </if>
           <if test = "orgInfoVo.summary != null">
-            and summary like concat('%', #{orgInfoVo.summary}, '%')
+            and t_org_info.summary like concat('%', #{orgInfoVo.summary}, '%')
           </if>
           <if test = "orgInfoVo.status != null">
-            and status like concat('%', #{orgInfoVo.status}, '%')
+            and t_org_info.`status` like concat('%', #{orgInfoVo.status}, '%')
           </if>
         </if>
      </sql>

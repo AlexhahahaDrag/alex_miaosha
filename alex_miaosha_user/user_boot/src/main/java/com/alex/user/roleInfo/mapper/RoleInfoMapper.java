@@ -18,9 +18,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface RoleInfoMapper extends BaseMapper<RoleInfo> {
 
-    @DataPermission(table = "t_role_info", field = "operator", scope = DataPermissionScope.USER_IDS)
+    @DataPermission(table = "t_role_info", scope = DataPermissionScope.ROLE_ORG_BOUND)
     Page<RoleInfoVo> getPage(Page<RoleInfoVo> page, @Param("roleInfoVo") RoleInfoVo roleInfoVo);
 
-    @DataPermission(table = "t_role_info", field = "operator", scope = DataPermissionScope.USER_IDS)
+    @DataPermission(table = "t_role_info", scope = DataPermissionScope.ROLE_ORG_BOUND)
     RoleInfoVo queryRoleInfo(@Param("id") String id);
 }

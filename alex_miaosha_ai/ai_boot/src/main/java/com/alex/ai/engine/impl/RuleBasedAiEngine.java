@@ -1,6 +1,7 @@
 package com.alex.ai.engine.impl;
 
 import com.alex.ai.engine.AiEngine;
+import com.alex.ai.engine.AiEngineType;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class RuleBasedAiEngine implements AiEngine {
 
     @Override
     public String key() {
-        return "rule-based";
+        return AiEngineType.RULE_BASED.getKey();
     }
 
     @Override

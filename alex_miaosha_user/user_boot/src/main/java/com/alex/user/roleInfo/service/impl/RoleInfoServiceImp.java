@@ -1,5 +1,6 @@
 package com.alex.user.roleInfo.service.impl;
 
+import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
 import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
@@ -13,10 +14,15 @@ import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
+import com.alex.user.rbac.OrgScopeIdsResolver;
 import com.alex.user.rbac.service.PermissionContextCacheService;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.roleInfo.entity.RoleInfo;
 import com.alex.user.roleInfo.mapper.RoleInfoMapper;
 import com.alex.user.roleInfo.service.RoleInfoService;
+import com.alex.user.roleOrgInfo.entity.RoleOrgInfo;
+import com.alex.user.roleOrgInfo.service.RoleOrgInfoService;
 import com.alex.user.rolePermissionInfo.entity.RolePermissionInfo;
 import com.alex.user.rolePermissionInfo.service.RolePermissionInfoService;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
@@ -29,10 +35,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 /**
@@ -58,6 +67,12 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     private final PermissionContextCacheService permissionContextCacheService;
 
     private final UserUtils userUtils;
+
+    private final RoleOrgInfoService roleOrgInfoService;
+
+    private final OrgUserInfoService orgUserInfoService;
+
+    private final OrgSubtreeLookup orgSubtreeLookup;
 
     @Override
     public Page<RoleInfoVo> getPage(Long pageNum, Long pageSize, RoleInfoVo roleInfoVo) {
@@ -99,15 +114,25 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                 })
                 .toList();
         roleInfoVo.setRoleUserInfoVoList(roleUserInfoVoList);
+        List<Long> orgIds = roleOrgInfoService.listValidByRoleId(id).stream()
+                .map(RoleOrgInfo::getOrgId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        roleInfoVo.setOrgIds(orgIds);
         return roleInfoVo;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String addRoleInfo(RoleInfoVo roleInfoVo) {
         assertRoleCodeUnique(roleInfoVo == null ? null : roleInfoVo.getRoleCode(), null);
+        List<Long> bindOrgIds = resolveCreateOrgIds(roleInfoVo);
+        assertOrgsInCallerScope(bindOrgIds, true);
         RoleInfo roleInfo = new RoleInfo();
         BeanUtils.copyProperties(roleInfoVo, roleInfo);
         roleInfoMapper.insert(roleInfo);
+        roleOrgInfoService.assignOrgs(roleInfo.getId(), bindOrgIds);
         // Return created id as String to avoid frontend page-lookup race / LIKE mismatch
         return String.valueOf(roleInfo.getId());
     }
@@ -157,6 +182,17 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
             row.setStatus(SysConf.INVALID_STATUS);
             if (!rolePermissionInfoService.updateById(row)) {
                 throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色权限旧关系失效失败:");
+            }
+        }
+        // Cascade-invalidate role-org bindings in the same TX as delete.
+        List<RoleOrgInfo> activeRoleOrgs = roleOrgInfoService.list(
+                Wrappers.<RoleOrgInfo>lambdaQuery()
+                        .in(RoleOrgInfo::getRoleId, idArr)
+                        .eq(RoleOrgInfo::getStatus, SysConf.VALID_STATUS));
+        for (RoleOrgInfo row : activeRoleOrgs) {
+            row.setStatus(SysConf.INVALID_STATUS);
+            if (!roleOrgInfoService.updateById(row)) {
+                throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色机构旧关系失效失败:");
             }
         }
         // Optional harden: invalidate leftover valid role_user (should be empty after guard).
@@ -232,9 +268,10 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         if (isSuperAdminLogin(loginUser)) {
             return;
         }
+        // Fail-closed via scoped queryRoleInfo (ROLE_ORG_BOUND): null = outside bind-org visibility.
         RoleInfoVo visible = roleInfoMapper.queryRoleInfo(String.valueOf(id));
         if (visible == null) {
-            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构的角色");
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：角色不在可见绑定机构范围");
         }
     }
 
@@ -280,7 +317,47 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     public Boolean assignUsers(Long roleId, List<Long> userIds) {
         // C2 修复：assign 系列是"授予超管"这类最高危写操作，必须先过归属校验 + 超管授予禁令。
         assertRoleGrantable(roleId);
+        assertUsersIntersectRoleOrgs(roleId, userIds);
         return roleUserInfoService.assignUsersToRole(roleId, userIds);
+    }
+
+    /**
+     * Spec §5.3: each assigned user must have a valid org that intersects the role's
+     * valid org bindings; empty intersection is fail-closed.
+     */
+    private void assertUsersIntersectRoleOrgs(Long roleId, List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return;
+        }
+        Set<String> roleOrgIds = roleOrgInfoService.listValidByRoleId(roleId).stream()
+                .map(RoleOrgInfo::getOrgId)
+                .filter(id -> !StringUtils.isEmpty(id))
+                .collect(Collectors.toSet());
+        for (Long userId : userIds) {
+            if (userId == null) {
+                continue;
+            }
+            Set<String> userOrgIds = new HashSet<>();
+            List<OrgInfoVo> orgs = orgUserInfoService.getOrgInfoList(userId);
+            if (orgs != null) {
+                for (OrgInfoVo org : orgs) {
+                    if (org != null && org.getId() != null) {
+                        userOrgIds.add(String.valueOf(org.getId()));
+                    }
+                }
+            }
+            boolean intersects = false;
+            for (String orgId : userOrgIds) {
+                if (roleOrgIds.contains(orgId)) {
+                    intersects = true;
+                    break;
+                }
+            }
+            if (!intersects) {
+                throw new SystemException(ResultEnum.PARAM_ERROR,
+                        "无权分配：用户机构与角色绑定机构无交集");
+            }
+        }
     }
 
     @Override
@@ -308,5 +385,81 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         // RBAC-BE-RELATION-002: 权限授权变更后失效该角色下所有绑定用户的缓存
         permissionContextCacheService.invalidateAll(toLongUserIds(boundUserIds));
         return ok;
+    }
+
+    @Override
+    public Boolean assignOrgs(Long roleId, List<Long> orgIds) {
+        assertRoleAccessible(roleId);
+        assertOrgsInCallerScope(orgIds, false);
+        return roleOrgInfoService.assignOrgs(roleId, orgIds);
+    }
+
+    /**
+     * Create path: Vo.orgIds if present, else default to login effective org.
+     * Must be non-empty before insert.
+     */
+    private List<Long> resolveCreateOrgIds(RoleInfoVo roleInfoVo) {
+        List<Long> fromVo = parseOrgIds(roleInfoVo == null ? null : roleInfoVo.getOrgIds());
+        if (!fromVo.isEmpty()) {
+            return fromVo;
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        Long selfOrgId = OrgScopeIdsResolver.resolveLoginOrgId(loginUser);
+        if (selfOrgId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "创建角色必须绑定机构");
+        }
+        return Collections.singletonList(selfOrgId);
+    }
+
+    private static List<Long> parseOrgIds(List<String> rawIds) {
+        if (rawIds == null || rawIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Long> result = new ArrayList<>();
+        for (String raw : rawIds) {
+            if (StringUtils.isEmpty(raw)) {
+                continue;
+            }
+            try {
+                result.add(Long.valueOf(raw.trim()));
+            } catch (NumberFormatException e) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "机构ID不合法");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param requireNonEmpty true for create (must bind at least one org);
+     *                        false for assign-orgs (non-super still cannot clear / bind out of scope)
+     */
+    private void assertOrgsInCallerScope(List<Long> orgIds, boolean requireNonEmpty) {
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        List<Long> normalized = orgIds == null ? Collections.emptyList() : orgIds.stream()
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
+        if (requireNonEmpty && normalized.isEmpty()) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "创建角色必须绑定机构");
+        }
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
+            return;
+        }
+        // Non-super: empty assign clears bindings — forbidden by upper layer
+        if (normalized.isEmpty()) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权绑定范围外机构");
+        }
+        OrgScopeIdsResolver resolver = new OrgScopeIdsResolver(orgSubtreeLookup);
+        Set<Long> scope = resolver.resolveOrgScopeIds(loginUser);
+        if (scope == null) {
+            return;
+        }
+        for (Long orgId : normalized) {
+            if (!scope.contains(orgId)) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权绑定范围外机构");
+            }
+        }
     }
 }

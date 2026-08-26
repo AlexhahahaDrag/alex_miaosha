@@ -1,5 +1,6 @@
 package com.alex.user.rbac;
 
+import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
@@ -7,9 +8,11 @@ import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.exception.SystemException;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
 import com.alex.user.rbac.service.PermissionContextCacheService;
+import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.roleInfo.entity.RoleInfo;
 import com.alex.user.roleInfo.mapper.RoleInfoMapper;
 import com.alex.user.roleInfo.service.impl.RoleInfoServiceImp;
+import com.alex.user.roleOrgInfo.service.RoleOrgInfoService;
 import com.alex.user.rolePermissionInfo.service.RolePermissionInfoService;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -47,6 +50,12 @@ public class RoleCodeUniquenessTest {
     private PermissionContextCacheService permissionContextCacheService;
     @Mock
     private UserUtils userUtils;
+    @Mock
+    private RoleOrgInfoService roleOrgInfoService;
+    @Mock
+    private OrgUserInfoService orgUserInfoService;
+    @Mock
+    private OrgSubtreeLookup orgSubtreeLookup;
 
     private RoleInfoServiceImp service;
 
@@ -58,7 +67,10 @@ public class RoleCodeUniquenessTest {
                 rolePermissionInfoService,
                 roleUserInfoService,
                 permissionContextCacheService,
-                userUtils
+                userUtils,
+                roleOrgInfoService,
+                orgUserInfoService,
+                orgSubtreeLookup
         );
     }
 
@@ -92,18 +104,22 @@ public class RoleCodeUniquenessTest {
     @Test
     void addRoleInfo_allowsUniqueRoleCode() {
         when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
         when(roleInfoMapper.insert(any(RoleInfo.class))).thenAnswer(inv -> {
             RoleInfo entity = inv.getArgument(0);
             entity.setId(99L);
             return 1;
         });
+        when(roleOrgInfoService.assignOrgs(any(), any())).thenReturn(true);
 
         RoleInfoVo vo = new RoleInfoVo();
         vo.setRoleCode("NEW-ROLE");
         vo.setRoleName("new");
+        vo.setOrgIds(Collections.singletonList("20"));
 
         assertDoesNotThrow(() -> service.addRoleInfo(vo));
         verify(roleInfoMapper).insert(any(RoleInfo.class));
+        verify(roleOrgInfoService).assignOrgs(any(), any());
     }
 
     @Test
