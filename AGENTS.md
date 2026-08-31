@@ -2,6 +2,7 @@
 
 - 用户说「git提交代码」时，默认执行 **commit + push**（推送到当前分支的 remote tracking branch）；仅当用户明确说「只 commit / 不要 push」时才跳过 push。
 - 提交时禁止写入/暂存 `.git-commit-msg.txt`、`.merge-commit-msg.txt` 等临时 commit message 文件；消息一律通过 `git commit -m`（或等价管道/heredoc）直接传入，提交后也不在仓库里残留这类文件。
+- 为绕过环境限制而创建的临时脚本（如 `%TEMP%\git-*-commit.bat`）必须在用完后立即删除，不得留在 TEMP、工作区或被 Git 跟踪。
 - 提交 Git 记录时，切勿在提交信息中携带 `Co-authored-by: Cursor <cursoragent@cursor.com>` 尾缀信息，并且在 Windows 环境下提交时注意避免中文注释产生乱码。
 - 前端处理 ID 数据时，必须避免将其作为 JavaScript `number` 类型处理（以防精度丢失导致低位数字变为 00），前端一律保持为 `string` 字符串类型，后端维持 `Long` 并通过特定注解与序列化机制进行互转。
 - 前端发起 API 请求并处理响应时，统一采用对象解构的形式，即 `const { code, data, message } = await api()`，禁止直接通过 `res.code` 链式点读取。

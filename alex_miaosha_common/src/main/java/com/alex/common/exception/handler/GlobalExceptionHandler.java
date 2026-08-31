@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -67,6 +68,42 @@ public class GlobalExceptionHandler {
         }
         log.error("参数校验异常:{}", errorMsg, bindException);
         return Result.error("400", errorMsg);
+    }
+
+    /**
+     * 请求体缺失 / JSON 非法：客户端问题，按 400 友好返回，避免兜底成「系统异常」刷 ERROR 栈。
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<String> handle(HttpMessageNotReadableException ex) {
+        String tip = "请求体无效或缺失，请提交 JSON（例如 {\"content\":\"...\"}）";
+        Throwable root = ex.getMostSpecificCause();
+        String rootMsg = root == null ? null : root.getMessage();
+        String wrapperMsg = ex.getMessage();
+        String detail = rootMsg != null ? rootMsg : wrapperMsg;
+
+        if (containsAny(wrapperMsg, rootMsg, "JSON parse error", "Unexpected character")) {
+            tip = "请求体 JSON 格式错误";
+        } else if (containsAny(wrapperMsg, rootMsg, "Required request body is missing")) {
+            tip = "请求体缺失，请提交 JSON（例如 {\"content\":\"...\"}）";
+        }
+        log.warn("请求体解析失败: {}", detail);
+        return Result.error("400", tip);
+    }
+
+    private static boolean containsAny(String a, String b, String... needles) {
+        for (String needle : needles) {
+            if (needle == null) {
+                continue;
+            }
+            if (a != null && a.contains(needle)) {
+                return true;
+            }
+            if (b != null && b.contains(needle)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @ExceptionHandler(ProductException.class)

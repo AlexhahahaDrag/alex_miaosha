@@ -19,15 +19,15 @@
 | 5 | `POST /am-ai/api/v1/ai/chat`（经 Gateway :30001，带 Token）返回业务成功 | ⏸ deferred | User 未起（`:30006` conn refused；Gateway `/am-user/.../login` → 503），无 Token；Gateway 无 Token → **401**。直连 `:30010/api/v1/ai/chat` rule-based → **200**（仅后端 sanity） |
 | 6 | `POST /am-ai/api/v1/ai/chat/stream` 响应 `text/event-stream`，可见 `meta`/`delta`/`done` | ⏸ deferred | 同上无 Token，Gateway stream → **401**。直连 `:30010/.../stream` 可见 `event:meta`/`delta`/`done` |
 | 7 | stream 响应体**不是** AES 整包密文（可人眼看到 `event:` 行） | ⏸ deferred | Gateway 路径未测（无 Token）。直连 AI stream 为明文 SSE（非 AES 整包）— Gateway 路径待 User 起后复测 |
-| 8 | `GET /am-ai/v3/api-docs?group=alex-ai` 含 `/ai/chat` 与 stream | ❌ | Gateway → **401**（`GatewayWebSecurityConfig` 仅 permit `/v3/api-docs`，不含 `/am-ai/v3/api-docs`）。直连 `:30010/v3/api-docs?group=alex-ai` → **200**，paths 含 `/am-ai/api/v1/ai/chat` 与 `/stream` |
-| 9 | Apifox 导入上述 OpenAPI URL 成功 | ⏸ deferred | 未手工打开 Apifox；Gateway OpenAPI URL 401。可暂用 `http://127.0.0.1:30010/v3/api-docs?group=alex-ai` 导入 — **verify when Gateway doc path fixed + Apifox available** |
+| 8 | `GET /am-ai/v3/api-docs?group=alex-ai` 含 `/ai/chat` 与 stream | ⏸ deferred | Security whitelist fixed（`GatewayWebSecurityConfig` 已加 `/am-ai/**`）；**re-smoke after Gateway restart** — 预期 Gateway → **200** |
+| 9 | Apifox 导入上述 OpenAPI URL 成功 | ⏸ deferred | Security fixed in WT（`GatewayWebSecurityConfig` 已加 `/am-ai/**`）；**re-smoke OpenAPI/Apifox after Gateway restart** — 未手工打开 Apifox |
 
 ## Automated
 
 | # | Item | Pass? | Notes |
 |---|------|-------|-------|
-| 10 | `GatewayAiRouteConfigTest` green | | `mvn -pl alex_miaosha_gateway test -Dtest=GatewayAiRouteConfigTest` |
-| 11 | `GatewaySsePathMatcherTest` green | | `mvn -pl alex_miaosha_gateway test -Dtest=GatewaySsePathMatcherTest` |
+| 10 | `GatewayAiRouteConfigTest` green | ✅ | `mvn -pl alex_miaosha_gateway -am test -Dtest=GatewayAiRouteConfigTest,GatewaySsePathMatcherTest,GatewayWebSecurityConfigTest` — green (JDK 17) |
+| 11 | `GatewaySsePathMatcherTest` green | ✅ | 同上 |
 
 ## 不测理由
 
