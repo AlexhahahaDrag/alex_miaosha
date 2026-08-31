@@ -12,6 +12,9 @@ spring:
           filters:
             # 保留原始请求的host头信息，并原封不动的转发出去，而不是被gateway的http客户端重置�?
             - PreserveHostHeader
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 180s
       routes:
         #移除前缀
         #            - name: RequestRateLimiter
@@ -50,6 +53,13 @@ spring:
           uri: lb://alex-product-prod
           predicates:
             - Path=/am-product/**
+          filters:
+            - StripPrefix=1
+
+        - id: alex-ai
+          uri: lb://alex-ai-prod
+          predicates:
+            - Path=/am-ai/**
           filters:
             - StripPrefix=1
   #

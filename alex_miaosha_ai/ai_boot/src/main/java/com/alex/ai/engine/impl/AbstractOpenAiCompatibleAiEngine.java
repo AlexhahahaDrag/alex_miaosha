@@ -5,6 +5,7 @@ import com.alex.ai.config.AiProperties;
 import com.alex.ai.config.OpenAiCompatibleProperties;
 import com.alex.ai.engine.AiEngine;
 import com.alex.ai.engine.AiEngineType;
+import com.alex.ai.stream.AiStreamSink;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,6 +14,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * OpenAI Chat Completions 兼容引擎抽象基类。
@@ -53,7 +55,46 @@ public abstract class AbstractOpenAiCompatibleAiEngine implements AiEngine {
         return toAnalyzeRespFromLlm(requestId, llmContent, engineTag, start);
     }
 
-    private AiAnalyzeResp toAnalyzeRespFromLlm(String requestId, String llmContent, String engine, long start) {
+    @Override
+    public void analyzeStream(AiAnalyzeReq req, String requestId, long start, AiStreamSink sink) {
+        OpenAiCompatibleProperties props = resolveProps(aiProperties);
+        String defaultModel = props == null ? null : props.getModel();
+        String model = pickFirstNotBlank(req == null ? null : req.getModel(), defaultModel);
+        String engineTag = key() + ":" + (model == null ? "default" : model);
+
+        sink.meta(requestId, engineTag);
+
+        int readTimeoutMs = 120000;
+        if (aiProperties != null && aiProperties.getStream() != null) {
+            readTimeoutMs = aiProperties.getStream().getReadTimeoutMs();
+        }
+
+        StringBuilder accumulated = new StringBuilder();
+        AtomicBoolean completed = new AtomicBoolean(false);
+        try {
+            openAiCompatibleClient.chatStream(
+                    req,
+                    props,
+                    engineType().getDisplayName(),
+                    readTimeoutMs,
+                    delta -> {
+                        accumulated.append(delta);
+                        sink.delta(delta);
+                    },
+                    () -> {
+                        completed.set(true);
+                        AiAnalyzeResp resp = toAnalyzeRespFromLlm(
+                                requestId, accumulated.toString(), engineTag, start);
+                        sink.done(resp);
+                    });
+        } catch (Exception e) {
+            if (!completed.get()) {
+                sink.error("500702", e.getMessage() == null ? "AI 引擎调用失败" : e.getMessage());
+            }
+        }
+    }
+
+    protected AiAnalyzeResp toAnalyzeRespFromLlm(String requestId, String llmContent, String engine, long start) {
         AiAnalyzeResp resp = new AiAnalyzeResp();
         resp.setRequestId(requestId);
         resp.setEngine(engine);

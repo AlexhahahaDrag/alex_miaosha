@@ -22,9 +22,17 @@ public class AiProperties {
 
     private SenseNovaProperties sensenova = new SenseNovaProperties();
 
+    private Stream stream = new Stream();
+
     @Data
     public static class Fallback {
         /** 对应 ai.fallback.enabled，默认 true */
         private boolean enabled = true;
+    }
+
+    @Data
+    public static class Stream {
+        /** 流式读超时（毫秒），默认 120000 */
+        private int readTimeoutMs = 120000;
     }
 }

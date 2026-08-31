@@ -3,7 +3,8 @@
 > **关联项目**：`alex_miaosha_ai`（`ai_api` + `ai_boot`）  
 > **关联文档**：根目录 `TESTING_STANDARD.md`；`docs/superpowers/specs/2026-08-26-ai-engine-governance-design.md`  
 > **样板属性**：结构参考 `tests/checklists/gift.md`，聚焦 AI 引擎路由 / OpenAI 兼容客户端 / Nacos 配置约定  
-> **最后更新**：2026-08-26
+> **流式专项**：SSE 双模式见 [`ai-analyze-stream.md`](./ai-analyze-stream.md)  
+> **最后更新**：2026-08-28
 
 ---
 

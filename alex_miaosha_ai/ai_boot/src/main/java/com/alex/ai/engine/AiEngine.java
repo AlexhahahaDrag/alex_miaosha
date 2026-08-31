@@ -1,6 +1,7 @@
 package com.alex.ai.engine;
 
 import com.alex.ai.config.AiProperties;
+import com.alex.ai.stream.AiStreamSink;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 
@@ -34,6 +35,22 @@ public interface AiEngine {
      * @param start 开始时间（ms）
      */
     AiAnalyzeResp analyze(AiAnalyzeReq req, String requestId, long start);
+
+    /**
+     * AI Agent：流式分析（默认：整包 analyze 后拆成 meta → 可选 delta → done）
+     */
+    default void analyzeStream(AiAnalyzeReq req, String requestId, long start, AiStreamSink sink) {
+        try {
+            sink.meta(requestId, key());
+            AiAnalyzeResp resp = analyze(req, requestId, start);
+            if (resp.getSummary() != null && !resp.getSummary().isEmpty()) {
+                sink.delta(resp.getSummary());
+            }
+            sink.done(resp);
+        } catch (Exception e) {
+            sink.error("500702", e.getMessage() == null ? "AI 引擎调用失败" : e.getMessage());
+        }
+    }
 }
 
 

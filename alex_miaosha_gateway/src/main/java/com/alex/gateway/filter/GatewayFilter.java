@@ -96,6 +96,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             "**/*.docx"
     );
 
+    // SSE 流式响应路径，跳过加密缓冲
+    private final GatewaySsePathMatcher ssePathMatcher = new GatewaySsePathMatcher();
+
     @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -191,6 +194,30 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return false;
     }
 
+    /**
+     * 判断是否应跳过响应加密（文件下载、SSE 流等）
+     */
+    private boolean shouldSkipResponseEncryption(ServerHttpResponse response, String path) {
+        if (isFileResponse(response, path)) {
+            return true;
+        }
+
+        if (ssePathMatcher.matches(path)) {
+            log.info("检测到 SSE 流式路径，跳过加密: {}", path);
+            return true;
+        }
+
+        String contentType = response.getHeaders().getContentType() != null
+                ? response.getHeaders().getContentType().toString().toLowerCase()
+                : "";
+        if (contentType.contains("text/event-stream")) {
+            log.info("检测到 SSE Content-Type，跳过加密: {}", contentType);
+            return true;
+        }
+
+        return false;
+    }
+
     private Mono<Void> out(ServerHttpResponse response) {
         JsonObject message = new JsonObject();
         message.addProperty("success", false);
@@ -212,9 +239,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             @NotNull
             @Override
             public Mono<Void> writeWith(@NotNull Publisher<? extends DataBuffer> body) {
-                // 检查是否为文件响应，如果是文件则直接返回，不进行加密处理
-                if (isFileResponse(getDelegate(), path)) {
-                    log.info("文件响应，跳过加密处理：{}", path);
+                // 文件/SSE 等响应直接透传，不进行加密缓冲
+                if (shouldSkipResponseEncryption(getDelegate(), path)) {
+                    log.info("跳过响应加密处理：{}", path);
                     return super.writeWith(body);
                 }
                 

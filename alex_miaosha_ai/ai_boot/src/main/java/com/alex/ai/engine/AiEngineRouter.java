@@ -2,6 +2,7 @@ package com.alex.ai.engine;
 
 import com.alex.ai.config.AiProperties;
 import com.alex.ai.engine.impl.RuleBasedAiEngine;
+import com.alex.ai.stream.AiStreamSink;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import com.alex.base.enums.ResultEnum;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * AI Agent：
@@ -72,6 +74,106 @@ public class AiEngineRouter {
                     : "AI 引擎调用失败，已回退规则引擎。");
             return fallback;
         }
+    }
+
+    /**
+     * 流式分析：引擎选择与 fallback 对齐 {@link #analyze}，失败时经 sink 回报。
+     */
+    public void analyzeStream(AiAnalyzeReq req, String requestId, long start, AiStreamSink sink) {
+        String desiredKey = pickFirstNotBlank(req == null ? null : req.getEngine(),
+                aiProperties == null ? null : aiProperties.getEngine());
+        AiEngine desiredEngine = findEngineOrNull(desiredKey);
+
+        if (desiredEngine == null || !desiredEngine.isEnabled(aiProperties)) {
+            if (isFallbackEnabled()) {
+                emitRuleFallback(req, requestId, start, sink, desiredKey);
+                return;
+            }
+            String key = desiredKey == null ? "" : desiredKey;
+            sink.error(ResultEnum.AI_ENGINE_UNAVAILABLE.getCode(),
+                    ResultEnum.AI_ENGINE_UNAVAILABLE.getValue() + ": " + key);
+            return;
+        }
+
+        if (ruleBasedAiEngine.key().equalsIgnoreCase(desiredEngine.key())) {
+            desiredEngine.analyzeStream(req, requestId, start, sink);
+            return;
+        }
+
+        String failedEngineKey = desiredEngine.key();
+        AtomicReference<String> engineError = new AtomicReference<>();
+        // 首个 LLM error 不转发给客户端：若将走 fallback，仅由 emitRuleFallback 收尾，避免 error+fallback 双通道污染
+        AiStreamSink wrapped = new AiStreamSink() {
+            @Override
+            public void meta(String rid, String engine) {
+                if (engineError.get() == null) {
+                    sink.meta(rid, engine);
+                }
+            }
+
+            @Override
+            public void delta(String text) {
+                if (engineError.get() == null) {
+                    sink.delta(text);
+                }
+            }
+
+            @Override
+            public void done(AiAnalyzeResp resp) {
+                if (engineError.get() == null) {
+                    sink.done(resp);
+                }
+            }
+
+            @Override
+            public void error(String code, String message) {
+                engineError.compareAndSet(null, message == null ? "" : message);
+            }
+        };
+
+        try {
+            desiredEngine.analyzeStream(req, requestId, start, wrapped);
+            if (engineError.get() != null) {
+                handleLlmStreamFailure(req, requestId, start, sink, failedEngineKey, engineError.get());
+            }
+        } catch (Exception e) {
+            String engineKey = failedEngineKey == null ? "" : failedEngineKey;
+            log.error("AI 引擎流式调用失败。engine={}, requestId={}, err={}",
+                    engineKey, requestId, e.getMessage(), e);
+            String detail = e.getMessage() == null || e.getMessage().isBlank()
+                    ? ResultEnum.AI_ENGINE_CALL_FAILED.getValue()
+                    : e.getMessage();
+            handleLlmStreamFailure(req, requestId, start, sink, failedEngineKey, detail);
+        }
+    }
+
+    private void handleLlmStreamFailure(AiAnalyzeReq req, String requestId, long start,
+                                        AiStreamSink sink, String failedEngineKey, String detail) {
+        if (isFallbackEnabled()) {
+            emitRuleFallback(req, requestId, start, sink, failedEngineKey);
+            return;
+        }
+        String msg = detail == null || detail.isBlank()
+                ? ResultEnum.AI_ENGINE_CALL_FAILED.getValue()
+                : detail;
+        sink.error(ResultEnum.AI_ENGINE_CALL_FAILED.getCode(), msg);
+    }
+
+    private void emitRuleFallback(AiAnalyzeReq req, String requestId, long start,
+                                  AiStreamSink sink, String failedEngineKey) {
+        sink.meta(requestId, "rule-based(fallback)");
+        AiAnalyzeResp resp = ruleBasedAiEngine.analyze(req, requestId, start);
+        resp.setEngine("rule-based(fallback)");
+        String displayName = AiEngineType.fromKey(failedEngineKey)
+                .map(AiEngineType::getDisplayName)
+                .orElse(null);
+        resp.setSummary(displayName != null
+                ? displayName + " 调用失败，已回退规则引擎。"
+                : "AI 引擎调用失败，已回退规则引擎。");
+        if (resp.getSummary() != null && !resp.getSummary().isEmpty()) {
+            sink.delta(resp.getSummary());
+        }
+        sink.done(resp);
     }
 
     private boolean isFallbackEnabled() {
