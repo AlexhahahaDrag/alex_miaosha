@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 /**
@@ -114,9 +113,10 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                 })
                 .toList();
         roleInfoVo.setRoleUserInfoVoList(roleUserInfoVoList);
-        List<Long> orgIds = roleOrgInfoService.listValidByRoleId(id).stream()
+        // orgId / Vo.orgIds 均为 String（防前端 Long 精度丢失）；listValidByRoleId 入参为 Long
+        List<String> orgIds = roleOrgInfoService.listValidByRoleId(Long.valueOf(id)).stream()
                 .map(RoleOrgInfo::getOrgId)
-                .filter(Objects::nonNull)
+                .filter(orgId -> !StringUtils.isEmpty(orgId))
                 .distinct()
                 .toList();
         roleInfoVo.setOrgIds(orgIds);
