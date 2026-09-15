@@ -6,6 +6,7 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
+import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.common.exception.SystemException;
@@ -102,14 +103,39 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
                 .toList();
 
         if (isFullQuery && !result.isEmpty()) {
-            try {
-                redisUtils.setEx(cacheRealKey, JSONObject.toJSONString(result), 1, TimeUnit.HOURS);
-                log.info("完整菜单树成功写入 Redis 缓存");
-            } catch (Exception e) {
-                log.error("写入菜单缓存异常：{}", e.getMessage());
-            }
+            writeMenuAllTreeCache(result);
         }
         return result;
+    }
+
+    @Override
+    public void warmMenuAllTree() {
+        MenuInfoVo menuQuery = new MenuInfoVo();
+        menuQuery.setStatus(SysConf.VALID_STATUS);
+        List<MenuInfoVo> list = menuInfoMapper.getListAll(menuQuery);
+        if (list == null || list.isEmpty()) {
+            log.warn("warmMenuAllTree: DB returned empty menu list");
+            return;
+        }
+        Map<Long, List<MenuInfoVo>> menuMap = list.stream()
+                .filter(item -> item.getParentId() != null)
+                .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
+        List<MenuInfoVo> result = list.stream().filter(item -> item.getParentId() == null)
+                .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
+                .toList();
+        if (!result.isEmpty()) {
+            writeMenuAllTreeCache(result);
+        }
+    }
+
+    private void writeMenuAllTreeCache(List<MenuInfoVo> result) {
+        try {
+            String cacheRealKey = LoginKey.loginKey.getPrefix() + ":" + MENU_CACHE_KEY;
+            redisUtils.setEx(cacheRealKey, JSONObject.toJSONString(result), 1, TimeUnit.HOURS);
+            log.info("完整菜单树成功写入 Redis 缓存");
+        } catch (Exception e) {
+            log.error("写入菜单缓存异常：{}", e.getMessage());
+        }
     }
 
     /**
@@ -193,6 +219,12 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
             log.info("清理菜单缓存成功：{}", cacheRealKey);
         } catch (Exception e) {
             log.error("清理菜单缓存失败：{}", e.getMessage());
+        }
+        // Rebuild immediately to avoid long cold window after CRUD
+        try {
+            warmMenuAllTree();
+        } catch (Exception e) {
+            log.error("清理后预热菜单缓存失败：{}", e.getMessage());
         }
     }
 

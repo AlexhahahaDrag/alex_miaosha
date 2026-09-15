@@ -1,6 +1,7 @@
 package com.alex.user.user.controller;
 
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -136,6 +137,14 @@ public class TUserController {
                                                @RequestParam(value = "password", required = false) String password,
                                                @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
         return Result.success(tUserService.login(request, username, password, isRememberMe));
+    }
+
+    @LogRestRequest(apiName = "获取当前用户可见菜单")
+    @ApiOperationSupport(order = 62, author = "alex")
+    @GetMapping("/menus")
+    @ApiOperation(value = "当前用户可见菜单树", notes = "需登录；按权限裁剪，不含匿名全树")
+    public Result<List<MenuInfoVo>> listCurrentUserMenus() {
+        return Result.success(tUserService.listCurrentUserMenus());
     }
 
     @LogRestRequest(apiName = "第三方登录渲染")

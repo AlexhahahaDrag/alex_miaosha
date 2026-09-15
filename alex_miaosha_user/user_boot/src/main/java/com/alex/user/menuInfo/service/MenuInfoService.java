@@ -33,4 +33,9 @@ public interface MenuInfoService extends IService<MenuInfo> {
     MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo);
 
     Boolean deleteMenuInfo(String ids);
+
+    /**
+     * Warm global unscoped menu tree into Redis {@code menu_all_tree} (same format as getList full-query).
+     */
+    void warmMenuAllTree();
 }

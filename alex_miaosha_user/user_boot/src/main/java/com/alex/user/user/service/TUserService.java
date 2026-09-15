@@ -1,5 +1,6 @@
 package com.alex.user.user.service;
 
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.user.tUserLogin.entity.TUserLogin;
@@ -39,6 +40,11 @@ public interface TUserService extends IService<TUser> {
     Boolean deleteTUser(String ids);
 
     Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
+
+    /**
+     * Current user's visible menu tree (auth required).
+     */
+    List<MenuInfoVo> listCurrentUserMenus();
 
     List<TUserVo> getList(TUserVo tUserVo);
 

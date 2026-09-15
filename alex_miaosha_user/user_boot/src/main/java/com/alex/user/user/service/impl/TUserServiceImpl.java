@@ -2,6 +2,7 @@ package com.alex.user.user.service.impl;
 
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
@@ -515,11 +516,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         stopWatch.start("6.构建权限上下文(buildContext)");
-        // 移回主登录线程同步构建，避开子线程首次加载 MyBatis SQL 映射时产生的锁争用与阻塞
-        UserPermissionContextVo permissionContext = userPermissionContextService.buildContext(tUserVo.getId());
+        // Login slim: org/roles/codes only — menus loaded later via GET /user/menus
+        UserPermissionContextVo permissionContext = userPermissionContextService.buildContext(tUserVo.getId(), false);
         stopWatch.stop();
 
-        stopWatch.start("7.等待头像与装配权限");
+        stopWatch.start("7.装配权限(不等待头像)");
         completeLoginResponse(tUserVo, avatarFuture, permissionContext);
         stopWatch.stop();
 
@@ -595,25 +596,22 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (userVo == null || userVo.getId() == null) {
             return userVo;
         }
-        applyPermissionContext(userVo, userPermissionContextService.buildContext(userVo.getId()));
+        applyPermissionContext(userVo, userPermissionContextService.buildContext(userVo.getId(), false));
         return userVo;
+    }
+
+    @Override
+    public List<MenuInfoVo> listCurrentUserMenus() {
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null || loginUser.getId() == null) {
+            throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+        }
+        return userPermissionContextService.listVisibleMenus(loginUser.getId());
     }
 
     public static void completeLoginResponse(TUserVo userVo, CompletableFuture<Void> avatarFuture,
                                              UserPermissionContextVo permissionContext) {
-        if (avatarFuture != null) {
-            try {
-                // 设置最大800毫秒的超时时间，防止微服务冷启动或RPC调用挂起阻塞登录接口
-                avatarFuture.get(800, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
-                log.warn("获取用户头像信息超时，进行熔断降级，跳过头像URL装配");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
-            } catch (Exception e) {
-                log.error("获取用户头像发生异常，跳过头像URL装配", e);
-            }
-        }
+        // Avatar enrichment is fire-and-forget; do not block login on OSS
         applyPermissionContext(userVo, permissionContext);
     }
 
