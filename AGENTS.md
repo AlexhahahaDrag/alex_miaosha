@@ -22,8 +22,8 @@
 - `@DataPermission` 注解的 SQL 过滤仅在 service 显式调用挂注解的自定义 mapper 方法时生效；若 service 走 MyBatis-Plus `IService` 默认 `page(Page, Wrapper)`/`updateById`/`removeBatchByIds` 等，注解会被绕过、数据权限失效——需要测试用例覆盖跨用户/跨机构访问场景。
 - 后端 VO 的 `Long` 主键/外键字段统一通过 `@JsonSerialize(using = Long2StringSerializer.class)` 序列化为前端字符串；前端 `views/finance/gift/api/index.ts` 中由 `normalizeGiftIds` 递归把所有 `*Id` 字段转 String，是\"ID 安全\"前后端契约的护城河，单测必须锁住该行为。
 - AI 测试基建：PC 与移动端均采用 `@midscene/web` + `@playwright/test`，case 数据放在 `tests/midscene/{module}/cases/*.json`，执行脚本位于 `scripts/midscene/run-*-smoke.mjs`，分 `smoke/button/flow` 三层并通过 `super_super`/`rbac_user_manager`/`rbac_readonly` 三种 persona 跑权限矩阵；移动端使用 `installHapticProbe` 拦截 `navigator.vibrate` 做副作用断言，并默认配置 390×844 viewport + `isMobile` + `hasTouch`。
-- 微服务在 Nacos 中的注册服务名分别为：用户微服务 `alex-miaosha@@alex-user-dev`（主端口 `30006`），OSS 存储微服务 `alex-miaosha@@alex-oss-dev`（主端口 `30009`）。
+- 微服务在 Nacos 中的注册服务名分别为：用户微服务 `alex-miaosha@@alex-user-dev`（主端口 `30006`），商品微服务 `alex-miaosha@@alex-product-dev`（主端口 `30007`），财务微服务 `alex-miaosha@@alex-finance-dev`（主端口 `30008`），OSS 存储微服务 `alex-miaosha@@alex-oss-dev`（主端口 `30009`），AI 智能分析微服务 `alex-ai-dev`（主端口 `30010`，采用 DeepSeek + 规则引擎降级双路由）。
 - Redis 缓存了所有的登录态和共享菜单树（Key 类似 `LoginKey:login:in:menu_all_tree`），在前端/后端做菜单重组或过滤渲染时，严禁修改/污染原始 children 的内存结构以防止 Redis 缓存共享干扰。
-- 项目专属外部全栈工程知识库位于 `D:\project\my_alex_brain`，按 `00-Overview/`、`01-Front-PC/`、`02-Mobile/`、`03-Backend/` 分层编排，且各项目端均包含 `01-需求文档/` (PRD/SRS) 与 `02-开发文档/` (TechSpec/SOP)。AI 与开发者在修改程序中的业务逻辑、模型字段、API契约或排错后，**必须在同一会话中同步更新 `D:\project\my_alex_brain` 对应端的需求文档与开发文档**，确保知识库与代码逻辑保持 100% 同步一致。
+- 项目专属外部全栈工程知识库位于 `D:\project\my_alex_brain`，采用 Ponytail 矩阵编排（入口 `Home.md`、`00-System/` 系统底座与架构全景、`01-Standards/` 跨端工程规约、`02-Features/` 各垂直业务自闭环包包含 PRD/TechSpec/历史方案/避坑SOP）。AI 与开发者在修改程序中的业务逻辑、模型字段、API契约或排错后，**必须在同一会话中同步更新 `D:\project\my_alex_brain` 对应功能包或规范文档**，确保知识库与代码逻辑保持 100% 同步一致。
 
 
