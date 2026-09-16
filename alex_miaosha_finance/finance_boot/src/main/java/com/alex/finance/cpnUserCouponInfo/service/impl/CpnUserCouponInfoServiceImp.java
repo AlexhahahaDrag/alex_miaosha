@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * <p>
@@ -44,8 +43,6 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
     private final CpnRedemptionRecordInfoService cpnRedemptionRecordInfoService;
 
     private final CpnCouponInfoMapper cpnCouponInfoMapper;
-
-    private final Executor taskExecutor;
 
     @Override
     public Page<CpnUserCouponInfoVo> getPage(Long pageNum, Long pageSize, CpnUserCouponInfoVo cpnUserCouponInfoVo) {
@@ -141,14 +138,8 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         record.setRedemptionQuantity(req.getRedemptionQuantity());
         record.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "核销");
 
-        // 异步处理：核销历史记录写入
-        taskExecutor.execute(() -> {
-            try {
-                cpnRedemptionRecordInfoService.save(record);
-            } catch (Exception e) {
-                log.error("异步写入核销历史记录失败，userCouponId={}", record.getUserCouponId(), e);
-            }
-        });
+        // 同步写入核销历史记录，保证事务原子性
+        cpnRedemptionRecordInfoService.save(record);
         return true;
     }
 
@@ -173,14 +164,8 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         record.setRedemptionQuantity(-req.getRedemptionQuantity());
         record.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "取消核销");
 
-        // 写入取消核销历史记录
-        taskExecutor.execute(() -> {
-            try {
-                cpnRedemptionRecordInfoService.save(record);
-            } catch (Exception e) {
-                log.error("异步写入取消核销历史记录失败，userCouponId={}", record.getUserCouponId(), e);
-            }
-        });
+        // 同步写入取消核销历史记录，保证事务原子性
+        cpnRedemptionRecordInfoService.save(record);
         return true;
     }
 }

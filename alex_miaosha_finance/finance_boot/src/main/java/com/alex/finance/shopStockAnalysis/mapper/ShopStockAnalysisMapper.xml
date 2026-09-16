@@ -23,6 +23,9 @@
         WHERE
             is_valid = '1'
           AND is_delete = '0'
+          <include refid="roleInfo">
+              <property name="tableName" value="t_shop_stock"/>
+          </include>
     </select>
 
     <select id="getAllAmountInfo" resultType="com.alex.api.finance.shopStockAnalysis.vo.ShopStockAmountVo">
@@ -82,5 +85,8 @@
           dict_info.belong_to = 'shop_pay_way'
           and t_shop_finance.is_delete = '0'
           and t_shop_finance.is_valid = '1'
+          <include refid="roleInfo">
+              <property name="tableName" value="t_shop_finance"/>
+          </include>
     </select>
 </mapper>

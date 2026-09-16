@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,7 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -55,8 +52,6 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
     private final ShopOrderMapper shopOrderMapper;
 
     private final ShopStockService shopStockService;
-
-    private final Executor taskExecutor;
 
     private final ShopFinanceService shopFinanceService;
 
@@ -141,50 +136,24 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         shopOrder.setIsValid(SysConf.VALID_STATUS);
         shopOrder.insert();
         shopOrderVo.setId(shopOrder.getId());
-        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-        taskExecutor.execute(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(attributes);
-                //2. 更新订单明细
-                shopOrderDetailVoList.forEach(item -> item.setOrderId(shopOrder.getId()));
-                shopOrderDetailService.batchUpdateShopOrderDetail(shopOrderDetailVoList);
-            } catch (Exception e) {
-                //  (majf) 2024/4/9 15:53 将来插入到日志表中，方便补偿数据
-                log.error("更新订单明细失败：{}", e.getMessage());
-            }
-        });
-        taskExecutor.execute(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(attributes);
-                //2. 更新库存信息
-                shopStockService.updateBatchById(shopStockList);
-            } catch (Exception e) {
-                log.error("更新库存信息失败：{}", e.getMessage());
-            }
-        });
-        taskExecutor.execute(() -> {
-            try {
-                //2. 更新销售信息
-                RequestContextHolder.setRequestAttributes(attributes);
-                saveFinanceInfo(shopOrderVo);
-            } catch (Exception e) {
-                log.error("更新销售信息失败：{}", e.getMessage());
-            }
-        });
+
+        // 2. 更新订单明细（同步在主事务中执行）
+        shopOrderDetailVoList.forEach(item -> item.setOrderId(shopOrder.getId()));
+        shopOrderDetailService.batchUpdateShopOrderDetail(shopOrderDetailVoList);
+
+        // 3. 更新库存信息（同步在主事务中执行）
+        shopStockService.updateBatchById(shopStockList);
+
+        // 4. 更新销售财务信息（同步在主事务中执行）
+        saveFinanceInfo(shopOrderVo);
+
+        // 5. 删除购物车信息
         List<Long> shopCartIds = shopOrderDetailVoList.parallelStream()
                 .map(ShopOrderDetailVo::getShopCartId)
                 .filter(Objects::nonNull)
                 .toList();
         if (!shopCartIds.isEmpty()) {
-            taskExecutor.execute(() -> {
-                try {
-                    //3. 删除购物车信息
-                    RequestContextHolder.setRequestAttributes(attributes);
-                    shopCartService.removeByIds(shopCartIds);
-                } catch (Exception e) {
-                    log.error("删除购物车信息失败：{}", e.getMessage());
-                }
-            });
+            shopCartService.removeByIds(shopCartIds);
         }
         return true;
     }

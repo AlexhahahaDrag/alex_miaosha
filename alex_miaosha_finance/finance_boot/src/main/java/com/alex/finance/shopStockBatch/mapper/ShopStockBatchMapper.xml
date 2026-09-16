@@ -93,8 +93,8 @@
             batch_code = #{batchCode}
             and is_valid = '1'
             and is_delete = 0
-            <if test="id != null">
-                and id != ${excludeId}
+            <if test="excludeId != null">
+                and id != #{excludeId}
             </if>
         </where>
     </select>

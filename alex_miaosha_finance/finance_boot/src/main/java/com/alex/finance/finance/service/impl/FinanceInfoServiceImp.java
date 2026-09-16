@@ -46,22 +46,21 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     @Override
     public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
         Page<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+        Page<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
+        if (result == null || result.getRecords() == null || result.getRecords().isEmpty()) {
+            return result;
+        }
         Result<List<TUserVo>> list = userApi.getList(new TUserVo());
         Map<Long, TUserVo> userMap = Optional.ofNullable(list)
                 .map(item -> item.getData().stream()
                         .collect(Collectors.toMap(TUserVo::getId, vo -> vo, (newVal, oldVal) -> newVal)))
                 .orElse(new HashMap<>());
-        Page<FinanceInfoVo> result = financeInfoMapper.getPage(page, financeInfoVo);
-        List<FinanceInfoVo> financeInfoVos = Optional.ofNullable(result)
-                .map(item -> item.getRecords().stream().peek(
-                        finance -> {
-                            TUserVo tUserVo = userMap.get(finance.getBelongTo());
-                            finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
-                        }).toList())
-                .orElse(null);
-        if (result != null) {
-            result.setRecords(financeInfoVos);
-        }
+        List<FinanceInfoVo> financeInfoVos = result.getRecords().stream().peek(
+                finance -> {
+                    TUserVo tUserVo = userMap.get(finance.getBelongTo());
+                    finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
+                }).toList();
+        result.setRecords(financeInfoVos);
         return result;
     }
 

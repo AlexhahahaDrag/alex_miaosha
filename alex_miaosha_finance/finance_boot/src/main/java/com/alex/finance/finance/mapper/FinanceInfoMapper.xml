@@ -82,8 +82,8 @@
                 or finance_info.name like concat('%', #{financeInfoVo.bigTypeCode}, '%')
                 )
             </if>
-            <if test = "financeInfoVo.amountSearch != null and financeInfoVo.amountSearch.size > 0">
-                <foreach collection="financeInfoVo.amount" index="index" item="amountBound" >
+            <if test = "financeInfoVo.amountSearch != null and financeInfoVo.amountSearch.length > 0">
+                <foreach collection="financeInfoVo.amountSearch" index="index" item="amountBound" >
                     <if test="index == 0 and amountBound != null">
                         and finance_info.amount >= #{amountBound}
                     </if>

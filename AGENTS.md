@@ -24,3 +24,6 @@
 - AI 测试基建：PC 与移动端均采用 `@midscene/web` + `@playwright/test`，case 数据放在 `tests/midscene/{module}/cases/*.json`，执行脚本位于 `scripts/midscene/run-*-smoke.mjs`，分 `smoke/button/flow` 三层并通过 `super_super`/`rbac_user_manager`/`rbac_readonly` 三种 persona 跑权限矩阵；移动端使用 `installHapticProbe` 拦截 `navigator.vibrate` 做副作用断言，并默认配置 390×844 viewport + `isMobile` + `hasTouch`。
 - 微服务在 Nacos 中的注册服务名分别为：用户微服务 `alex-miaosha@@alex-user-dev`（主端口 `30006`），OSS 存储微服务 `alex-miaosha@@alex-oss-dev`（主端口 `30009`）。
 - Redis 缓存了所有的登录态和共享菜单树（Key 类似 `LoginKey:login:in:menu_all_tree`），在前端/后端做菜单重组或过滤渲染时，严禁修改/污染原始 children 的内存结构以防止 Redis 缓存共享干扰。
+- 项目专属外部全栈工程知识库位于 `D:\project\my_alex_brain`，按 `00-Overview/`、`01-Front-PC/`、`02-Mobile/`、`03-Backend/` 分层编排，且各项目端均包含 `01-需求文档/` (PRD/SRS) 与 `02-开发文档/` (TechSpec/SOP)。AI 与开发者在修改程序中的业务逻辑、模型字段、API契约或排错后，**必须在同一会话中同步更新 `D:\project\my_alex_brain` 对应端的需求文档与开发文档**，确保知识库与代码逻辑保持 100% 同步一致。
+
+

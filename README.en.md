@@ -42,8 +42,6 @@ The system is divided into the following core business and basic modules:
 - **`alex_miaosha_common`**: Public dependency module, providing global exception handling, utilities, etc.
 - **`alex_miaosha_finance`**: Finance/Billing management module, responsible for related financial data statistics and processing.
 - **`alex_miaosha_gateway`**: Microservice API Gateway module, unifying traffic entry, responsible for routing, forwarding, authentication, etc.
-- **`alex_miaosha_mission`**: Task scheduling / Business module.
-- **`alex_miaosha_monitor`**: Monitoring center module, integrating Spring Boot Admin and service health monitoring.
 - **`alex_miaosha_order`**: Order module, responsible for generating and controlling the flow of business orders.
 - **`alex_miaosha_oss`**: File storage module, integrating object storage services to centrally manage images and attachments.
 - **`alex_miaosha_product`**: Product management module, maintaining information related to goods, categories, attributes, etc.
@@ -59,7 +57,7 @@ The core infrastructure dependencies are as follows. It is recommended to start 
 - **Prometheus** (System Monitoring)
 
 Recommended startup sequence for local microservices:
-`Nacos` -> `alex_miaosha_gateway` -> `alex_miaosha_user` (User Auth System) -> `alex_miaosha_monitor` -> Other business modules.
+`Nacos` -> `alex_miaosha_gateway` -> `alex_miaosha_user` (User Auth System) -> Other business modules.
 
 ## 🌐 Live Demo
 

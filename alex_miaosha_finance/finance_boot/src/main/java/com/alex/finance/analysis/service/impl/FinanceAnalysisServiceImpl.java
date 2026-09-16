@@ -33,12 +33,21 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
             return new BalanceVo().setList(currentList);
         }
 
-        // Calculate MoM and YoY dates
-        String[] dateParts = searchDate.split("-");
-        int year = Integer.parseInt(dateParts[0]);
-        int month = Integer.parseInt(dateParts[1]);
+        // Calculate MoM and YoY dates safely
+        String[] dateParts = searchDate.trim().split("-");
+        if (dateParts.length < 2) {
+            return new BalanceVo().setList(currentList);
+        }
+        int year;
+        int month;
+        try {
+            year = Integer.parseInt(dateParts[0]);
+            month = Integer.parseInt(dateParts[1]);
+        } catch (NumberFormatException e) {
+            return new BalanceVo().setList(currentList);
+        }
 
-        String momDate = (month == 1) ? (year - 1) + "-12" : year + "-" + String.format("%02d", month - 1);
+        String momDate = (month <= 1) ? (year - 1) + "-12" : year + "-" + String.format("%02d", month - 1);
         String yoyDate = (year - 1) + "-" + String.format("%02d", month);
 
         List<AnalysisVo> momList = financeAnalysisMapper.getBalance(belongTo, momDate);

@@ -76,14 +76,14 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         return true;
     }
 
-    private void getShopStockAttrs( List<ShopStockAttrs> attrsList, String size, String color, String style, Long id) {
+    private void getShopStockAttrs(List<ShopStockAttrs> attrsList, String size, String color, String style, Long id) {
         if (StringUtils.isNotEmpty(size)) {
             attrsList.add(getAttr("size", "尺码", size, id));
         }
-        if (StringUtils.isNotEmpty(size)) {
+        if (StringUtils.isNotEmpty(color)) {
             attrsList.add(getAttr("color", "颜色", color, id));
         }
-        if (StringUtils.isNotEmpty(size)) {
+        if (StringUtils.isNotEmpty(style)) {
             attrsList.add(getAttr("style", "款式", style, id));
         }
     }
