@@ -1,0 +1,466 @@
+# RBAC 成熟度评分卡与缺陷登记册
+
+Date: 2026-08-06
+Spec: `docs/superpowers/specs/2026-08-06-rbac-maturity-review-design.md`
+Plan: `docs/superpowers/plans/2026-08-06-rbac-maturity-review-execution.md`
+Branch: `develop-1.0-feature-org-manage`
+Status: 评审完成（21 格已评分，67 条缺陷已登记并归入批次）
+
+门禁：`node scripts/rbac-scorecard-check.mjs`（分端推进时用 `--end BE|PC|MB`）。
+
+## 1. 读法
+
+- 端代码：`BE` 后端 `alex_miaosha_user`、`PC` `alex_miaosha_front`、`MB` `alex_miaosha_mobile`。
+- 模块代码：`ORG` 机构、`USER` 用户、`ROLE` 角色、`MENU` 菜单、`PERM` 权限点、`RELATION` 关系配置、`SCOPE` 数据权限。
+- 维度与权重：D1 安全与数据正确性 35%、D2 功能完整度 30%、D3 交互一致性 18%、D4 视觉规范符合度 7%、D5 可测性与回归保护 10%。
+- 判据折算：勾中比例 0% → 0；(0%, 30%] → 1；(30%, 55%] → 2；(55%, 75%] → 3；(75%, 95%] → 4；(95%, 100%] → 5。
+- 加权总分按**适用维度**归一化，故 `BE` 各格（D4 记 N/A）与前端各格不做单格直接排名，只在模块总分与单维度上横向比较。
+
+## 2. 评分矩阵
+
+<!-- matrix:start -->
+| 端 | 模块 | D1 | D2 | D3 | D4 | D5 | 加权总分 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BE | ORG | 1 | 3 | 4 | N/A | 0 | 42 |
+| BE | USER | 3 | 3 | 4 | N/A | 3 | 64 |
+| BE | ROLE | 1 | 3 | 3 | N/A | 3 | 45 |
+| BE | MENU | 1 | 3 | 3 | N/A | 0 | 38 |
+| BE | PERM | 1 | 3 | 3 | N/A | 0 | 38 |
+| BE | RELATION | 1 | 3 | 4 | N/A | 2 | 47 |
+| BE | SCOPE | 1 | 2 | 4 | N/A | 3 | 42 |
+| PC | ORG | 5 | 2 | 3 | 2 | 2 | 65 |
+| PC | USER | 5 | 3 | 3 | 2 | 2 | 71 |
+| PC | ROLE | 5 | 3 | 3 | 2 | 2 | 71 |
+| PC | MENU | 5 | 3 | 3 | 3 | 2 | 72 |
+| PC | PERM | 5 | 3 | 3 | 2 | 2 | 71 |
+| PC | RELATION | 5 | 3 | 3 | 2 | 2 | 71 |
+| PC | SCOPE | 5 | N/A | 2 | N/A | 2 | 73 |
+| MB | ORG | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | USER | 3 | 0 | 3 | 5 | 0 | 39 |
+| MB | ROLE | 3 | 3 | 3 | 1 | 0 | 51 |
+| MB | MENU | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | PERM | 3 | 2 | 3 | 1 | 0 | 45 |
+| MB | RELATION | 3 | 1 | 3 | 1 | 0 | 39 |
+| MB | SCOPE | 3 | N/A | 3 | N/A | 0 | 50 |
+<!-- matrix:end -->
+
+### 2.1 判据勾选明细
+
+每格的勾中/剔除逐条记录在此，供复算。格式：`端-模块 Dn: 勾中 x/y → z 分`，附不勾原因一句。
+
+### BE 判据在后端语境下的解释
+
+D3 的 7 条判据是按前端交互写的，后端按下表对应解释，否则无法复算：
+
+| D3 判据 | 后端解释 |
+| --- | --- |
+| 1 同类操作容器一致 | 接口风格一致：`POST /page` + `GET` + `POST` + `PUT` + `DELETE` 五件套，分页参数与返回结构统一 |
+| 2 危险操作二次确认 | 删除类操作有服务端前置保护（下级存在性、引用完整性） |
+| 3 提交 loading 防重 | 写接口挂 `@AvoidRepeatableCommit` |
+| 4 表单校验规则 | 入参校验（唯一性、必填、DTO 约束） |
+| 5 三端口径一致 | 同一接口能同时满足 PC 与 mobile，无端专属分支 |
+| 6 复用共享组件 | 复用 `ServiceImpl` / `Result` / `Page` 等公共基类 |
+| 7 命名与规范一致 | 命名规范 + 代码卫生（无乱码文案、无调试输出残留） |
+
+D5 判据 3（自动化定位钩子）对后端一律剔除。判据 5（一条命令跑通）也一律剔除：本机 `JAVA_HOME` 指向缺失的 JDK 8、可用的是 JDK 21，而仓库声明 Java 17 + Lombok 1.18.24，`mvn test` 因 Lombok 与 JDK 21 不兼容而编译失败。这属于本机工具链问题而非 RBAC 缺陷（仓库声明本身自洽），故不计分也不登记，但它使 D5 的取证只能依赖静态 `@Test` 清点——见第 6 节阻塞项。
+
+#### BE-ORG
+
+- D1: 勾中 3/10 → 1 分（30%）。勾中：1 列表挂注解且 `field=id scope=ORG_ID` 语义正确、9 无敏感信息、10 单一写入口。不勾：2 `queryOrgInfo` 裸查无归属校验；3 `updateOrgInfo`/`deleteOrgInfo` 无归属校验；4 机构编码无唯一性校验；5 删除侧有下级机构与绑定用户双重保护，但新增/修改侧无父节点存在性与防环校验，三项只满足一项；6 全类无 `@Transactional`；7 机构变更不失效 `permission_context`；8 角色判定为子串包含（全局）。
+- D2: 勾中 5/9 → 3 分（55.6%）。勾中：1 CRUD、2 筛选、3 服务端分页、4 `deleteOrgInfo` 支持逗号串批量、7 关系配置入口（`assignSingleOrg`）。不勾：5 无 tree 接口；6 无独立启停；8 stage1 契约要求的机构树未落地；9 无导出。
+- D3: 勾中 6/7 → 4 分（85.7%）。不勾：4 `addOrgInfo` 无入参校验。
+- D4: N/A。
+- D5: 勾中 0/2 → 0 分。分母剔除判据 3 与 5，剩 1（有可执行测试）与 2（D1 路径覆盖），`rbac` 测试目录下无任何 Org 相关测试。
+
+#### BE-USER
+
+- D1: 勾中 6/10 → 3 分（60%）。勾中：1 `getPage`/`getList` 挂注解且 `field=id scope=USER_IDS` 语义正确、4 username/mobile/email 唯一性校验、5 删除有 `UserDeleteCleanupService` 级联清理、6 有 3 处显式事务、7 改用户与删用户均失效 `permission_context`、10 单一写入口。不勾：2 `queryTUser`/`getUserInfo` 未挂注解；3 更新无归属校验；8 角色判定子串包含；9 `main` 方法打印明文密码。
+- D2: 勾中 5/8 → 3 分（62.5%）。剔除：5 树（用户无层级）。不勾：6 无独立启停；8 stage1 的左机构树筛选未落地；9 无导出。
+- D3: 勾中 6/7 → 4 分（85.7%）。不勾：7 `TUserServiceImpl` 多处中文乱码。
+- D4: N/A。
+- D5: 勾中 2/3 → 3 分（66.7%）。剔除 3、5。勾中：1 `UserDeleteCleanupServiceTest` 6 个 `@Test` 可执行、4 测试与实现一致。不勾：2 密码外泄与详情越权无测试覆盖。
+
+#### BE-ROLE
+
+- D1: 勾中 3/10 → 1 分（30%）。勾中：1 `field=operator scope=USER_IDS` 语义正确、7 授权后按用户逐个删 `permission_context`、9 无敏感信息。不勾：2 详情裸查；3 写无归属校验；4 角色编码无唯一性校验；5 删角色不清理 `t_role_permission_info`；6 `RoleInfoServiceImp` 自身写操作无事务；8 子串包含；10 `RolePermissionInfoController` 裸 CRUD 与 `assignPermissions` 双轨。
+- D2: 勾中 5/7 → 3 分（71.4%）。剔除：5 树、9 导出。不勾：6 无独立启停；8 stage1 的角色统计列未落地。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：2 删角色无引用完整性前置保护；4 `addRoleInfo`/`updateRoleInfo` 无入参校验。
+- D4: N/A。
+- D5: 勾中 2/3 → 3 分（66.7%）。勾中 1（`RolePermissionAssignmentServiceTest` 5 个 `@Test`）、4。不勾 2（越权与级联清理无测试）。
+
+#### BE-MENU
+
+- D1: 勾中 3/10 → 1 分（30%）。勾中：7 菜单变更失效 `menu_all_tree` 缓存、9、10。不勾：1 `MenuInfoMapper` 完全无 `@DataPermission`；2、3 无归属校验；4 无唯一性；5 删父菜单不检查子节点，产生孤儿；6 无事务；8 子串包含。
+- D2: 勾中 4/7 → 3 分（57.1%）。剔除：7 关系配置（菜单本身不承载）、9 导出。不勾：5 无管理端 tree 接口；6 无启停；8 目标态未落地。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：2 删除无子节点保护；4 无入参校验。
+- D4: N/A。
+- D5: 勾中 0/3 → 0 分。不勾：1 `MenuPermissionFilterTest` 未挂 `@Test`，4 个用例一个都不执行；2；4 测试存在却不执行，与「有测试」的表象不符。
+
+#### BE-PERM
+
+- D1: 勾中 3/10 → 1 分（30%）。勾中：1 挂注解（默认 `field=operator scope=USER_IDS`）、9、10。不勾：2、3 无归属校验；4 权限码无唯一性；5 删权限点不清理 `t_role_permission_info`；6 无事务；7 权限点变更不失效 `permission_context`；8 子串包含。
+- D2: 勾中 4/6 → 3 分（66.7%）。剔除：5 树、7 关系配置（在 role-permission）、9 导出。不勾：6 无启停；8 目标态未落地。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：2、4。
+- D4: N/A。
+- D5: 勾中 0/3 → 0 分。权限点模块无任何测试。
+
+#### BE-RELATION
+
+- D1: 勾中 2/10 → 1 分（20%）。勾中：6 `assignSingleOrg`/`assignRoles`/`assignPermissions` 均有显式事务与并发锁、9。不勾：1 `OrgUserInfoMapper` 与 `RoleUserInfoMapper` 无 `@DataPermission`（仅 `RolePermissionInfoMapper` 有）；2、3 裸 insert 无任何校验；4 不校验是否已存在有效机构关系；5 不校验 userId/orgId 存在性；7 换机构后不失效 `permission_context`；8 子串包含；10 裸 CRUD 可绕过 `assignSingleOrg` 的唯一有效机构约束。
+- D2: 勾中 5/7 → 3 分（71.4%）。剔除：5 树、9 导出。不勾：6 关系有 `status` 字段但无独立启停接口；8 stage1 要求的独立配置页对应能力未落地。
+- D3: 勾中 6/7 → 4 分（85.7%）。不勾：2 删除关系无前置保护。
+- D5: 勾中 1/3 → 2 分（33.3%）。勾中：1 `RolePermissionAssignmentServiceTest` 可执行。不勾：2 双轨绕过与缓存失效无测试；4 `OrgUserAssignmentServiceTest` 与 `RoleUserAssignmentServiceTest` 共 8 个用例未挂 `@Test`，恰好覆盖本格最关键的唯一有效机构约束却完全不执行。
+- D4: N/A。
+
+#### BE-SCOPE
+
+- D1: 勾中 2/7 → 1 分（28.6%）。剔除：4 唯一性、6 事务、10 双轨（本格无业务表写操作）。勾中：1 handler 支持 `USER_IDS` 与 `ORG_ID` 两种 scope 且已挂 5 个 mapper、9。不勾：2 详情查询全都未挂注解；3 handler 不拦写操作；5 `ORG_ID` scope 只按自身 org 过滤，不含子机构；7 `permission_context` 1 小时 TTL 使过滤规则滞后；8 `code.contains("super"/"admin"/"user")` 子串匹配。
+- D2: 勾中 1/3 → 2 分（33.3%）。剔除：2、3、4、6、7、9（数据权限不承载列表类能力）。勾中：1 两种 scope 基础能力完整。不勾：5 不支持子机构递归；8 无自定义数据范围、无按角色配置 scope。
+- D3: 勾中 4/5 → 4 分（80%）。剔除：2、3。勾中：1 注解口径统一、4 缺失 org 时用恒假条件兜底防泄漏、6、7。不勾：5 前端无从得知当前数据范围，三端对「admin 能看到什么」无统一表达。
+- D4: N/A。
+- D5: 勾中 2/3 → 3 分（66.7%）。勾中：1 `DataPermissionScopeHandlerTest` 5 个 `@Test`、4。不勾：2 子串角色判定与详情未挂注解这两条 S1 无测试。
+
+### PC 判据适用说明
+
+- D1 全部 7 格用**前端消费侧**判据（5 条）。
+- D4 判据 3（卡片化与圆角基准）与 4（触觉反馈）对 PC 一律剔除：`alex_miaosha_front/.cursorrules` 未对 PC 提出卡片化圆角与触觉要求，这两条是 mobile 规范。PC 的 D4 分母为 5 条（加载态、空状态、侧距、无 emoji、无残留与乱码）。
+- D1 的 5 条判据在本次取证中全部勾中，故 7 格 D1 一律 5 分。这是 wave2 已落地 ID string 化、`v-permission` 指令、以及 `src/utils/permission/index.ts:44-49` 多角色权限码 uniq 合并的直接结果，不是评分放水。前端在数据范围上的表达缺失落在 D3-5，不在 D1 重复扣分。
+- PC-RELATION 按 spec 6.1 处理：三个关系目录只有 `api/index.ts` 而无页面，能力内嵌在用户表单与角色抽屉，D2 不记能力缺失，扣分落在 D3-5 与 D3-6。
+
+#### PC-ORG
+
+- D1: 勾中 5/5 → 5 分。ID 全程 string、`v-permission` 按钮级校验、仅做展示控制、多角色权限码合并、详情表单不回传审计字段。
+- D2: 勾中 3/8 → 2 分（37.5%）。剔除：7 关系配置（见上）。勾中：1 CRUD、2 筛选、3 `usePagination` 服务端分页。不勾：4 机构是五个模块里唯一没有 `rowSelection` 与批量删除的；5 无机构树视图；6 无启停入口；8 stage1 机构 Drawer 与左树未落地；9 无导出。
+- D3: 勾中 5/7 → 3 分（71.4%）。勾中：1 容器规则清晰（主详情 Modal、关系配置 Drawer）、2 `a-popconfirm` 二次确认、3 提交 loading、4 `rulesRef` 有 orgCode 与 orgName 必填、7 命名规范。不勾：5 PC 无关系配置页而 mobile 有，三端口径不一致；6 `src/components/rbac/*` 零引用。
+- D4: 勾中 2/5 → 2 分（40%）。勾中：5 侧距、6 无 emoji。不勾：1 有 `:loading` 但无骨架屏；2 无 `a-empty` 空状态；7 `config/index.ts` 校验提示文案乱码。
+- D5: 勾中 2/5 → 2 分（40%）。勾中：1 `scripts/playwright/run-rbac-smoke.mjs` 与 `test:rbac:smoke:local` 存在、5 一条命令可跑。不勾：2 越权与权限码合并无测试；3 无 `data-testid`；4 `stage1-smoke.json` 描述的目标 UI 与现状不符，冒烟脚本只能用文案与 `.ant-*` 类选择器定位。
+
+#### PC-USER
+
+- D1: 勾中 5/5 → 5 分。同 PC-ORG。
+- D2: 勾中 5/8 → 3 分（62.5%）。剔除：5 树。勾中：1、2 wave2 已补筛选、3、4 `rowSelection` 与 `batchDelUserManager`、7 机构与角色维护内嵌在用户表单。不勾：6 无启停入口；8 stage1 左机构树筛选未落地；9 无导出。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：5、6。
+- D4: 勾中 2/5 → 2 分（40%）。不勾：1、2、7（列表页残留 `console.log`，`config/index.ts` 文案乱码）。
+- D5: 勾中 2/5 → 2 分（40%）。同 PC-ORG。
+
+#### PC-ROLE
+
+- D1: 勾中 5/5 → 5 分。
+- D2: 勾中 5/7 → 3 分（71.4%）。剔除：5 树、9 导出。勾中：1、2、3、4、7（`authorizationDetail` 与 `userAssignmentDetail` 两个抽屉是清晰的关系配置入口）。不勾：6 无启停；8 stage1 角色统计列未落地。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：5、6（权限树用 `src/compoments/menu-tree` 而非 `rbac/RbacPermissionTreePanel`）。
+- D4: 勾中 2/5 → 2 分（40%）。不勾：1、2、7。
+- D5: 勾中 2/5 → 2 分（40%）。
+
+#### PC-MENU
+
+- D1: 勾中 5/5 → 5 分。
+- D2: 勾中 5/7 → 3 分（71.4%）。剔除：7 关系配置、9 导出。勾中：1、2、3、4、5（`subMenuManager` 抽屉提供子菜单层级管理）。不勾：6 无启停；8 目标态未落地。
+- D3: 勾中 4/7 → 3 分（57.1%）。不勾：4 `menuInfoDetail/index.vue:239` 的 `rulesRef = reactive({})` 是空对象，必填项完全不校验；5；6。
+- D4: 勾中 3/5 → 3 分（60%）。勾中：5、6、7（本模块无 `console.log` 残留也无乱码文案）。不勾：1、2。
+- D5: 勾中 2/5 → 2 分（40%）。
+
+#### PC-PERM
+
+- D1: 勾中 5/5 → 5 分。
+- D2: 勾中 4/6 → 3 分（66.7%）。剔除：5 树、7 关系配置（在 role-permission）、9 导出。勾中：1、2、3、4。不勾：6、8。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：5、6。
+- D4: 勾中 2/5 → 2 分（40%）。不勾：1、2、7（3 处 `console.log`）。
+- D5: 勾中 2/5 → 2 分（40%）。
+
+#### PC-RELATION
+
+- D1: 勾中 5/5 → 5 分。关系维护的宿主页面同样满足 5 条消费侧判据。
+- D2: 勾中 5/7 → 3 分（71.4%）。剔除：5 树、9 导出。勾中：1 三套 api 完整、2、3、4、7（入口存在，虽分散）。不勾：6 关系有 status 但无启停入口；8 stage1 的独立机构-用户与用户-角色配置页未落地。
+- D3: 勾中 5/7 → 3 分（71.4%）。不勾：5 PC 内嵌而 mobile 独立成页，同一能力三端形态不同；6。
+- D4: 勾中 2/5 → 2 分（40%）。按宿主页面评，不勾 1、2、7。
+- D5: 勾中 2/5 → 2 分（40%）。
+
+#### PC-SCOPE
+
+- D1: 勾中 5/5 → 5 分。前端未对后端过滤规则做出错误假设，也未越权兜底。
+- D2: N/A。
+- D3: 勾中 2/4 → 2 分（50%）。剔除：2、3、4（本格无写操作）。勾中：1、7。不勾：5 页面完全不表达当前数据范围，用户看到空列表时无法区分「无数据」与「无权限」，而后端 `ORG_ID` scope 又不含子机构，三端对「管理员能看到什么」无统一口径；6。
+- D4: N/A。
+- D5: 勾中 2/5 → 2 分（40%）。勾中 1、5。不勾 2 数据范围表达无测试、3、4。
+
+### MB 判据适用说明
+
+- D1 全部 7 格用**前端消费侧**判据。7 格 D1 一律 3 分：勾中 1 ID 全程 string、3 不承担安全决策、5 payload 干净；不勾 2 全仓无 `hasPermission`/`usePermission`/`v-permission`，3 `buildPermissionContext` 只产出 menuInfo/roleInfo/orgInfo，**根本没有权限码这一概念**，页内无从做按钮级校验；不勾 4 `pickPrimaryRole` 取 `roleInfoVoList[0]`。
+- MB-USER 按**个人信息页**评（spec 6 节的描述准确）：`src/views/user/userManager/` 下只有 `index.vue`（17 行）、`config`、`api`，没有列表也没有详情页，不构成用户管理能力。故 D2 分母只保留判据 1（CRUD）与 8（目标态），其余管理类判据全部剔除。
+- MB-USER 的 D4 得 5 分而 D2 得 0 分不是矛盾：完整的个人中心 `src/views/user/index.vue` 视觉最规范（骨架屏、16px 圆角、`navigator.vibrate`、侧距齐全），但路由 `/myself/info`「个人信息」指向的是那个 17 行残片。视觉规范与功能完成度在这一格恰好分离。
+- 7 个管理模块的 D4 判据 3（卡片化圆角）与 4（触觉反馈）**适用且未满足**：`border-radius` 与 `vibrate` 只出现在个人中心页，管理页一处都没有。
+
+#### MB-ORG
+
+- D2: 勾中 4/9 → 2 分（44.4%）。勾中：1 列表加详情齐备、2 `van-search` 筛选、3 `usePagination` 服务端分页、7 `orgUserInfo` 有独立页面入口。不勾：4 无批量；5 无机构树；6 无启停；8 `mobile-rbac-visibility-checklist.md` 要求的按权限可见性控制未落地；9 无导出。
+- D3: 勾中 4/7 → 3 分（57.1%）。勾中：1 列表加详情页路由形态统一、4 `rulesRef` 与 `required="auto"`、6 复用 `CommonList` 与 `CommonPullRefresh`、7 命名规范。不勾：2 全仓无 `showConfirmDialog`，删除没有二次确认；3 详情页提交按钮无 loading 防重；5 PC 内嵌而 mobile 独立成页。
+- D4: 勾中 2/7 → 1 分（28.6%）。勾中：2 `van-empty` 空状态、6 无 emoji。不勾：1 管理页只有 loading 无骨架屏；3 无 16px 卡片圆角；4 无触觉反馈；5 无 `0 16px` 侧距；7 详情页 placeholder 文案乱码。
+- D5: 勾中 0/5 → 0 分。`tests/` 目录不存在，无任何自动化测试、无定位钩子、无可跑命令。
+
+#### MB-USER
+
+- D2: 勾中 0/2 → 0 分。剔除：2、3、4、5、6、7、9（个人信息页不承载列表与管理能力）。不勾：1 `/myself/info` 渲染的 `userManager/index.vue` 只有一个孤立头像上传字段，既无其他字段也无保存按钮，`value` 定义后未使用，是挂在路由上的未完成残片；8 目标态未落地。
+- D3: 勾中 4/6 → 3 分（66.7%）。剔除：4（残片无表单校验可评）。勾中：1、3 个人中心有 loading、6、7。不勾：2 退出登录无二次确认；5。
+- D4: 勾中 6/6 → 5 分。剔除：2（个人页无列表空态）。个人中心页骨架屏、16px 圆角、`navigator.vibrate`、侧距、无 emoji、无乱码全部满足，是三端里唯一完全符合自身 `.cursorrules` 视觉基准的页面。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-ROLE
+
+- D2: 勾中 4/7 → 3 分（57.1%）。剔除：5 树、9 导出。勾中：1、2、3、7（`roleUserInfo` 与 `rolePermissionInfo` 均有独立页）。不勾：4、6、8。
+- D3: 勾中 4/7 → 3 分（57.1%）。同 MB-ORG。
+- D4: 勾中 2/7 → 1 分（28.6%）。同 MB-ORG。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-MENU
+
+- D2: 勾中 3/7 → 2 分（42.9%）。剔除：7 关系配置、9 导出。勾中：1、2、3。不勾：4 无批量；5 无树；6 无启停；8 目标态未落地。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。本模块乱码最严重，`menuInfoDetail/index.vue` 有 11 处受损文案。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-PERM
+
+- D2: 勾中 3/6 → 2 分（50%）。剔除：5 树、7 关系配置、9 导出。勾中：1、2、3。不勾：4、6、8。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-RELATION
+
+- D2: 勾中 2/7 → 1 分（28.6%）。剔除：5 树、9 导出。勾中：1、3。不勾：2 `roleUserInfo/index.vue:11` 的搜索框绑定的是 `searchInfo.typeCode`，而该模块根本没有 typeCode 这个业务字段，筛选形同失效；4 无批量；6 无启停；7 详情页用 `van-field` 要求用户手填 Long 型 orgId 与 userId，无任何选择器，实际不可用；8 目标态未落地。
+- D3: 勾中 4/7 → 3 分（57.1%）。
+- D4: 勾中 2/7 → 1 分（28.6%）。
+- D5: 勾中 0/5 → 0 分。
+
+#### MB-SCOPE
+
+- D1: 勾中 3/5 → 3 分。取首个角色这条对本格影响最直接：多角色用户的数据范围判断从源头就是错的。
+- D2: N/A。
+- D3: 勾中 3/4 → 3 分（75%）。剔除：2、3、4。勾中：1、6、7。不勾：5 与 PC 同样不表达数据范围，且 mobile 连权限码都没有，三端口径差距最大。
+- D4: N/A。
+- D5: 勾中 0/5 → 0 分。
+
+## 3. 缺陷登记册
+
+证据写法 `<repo>/<路径>:<起行>-<止行>`，`repo` 取 `backend` `front` `mobile`，门禁会回仓核对文件与行号。
+
+<!-- registry:start -->
+| ID | 标题 | 端 | 模块 | 维度 | 严重级 | 证据 | 影响 | 修复方向 | 成本 | 验收 | 来源 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| RBAC-BE-USER-001 | 生产代码 main 方法打印明文密码 | BE | USER | D1 | S1 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/user/service/impl/TUserServiceImpl.java:195-200 | 该类被反射调用或误触发时明文密码进入标准输出与日志采集 | 删除 main 方法，需要本地试算改用测试类 | S | 静态断言：该文件不含 main 方法与 System.out | 新发现 |
+| RBAC-BE-USER-002 | 用户详情与更新接口无数据权限与归属校验 | BE | USER | D1 | S1 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/user/mapper/TUserMapper.java:22-31 | 越权用户按 id 可直读或改写他机构用户，分页已过滤但详情未过滤形成缺口 | queryTUser 与 getUserInfo 挂 @DataPermission，写路径加服务层归属校验 | M | 集成测试：他机构用户 id 查询返回空、更新被拒 | wave1 Non-goals |
+| RBAC-BE-USER-003 | 用户无独立启停接口 | BE | USER | D2 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/user/controller/TUserController.java:50-95 | 停用用户须走完整编辑表单，易误改其他字段 | 增加 PUT status 专用接口，仅接受 id 与目标状态 | S | 集成测试：仅传 id 与 status 即可切换状态 | wave2 与 role-assign-permissions Non-goals |
+| RBAC-BE-USER-004 | UserPermissionContextServiceTest 未挂 @Test 不执行 | BE | USER | D5 | S3 | backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/UserPermissionContextServiceTest.java:1-40 | 权限上下文构建这条核心链路的测试形同注释，改坏不会被发现 | 补 @Test 注解并改用 JUnit 断言替换手写静态断言 | S | Surefire 实际执行用例数上升 | 新发现 |
+| RBAC-BE-USER-005 | TUserServiceImpl 多处中文文案乱码 | BE | USER | D3 | S4 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/user/service/impl/TUserServiceImpl.java:330-341 | 日志与注释可读性受损，排障时误导 | 按 UTF-8 重新写入受损文案 | S | 静态扫描：源码无 U+FFFD 替换字符 | 新发现 |
+| RBAC-BE-ORG-001 | 机构详情与写接口无数据权限与归属校验 | BE | ORG | D1 | S1 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgInfo/mapper/OrgInfoMapper.java:20-23 | 分页已按 ORG_ID 过滤，但按 id 查询与更新删除完全不过滤，可越权读写他机构 | queryOrgInfo 挂注解，写路径加归属校验 | M | 集成测试：他机构 id 查询返回空、更新被拒 | wave1 Non-goals |
+| RBAC-BE-ORG-002 | 机构新增与修改无唯一性、父节点存在性与防环校验 | BE | ORG | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgInfo/service/impl/OrgInfoServiceImp.java:51-64 | 可造出重名机构与父子成环的机构树，树渲染将无限递归 | 新增改前校验编码唯一、父节点存在、父链不含自身 | M | 单测：重名被拒、自身设为父被拒、成环被拒 | 新发现 |
+| RBAC-BE-ORG-003 | 无机构树接口 | BE | ORG | D2 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgInfo/controller/OrgInfoController.java:39-79 | 前端要展示机构树须自行拉全量再拼装，数据量增长后不可用 | 增加 tree 接口，服务端按 parentId 组装并复用数据权限过滤 | M | 集成测试：返回结构含 children 且受数据权限约束 | 新发现 |
+| RBAC-BE-ORG-004 | 机构模块无任何自动化测试 | BE | ORG | D5 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgInfo/service/impl/OrgInfoServiceImp.java:51-91 | 删除前置保护这类已实现的正确逻辑无回归保护，后续重构易失守 | 为删除前置保护与新增校验补单测 | M | Surefire 出现 Org 相关用例且通过 | 新发现 |
+| RBAC-BE-ROLE-001 | 角色详情与写接口无数据权限与归属校验 | BE | ROLE | D1 | S1 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/roleInfo/mapper/RoleInfoMapper.java:20-24 | 分页按 operator 过滤，详情与写不过滤，可越权改他人角色 | 详情挂注解，写路径加归属校验 | M | 集成测试：他人角色查询返回空、更新被拒 | wave1 Non-goals |
+| RBAC-BE-ROLE-002 | 删除角色未级联清理 t_role_permission_info | BE | ROLE | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/roleInfo/service/impl/RoleInfoServiceImp.java:107-120 | 残留权限关系行，角色 id 复用时会带回旧权限 | 删除角色时在同一事务内失效其权限与用户关系 | S | 单测：删角色后关系行为失效状态 | wave1 Non-goals |
+| RBAC-BE-ROLE-003 | 角色新增与修改无唯一性与入参校验 | BE | ROLE | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/roleInfo/service/impl/RoleInfoServiceImp.java:99-104 | 可造出同名同码角色，权限判定与展示都会歧义 | 新增改前校验角色编码唯一 | S | 单测：重复角色编码被拒 | 新发现 |
+| RBAC-BE-MENU-001 | 菜单查询完全无数据权限 | BE | MENU | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/menuInfo/mapper/MenuInfoMapper.java:1-26 | 任意登录用户可列出全部菜单定义，暴露未授权功能的存在与路径 | 分页与列表挂 @DataPermission，或在服务层按权限码过滤 | M | 集成测试：普通用户看不到未授权菜单 | 新发现 |
+| RBAC-BE-MENU-002 | 删除父菜单不检查子节点，产生孤儿菜单 | BE | MENU | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/menuInfo/service/impl/MenuInfoServiceImp.java:149-157 | 子菜单 parentId 悬空，菜单树渲染缺失或报错 | 删除前校验无有效子节点，或改为级联失效 | S | 单测：删有子节点的菜单被拒 | 新发现 |
+| RBAC-BE-MENU-003 | MenuPermissionFilterTest 未挂 @Test，4 个用例不执行 | BE | MENU | D5 | S3 | backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/MenuPermissionFilterTest.java:10-58 | 菜单过滤不污染 Redis 共享 children 这条关键约束无实际保护 | 补 @Test 并改用 JUnit 断言 | S | Surefire 实际执行用例数上升 | 新发现 |
+| RBAC-BE-MENU-004 | 无管理端菜单树接口 | BE | MENU | D2 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/menuInfo/controller/MenuInfoController.java:41-92 | menu_all_tree 缓存只服务登录态，管理端须自行拼树 | 增加管理端 tree 接口，与登录态缓存分开 | M | 集成测试：返回含 children 的树结构 | 新发现 |
+| RBAC-BE-PERM-001 | 权限点详情与写接口无归属校验 | BE | PERM | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/permissionInfo/mapper/PermissionInfoMapper.java:22-28 | 可越权读改他人创建的权限点定义 | 详情挂注解，写路径加归属校验 | M | 集成测试：他人权限点更新被拒 | wave1 Non-goals |
+| RBAC-BE-PERM-002 | 删除权限点未清理 t_role_permission_info | BE | PERM | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/permissionInfo/service/impl/PermissionInfoServiceImp.java:50-93 | 残留关系行，权限点 id 复用时角色会拿到意外权限 | 删除时在同一事务内失效关联关系 | S | 单测：删权限点后关系行失效 | 新发现 |
+| RBAC-BE-PERM-003 | 权限码无唯一性校验 | BE | PERM | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/permissionInfo/service/impl/PermissionInfoServiceImp.java:50-93 | 同一权限码存在多条定义，按码判权时行为不确定 | 新增改前校验权限码唯一 | S | 单测：重复权限码被拒 | 新发现 |
+| RBAC-BE-PERM-004 | 权限点模块无任何自动化测试 | BE | PERM | D5 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/permissionInfo/service/impl/PermissionInfoServiceImp.java:50-93 | 权限码唯一性与关系清理修好后无回归保护 | 补服务层单测 | M | Surefire 出现权限点相关用例 | 新发现 |
+| RBAC-BE-RELATION-001 | 关系裸 CRUD 可绕过 assignSingleOrg 的唯一有效机构约束 | BE | RELATION | D1 | S1 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/service/impl/OrgUserInfoServiceImp.java:52-74 backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/controller/OrgUserInfoController.java:66-74 | assignSingleOrg 用锁与事务保证单用户唯一有效机构，而 POST 裸 insert 完全不校验，可造出多条 status=1 记录使数据权限过滤结果不确定 | 关系表写入口收敛到 assign 语义，裸 CRUD 下线或改为仅内部调用 | M | 集成测试：直接 POST 造第二条有效关系被拒 | 新发现 |
+| RBAC-BE-RELATION-002 | 换机构与改角色后不失效 permission_context 缓存 | BE | RELATION | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/service/impl/OrgUserInfoServiceImp.java:78-90 | 缓存 TTL 一小时，期间用户的数据权限仍按旧机构过滤，既可能越权也可能看不到本机构数据 | assignSingleOrg 与 assignRoles 成功后删除该用户的 permission_context | S | 单测：assign 后缓存键被删除 | 新发现 |
+| RBAC-BE-RELATION-003 | org-user 与 role-user 分页无数据权限 | BE | RELATION | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/mapper/OrgUserInfoMapper.java:1-27 backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/roleUserInfo/mapper/RoleUserInfoMapper.java:1-28 | 可枚举全部机构-用户与角色-用户绑定关系，间接泄漏组织结构 | 两个 mapper 的分页挂 @DataPermission | S | 集成测试：SQL 含过滤条件且跨机构行不可见 | 新发现 |
+| RBAC-BE-RELATION-004 | 历史失效关系行持续累积无清理机制 | BE | RELATION | D2 | S3 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/orgUserInfo/service/impl/OrgUserInfoServiceImp.java:78-90 | 频繁调岗后单用户堆积大量 status=0 行，分页与子查询逐步变慢 | 增加归档或定期清理任务，或改为只保留最近 N 条 | M | 压测或计数断言：调岗 100 次后有效行仍为 1 | role-assign-permissions Risks |
+| RBAC-BE-RELATION-005 | 两个关系测试类未挂 @Test，13 个用例不执行 | BE | RELATION | D5 | S3 | backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/OrgUserAssignmentServiceTest.java:18-60 backend/alex_miaosha_user/user_boot/src/test/java/com/alex/user/rbac/RoleUserAssignmentServiceTest.java:1-40 | 唯一有效机构约束与事务边界这两条本格最关键的保证毫无实际验证 | 补 @Test 并改用 JUnit 断言 | S | Surefire 实际执行用例数上升 13 | 新发现 |
+| RBAC-BE-SCOPE-001 | 角色判定用子串包含，可被角色编码命名绕过 | BE | SCOPE | D1 | S1 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:92-96 | 名为 superviser 或 badmin 的普通角色会被判为超管或机构管理员，直接拿到全量数据 | 改为与角色编码常量精确相等匹配 | S | 单测：superviser 不被判为 super | 新发现 |
+| RBAC-BE-SCOPE-002 | ORG_ID scope 不含子机构，管理员看不到下级 | BE | SCOPE | D1,D2 | S3 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:155-160 | 多层机构下管理员无法管理下级机构数据，与机构树能力矛盾 | 支持按机构子树递归的 scope，需先确认产品是否要下级可见 | L | 集成测试：父机构管理员可见子机构行 | wave1 Risks（产品限制） |
+| RBAC-BE-SCOPE-003 | 详情查询与写操作完全不经过数据权限 | BE | SCOPE | D1 | S1 | backend/alex_miaosha_user/user_api/src/main/java/com/alex/api/user/handler/DataPermissionHandlerImpl.java:130-140 | handler 只作用于挂注解的方法，全部详情与写路径成为统一的越权缺口 | 建立注解覆盖清单并在测试中断言无遗漏方法 | M | 静态或反射测试：查询与写方法均已覆盖 | wave1 Non-goals |
+| RBAC-BE-SCOPE-004 | permission_context 一小时 TTL 使过滤规则滞后 | BE | SCOPE | D1 | S2 | backend/alex_miaosha_user/user_boot/src/main/java/com/alex/user/rbac/service/impl/UserPermissionContextServiceImpl.java:100-110 | 权限变更后最长一小时内过滤仍按旧上下文，与 RELATION-002 叠加放大 | 变更侧主动失效，TTL 仅作兜底 | S | 单测：权限变更后再次构建拿到新上下文 | 新发现 |
+| RBAC-PC-ORG-001 | 机构列表无批量选择与批量删除 | PC | ORG | D2 | S3 | front/src/views/user/orgInfo/index.vue:73-145 | 机构是五个管理模块里唯一没有批量能力的，批量维护须逐条点 | 补 rowSelection 与批量删除按钮，复用其余四个模块的现成写法 | S | midscene：勾选两行后批量删除成功 | wave2 Non-goals |
+| RBAC-PC-ORG-002 | 无机构树视图，stage1 目标 UI 未落地 | PC | ORG | D2,D3 | S3 | front/tests/midscene/rbac/cases/stage1-smoke.json:1-40 front/src/components/rbac/index.ts:1-11 | 契约文档描述的机构 Drawer 与左树都没实现，共享组件在库零引用，文档态与代码态脱节 | 后端补 tree 接口后接 rbac-permission-tree-panel 与 base-rbac-drawer | L | 静态检查：src/views/user 出现 components/rbac 引用且 stage1 用例通过 | 新发现（组件已由 front 3f3b605 归位本分支） |
+| RBAC-PC-ORG-003 | 机构表单校验提示文案乱码 | PC | ORG | D4 | S4 | front/src/views/user/orgInfo/config/index.ts:66-79 | 用户提交空表单时看到乱码提示，直接可见 | 按 UTF-8 重写受损文案 | S | 静态扫描：config 目录无 U+FFFD | 新发现 |
+| RBAC-PC-ORG-004 | RBAC 页面无空状态与骨架屏 | PC | ORG | D4 | S4 | front/src/views/user/orgInfo/index.vue:100-150 | 首屏与空结果都只有转圈，用户无法区分加载中与无数据 | 列表补 a-empty 空态与骨架屏占位 | M | 视觉检查加静态检查：出现 a-empty 与骨架屏 | 新发现 |
+| RBAC-PC-ORG-005 | RBAC 页面无 data-testid，自动化只能靠文案选择器 | PC | ORG | D5 | S3 | front/scripts/playwright/run-rbac-smoke.mjs:210-240 | 冒烟脚本用 button:has-text 与 .ant-* 类定位，文案或组件版本一变就断，且脚本自身文案已乱码 | 给列表、按钮、表单项补 data-testid 并改写选择器 | M | grep 确认目标页面已有 data-testid 且冒烟改用其定位 | 新发现 |
+| RBAC-PC-USER-001 | 用户列表无独立启停入口 | PC | USER | D2 | S3 | front/src/views/user/userManager/index.vue:70-110 | 停用用户须打开完整编辑弹窗 | 列表加状态开关，调后端启停接口 | S | midscene：列表内切换状态成功 | wave2 与 role-assign-permissions Non-goals |
+| RBAC-PC-USER-002 | 用户列表残留 console.log 与文案乱码 | PC | USER | D4 | S4 | front/src/views/user/userManager/index.vue:198-220 front/src/views/user/userManager/config/index.ts:98-110 | 生产构建输出调试信息，校验提示乱码用户可见 | 删除 console.log，按 UTF-8 重写文案 | S | 静态扫描：无 console.log 与 U+FFFD | 新发现 |
+| RBAC-PC-USER-003 | 用户页无 data-testid | PC | USER | D5 | S3 | front/src/views/user/userManager/index.vue:70-110 | 同 RBAC-PC-ORG-005，用户页是冒烟脚本的主路径，最需要稳定钩子 | 补 data-testid | S | grep 确认覆盖 | 新发现 |
+| RBAC-PC-ROLE-001 | 权限树未复用 rbac 共享组件 | PC | ROLE | D3 | S3 | front/src/views/user/roleInfo/authorizationDetail/index.vue:1-40 front/src/components/rbac/index.ts:1-11 | 授权抽屉用 src/compoments/menu-tree 自行实现，与 RbacPermissionTreePanel 双份维护 | 授权抽屉切换到 rbac 共享组件 | M | 静态检查：authorizationDetail 引用 components/rbac | 新发现 |
+| RBAC-PC-ROLE-002 | 角色列表残留 console.log 与文案乱码 | PC | ROLE | D4 | S4 | front/src/views/user/roleInfo/index.vue:165-185 front/src/views/user/roleInfo/config/index.ts:51-60 | 同 RBAC-PC-USER-002 | 删除调试输出并修文案 | S | 静态扫描通过 | 新发现 |
+| RBAC-PC-ROLE-003 | 角色页无 data-testid | PC | ROLE | D5 | S3 | front/src/views/user/roleInfo/index.vue:45-100 | 授权与分配用户两个抽屉是 stage1 用例的核心断言点，缺钩子无法稳定验收 | 补 data-testid | S | grep 确认覆盖 | 新发现 |
+| RBAC-PC-MENU-001 | 菜单详情表单校验规则是空对象 | PC | MENU | D3 | S2 | front/src/views/user/menuInfo/menuInfoDetail/index.vue:239-240 | rulesRef = reactive({}) 使必填项完全不校验，空菜单名与空权限标识可直接落库 | 按后端非空字段补 rules，与其余四模块一致从 config 导入 | S | midscene：提交空表单被拦下 | 新发现 |
+| RBAC-PC-MENU-002 | 菜单页无 data-testid | PC | MENU | D5 | S3 | front/src/views/user/menuInfo/index.vue:155-215 | 同 RBAC-PC-ORG-005 | 补 data-testid | S | grep 确认覆盖 | 新发现 |
+| RBAC-PC-PERM-001 | 权限点列表残留 console.log | PC | PERM | D4 | S4 | front/src/views/user/permissionInfo/index.vue:200-212 | 生产构建输出调试信息 | 删除 console.log | S | 静态扫描无 console.log | 新发现 |
+| RBAC-PC-PERM-002 | 权限点页无 data-testid | PC | PERM | D5 | S3 | front/src/views/user/permissionInfo/index.vue:90-140 | 同 RBAC-PC-ORG-005 | 补 data-testid | S | grep 确认覆盖 | 新发现 |
+| RBAC-PC-RELATION-001 | 关系配置无独立页面，入口分散且三端形态不一致 | PC | RELATION | D3 | S3 | front/src/views/user/orgUserInfo/api/index.ts:1-50 front/src/views/user/roleUserInfo/api/index.ts:1-56 | 三套 api 齐备但无页面，PC 内嵌在用户表单与角色抽屉，mobile 却是独立页，同一能力两种形态，用户跨端认知成本高 | 先定产品形态再收敛：要么 PC 补独立配置页，要么 mobile 改为内嵌 | L | 三端形态一致且 stage1 用例通过 | 新发现 |
+| RBAC-PC-RELATION-002 | 关系配置宿主页无空状态与调试残留清理 | PC | RELATION | D4,D5 | S4 | front/src/views/user/roleInfo/authorizationDetail/index.vue:1-40 | 关系配置抽屉无空态提示也无 data-testid，无法自动化验收 | 随宿主页面一并补空态与 data-testid | S | 静态检查通过 | 新发现 |
+| RBAC-PC-SCOPE-001 | 前端完全不表达当前数据范围 | PC | SCOPE | D3 | S3 | front/src/utils/permission/index.ts:95-105 | 用户看到空列表时无法区分无数据与无权限；后端 ORG_ID scope 又不含子机构，管理员会误以为下级机构没有数据 | 列表页展示当前数据范围提示，与后端 scope 口径对齐 | M | midscene：管理员登录后页面显示数据范围说明 | wave1 Risks（产品限制） |
+| RBAC-PC-SCOPE-002 | 数据范围表达无任何测试覆盖 | PC | SCOPE | D5 | S3 | front/tests/midscene/rbac/cases/stage1-smoke.json:1-40 | 数据权限的消费侧行为改坏了不会被发现 | 补一条不同角色登录后可见范围的用例 | M | 新增用例通过 | 新发现 |
+| RBAC-MB-SCOPE-001 | 权限上下文只取首个角色且不产出权限码 | MB | SCOPE | D1 | S2 | mobile/src/utils/permission/index.ts:19-38 | pickPrimaryRole 取 roleInfoVoList[0]，多角色用户丢失其余角色；buildPermissionContext 完全不产出 permissionCodes，页内无从做按钮级校验 | 合并全部角色的权限码去重后写入上下文，与 PC 的 utils/permission 对齐 | M | 单测：双角色用户的权限码为两者并集 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-SCOPE-002 | 移动端无任何自动化测试 | MB | SCOPE | D5 | S3 | mobile/docs/testing/mobile-rbac-visibility-checklist.md:1-40 | 可见性清单只是文档，无一条能执行的断言，改坏不会被发现 | 建 tests 目录，先覆盖权限上下文合并与路由可见性 | M | 一条命令可跑通且用例通过 | 新发现 |
+| RBAC-MB-USER-001 | 个人信息页渲染的是未完成残片 | MB | USER | D2 | S3 | mobile/src/router/index.ts:14-21 mobile/src/views/user/userManager/index.vue:1-17 | 路由 /myself/info 指向只有一个孤立头像上传字段的 17 行文件，无其他字段也无保存按钮，用户点进去等于进了坏页面 | 补齐个人信息表单与保存，或先从路由摘除该入口 | M | 进入个人信息页可查看并保存资料 | 新发现 |
+| RBAC-MB-USER-002 | 个人中心与个人信息无测试覆盖 | MB | USER | D5 | S3 | mobile/src/views/user/index.vue:1-40 | 三端唯一视觉达标的页面也无回归保护 | 补组件测试覆盖资料读取与保存 | M | 用例通过 | 新发现 |
+| RBAC-MB-ORG-001 | 机构管理无批量、无树、无启停 | MB | ORG | D2 | S3 | mobile/src/views/user/orgInfo/index.vue:1-60 | 移动端只能逐条维护，机构层级不可见 | 按移动端形态补树视图与状态切换，批量视需要再定 | L | 可在移动端查看机构层级并切换状态 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-ORG-002 | 管理页不符合移动端视觉基准且详情文案乱码 | MB | ORG | D4 | S4 | mobile/src/views/user/orgInfo/orgInfoDetail/index.vue:1-40 | 无骨架屏、无 16px 卡片圆角、无触觉反馈、无 0 16px 侧距，placeholder 文案乱码用户直接可见 | 按 .cursorrules 补骨架屏、圆角、侧距与触觉，并按 UTF-8 重写文案 | M | 视觉检查加静态扫描无 U+FFFD | 新发现 |
+| RBAC-MB-ORG-003 | 机构模块无测试与定位钩子 | MB | ORG | D5 | S3 | mobile/src/views/user/orgInfo/index.vue:1-60 | tests 目录不存在，修完上面两条也无法验收 | 建 tests 目录并补 data-testid | M | 一条命令跑通用例 | 新发现 |
+| RBAC-MB-ROLE-001 | 角色管理页视觉不达标且文案乱码 | MB | ROLE | D4 | S4 | mobile/src/views/user/roleInfo/index.vue:1-60 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查加静态扫描通过 | 新发现 |
+| RBAC-MB-ROLE-002 | 角色模块无测试与定位钩子 | MB | ROLE | D5 | S3 | mobile/src/views/user/roleInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-MENU-001 | 菜单管理无树视图与启停 | MB | MENU | D2 | S3 | mobile/src/views/user/menuInfo/index.vue:1-60 | 菜单层级在移动端完全不可见，只能看平铺列表 | 补树视图或分级下钻 | L | 移动端可查看菜单层级 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-MENU-002 | 菜单详情 11 处文案乱码且视觉不达标 | MB | MENU | D4 | S4 | mobile/src/views/user/menuInfo/menuInfoDetail/index.vue:1-40 | 本模块乱码最密集，表单几乎每个 placeholder 都损坏 | 按 UTF-8 重写全部文案并补视觉规范 | M | 静态扫描无 U+FFFD | 新发现 |
+| RBAC-MB-MENU-003 | 菜单模块无测试与定位钩子 | MB | MENU | D5 | S3 | mobile/src/views/user/menuInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-PERM-001 | 权限点管理无批量与启停 | MB | PERM | D2 | S3 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 移动端只能逐条维护权限点 | 按移动端形态补状态切换 | M | 可在移动端切换权限点状态 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-PERM-002 | 权限点页视觉不达标且文案乱码 | MB | PERM | D4 | S4 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查通过 | 新发现 |
+| RBAC-MB-PERM-003 | 权限点模块无测试与定位钩子 | MB | PERM | D5 | S3 | mobile/src/views/user/permissionInfo/index.vue:1-60 | 同 RBAC-MB-ORG-003 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+| RBAC-MB-RELATION-001 | 关系配置详情要求手填 Long 型 ID | MB | RELATION | D2 | S3 | mobile/src/views/user/orgUserInfo/orgUserInfoDetail/index.vue:8-37 | 用户须自行记住并输入机构与用户的 Long ID，没有任何选择器，功能实际不可用 | 换成 van-picker 拉取机构与用户列表选择 | M | 不输入 ID 也能完成一次绑定 | 移动端全部 RBAC 变更（三份 spec 一致 Non-goals） |
+| RBAC-MB-RELATION-002 | 角色用户列表搜索绑定了不存在的字段 | MB | RELATION | D2 | S3 | mobile/src/views/user/roleUserInfo/index.vue:10-11 | 搜索框绑 searchInfo.typeCode，而该模块无此业务字段，筛选形同失效且用户不会察觉 | 改绑角色或用户维度的真实查询字段 | S | 输入关键字后列表结果确实收敛 | 新发现 |
+| RBAC-MB-RELATION-003 | 关系配置页视觉不达标且文案乱码 | MB | RELATION | D4 | S4 | mobile/src/views/user/roleUserInfo/roleUserInfoDetail/index.vue:1-40 | 同 RBAC-MB-ORG-002 | 按 .cursorrules 补齐并修文案 | M | 视觉检查通过 | 新发现 |
+| RBAC-MB-RELATION-004 | 关系模块无测试与定位钩子 | MB | RELATION | D5 | S3 | mobile/src/views/user/orgUserInfo/index.vue:1-60 | 手填 ID 改成选择器后无法自动化验收 | 补测试与 data-testid | M | 用例通过 | 新发现 |
+<!-- registry:end -->
+
+## 4. 汇总
+
+### 4.1 端总分
+
+| 端 | 7 格平均 | 最弱格 | 最弱维度（该端 7 格均值） |
+| --- | --- | --- | --- |
+| BE | 45 | MENU 38、PERM 38 | D1 = 1.29 |
+| PC | 71 | ORG 65 | D5 = 2.00 |
+| MB | 45 | USER 39、RELATION 39 | D5 = 0.00 |
+
+各端各维度均值：
+
+| 端 | D1 | D2 | D3 | D4 | D5 |
+| --- | --- | --- | --- | --- | --- |
+| BE | 1.29 | 2.86 | 3.57 | N/A | 1.57 |
+| PC | 5.00 | 2.83 | 2.86 | 2.17 | 2.00 |
+| MB | 3.00 | 1.67 | 3.00 | 1.67 | 0.00 |
+
+### 4.2 模块总分
+
+| 模块 | BE | PC | MB | 模块平均 | 拉后腿的端 |
+| --- | --- | --- | --- | --- | --- |
+| ORG | 42 | 65 | 45 | 51 | BE |
+| USER | 64 | 71 | 39 | 58 | MB |
+| ROLE | 45 | 71 | 51 | 56 | BE |
+| MENU | 38 | 72 | 45 | 52 | BE |
+| PERM | 38 | 71 | 45 | 51 | BE |
+| RELATION | 47 | 71 | 39 | 52 | MB |
+| SCOPE | 42 | 73 | 50 | 55 | BE |
+
+### 4.3 Top 风险格
+
+按 D1 升序取前 5 格。D1 = 1 的格共 6 个，全部在后端：
+
+| 排名 | 格 | D1 | 加权总分 | 对应 S1 / S2 条目 |
+| --- | --- | --- | --- | --- |
+| 1 | BE-MENU | 1 | 38 | RBAC-BE-MENU-001、RBAC-BE-MENU-002 |
+| 2 | BE-PERM | 1 | 38 | RBAC-BE-PERM-001、RBAC-BE-PERM-002、RBAC-BE-PERM-003 |
+| 3 | BE-ORG | 1 | 42 | RBAC-BE-ORG-001（S1）、RBAC-BE-ORG-002 |
+| 4 | BE-SCOPE | 1 | 42 | RBAC-BE-SCOPE-001（S1）、RBAC-BE-SCOPE-003（S1）、RBAC-BE-SCOPE-004 |
+| 5 | BE-RELATION | 1 | 47 | RBAC-BE-RELATION-001（S1）、RBAC-BE-RELATION-002、RBAC-BE-RELATION-003 |
+
+### 4.4 结论
+
+**当前 RBAC 的完善程度：功能面基本齐、安全面成体系性欠账。** 三端加权总分 BE 45、PC 71、MB 45，登记册共 67 条，其中 S1 七条、S2 十三条、S3 三十五条、S4 十二条。
+
+三条结论：
+
+1. **7 条 S1 全部在后端，且集中于同一个根因**：数据权限只覆盖了分页查询。`@DataPermission` 挂了 5 个 mapper 的 `getPage`，而所有详情查询与全部写操作都不经过 handler，加上角色判定用 `code.contains("admin")` 子串匹配，构成一条可复现的越权链路。前端两端 D1 分别为 5 分和 3 分，不代表整体安全——前端只做展示控制，安全边界在后端，而后端 D1 均值只有 1.29。
+2. **D5 是唯一三端一致薄弱的维度**（BE 1.57、PC 2.00、MB 0.00）。后端 7 个 RBAC 测试类里 4 个没挂 `@Test`，24 个用例一个都不执行，且恰好覆盖唯一有效机构约束、菜单过滤不污染缓存、权限上下文构建这三条最关键逻辑；PC 全站 RBAC 页面无一个 `data-testid`，冒烟脚本只能用文案和 `.ant-*` 类选择器；mobile 连 `tests/` 目录都不存在。这意味着 S1、S2 修完后没有任何手段证明修好了，也没有手段防止改回去。
+3. **移动端和 PC 的差距不在页面数量而在权限模型**：mobile 有 7 个管理模块的完整 CRUD 骨架，但 `buildPermissionContext` 只产出 menuInfo/roleInfo/orgInfo，**完全没有权限码概念**，且 `pickPrimaryRole` 只取首个角色，因此页内无法做按钮级校验、多角色用户从源头就判断错误。此外关系配置要求手填 Long 型 ID、`/myself/info` 指向 17 行未完成残片、7 个管理页无一处符合自身 `.cursorrules` 的骨架屏与圆角基准。
+
+**关于跨端比较的口径**：PC 总分（71）明显高于 BE（45）与 MB（45），主要来自 PC 的 D1 满分——wave2 已落地 ID string 化、`v-permission` 指令与多角色权限码合并，恰好命中前端消费侧 5 条判据的全部。由于 BE 与前端用的是两套 D1 判据、BE 无 D4、前端 SCOPE 格有 N/A，**单格总分不做跨端排名**；跨端只在 4.2 的模块平均与 4.1 的单维度均值上解读。
+
+## 5. 既有 spec 遗留项映射
+
+下列条目来自既有三份 spec 的 Non-goals 与 Risks，已在登记册中登记，**不得作为新发现重复讨论**。
+
+<!-- legacy:start -->
+| 遗留项 | 登记册 ID |
+| --- | --- |
+| Org/Role 详情与写接口的数据权限（仅 getPage 已覆盖） | RBAC-BE-ORG-001 RBAC-BE-ROLE-001 RBAC-BE-SCOPE-003 |
+| 删除角色时级联清理 t_role_permission_info | RBAC-BE-ROLE-002 |
+| 管理员仅可见本机构，无法看子机构 | RBAC-BE-SCOPE-002 RBAC-PC-SCOPE-001 |
+| 无独立启停接口 | RBAC-BE-USER-003 RBAC-PC-USER-001 |
+| 机构无批量删除 | RBAC-PC-ORG-001 |
+| 移动端全部 RBAC 变更 | RBAC-MB-SCOPE-001 RBAC-MB-ORG-001 RBAC-MB-MENU-001 RBAC-MB-PERM-001 RBAC-MB-RELATION-001 |
+| 历史失效关系行持续累积 | RBAC-BE-RELATION-004 |
+| PC stage1 目标 UI 未落地 | RBAC-PC-ORG-002 RBAC-PC-ROLE-001 |
+<!-- legacy:end -->
+
+两点需要说明：
+
+- **「机构无批量删除」后端侧已在本分支解决**：`OrgInfoServiceImp.deleteOrgInfo` 支持逗号串批量，并带下级机构与绑定用户双重前置保护。仍未解决的是 PC 侧——机构是五个管理模块里唯一没有 `rowSelection` 与批量删除按钮的，故只映射到 `RBAC-PC-ORG-001`。
+- **wave1 Risks 里「管理员仅可见本机构」原被记为产品限制**，本轮评审仍按限制对待，但补充了后果：前端完全不表达数据范围，管理员看到空列表时无法区分「下级机构没数据」与「没权限看下级」，故同时映射了前端条目。
+
+## 6. 批次归类与阻塞项
+
+严格按严重级推进，不允许跨批次挑低成本项。批次 0 本身不修缺陷，只为后三批提供回归保护与定位抓手，故不受严重级一致性约束。
+
+<!-- batches:start -->
+| 批次 | 条目 ID | 验收手段 |
+| --- | --- | --- |
+| 批次 0 | RBAC-BE-USER-004 RBAC-BE-MENU-003 RBAC-BE-RELATION-005 RBAC-PC-ORG-005 RBAC-PC-USER-003 RBAC-PC-ROLE-003 RBAC-PC-MENU-002 RBAC-PC-PERM-002 RBAC-PC-RELATION-002 RBAC-MB-SCOPE-002 RBAC-MB-USER-002 RBAC-MB-ORG-003 RBAC-MB-ROLE-002 RBAC-MB-MENU-003 RBAC-MB-PERM-003 RBAC-MB-RELATION-004 | 后端 Surefire 实际执行用例数由 16 升至 40；grep 确认 PC 六个 RBAC 页面已有 data-testid 且冒烟脚本改用其定位；mobile tests 目录存在且一条命令跑通 |
+| 批次 1 | RBAC-BE-USER-001 RBAC-BE-USER-002 RBAC-BE-ORG-001 RBAC-BE-ROLE-001 RBAC-BE-RELATION-001 RBAC-BE-SCOPE-001 RBAC-BE-SCOPE-003 | 自动化测试断言：他机构 id 查询返回空、跨机构写被拒、生成 SQL 含预期过滤片段、superviser 不被判为 super、源码无 main 打印密码 |
+| 批次 2 | RBAC-BE-ORG-002 RBAC-BE-ROLE-002 RBAC-BE-ROLE-003 RBAC-BE-MENU-001 RBAC-BE-MENU-002 RBAC-BE-PERM-001 RBAC-BE-PERM-002 RBAC-BE-PERM-003 RBAC-BE-RELATION-002 RBAC-BE-RELATION-003 RBAC-BE-SCOPE-004 RBAC-PC-MENU-001 RBAC-MB-SCOPE-001 | 单元测试加集成测试：唯一性与防环被拒、删除级联失效关系行、assign 后缓存键被删、空表单被前端拦下、双角色权限码为并集 |
+| 批次 3 | RBAC-BE-USER-003 RBAC-BE-ORG-003 RBAC-BE-ORG-004 RBAC-BE-MENU-004 RBAC-BE-PERM-004 RBAC-BE-RELATION-004 RBAC-BE-SCOPE-002 RBAC-PC-ORG-001 RBAC-PC-ORG-002 RBAC-PC-USER-001 RBAC-PC-ROLE-001 RBAC-PC-RELATION-001 RBAC-PC-SCOPE-001 RBAC-PC-SCOPE-002 RBAC-MB-USER-001 RBAC-MB-ORG-001 RBAC-MB-MENU-001 RBAC-MB-PERM-001 RBAC-MB-RELATION-001 RBAC-MB-RELATION-002 | Midscene 与 Playwright 用例通过，加静态检查：src/views/user 出现 components/rbac 引用、关系配置不再需要手填 ID、三端关系配置形态一致 |
+| 批次 4 | RBAC-BE-USER-005 RBAC-PC-ORG-003 RBAC-PC-ORG-004 RBAC-PC-USER-002 RBAC-PC-ROLE-002 RBAC-PC-PERM-001 RBAC-MB-ORG-002 RBAC-MB-ROLE-001 RBAC-MB-MENU-002 RBAC-MB-PERM-002 RBAC-MB-RELATION-003 | 静态扫描：三端源码无 U+FFFD 替换字符、无 console.log 残留；视觉检查：PC 有空态与骨架屏、mobile 管理页符合 16px 圆角与触觉基准 |
+<!-- batches:end -->
+
+批次容量：0 号 16 条、1 号 7 条、2 号 13 条、3 号 20 条、4 号 11 条，合计 67 条，与登记册条目数一致（门禁校验此项）。
+
+### 6.1 阻塞项一：本机跑不了后端测试
+
+`JAVA_HOME` 指向 `D:\Program Files (x86)\Java\JDK1.8_x32`（该目录不存在），本机实际可用的是 JDK 21，而仓库根 `pom.xml` 声明 Java 17 与 Lombok 1.18.24。用 JDK 21 跑 `mvn test` 会在 `alex_miaosha_common` 编译阶段抛 `NoSuchFieldError: JCTree$JCImport qualid`，这是 Lombok 1.18.24 不支持 JDK 21 的已知表现。
+
+仓库声明本身自洽（Java 17 + Lombok 1.18.24 是兼容组合），所以这不是仓库缺陷，未登记为条目。但它直接卡住批次 0 的验收——「Surefire 实际执行用例数上升」需要能跑 `mvn test`。**批次 0 开工前必须先解决其一**：
+
+1. 装 JDK 17 并把 `JAVA_HOME` 指向它（改动最小，与仓库声明一致）。
+2. 升 Lombok 到支持 JDK 21 的版本（会牵动全仓编译，超出本轮范围）。
+3. 把批次 0 的验收改为纯静态断言（每个测试类的 `@Test` 数量等于其 `public void test*` 方法数），不依赖实际执行。
+
+本轮 D5 的取证已全部改用静态 `@Test` 清点，评分不受此影响。
+
+**状态：已按方案 1 解除（2026-08-06）。** 装好 JDK 17 后以 `$env:JAVA_HOME="C:\Program Files\Java\jdk-17"` 跑 `mvn -pl alex_miaosha_user/user_boot -am test`，改造前实测 `BUILD SUCCESS` 且 `Tests run: 16`，与静态清点结论一致；批次 0 Task 1 完成后实测 `Tests run: 40, Failures: 0, Errors: 0, Skipped: 0`。因此批次 0 验收无需退化为纯静态断言，方案 2 与方案 3 不再需要。四个休眠测试类的 24 个用例首次真实执行**全部通过**，未发现需要 `@Disabled` 分流的生产代码缺陷——这些用例此前只是从未被 Surefire 收集。
+
+### 6.2 阻塞项二：批次 3 的产品形态决策
+
+`tests/midscene/rbac/cases/stage1-smoke.json` 与 `docs/testing/rbac-stage1-midscene-test-design.md` 描述了一套目标 UI：用户页左侧机构树、机构 Drawer 契约、角色统计列、权限差异预览、独立的机构-用户与用户-角色配置页。这批资产已由前端仓 commit `3f3b605` 从 `codex/gift-management-module` 归位到本分支。
+
+**执行批次 3 前必须先确认该设计是否仍然采纳**，否则会出现照旧文档改完又不满意的返工，成本 L。需回答四个问题：
+
+1. PC 关系配置改为独立页面，还是保持内嵌在用户表单与角色抽屉？这直接决定 `RBAC-PC-RELATION-001` 与 `RBAC-MB-RELATION-001` 往哪个方向收敛。
+2. 用户页是否引入左侧机构树布局？决定 `RBAC-PC-USER-001` 之外是否还要动布局，以及后端 `RBAC-BE-ORG-003` 树接口的优先级。
+3. `src/components/rbac/*` 四个组件作为最终形态复用，还是重新设计？决定 `RBAC-PC-ORG-002` 与 `RBAC-PC-ROLE-001` 是接线工作还是重做工作。
+4. 移动端关系配置需要完整管理能力，还是只保留查看？决定 `RBAC-MB-RELATION-001` 是补选择器还是降级为只读。
+
+**状态：已锁定（2026-08-11）。** 决策见 `docs/superpowers/specs/2026-08-11-rbac-batch3-product-design.md`：PC 补独立关系页；用户页要左树；复用 `components/rbac` 接线不重做；mobile 完整管理（picker）；机构管理员 ORG_ID 含子机构。实现计划：`docs/superpowers/plans/2026-08-11-rbac-batch3-s3.md`。
+
+### 6.3 各批次的 plan 落盘位置
+
+| 批次 | plan 路径 |
+| --- | --- |
+| 批次 0 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch0-regression-hooks.md`（跨三仓，主 plan 落后端仓） |
+| 批次 1 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch1-s1.md`（纯后端） |
+| 批次 2 | `alex_miaosha/docs/superpowers/plans/2026-08-06-rbac-batch2-s2.md`（后端 11 条为主，PC 与 mobile 各 1 条） |
+| 批次 3 | 后端条目落后端仓，前端条目落各前端仓 `docs/superpowers/plans/` |
+| 批次 4 | 同批次 3 |
+
+## 7. 批次 3 验收执行记录（2026-08-11，Task 16）
+
+**说明：** 本节只回填实测数字与静态验收结论；**§2 评分矩阵未复评改分**。
+
+| 指标 | 批次 0 基线 | 批次 3 验收实测 |
+| --- | --- | --- |
+| BE `com.alex.user.rbac.**` Surefire | 40（批次 0 完成后） | **150**，Failures=0，Errors=0，Skipped=0（33 类） |
+| PC `npm run test:unit` | 无 / 未建立 | **6** passed（2 files：`permission-context`、`data-scope-hint`） |
+| MB `npm run test:unit` | 3（批次 0 Task 4） | **10** passed（2 files） |
+| PC `components/rbac` 被 views 引用 | 0（库零引用） | **3** 处（orgUserInfo、roleUserInfo、authorizationDetail） |
+| MB 关系详情手填 Long 主路径 | 有（登记册 RBAC-MB-RELATION-001） | **无**（picker + readonly） |
+| PC 冒烟 `test:rbac:smoke:local` | 环境性失败 / 部分通过 | **0/9**（`ERR_CONNECTION_REFUSED` @ localhost:3000，dev 未起） |
+| PC midscene `test:midscene:local` | 同左 | **0/9**（同上，断言未放宽） |
+| PC `npm run lint` | 未作为批次 0 门禁 | **44 error** / 92 warning（全仓既有债） |
+| MB `npm run lint` | — | **0 error** / 4 warning |
+
+**批次 3 完成判据（plan）静态对齐：** 用户 status、org/menu tree、admin 子树 scope、Org 删除守卫 / Perm 回归 / 关系 prune 均有对应 `@Test` 且本次 Surefire 全绿；PC 独立关系页 + scope 提示 + rbac 接线已落地；MB 个人信息 / picker / 树 / 启停已落地。
+
+**待环境复验：** 起 PC dev + 后端 + 测试账号后重跑 smoke/midscene，目标 9/9 绿后再考虑上调 PC D5 与批次 3 验收行状态。

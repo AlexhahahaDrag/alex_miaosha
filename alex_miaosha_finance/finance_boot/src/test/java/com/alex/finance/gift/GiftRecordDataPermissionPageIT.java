@@ -1,6 +1,7 @@
 package com.alex.finance.gift;
 
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
+import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
@@ -40,7 +41,7 @@ class GiftRecordDataPermissionPageIT {
 
     @BeforeEach
     void setUp() {
-        handler = new DataPermissionHandlerImpl(userUtils);
+        handler = new DataPermissionHandlerImpl(userUtils, OrgSubtreeLookup.NOOP);
     }
 
     @Test

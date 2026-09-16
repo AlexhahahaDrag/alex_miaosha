@@ -7,20 +7,24 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
-import com.alex.common.exception.UserException;
 import com.alex.user.menuInfo.service.MenuInfoService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.UserPermissionContextService;
 import com.alex.user.rbac.service.impl.UserPermissionContextServiceImpl;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.user.service.impl.TUserServiceImpl;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 public class UserPermissionContextServiceTest {
 
+    @Test
     public void testTUserVoExposesPermissionContextAndPermissionCodes() {
         UserPermissionContextVo permissionContext = new UserPermissionContextVo();
         List<String> permissionCodes = Arrays.asList("user:list", "user:create");
@@ -33,6 +37,7 @@ public class UserPermissionContextServiceTest {
         assertEquals(permissionCodes, userVo.getPermissionCodes(), "permissionCodes should be readable from TUserVo");
     }
 
+    @Test
     public void testBuildContextMergesRolePermissionsAndUsesFirstOrg() {
         Long userId = 1001L;
         OrgInfoVo firstOrg = new OrgInfoVo();
@@ -58,6 +63,7 @@ public class UserPermissionContextServiceTest {
         assertEquals(Arrays.asList("user:add", "role:update"), context.getButtonPermissionCodes(), "button permission codes should match merged permissions");
     }
 
+    @Test
     public void testBuildContextKeepsAllMenusForSuperAdmin() {
         Long userId = 1002L;
         RoleInfoVo superRole = role("super_super", permissions("user:add"));
@@ -83,6 +89,29 @@ public class UserPermissionContextServiceTest {
         assertSame(allMenus, context.getMenuList(), "super admin menus should not be filtered");
     }
 
+    @Test
+    public void testBuildContextIncludeMenusFalseSkipsMenuList() {
+        Long userId = 1004L;
+        RoleInfoVo role = role("user-admin", permissions("user:add"));
+        MenuInfoVo menu = new MenuInfoVo();
+        menu.setName("User");
+        menu.setPermissionCode("user:add");
+
+        UserPermissionContextService service = new UserPermissionContextServiceImpl(
+                orgService(userId, Collections.emptyList()),
+                roleService(userId, Collections.singletonList(role)),
+                menuService(Collections.singletonList(menu)),
+                Runnable::run,
+                null
+        );
+
+        UserPermissionContextVo context = service.buildContext(userId, false);
+
+        assertEquals(Collections.emptyList(), context.getMenuList(), "login slim context must not carry menus");
+        assertEquals(Collections.singletonList("user:add"), context.getPermissionCodes());
+    }
+
+    @Test
     public void testApplyPermissionContextSetsLoginResponseCompatibilityFields() {
         TUserVo userVo = new TUserVo();
         OrgInfoVo orgInfo = new OrgInfoVo();
@@ -123,6 +152,7 @@ public class UserPermissionContextServiceTest {
         assertSame(menuList, userVo.getMenuInfoVoList(), "legacy menuInfoVoList should mirror context menuList");
     }
 
+    @Test
     public void testRefreshLoginPermissionContextRebuildsCachedUserContext() {
         Long userId = 1003L;
         TUserVo cachedUser = new TUserVo();
@@ -137,13 +167,21 @@ public class UserPermissionContextServiceTest {
         freshContext.setOrgInfo(orgInfo);
         freshContext.setRoleList(Collections.singletonList(roleInfo));
         freshContext.setPermissionCodes(Collections.singletonList("fresh:permission"));
-        UserPermissionContextService contextService = requestedUserId -> {
-            assertEquals(userId, requestedUserId, "cached login should rebuild context for redis user id");
-            return freshContext;
-        };
-        TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null, null,
-                null, null, null, null, Runnable::run, contextService, null);
+        UserPermissionContextService contextService = new UserPermissionContextService() {
+            @Override
+            public UserPermissionContextVo buildContext(Long requestedUserId, boolean includeMenus) {
+                assertEquals(userId, requestedUserId, "cached login should rebuild context for redis user id");
+                assertEquals(false, includeMenus, "fast-path refresh should use slim context");
+                return freshContext;
+            }
 
+            @Override
+            public List<MenuInfoVo> listVisibleMenus(Long requestedUserId) {
+                throw new UnsupportedOperationException();
+            }
+        };
+        TUserServiceImpl service = new TUserServiceImpl(null, null, null, null, null,
+                null, null, null, null, null, null, Runnable::run, contextService, null, null, null);
         TUserVo refreshedUser = service.refreshLoginPermissionContext(cachedUser);
 
         assertSame(cachedUser, refreshedUser, "cached login should keep using the redis user object");
@@ -151,7 +189,8 @@ public class UserPermissionContextServiceTest {
         assertEquals("Fresh Org", refreshedUser.getOrgName(), "cached login should refresh legacy orgName");
     }
 
-    public void testCompleteLoginResponseWaitsForAvatarAndPermissionContext() {
+    @Test
+    public void testCompleteLoginResponseDoesNotWaitForAvatar() {
         TUserVo userVo = new TUserVo();
         OrgInfoVo orgInfo = new OrgInfoVo();
         orgInfo.setOrgCode("org-a");
@@ -160,31 +199,12 @@ public class UserPermissionContextServiceTest {
         UserPermissionContextVo context = new UserPermissionContextVo();
         context.setOrgInfo(orgInfo);
         context.setRoleList(Collections.singletonList(roleInfo));
-        CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(() -> {
-            sleep(80L);
-            userVo.setAvatarUrl("https://cdn.example.com/avatar.png");
-        });
+        CompletableFuture<Void> avatarFuture = new CompletableFuture<>();
         TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, context);
 
-        assertEquals("https://cdn.example.com/avatar.png", userVo.getAvatarUrl(), "login response should wait for avatar enrichment");
         assertSame(context, userVo.getPermissionContext(), "login response should include permission context before returning");
-    }
-
-    public void testCompleteLoginResponseRestoresInterruptFlagWhenInterrupted() {
-        TUserVo userVo = new TUserVo();
-        CompletableFuture<Void> avatarFuture = new CompletableFuture<>();
-        UserPermissionContextVo context = new UserPermissionContextVo();
-        Thread.currentThread().interrupt();
-
-        try {
-            TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, context);
-            throw new AssertionError("interrupted wait should throw UserException");
-        } catch (UserException e) {
-            assertEquals(Boolean.TRUE, Thread.currentThread().isInterrupted(), "interrupted wait should restore interrupt flag");
-        } finally {
-            Thread.interrupted();
-            avatarFuture.complete(null);
-        }
+        assertEquals(null, userVo.getAvatarUrl(), "login must not block waiting for avatar");
+        avatarFuture.complete(null);
     }
 
     private static RoleInfoVo role(String roleCode, List<PermissionInfoVo> permissions) {
@@ -239,26 +259,5 @@ public class UserPermissionContextServiceTest {
 
     private interface MethodHandler {
         Object invoke(Object[] args);
-    }
-
-    private static void assertSame(Object expected, Object actual, String message) {
-        if (expected != actual) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (!Objects.equals(expected, actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
-    }
-
-    private static void sleep(Long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AssertionError("test sleep was interrupted");
-        }
     }
 }

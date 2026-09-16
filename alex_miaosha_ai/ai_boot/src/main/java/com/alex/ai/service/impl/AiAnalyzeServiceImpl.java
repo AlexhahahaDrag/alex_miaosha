@@ -2,6 +2,7 @@ package com.alex.ai.service.impl;
 
 import com.alex.ai.engine.AiEngineRouter;
 import com.alex.ai.service.AiAnalyzeService;
+import com.alex.ai.stream.AiStreamSink;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,15 @@ public class AiAnalyzeServiceImpl implements AiAnalyzeService {
         // AI Agent：策略模式（Strategy）+ 路由器（Router）
         // - 由 AiEngineRouter 选择具体引擎策略并统一处理回退
         return aiEngineRouter.analyze(req, requestId, start);
+    }
+
+    @Override
+    public void analyzeStream(AiAnalyzeReq req, AiStreamSink sink) {
+        long start = System.currentTimeMillis();
+        String content = req == null ? null : req.getContent();
+        String bizType = req == null ? null : req.getBizType();
+        String requestId = buildRequestId(bizType, content);
+        aiEngineRouter.analyzeStream(req, requestId, start, sink);
     }
 
     private String buildRequestId(String bizType, String content) {

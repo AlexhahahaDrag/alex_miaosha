@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alex.user.roleOrgInfo.mapper.RoleOrgInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t_role_org_info.id,
+        t_role_org_info.creator,
+        t_role_org_info.create_time,
+        t_role_org_info.updater,
+        t_role_org_info.update_time,
+        t_role_org_info.deleter,
+        t_role_org_info.delete_time,
+        t_role_org_info.is_delete,
+        t_role_org_info.operator,
+        t_role_org_info.operate_time,
+        t_role_org_info.role_id,
+        t_role_org_info.org_id,
+        t_role_org_info.summary,
+        t_role_org_info.`status`
+    </sql>
+
+    <select id="listValidByRoleId" resultType="com.alex.user.roleOrgInfo.entity.RoleOrgInfo">
+        select <include refid="Base_Column_List"/>
+        from t_role_org_info
+        <where>
+            t_role_org_info.role_id = #{roleId}
+            and t_role_org_info.is_delete = 0
+            and t_role_org_info.`status` = '1'
+        </where>
+    </select>
+
+    <select id="listValidByOrgIds" resultType="com.alex.user.roleOrgInfo.entity.RoleOrgInfo">
+        select <include refid="Base_Column_List"/>
+        from t_role_org_info
+        <where>
+            t_role_org_info.is_delete = 0
+            and t_role_org_info.`status` = '1'
+            <choose>
+                <when test="orgIds != null and orgIds.size() &gt; 0">
+                    and t_role_org_info.org_id in
+                    <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+                        #{orgId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 = 0
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+</mapper>

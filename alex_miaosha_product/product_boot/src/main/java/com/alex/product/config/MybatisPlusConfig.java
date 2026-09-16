@@ -1,6 +1,7 @@
 package com.alex.product.config;
 
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
+import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.user.UserUtils;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -28,12 +29,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MybatisPlusConfig {
 
     private final UserUtils userUtils;
+    private final OrgSubtreeLookup orgSubtreeLookup;
 
     // 最新版
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils)));
+        interceptor.addInnerInterceptor(new DataPermissionInterceptor(new DataPermissionHandlerImpl(userUtils, orgSubtreeLookup)));
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;

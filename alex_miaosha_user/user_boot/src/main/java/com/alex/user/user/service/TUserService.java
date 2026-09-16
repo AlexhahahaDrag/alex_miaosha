@@ -1,5 +1,6 @@
 package com.alex.user.user.service;
 
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.user.tUserLogin.entity.TUserLogin;
@@ -30,9 +31,20 @@ public interface TUserService extends IService<TUser> {
 
     TUser updateTUser(TUserVo tUserVo);
 
+    /**
+     * RBAC-BE-USER-003: 用户启停专用写路径，仅更新 status（"1"/"0"）。
+     * 必须先走 assertUserAccessible；成功后失效 permission_context。
+     */
+    Boolean updateUserStatus(Long id, String status);
+
     Boolean deleteTUser(String ids);
 
     Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
+
+    /**
+     * Current user's visible menu tree (auth required).
+     */
+    List<MenuInfoVo> listCurrentUserMenus();
 
     List<TUserVo> getList(TUserVo tUserVo);
 

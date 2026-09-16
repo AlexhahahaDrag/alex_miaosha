@@ -34,6 +34,12 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo>{
     @ApiModelProperty(value = "状态,字典(is_valid) 1：有效,0:失效)")
     private String status;
 
+    @ApiModelProperty(value = "绑定用户数")
+    private Long boundUserCount;
+
+    @ApiModelProperty(value = "权限数量")
+    private Long permissionCount;
+
     @ApiModelProperty(value = "权限列表")
     List<PermissionInfoVo> permissionList;
 
@@ -42,4 +48,7 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo>{
 
     @ApiModelProperty(value = "角色用户列表")
     List<RoleUserInfoVo> roleUserInfoVoList;
+
+    @ApiModelProperty(value = "绑定机构id列表（创建时可选；缺省则绑定登录用户有效机构）")
+    private List<String> orgIds;
 }

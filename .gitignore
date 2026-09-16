@@ -60,6 +60,5 @@ graphify-out/cache
 # env variables
 .env
 *.env
-
-.mybatis
 .superpowers
+.mybatis

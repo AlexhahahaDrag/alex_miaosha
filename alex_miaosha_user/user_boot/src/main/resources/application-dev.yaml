@@ -24,42 +24,31 @@ isRememberMeExpiresSecond: 86400 #记住密码一天
 
 defaultPassword: 1234@com
 
-# Token刷新配置
-token:
-  refresh:
-    # 核心线程数
-    core-pool-size: 2
-    # 最大线程数
-    max-pool-size: 4
-    # 队列容量
-    queue-capacity: 100
-    # 线程空闲时间（秒）
+# 业务专属线程池配置
+thread-pool:
+  # 通用异步任务线程池（登录并行查询、权限构建等核心链路）
+  async-task:
+    core-pool-size: 8
+    max-pool-size: 16
+    queue-capacity: 50
     keep-alive-seconds: 60
-    # 线程名前缀
+    thread-name-prefix: "async-task-"
+    await-termination-seconds: 30
+
+  # 在线用户管理线程池（旁路任务：解析 IP 地址并更新在线列表）
+  online-user:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    keep-alive-seconds: 30
+    thread-name-prefix: "online-user-"
+    await-termination-seconds: 10
+
+  # Token 刷新线程池（异步刷新 Redis Token）
+  token-refresh:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    keep-alive-seconds: 60
     thread-name-prefix: "token-refresh-"
-
-# 在线用户管理配置
-online-user:
-  # 核心线程数
-  core-pool-size: 1
-  # 最大线程数
-  max-pool-size: 2
-  # 队列容量
-  queue-capacity: 50
-  # 线程空闲时间（秒）
-  keep-alive-seconds: 30
-  # 线程名前缀
-  thread-name-prefix: "online-user-"
-
-# 通用异步任务配置
-async-task:
-  # 核心线程数
-  core-pool-size: 3
-  # 最大线程数
-  max-pool-size: 6
-  # 队列容量
-  queue-capacity: 200
-  # 线程空闲时间（秒）
-  keep-alive-seconds: 60
-  # 线程名前缀
-  thread-name-prefix: "async-task-"
+    await-termination-seconds: 30

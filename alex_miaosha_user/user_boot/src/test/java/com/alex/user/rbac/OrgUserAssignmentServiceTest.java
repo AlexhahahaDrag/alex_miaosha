@@ -3,20 +3,31 @@ package com.alex.user.rbac;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.mapper.OrgUserInfoMapper;
 import com.alex.user.orgUserInfo.service.impl.OrgUserInfoServiceImp;
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class OrgUserAssignmentServiceTest {
 
+    @Test
     public void testAssignSingleOrgInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignment() {
         OrgUserInfo oldActiveAssignment = assignment(1L, "100", "10", "1");
         TestableOrgUserInfoService service = new TestableOrgUserInfoService(oldActiveAssignment);
@@ -33,6 +44,7 @@ public class OrgUserAssignmentServiceTest {
         assertEquals("1", service.savedAssignment.getStatus(), "new assignment should be active");
     }
 
+    @Test
     public void testAssignSingleOrgDoesNotSaveWhenInvalidatingOldAssignmentFails() {
         OrgUserInfo oldActiveAssignment = assignment(1L, "100", "10", "1");
         TestableOrgUserInfoService service = new TestableOrgUserInfoService(oldActiveAssignment);
@@ -44,6 +56,7 @@ public class OrgUserAssignmentServiceTest {
         assertNull(service.savedAssignment, "new assignment should not be saved after update failure");
     }
 
+    @Test
     public void testAssignSingleOrgDeclaresTransactionBoundary() throws NoSuchMethodException {
         Transactional transactional = OrgUserInfoServiceImp.class
                 .getMethod("assignSingleOrg", Long.class, Long.class)
@@ -52,6 +65,7 @@ public class OrgUserAssignmentServiceTest {
         assertNull(transactional, "assignSingleOrg should let the per-user lock wrap the explicit transaction boundary");
     }
 
+    @Test
     public void testAssignSingleOrgHoldsUserLockUntilTransactionCallbackCompletes() throws InterruptedException {
         BlockingTransactionTemplate transactionTemplate = new BlockingTransactionTemplate();
         BlockingOrgUserInfoService service = new BlockingOrgUserInfoService(transactionTemplate);
@@ -83,49 +97,6 @@ public class OrgUserAssignmentServiceTest {
         return orgUserInfo;
     }
 
-    private static void assertTrue(boolean condition, String message) {
-        if (!condition) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (expected == null ? actual != null : !expected.equals(actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
-    }
-
-    private static void assertSame(Object expected, Object actual, String message) {
-        if (expected != actual) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertThrows(Class<? extends Throwable> expectedType, ThrowingRunnable runnable, String message) {
-        try {
-            runnable.run();
-        } catch (Throwable throwable) {
-            if (expectedType.isInstance(throwable)) {
-                return;
-            }
-            throw new AssertionError(message + ", expected exception: " + expectedType.getName()
-                    + ", actual: " + throwable.getClass().getName(), throwable);
-        }
-        throw new AssertionError(message + ", expected exception: " + expectedType.getName());
-    }
-
-    private static void assertNotNull(Object actual, String message) {
-        if (actual == null) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertNull(Object actual, String message) {
-        if (actual != null) {
-            throw new AssertionError(message);
-        }
-    }
-
     private static void sleep(Long millis) {
         try {
             Thread.sleep(millis);
@@ -133,11 +104,6 @@ public class OrgUserAssignmentServiceTest {
             Thread.currentThread().interrupt();
             throw new AssertionError("test sleep was interrupted");
         }
-    }
-
-    @FunctionalInterface
-    private interface ThrowingRunnable {
-        void run() throws Throwable;
     }
 
     private static class TestableOrgUserInfoService extends OrgUserInfoServiceImp {
@@ -148,7 +114,7 @@ public class OrgUserAssignmentServiceTest {
         private OrgUserInfo savedAssignment;
 
         private TestableOrgUserInfoService(OrgUserInfo activeAssignment) {
-            super((OrgUserInfoMapper) null, noOpTransactionTemplate());
+            super((OrgUserInfoMapper) null, noOpTransactionTemplate(), noOpCache());
             this.activeAssignments.add(activeAssignment);
         }
 
@@ -179,6 +145,24 @@ public class OrgUserAssignmentServiceTest {
         };
     }
 
+    /**
+     * These tests assert on the assignSingleOrg DB-write behavior; cache invalidation itself
+     * is covered separately by PermissionContextInvalidationTest, so a no-op stub is enough here.
+     */
+    private static PermissionContextCacheService noOpCache() {
+        return new PermissionContextCacheService() {
+            @Override
+            public void invalidate(Long userId) {
+                // no-op for this test's scope
+            }
+
+            @Override
+            public void invalidateAll(Collection<Long> userIds) {
+                // no-op for this test's scope
+            }
+        };
+    }
+
     private static class BlockingTransactionTemplate extends TransactionTemplate {
 
         private final AtomicInteger callbackEntries = new AtomicInteger();
@@ -205,12 +189,19 @@ public class OrgUserAssignmentServiceTest {
         private final AtomicInteger listCalls = new AtomicInteger();
 
         private BlockingOrgUserInfoService(TransactionTemplate transactionTemplate) {
-            super((OrgUserInfoMapper) null, transactionTemplate);
+            super((OrgUserInfoMapper) null, transactionTemplate, noOpCache());
         }
 
         @Override
-        public List<OrgUserInfo> list(Wrapper<OrgUserInfo> queryWrapper) {
+        protected List<OrgUserInfo> listActiveAssignments(Long userId) {
             listCalls.incrementAndGet();
+            return new ArrayList<>();
+        }
+
+        // RBAC-BE-RELATION-004: pruning queries a separate seam; keep it a no-op here so this
+        // test's listCalls counter stays a clean proxy for "entered core assignment" per call.
+        @Override
+        protected List<OrgUserInfo> listInvalidHistory(Long userId) {
             return new ArrayList<>();
         }
 

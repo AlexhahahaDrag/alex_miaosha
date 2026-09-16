@@ -48,6 +48,18 @@
         </where>
     </select>
 
+    <!-- RBAC-BE-ORG-003: same projection as getPage; used by getTree with @DataPermission -->
+    <select id="getList" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
+        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
+            from t_org_info
+            left join t_org_info par_info
+            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        <where>
+            t_org_info.is_delete = 0
+            <include refid="queryInfo"/>
+        </where>
+    </select>
+
     <select id="queryOrgInfo" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
         select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
             from t_org_info
@@ -59,25 +71,26 @@
         </where>
     </select>
 
+     <!-- 自连接 par_info 后两侧同名列多，条件必须带主表前缀，否则 MySQL 报 Column ambiguous -->
      <sql id="queryInfo">
         <if test = "orgInfoVo != null">
           <if test = "orgInfoVo.orgCode != null">
-            and org_code like concat('%', #{orgInfoVo.orgCode}, '%')
+            and t_org_info.org_code like concat('%', #{orgInfoVo.orgCode}, '%')
           </if>
           <if test = "orgInfoVo.orgName != null">
-            and org_name like concat('%', #{orgInfoVo.orgName}, '%')
+            and t_org_info.org_name like concat('%', #{orgInfoVo.orgName}, '%')
           </if>
           <if test = "orgInfoVo.orgShortName != null">
-            and org_short_name like concat('%', #{orgInfoVo.orgShortName}, '%')
+            and t_org_info.org_short_name like concat('%', #{orgInfoVo.orgShortName}, '%')
           </if>
           <if test = "orgInfoVo.parentId != null">
-            and parent_id = #{orgInfoVo.parentId}
+            and t_org_info.parent_id = #{orgInfoVo.parentId}
           </if>
           <if test = "orgInfoVo.summary != null">
-            and summary like concat('%', #{orgInfoVo.summary}, '%')
+            and t_org_info.summary like concat('%', #{orgInfoVo.summary}, '%')
           </if>
           <if test = "orgInfoVo.status != null">
-            and status like concat('%', #{orgInfoVo.status}, '%')
+            and t_org_info.`status` like concat('%', #{orgInfoVo.status}, '%')
           </if>
         </if>
      </sql>

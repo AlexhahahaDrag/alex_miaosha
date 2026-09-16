@@ -2,7 +2,9 @@ package com.alex.user.user.service.impl;
 
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.OnlineAdmin;
@@ -15,6 +17,7 @@ import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
 import com.alex.common.exception.LoginException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
@@ -22,7 +25,10 @@ import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.service.PermissionContextCacheService;
+import com.alex.user.rbac.service.UserDeleteCleanupService;
 import com.alex.user.rbac.service.UserPermissionContextService;
+import com.alex.user.roleInfo.mapper.RoleInfoMapper;
 import com.alex.user.roleUserInfo.service.RoleUserInfoService;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.token.service.TokenRefreshService;
@@ -36,6 +42,7 @@ import com.alex.utils.IpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -109,6 +116,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private final RoleUserInfoService roleUserInfoService;
 
+    // C2 修复：syncUserRbacAssignments 需要对请求体里的 roleIds 做归属校验，
+    // 复用已挂 @DataPermission 的 queryRoleInfo，而不是新起一套判断逻辑。
+    private final RoleInfoMapper roleInfoMapper;
+
     private final TokenRefreshService tokenRefreshService;
 
     private final OnlineUserService onlineUserService;
@@ -117,6 +128,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final Executor asyncTaskExecutor;
 
     private final UserPermissionContextService userPermissionContextService;
+
+    private final UserDeleteCleanupService userDeleteCleanupService;
+
+    // RBAC-BE-RELATION-002: permission_context 主动失效统一走 helper（行为不变，去重）
+    private final PermissionContextCacheService permissionContextCacheService;
 
     private final ObjectProvider<ObjectMapper> objectMapper;
 
@@ -183,16 +199,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return map;
     }
 
-    public static void main(String[] args) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = "12345";
-        String pass = encoder.encode(password + "Bxh");
-        System.out.println(pass);
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TUser updateTUser(TUserVo tUserVo) {
+        assertUserAccessible(tUserVo == null ? null : tUserVo.getId());
         Map<String, Object> map = new HashMap<>();
         if (StringUtils.isNotEmpty(tUserVo.getUsername())) {
             map.put(SysConf.USERNAME, tUserVo.getUsername());
@@ -212,6 +222,29 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return tUser;
     }
 
+    /**
+     * RBAC-BE-USER-003: 专用启停接口——只写 status，避免走完整编辑表单误改其它字段。
+     * UpdateWrapper 保证 SET 子句仅含 status；归属校验与 updateTUser 共用 assertUserAccessible。
+     * 使用列名（非 lambda）以便单测无需初始化 MyBatis-Plus TableInfo 缓存。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateUserStatus(Long id, String status) {
+        assertUserAccessible(id);
+        if (!SysConf.VALID_STATUS.equals(status) && !SysConf.INVALID_STATUS.equals(status)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "状态只能为1或0");
+        }
+        UpdateWrapper<TUser> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", id).set("status", status);
+        int rows = tUserMapper.update(null, wrapper);
+        if (rows > 0) {
+            permissionContextCacheService.invalidate(id);
+            log.info("用户 {} 状态更新为 {}，已失效 permission_context", id, status);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
     private void syncUserRbacAssignments(Long userId, TUserVo tUserVo) {
         if (userId == null || tUserVo == null) {
             return;
@@ -220,24 +253,111 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             orgUserInfoService.assignSingleOrg(userId, tUserVo.getOrgId());
         }
         if (tUserVo.getRoleIds() != null) {
+            // C2 修复：请求体里的 roleIds 此前完全不校验归属，机构管理员可在编辑用户时
+            // 顺手塞进 super_super 的角色 id 把目标用户变成超管。
+            assertRoleIdsGrantable(tUserVo.getRoleIds());
             roleUserInfoService.assignRoles(userId, tUserVo.getRoleIds());
         }
-        // 清理权限上下文缓存
-        try {
-            redisUtils.delete(LoginKey.loginKey, "permission_context:" + userId);
-            log.info("清理用户 {} 的权限上下文缓存", userId);
-        } catch (Exception e) {
-            log.error("清理用户权限上下文缓存异常，userId: {}", userId, e);
+        // 清理权限上下文缓存：统一走 PermissionContextCacheService（RBAC-BE-RELATION-002 helper）
+        permissionContextCacheService.invalidate(userId);
+        log.info("清理用户 {} 的权限上下文缓存", userId);
+    }
+
+    /**
+     * C2 修复：校验请求体中要授予的 roleIds 是否可授予。
+     * 1) 归属校验——非超管只能授予自己数据范围内可见的角色（复用已挂注解的 queryRoleInfo，
+     *    越权/不存在返回 null 即拒绝，文案含"无权"）；
+     * 2) 硬性规则——非超管一律不得授予 super_super 角色，即使该角色行恰好在其可见范围内。
+     * 超管登录不受限制。
+     */
+    private void assertRoleIdsGrantable(List<Long> roleIds) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            return;
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            // 与 assertUserAccessible 保持一致的 fail-closed 语义
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (isSuperAdminLogin(loginUser)) {
+            return;
+        }
+        for (Long roleId : roleIds) {
+            if (roleId == null) {
+                continue;
+            }
+            RoleInfoVo visible = roleInfoMapper.queryRoleInfo(String.valueOf(roleId));
+            if (visible == null) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权授予其他机构的角色");
+            }
+            if (RbacRoleCodes.SUPER.equals(visible.getRoleCode())) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权授予超级管理员角色");
+            }
         }
     }
 
+    /**
+     * Write-path ownership guard: non-super users must pass a scoped queryTUser
+     * before update/delete. Null means outside data scope — never silent success.
+     */
+    private void assertUserAccessible(Long id) {
+        if (id == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户ID不能为空");
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            // I1 修复：登录上下文不可用时必须 fail-closed，不能默认放行。
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (isSuperAdminLogin(loginUser)) {
+            return;
+        }
+        TUserVo visible = tUserMapper.queryTUser(String.valueOf(id));
+        if (visible == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构的用户");
+        }
+    }
+
+    private static boolean isSuperAdminLogin(TUserVo loginUser) {
+        if (loginUser == null) {
+            return false;
+        }
+        UserPermissionContextVo context = loginUser.getPermissionContext();
+        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
+            return true;
+        }
+        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+        for (RoleInfoVo role : roles) {
+            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteTUser(String ids) {
         if (StringUtils.isEmpty(ids)) {
             return true;
         }
-        List<String> idArr = Arrays.asList(ids.split(","));
-        tUserMapper.deleteByIds(idArr);
+        List<String> idArr = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+        if (idArr.isEmpty()) {
+            return true;
+        }
+        for (String userId : idArr) {
+            assertUserAccessible(Long.valueOf(userId));
+        }
+        tUserMapper.deleteBatchIds(idArr);
+        for (String userId : idArr) {
+            userDeleteCleanupService.cleanupAfterUserDeleted(userId);
+        }
         return true;
     }
 
@@ -396,11 +516,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.stop();
 
         stopWatch.start("6.构建权限上下文(buildContext)");
-        // 移回主登录线程同步构建，避开子线程首次加载 MyBatis SQL 映射时产生的锁争用与阻塞
-        UserPermissionContextVo permissionContext = userPermissionContextService.buildContext(tUserVo.getId());
+        // Login slim: org/roles/codes only — menus loaded later via GET /user/menus
+        UserPermissionContextVo permissionContext = userPermissionContextService.buildContext(tUserVo.getId(), false);
         stopWatch.stop();
 
-        stopWatch.start("7.等待头像与装配权限");
+        stopWatch.start("7.装配权限(不等待头像)");
         completeLoginResponse(tUserVo, avatarFuture, permissionContext);
         stopWatch.stop();
 
@@ -476,25 +596,22 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (userVo == null || userVo.getId() == null) {
             return userVo;
         }
-        applyPermissionContext(userVo, userPermissionContextService.buildContext(userVo.getId()));
+        applyPermissionContext(userVo, userPermissionContextService.buildContext(userVo.getId(), false));
         return userVo;
+    }
+
+    @Override
+    public List<MenuInfoVo> listCurrentUserMenus() {
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null || loginUser.getId() == null) {
+            throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
+        }
+        return userPermissionContextService.listVisibleMenus(loginUser.getId());
     }
 
     public static void completeLoginResponse(TUserVo userVo, CompletableFuture<Void> avatarFuture,
                                              UserPermissionContextVo permissionContext) {
-        if (avatarFuture != null) {
-            try {
-                // 设置最大800毫秒的超时时间，防止微服务冷启动或RPC调用挂起阻塞登录接口
-                avatarFuture.get(800, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
-                log.warn("获取用户头像信息超时，进行熔断降级，跳过头像URL装配");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new UserException(ResultEnum.USER_GET_INFO_ERROR);
-            } catch (Exception e) {
-                log.error("获取用户头像发生异常，跳过头像URL装配", e);
-            }
-        }
+        // Avatar enrichment is fire-and-forget; do not block login on OSS
         applyPermissionContext(userVo, permissionContext);
     }
 

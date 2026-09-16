@@ -55,10 +55,10 @@
 
     <select id="getPage" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/>,
-               oi.org_name  as orgName,
-               oi.org_code  as orgCode,
-               ri.role_name as roleName,
-               ri.role_code as roleCode
+               max(oi.org_name)  as orgName,
+               max(oi.org_code)  as orgCode,
+               group_concat(distinct ri.role_name order by ri.role_name separator ',') as roleName,
+               group_concat(distinct ri.role_code order by ri.role_code separator ',') as roleCode
         from t_user
         left join t_org_user_info oui on oui.user_id = t_user.id and oui.is_delete = 0
         left join t_org_info oi on oi.id = oui.org_id and oi.is_delete = 0
@@ -67,6 +67,34 @@
         <where>
             t_user.is_delete = 0 <include refid="queryInfo"/>
         </where>
+        group by
+            t_user.id,
+            t_user.creator,
+            t_user.create_time,
+            t_user.updater,
+            t_user.update_time,
+            t_user.deleter,
+            t_user.delete_time,
+            t_user.is_delete,
+            t_user.operator,
+            t_user.operate_time,
+            t_user.username,
+            t_user.gender,
+            t_user.avatar,
+            t_user.email,
+            t_user.birthday,
+            t_user.mobile,
+            t_user.valid_code,
+            t_user.summary,
+            t_user.`status`,
+            t_user.nick_name,
+            t_user.qq_number,
+            t_user.we_chat,
+            t_user.occupation,
+            t_user.github,
+            t_user.gitee,
+            t_user.role_id,
+            t_user.person_resume
         order by t_user.operate_time desc
     </select>
 
@@ -97,59 +125,97 @@
 
     <sql id="queryInfo">
         <if test = "tUserVo != null">
+            <if test = "tUserVo.keyword != null">
+                and (
+                    t_user.username like concat('%', #{tUserVo.keyword}, '%')
+                    or t_user.nick_name like concat('%', #{tUserVo.keyword}, '%')
+                    or t_user.mobile like concat('%', #{tUserVo.keyword}, '%')
+                )
+            </if>
             <if test = "tUserVo.username != null">
-                and username like concat('%', #{tUserVo.username}, '%')
+                and t_user.username like concat('%', #{tUserVo.username}, '%')
             </if>
             <if test = "tUserVo.password != null">
-                and password like concat('%', #{tUserVo.password}, '%')
+                and t_user.password like concat('%', #{tUserVo.password}, '%')
             </if>
             <if test = "tUserVo.gender != null">
-                and gender = #{tUserVo.gender}
+                and t_user.gender = #{tUserVo.gender}
             </if>
             <if test = "tUserVo.avatar != null">
-                and avatar like concat('%', #{tUserVo.avatar}, '%')
+                and t_user.avatar like concat('%', #{tUserVo.avatar}, '%')
             </if>
             <if test = "tUserVo.email != null">
-                and email like concat('%', #{tUserVo.email}, '%')
+                and t_user.email like concat('%', #{tUserVo.email}, '%')
             </if>
             <if test = "tUserVo.mobile != null">
-                and mobile like concat('%', #{tUserVo.mobile}, '%')
+                and t_user.mobile like concat('%', #{tUserVo.mobile}, '%')
             </if>
             <if test = "tUserVo.validCode != null">
-                and valid_code like concat('%', #{tUserVo.validCode}, '%')
+                and t_user.valid_code like concat('%', #{tUserVo.validCode}, '%')
             </if>
             <if test = "tUserVo.summary != null">
-                and summary like concat('%', #{tUserVo.summary}, '%')
+                and t_user.summary like concat('%', #{tUserVo.summary}, '%')
             </if>
             <if test = "tUserVo.status != null">
-                and status = #{tUserVo.status}
+                and t_user.status = #{tUserVo.status}
             </if>
             <if test = "tUserVo.nickName != null">
-                and nick_name like concat('%', #{tUserVo.nickName}, '%')
+                and t_user.nick_name like concat('%', #{tUserVo.nickName}, '%')
             </if>
             <if test = "tUserVo.qqNumber != null">
-                and qq_number like concat('%', #{tUserVo.qqNumber}, '%')
+                and t_user.qq_number like concat('%', #{tUserVo.qqNumber}, '%')
             </if>
             <if test = "tUserVo.weChat != null">
-                and we_chat like concat('%', #{tUserVo.weChat}, '%')
+                and t_user.we_chat like concat('%', #{tUserVo.weChat}, '%')
             </if>
             <if test = "tUserVo.occupation != null">
-                and occupation like concat('%', #{tUserVo.occupation}, '%')
+                and t_user.occupation like concat('%', #{tUserVo.occupation}, '%')
             </if>
             <if test = "tUserVo.github != null">
-                and github like concat('%', #{tUserVo.github}, '%')
+                and t_user.github like concat('%', #{tUserVo.github}, '%')
             </if>
             <if test = "tUserVo.gitee != null">
-                and gitee like concat('%', #{tUserVo.gitee}, '%')
+                and t_user.gitee like concat('%', #{tUserVo.gitee}, '%')
             </if>
             <if test = "tUserVo.roleId != null">
-                and t_role_user_info.role_id like concat('%', #{tUserVo.roleId}, '%')
+                and exists (
+                    select 1 from t_role_user_info role_filter
+                    where role_filter.user_id = t_user.id
+                      and role_filter.is_delete = 0
+                      and role_filter.role_id = #{tUserVo.roleId}
+                )
+            </if>
+            <if test = "tUserVo.roleIds != null and tUserVo.roleIds.size() > 0">
+                and exists (
+                    select 1 from t_role_user_info role_filter
+                    where role_filter.user_id = t_user.id
+                      and role_filter.is_delete = 0
+                      and role_filter.role_id in
+                      <foreach collection="tUserVo.roleIds" item="roleId" open="(" separator="," close=")">
+                          #{roleId}
+                      </foreach>
+                )
+            </if>
+            <if test = "tUserVo.orgId != null">
+                and exists (
+                    select 1 from t_org_user_info org_filter
+                    where org_filter.user_id = t_user.id
+                      and org_filter.is_delete = 0
+                      and org_filter.org_id = #{tUserVo.orgId}
+                )
             </if>
             <if test = "tUserVo.orgCode != null">
-                and oi.org_code like concat('%', #{tUserVo.orgCode}, '%')
+                and exists (
+                    select 1
+                    from t_org_user_info org_filter
+                    inner join t_org_info org_info_filter on org_info_filter.id = org_filter.org_id and org_info_filter.is_delete = 0
+                    where org_filter.user_id = t_user.id
+                      and org_filter.is_delete = 0
+                      and org_info_filter.org_code like concat('%', #{tUserVo.orgCode}, '%')
+                )
             </if>
             <if test = "tUserVo.personResume != null">
-                and person_resume like concat('%', #{tUserVo.personResume}, '%')
+                and t_user.person_resume like concat('%', #{tUserVo.personResume}, '%')
             </if>
         </if>
     </sql>

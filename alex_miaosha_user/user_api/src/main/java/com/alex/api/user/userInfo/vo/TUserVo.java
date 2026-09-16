@@ -37,6 +37,9 @@ public class TUserVo extends BaseVo<TUserVo>{
     @NotBlank(groups = {Insert.class, Update.class}, message = "用户名不能为空！")
     private String username;
 
+    @ApiModelProperty(value = "用户综合查询关键字")
+    private String keyword;
+
     @ApiModelProperty(value = "密码")
     private String password;
 

@@ -2,6 +2,9 @@ package com.alex.api.user.roleInfo.api;
 
 import com.alex.api.user.roleInfo.fallback.RoleInfoFallbackFactory;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleOrgAssignRequest;
+import com.alex.api.user.roleInfo.vo.RolePermissionAssignRequest;
+import com.alex.api.user.roleInfo.vo.RoleUserAssignRequest;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,7 +46,7 @@ public interface RoleInfoApi {
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色信息表", notes = "新增角色信息表", response = Result.class)
     @PostMapping
-    Result<Boolean> addRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
+    Result<String> addRoleInfo(@RequestBody RoleInfoVo roleInfoVo);
 
     @ApiOperationSupport(order = 40, author = "majf")
     @ApiOperation(value = "修改角色信息表", notes = "修改角色信息表", response = Result.class)
@@ -54,4 +57,19 @@ public interface RoleInfoApi {
     @ApiOperation(value = "刪除角色信息表", notes = "刪除角色信息表", response = Result.class)
     @DeleteMapping
     Result<Boolean> deleteRoleInfo(@RequestParam("ids") String ids);
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "角色分配用户", notes = "角色管理辅助入口，修改用户角色关系", response = Result.class)
+    @PostMapping("/assign-users")
+    Result<Boolean> assignUsers(@RequestBody RoleUserAssignRequest request);
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "角色分配权限", notes = "全量替换角色权限关系", response = Result.class)
+    @PostMapping("/assign-permissions")
+    Result<Boolean> assignPermissions(@RequestBody RolePermissionAssignRequest request);
+
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "角色分配机构", notes = "全量替换角色机构绑定", response = Result.class)
+    @PostMapping("/assign-orgs")
+    Result<Boolean> assignOrgs(@RequestBody RoleOrgAssignRequest request);
 }

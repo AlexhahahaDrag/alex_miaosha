@@ -20,11 +20,15 @@ public interface RoleInfoService extends IService<RoleInfo> {
 
     RoleInfoVo queryRoleInfo(String id);
 
-    Boolean addRoleInfo(RoleInfoVo roleInfoVo);
+    String addRoleInfo(RoleInfoVo roleInfoVo);
 
     Boolean updateRoleInfo(RoleInfoVo roleInfoVo);
 
     Boolean deleteRoleInfo(String ids);
 
     Boolean assignUsers(Long roleId, List<Long> userIds);
+
+    Boolean assignPermissions(Long roleId, List<Long> permissionIds);
+
+    Boolean assignOrgs(Long roleId, List<Long> orgIds);
 }

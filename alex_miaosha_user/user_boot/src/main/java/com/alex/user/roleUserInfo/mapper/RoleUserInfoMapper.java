@@ -1,5 +1,7 @@
 package com.alex.user.roleUserInfo.mapper;
 
+import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
@@ -19,6 +21,7 @@ import java.util.List;
 @Mapper
 public interface RoleUserInfoMapper extends BaseMapper<RoleUserInfo> {
 
+    @DataPermission(table = "t_role_user_info", field = "user_id", scope = DataPermissionScope.USER_IDS)
     Page<RoleUserInfoVo> getPage(Page<RoleUserInfoVo> page, @Param("roleUserInfoVo") RoleUserInfoVo roleUserInfoVo);
 
     RoleUserInfoVo queryRoleUserInfo(@Param("id") String id);

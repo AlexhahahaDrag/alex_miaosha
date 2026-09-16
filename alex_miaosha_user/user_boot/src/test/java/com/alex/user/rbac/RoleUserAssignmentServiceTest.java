@@ -1,9 +1,11 @@
 package com.alex.user.rbac;
 
+import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.roleUserInfo.entity.RoleUserInfo;
 import com.alex.user.roleUserInfo.mapper.RoleUserInfoMapper;
 import com.alex.user.roleUserInfo.service.impl.RoleUserInfoServiceImp;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -12,8 +14,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class RoleUserAssignmentServiceTest {
 
+    @Test
     public void testAssignRolesInvalidatesOldActiveAssignmentAndCreatesNewActiveAssignments() {
         RoleUserInfo oldActiveAssignment = assignment(1L, "100", "1", "1");
         TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
@@ -29,6 +38,7 @@ public class RoleUserAssignmentServiceTest {
         assertAssignment(service.savedAssignments.get(1), "100", "3", "1");
     }
 
+    @Test
     public void testAssignRolesDeduplicatesRoleIdsBeforeSaving() {
         TestableRoleUserInfoService service = new TestableRoleUserInfoService();
 
@@ -40,6 +50,7 @@ public class RoleUserAssignmentServiceTest {
         assertAssignment(service.savedAssignments.get(1), "100", "3", "1");
     }
 
+    @Test
     public void testAssignRolesFiltersNullRoleIdsBeforeSaving() {
         TestableRoleUserInfoService service = new TestableRoleUserInfoService();
 
@@ -51,6 +62,7 @@ public class RoleUserAssignmentServiceTest {
         assertAssignment(service.savedAssignments.get(1), "100", "3", "1");
     }
 
+    @Test
     public void testAssignRolesWithOnlyNullRoleIdsOnlyInvalidatesOldActiveAssignments() {
         RoleUserInfo oldActiveAssignment = assignment(1L, "100", "1", "1");
         TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
@@ -65,6 +77,7 @@ public class RoleUserAssignmentServiceTest {
     }
 
 
+    @Test
     public void testAssignRolesWithEmptyRoleIdsOnlyInvalidatesOldActiveAssignments() {
         RoleUserInfo oldActiveAssignment = assignment(1L, "100", "1", "1");
         TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
@@ -78,6 +91,7 @@ public class RoleUserAssignmentServiceTest {
         assertEquals(0, service.saveBatchCalls, "saveBatch should not be called for empty roleIds");
     }
 
+    @Test
     public void testAssignRolesDoesNotSaveWhenInvalidatingOldAssignmentFails() {
         RoleUserInfo oldActiveAssignment = assignment(1L, "100", "1", "1");
         TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
@@ -90,6 +104,7 @@ public class RoleUserAssignmentServiceTest {
         assertEquals(0, service.saveBatchCalls, "saveBatch should not be called after update failure");
     }
 
+    @Test
     public void testAssignRolesDeclaresTransactionBoundary() throws NoSuchMethodException {
         Transactional transactional = RoleUserInfoServiceImp.class
                 .getMethod("assignRoles", Long.class, List.class)
@@ -98,6 +113,7 @@ public class RoleUserAssignmentServiceTest {
         assertNotNull(transactional, "assignRoles should declare a transaction boundary");
     }
 
+    @Test
     public void testAssignUsersToRoleInvalidatesOldActiveUsersAndCreatesNewActiveAssignments() {
         RoleUserInfo oldActiveAssignment = assignment(1L, "100", "2", "1");
         TestableRoleUserInfoService service = new TestableRoleUserInfoService(oldActiveAssignment);
@@ -112,6 +128,7 @@ public class RoleUserAssignmentServiceTest {
         assertAssignment(service.savedAssignments.get(1), "102", "2", "1");
     }
 
+    @Test
     public void testAssignUsersToRoleDeduplicatesAndFiltersNullUserIds() {
         TestableRoleUserInfoService service = new TestableRoleUserInfoService();
 
@@ -138,48 +155,6 @@ public class RoleUserAssignmentServiceTest {
         assertEquals(status, roleUserInfo.getStatus(), "assignment should use requested status");
     }
 
-    private static void assertTrue(boolean condition, String message) {
-        if (!condition) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (expected == null ? actual != null : !expected.equals(actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
-    }
-
-    private static void assertSame(Object expected, Object actual, String message) {
-        if (expected != actual) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertThrows(Class<? extends Throwable> expectedType, ThrowingRunnable runnable, String message) {
-        try {
-            runnable.run();
-        } catch (Throwable throwable) {
-            if (expectedType.isInstance(throwable)) {
-                return;
-            }
-            throw new AssertionError(message + ", expected exception: " + expectedType.getName()
-                    + ", actual: " + throwable.getClass().getName(), throwable);
-        }
-        throw new AssertionError(message + ", expected exception: " + expectedType.getName());
-    }
-
-    private static void assertNotNull(Object actual, String message) {
-        if (actual == null) {
-            throw new AssertionError(message);
-        }
-    }
-
-    @FunctionalInterface
-    private interface ThrowingRunnable {
-        void run() throws Throwable;
-    }
-
     private static class TestableRoleUserInfoService extends RoleUserInfoServiceImp {
 
         private final List<RoleUserInfo> activeAssignments = new ArrayList<>();
@@ -189,7 +164,7 @@ public class RoleUserAssignmentServiceTest {
         private int saveBatchCalls;
 
         private TestableRoleUserInfoService(RoleUserInfo... activeAssignments) {
-            super((RoleUserInfoMapper) null);
+            super((RoleUserInfoMapper) null, noOpCache());
             this.activeAssignments.addAll(Arrays.asList(activeAssignments));
         }
 
@@ -210,5 +185,23 @@ public class RoleUserAssignmentServiceTest {
             savedAssignments.addAll(entityList);
             return true;
         }
+    }
+
+    /**
+     * These tests assert on the DB-write behavior of assignRoles/assignUsersToRole; cache
+     * invalidation itself is covered separately by PermissionContextInvalidationTest.
+     */
+    private static PermissionContextCacheService noOpCache() {
+        return new PermissionContextCacheService() {
+            @Override
+            public void invalidate(Long userId) {
+                // no-op for this test's scope
+            }
+
+            @Override
+            public void invalidateAll(Collection<Long> userIds) {
+                // no-op for this test's scope
+            }
+        };
     }
 }

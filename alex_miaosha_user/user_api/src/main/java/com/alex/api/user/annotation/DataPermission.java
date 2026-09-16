@@ -16,7 +16,7 @@ public @interface DataPermission {
 
     String[] where() default {};
 
-    /** 用户维度字段，如 user_id / operator / belong_to */
+    /** 用户维度字段，如 user_id / operator / belong_to；{@link DataPermissionScope#ORG_ID} 时表示机构列 */
     String field() default "operator";
 
     /**

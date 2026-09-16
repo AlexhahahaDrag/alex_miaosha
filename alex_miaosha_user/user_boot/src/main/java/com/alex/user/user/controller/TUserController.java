@@ -1,6 +1,7 @@
 package com.alex.user.user.controller;
 
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -84,6 +85,35 @@ public class TUserController {
         return Result.success(tUserService.updateTUser(tUserVo));
     }
 
+    /**
+     * RBAC-BE-USER-003: 用户启停专用接口。
+     * 支持 query 或 body 传入 id/status；仅更新 status，不改其它字段。
+     */
+    @LogRestRequest(apiName = "更新用户状态")
+    @ApiOperationSupport(order = 45, author = "alex")
+    @ApiOperation(value = "更新用户状态", notes = "仅更新用户启停状态（1/0）", response = Result.class)
+    @PutMapping("/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "用户ID", name = "id", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "状态(1有效/0无效)", name = "status", dataTypeClass = String.class)
+    })
+    public Result<Boolean> updateStatus(@RequestParam(value = "id", required = false) String id,
+                                        @RequestParam(value = "status", required = false) String status,
+                                        @RequestBody(required = false) TUserVo body) {
+        String resolvedId = id;
+        String resolvedStatus = status;
+        if (body != null) {
+            if ((resolvedId == null || resolvedId.isEmpty()) && body.getId() != null) {
+                resolvedId = String.valueOf(body.getId());
+            }
+            if ((resolvedStatus == null || resolvedStatus.isEmpty()) && body.getStatus() != null) {
+                resolvedStatus = body.getStatus();
+            }
+        }
+        Long userId = resolvedId == null || resolvedId.isEmpty() ? null : Long.valueOf(resolvedId);
+        return Result.success(tUserService.updateUserStatus(userId, resolvedStatus));
+    }
+
     @LogRestRequest(apiName = "刪除管理员表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除管理员表", notes = "刪除管理员表", response = Result.class)
@@ -107,6 +137,14 @@ public class TUserController {
                                                @RequestParam(value = "password", required = false) String password,
                                                @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
         return Result.success(tUserService.login(request, username, password, isRememberMe));
+    }
+
+    @LogRestRequest(apiName = "获取当前用户可见菜单")
+    @ApiOperationSupport(order = 62, author = "alex")
+    @GetMapping("/menus")
+    @ApiOperation(value = "当前用户可见菜单树", notes = "需登录；按权限裁剪，不含匿名全树")
+    public Result<List<MenuInfoVo>> listCurrentUserMenus() {
+        return Result.success(tUserService.listCurrentUserMenus());
     }
 
     @LogRestRequest(apiName = "第三方登录渲染")

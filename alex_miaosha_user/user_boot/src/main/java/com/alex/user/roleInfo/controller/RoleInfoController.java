@@ -1,6 +1,9 @@
 package com.alex.user.roleInfo.controller;
 
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleOrgAssignRequest;
+import com.alex.api.user.roleInfo.vo.RolePermissionAssignRequest;
+import com.alex.api.user.roleInfo.vo.RoleUserAssignRequest;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -14,12 +17,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * description:  角色信息表restApi
@@ -64,7 +64,7 @@ public class RoleInfoController {
     @ApiOperationSupport(order = 30, author = "majf")
     @ApiOperation(value = "新增角色信息表", notes = "新增角色信息表", response = Result.class)
     @PostMapping
-    public Result<Boolean> add(@Validated({Insert.class}) @RequestBody RoleInfoVo roleInfoVo) {
+    public Result<String> add(@Validated({Insert.class}) @RequestBody RoleInfoVo roleInfoVo) {
         return Result.success(roleInfoService.addRoleInfo(roleInfoVo));
     }
 
@@ -92,9 +92,19 @@ public class RoleInfoController {
         return Result.success(roleInfoService.assignUsers(request.getRoleId(), request.getUserIds()));
     }
 
-    @Data
-    public static class RoleUserAssignRequest {
-        private Long roleId;
-        private List<Long> userIds;
+    @LogRestRequest(apiName = "角色分配权限")
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "角色分配权限", notes = "全量替换角色权限关系", response = Result.class)
+    @PostMapping("/assign-permissions")
+    public Result<Boolean> assignPermissions(@RequestBody RolePermissionAssignRequest request) {
+        return Result.success(roleInfoService.assignPermissions(request.getRoleId(), request.getPermissionIds()));
+    }
+
+    @LogRestRequest(apiName = "角色分配机构")
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "角色分配机构", notes = "全量替换角色机构绑定", response = Result.class)
+    @PostMapping("/assign-orgs")
+    public Result<Boolean> assignOrgs(@RequestBody RoleOrgAssignRequest request) {
+        return Result.success(roleInfoService.assignOrgs(request.getRoleId(), request.getOrgIds()));
     }
 }

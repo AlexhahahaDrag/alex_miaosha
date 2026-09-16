@@ -19,6 +19,12 @@
 - 禁止在 ServiceImpl 中拼接字符串 SQL；复杂查询优先封装为清晰的 Mapper 方法。
 - 所有列表、详情、编辑、删除、统计、导出均必须带 `org_id` 数据隔离条件。
 
+### 数据权限（与 org RBAC 对齐）
+
+- `@DataPermission.scope()` 使用独立枚举 `DataPermissionScope`：`USER_OWNER`/`USER_IDS`（管理员机构成员子查询、普通用户本人）、`ORG_SHARED`（礼尚往来家庭共享）、`ORG_ID`（机构树，管理员扩子孙）。
+- 角色判定必须精确匹配 `RbacRoleCodes`（`super_super` / `admin` / `user`），禁止 `code.contains("super|admin|user")`。
+- 礼尚往来 mapper 使用 `scope = ORG_SHARED`，并配置 `alias` 与 `orgField`；删除用户/角色/菜单/权限/机构走 org 分支的 ownership + 级联，不使用 gift 的裸 `deleteByIds`。
+
 ### 回礼实现
 
 回礼不单独拆表，统一记录在 `gift_record_info_t`：

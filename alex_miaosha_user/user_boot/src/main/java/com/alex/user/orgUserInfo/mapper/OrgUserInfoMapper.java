@@ -1,5 +1,7 @@
 package com.alex.user.orgUserInfo.mapper;
 
+import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
@@ -19,6 +21,7 @@ import java.util.List;
 @Mapper
 public interface OrgUserInfoMapper extends BaseMapper<OrgUserInfo> {
 
+    @DataPermission(table = "t_org_user_info", field = "user_id", scope = DataPermissionScope.USER_IDS)
     Page<OrgUserInfoVo> getPage(Page<OrgUserInfoVo> page, @Param("orgUserInfoVo") OrgUserInfoVo orgUserInfoVo);
 
     OrgUserInfoVo queryOrgUserInfo(@Param("id") Long id);
