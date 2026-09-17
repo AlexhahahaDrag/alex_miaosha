@@ -95,28 +95,4 @@ public class AESUtils {
         }
         return decrypt(base64Encrypted, encryptionProperties.getKey(), encryptionProperties.getIv(), encryptionProperties.getPadding());
     }
-    public static void main(String[] args) throws Exception {
-        //明文
-        String text = "123444444444444444";
-        
-        // 使用配置参数的加密方式（推荐）
-        try {
-            String base64Encrypted = encryptWithConfig(text);
-            System.out.println("使用配置参数加密: " + base64Encrypted);
-            String text2 = decryptWithConfig(base64Encrypted);
-            System.out.println("使用配置参数解密: " + text2);
-        } catch (IllegalStateException e) {
-            System.out.println("配置未初始化，使用默认参数");
-            // 默认参数（兼容旧版本）
-            String key = "20230610HelloDog";
-            String iv = "1234567890123456";
-            String type = "PKCS5Padding";
-            //加密，生成密文
-            String base64Encrypted = encrypt(text, key, iv, type);
-            System.out.println("默认参数加密: " + base64Encrypted);
-            //解密，获取明文
-            String text2 = decrypt(base64Encrypted, key, iv, type);
-            System.out.println("默认参数解密: " + text2);
-        }
-    }
 }

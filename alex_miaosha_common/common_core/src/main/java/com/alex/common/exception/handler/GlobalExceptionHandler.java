@@ -127,6 +127,13 @@ public class GlobalExceptionHandler {
         return Result.error(e.getCode(), e.getMsg());
     }
 
+    @ExceptionHandler(FileException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<String> handle(FileException e) {
+        log.error("文件异常:{}", e.getMsg(), e);
+        return Result.error(e.getCode(), e.getMsg());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(Exception ex) {

@@ -1,4 +1,4 @@
-package com.alex.utils.interceptor;
+package com.alex.common.aspect;
 
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
@@ -6,7 +6,7 @@ import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.AccessKey;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alex.utils.IpUtils;
+import com.alex.common.utils.ip.IpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,10 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
- * description: 访问次数限制aop
- * author:       majf
+ * description: 访问次数限制aop切面
+ * author:       majf, alex
  * createDate:   2022/8/8 17:49
- * version:      1.0.0
+ * version:      2.0.0
  */
 @Aspect
 @Component
@@ -37,10 +37,7 @@ public class AccessLimitAspect {
      * description:  过滤AccessLimit，访问次数限制
      * author:       alex
      * return:       java.lang.Object
-    */
-    // TODO (majf) 2024/1/16 19:57 测试功能是否生效
-    // todo 这里需要优化，使用redis的布隆过滤器，减少redis的访问
-    // 这里如何添加布隆过滤器
+     */
     @Around("@annotation(com.alex.common.annotations.user.AccessLimit)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         HttpServletRequest request = RequestHolder.getRequest();
@@ -54,14 +51,14 @@ public class AccessLimitAspect {
 
         AccessKey accessKey = AccessKey.withExpire;
         String ip = IpUtils.getIpAddr(request);
-        //当前获取指定url的访问次数
-        Integer count = redisUtils.get(accessKey, ip, Integer.class);
-        if (count == null) {
-            redisUtils.set(accessKey, ip, 1, timeout);
-        } else if (count < limit) {
-            redisUtils.increase(accessKey, ip);
-        } else {
-            log.info("用户ip：{}，访问太频繁", ip);
+        String uri = request != null ? request.getRequestURI() : method.getDeclaringClass().getSimpleName() + "#" + method.getName();
+        // 绑定 URI 与 IP，彻底解决不同接口之间全局配额撞车问题
+        String key = uri + ":" + ip;
+
+        // 原子递增并在首次生成 Key 时设置 TTL，消除并发竞态漂移
+        Long count = redisUtils.incrementWithExpire(accessKey, key, timeout, java.util.concurrent.TimeUnit.SECONDS);
+        if (count != null && count > limit) {
+            log.warn("用户IP: {} 访问接口 {} 过于频繁，当前次数: {}，上限: {}", ip, uri, count, limit);
             return Result.error(ResultEnum.ACCESS_LIMIT_REACHED.getCode(), ResultEnum.ACCESS_LIMIT_REACHED.getValue());
         }
         //执行方法

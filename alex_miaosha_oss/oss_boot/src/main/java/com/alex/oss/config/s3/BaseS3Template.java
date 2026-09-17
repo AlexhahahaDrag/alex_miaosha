@@ -1,7 +1,7 @@
 package com.alex.oss.config.s3;
 
 import com.alex.common.utils.string.StringUtils;
-import com.alex.oss.minio.vo.ObjectItem;
+import com.alex.oss.storage.vo.ObjectItem;
 import com.alibaba.fastjson.JSONObject;
 import io.minio.*;
 import io.minio.errors.*;
@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +70,11 @@ public abstract class BaseS3Template {
     /**
      * 初始化 MinioClient
      */
-    protected void initClient(String url, Integer port, String accessKey, String secretKey, String region, Boolean secure, String publicUrl) {
+    protected void initClient(String url, Integer port, String accessKey, String secretKey, String region,
+            Boolean secure, String publicUrl) {
         this.publicUrl = publicUrl;
-        if (StringUtils.isBlank(url) || port == null || StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
+        if (StringUtils.isBlank(url) || port == null || StringUtils.isBlank(accessKey)
+                || StringUtils.isBlank(secretKey)) {
             log.warn("[S3Storage] 缺少必要的连接参数 (url={}, port={}, accessKey={})，跳过客户端初始化", url, port, accessKey);
             return;
         }
@@ -147,7 +150,8 @@ public abstract class BaseS3Template {
     /**
      * 流式上传（推荐：明确传入 objectSize，严禁使用 inputStream.available()）
      */
-    public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, long objectSize, String contentType) throws Exception {
+    public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, long objectSize,
+            String contentType) throws Exception {
         existBucket(bucketName);
         ObjectWriteResponse response = minioClient.putObject(PutObjectArgs.builder()
                 .bucket(bucketName)
@@ -164,7 +168,8 @@ public abstract class BaseS3Template {
     /**
      * 向后兼容老接口（不带 size 时降级为 -1 分片读取）
      */
-    public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
+    public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType)
+            throws Exception {
         return upload(bucketName, filename, inputStream, -1, contentType);
     }
 
@@ -181,9 +186,9 @@ public abstract class BaseS3Template {
         }
         try {
             return minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-        } catch (ServerException | InternalException | XmlParserException | InvalidResponseException |
-                 InvalidKeyException | NoSuchAlgorithmException | IOException | ErrorResponseException |
-                 InsufficientDataException e) {
+        } catch (ServerException | InternalException | XmlParserException | InvalidResponseException
+                | InvalidKeyException | NoSuchAlgorithmException | IOException | ErrorResponseException
+                | InsufficientDataException e) {
             log.error("[S3Storage] 下载文件流异常：bucket={}, file={}", bucketName, fileName, e);
             throw new RuntimeException(e);
         }
@@ -200,8 +205,9 @@ public abstract class BaseS3Template {
             writeDownloadError(response, "文件名不能为空");
             return;
         }
-        try (InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-             OutputStream outputStream = response.getOutputStream()) {
+        try (InputStream inputStream = minioClient
+                .getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
+                OutputStream outputStream = response.getOutputStream()) {
             response.reset();
             String downloadName = fileName.substring(fileName.lastIndexOf("/") + 1);
             response.setHeader("Content-Disposition", "attachment;filename=" +
@@ -253,7 +259,7 @@ public abstract class BaseS3Template {
             }
         } catch (Exception e) {
             log.error("[S3Storage] 查看文件对象异常：bucket={}", bucketName, e);
-            return null;
+            return Collections.emptyList();
         }
         return objectItems;
     }
@@ -274,7 +280,8 @@ public abstract class BaseS3Template {
                         .build());
         for (Result<DeleteError> result : results) {
             DeleteError error = result.get();
-            log.error("[S3Storage] 删除文件对象失败: bucket={}, object={}, error={}", bucketName, error.objectName(), error.message());
+            log.error("[S3Storage] 删除文件对象失败: bucket={}, object={}, error={}", bucketName, error.objectName(),
+                    error.message());
         }
         resultMap.put("mes", "删除成功");
         return resultMap;
@@ -283,7 +290,9 @@ public abstract class BaseS3Template {
     /**
      * 获取预签名预览直链（1小时有效期，支持 publicUrl/CDN 域名自动映射替换）
      */
-    public String preview(String bucketName, String objectKey) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
+    public String preview(String bucketName, String objectKey)
+            throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
+            NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         if (!isInitialized()) {
             throw new IllegalStateException("S3 存储客户端未初始化");
         }
@@ -298,7 +307,8 @@ public abstract class BaseS3Template {
         if (StringUtils.isNotBlank(publicUrl)) {
             try {
                 URI originUri = URI.create(presignedUrl);
-                URI targetUri = URI.create(publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl);
+                URI targetUri = URI
+                        .create(publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl);
                 String originHostPart = originUri.getScheme() + "://" + originUri.getAuthority();
                 String targetHostPart = targetUri.getScheme() + "://" + targetUri.getAuthority();
                 presignedUrl = presignedUrl.replaceFirst(originHostPart, targetHostPart);
@@ -312,7 +322,8 @@ public abstract class BaseS3Template {
     /**
      * 生成图片缩略图并上传
      */
-    public Map<String, String> thumbnail(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
+    public Map<String, String> thumbnail(String bucketName, String filename, InputStream inputStream,
+            String contentType) throws Exception {
         existBucket(bucketName);
         ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
         BufferedImage bufferedImage = ImageIO.read(inputStream);
@@ -340,8 +351,7 @@ public abstract class BaseS3Template {
                         .object(thumbnailFilename)
                         .contentType(contentType)
                         .stream(new ByteArrayInputStream(thumbnailBytes), thumbnailBytes.length, -1)
-                        .build()
-        );
+                        .build());
         log.info("[S3Storage] 上传缩略图成功：bucket={}, file={}", bucketName, thumbnailFilename);
 
         Map<String, String> resultMap = new HashMap<>();

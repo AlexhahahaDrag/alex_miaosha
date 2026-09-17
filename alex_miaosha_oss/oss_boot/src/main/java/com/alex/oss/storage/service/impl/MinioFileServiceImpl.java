@@ -1,4 +1,4 @@
-package com.alex.oss.minio.service.impl;
+package com.alex.oss.storage.service.impl;
 
 import com.alex.common.enums.FileSystemTypeEnum;
 import com.alex.oss.config.minio.MinioTemplate;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
  * description:  MinIO 文件服务实现类，继承自统一的 AbstractS3FileService
  *
  * @author majf, alex
- * @version 2.0.0
+ * @version 2.1.0
  */
 @Service("minioFileService")
 @RequiredArgsConstructor
 @Slf4j
-public class MinioMinioFileServiceImpl extends AbstractS3FileService {
+public class MinioFileServiceImpl extends AbstractS3FileService {
 
     private final MinioTemplate minioTemplate;
 

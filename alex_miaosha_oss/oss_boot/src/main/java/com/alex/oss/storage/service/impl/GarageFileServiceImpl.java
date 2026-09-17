@@ -1,4 +1,4 @@
-package com.alex.oss.minio.service.impl;
+package com.alex.oss.storage.service.impl;
 
 import com.alex.common.enums.FileSystemTypeEnum;
 import com.alex.oss.config.garage.GarageTemplate;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  * description:  Garage 文件服务实现类，继承自统一的 AbstractS3FileService
  *
  * @author alex
- * @version 2.0.0
+ * @version 2.1.0
  */
 @Service("garageFileService")
 @RequiredArgsConstructor

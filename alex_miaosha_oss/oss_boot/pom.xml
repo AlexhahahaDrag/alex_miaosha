@@ -23,6 +23,11 @@
 
     <dependency>
         <groupId>com.alex</groupId>
+        <artifactId>common_api</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.alex</groupId>
         <artifactId>common_core</artifactId>
     </dependency>
 

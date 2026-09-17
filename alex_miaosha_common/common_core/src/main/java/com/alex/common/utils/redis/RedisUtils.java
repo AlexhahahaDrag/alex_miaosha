@@ -48,8 +48,8 @@ public class RedisUtils {
         try {
             String result = redisTemplate.opsForValue().get(key);
             T t = BeanUtils.stringToBean(result, clazz);
-            log.info("获取单个对象成功，class为{}，key为{}，value为{}", clazz.getName(), key, t);
-            return BeanUtils.stringToBean(result, clazz);
+            log.debug("获取单个对象成功，class为{}，key为{}，value为{}", clazz.getName(), key, t);
+            return t;
         } catch (Exception e) {
             log.error("获取单个对象失败，class为{}，key为{}，异常为{}", clazz.getName(), key, e.getMessage());
             return null;
@@ -60,7 +60,7 @@ public class RedisUtils {
         try {
             String result = redisTemplate.opsForValue().get(key);
             List<T> arr = JSONArray.parseArray(result, clazz);
-            log.info("获取列表对象成功，key为{}，value为{}", key, arr);
+            log.debug("获取列表对象成功，key为{}，value为{}", key, arr);
             return arr;
         } catch (Exception e) {
             log.error("获取列表对象失败，key为{}，异常为{}", key, e.getMessage());
@@ -164,6 +164,53 @@ public class RedisUtils {
     }
 
     /**
+     * 原子设置分布式防重/排他锁（SET NX PX/EX）
+     *
+     * @param prefix   前缀
+     * @param key      键
+     * @param value    值
+     * @param timeout  超时时长
+     * @param timeUnit 时间单位
+     * @return 是否成功抢占
+     */
+    public Boolean setIfAbsent(KeyPrefix prefix, String key, String value, long timeout, TimeUnit timeUnit) {
+        try {
+            String realKey = (prefix != null ? prefix.getPrefix() + SEGMENT : "") + key;
+            return redisTemplate.opsForValue().setIfAbsent(realKey, value, timeout, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
+        } catch (Exception e) {
+            log.error("setIfAbsent设置失败，key为{}，异常为{}", key, e.getMessage());
+            return false;
+        }
+    }
+
+    public Boolean setIfAbsent(String key, String value, long timeout, TimeUnit timeUnit) {
+        return setIfAbsent(null, key, value, timeout, timeUnit);
+    }
+
+    /**
+     * 原子递增并在首次创建时设定过期时间
+     *
+     * @param prefix   前缀
+     * @param key      键
+     * @param timeout  超时时长
+     * @param timeUnit 时间单位
+     * @return 递增后的计数值
+     */
+    public Long incrementWithExpire(KeyPrefix prefix, String key, long timeout, TimeUnit timeUnit) {
+        try {
+            String realKey = (prefix != null ? prefix.getPrefix() + SEGMENT : "") + key;
+            Long count = redisTemplate.opsForValue().increment(realKey, 1);
+            if (count != null && count == 1) {
+                redisTemplate.expire(realKey, timeout, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
+            }
+            return count;
+        } catch (Exception e) {
+            log.error("incrementWithExpire失败，key为{}，异常为{}", key, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * @param prefix
      * @param key    description: 删除key
      *               author: majf
@@ -227,38 +274,78 @@ public class RedisUtils {
     }
 
     /**
-     * param: prefix
-     * description: 获取所有模糊的key
-     * author:      majf
-     * return:      java.util.Set<java.lang.String>
+     * 基于 Redis SCAN 游标的非阻塞迭代，避免生产环境使用 KEYS 命令阻塞单线程事件循环
+     *
+     * @param pattern 模糊匹配表达式（例如 "prefix:*"）
+     * @return 匹配的键集合
+     */
+    public Set<String> scan(String pattern) {
+        Set<String> keys = new java.util.HashSet<>();
+        if (StringUtils.isEmpty(pattern)) {
+            return keys;
+        }
+        try {
+            org.springframework.data.redis.core.ScanOptions options = org.springframework.data.redis.core.ScanOptions.scanOptions()
+                    .match(pattern)
+                    .count(200)
+                    .build();
+            try (org.springframework.data.redis.core.Cursor<String> cursor = redisTemplate.scan(options)) {
+                while (cursor.hasNext()) {
+                    keys.add(cursor.next());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Redis 非阻塞 scan 扫描异常，pattern为{}，异常为{}", pattern, e.getMessage());
+        }
+        return keys;
+    }
+
+    /**
+     * 基于前缀进行非阻塞 scan
+     *
+     * @param prefix 前缀
+     * @return 匹配的键集合
+     */
+    public Set<String> scan(KeyPrefix prefix) {
+        if (prefix == null) {
+            return Collections.emptySet();
+        }
+        return scan(prefix.getPrefix() + "*");
+    }
+
+    /**
+     * 获取指定前缀的所有键（内部已切换为基于游标的非阻塞 SCAN 机制，消除 KEYS * 阻塞）
+     *
+     * @param prefix 前缀
+     * @return 匹配的键集合
      */
     public Set<String> keys(KeyPrefix prefix) {
-        return redisTemplate.keys(prefix.getPrefix() + "*");
+        return scan(prefix);
     }
 
     /**
      * @param prefix
-     * @param clazz  description: 根据前缀模糊查询数据
+     * @param clazz  description: 根据前缀模糊查询数据（非阻塞扫描）
      *               author: majf
      *               createDate: 2022/7/12 11:30
      *               return: java.util.List<T>
      */
     public <T> List<T> keys(KeyPrefix prefix, Class<T> clazz) {
         try {
-            Set<String> keys = keys(prefix);
+            Set<String> keys = scan(prefix);
             if (keys == null || keys.isEmpty()) {
                 return null;
             }
             return keys.parallelStream().map(item -> get(item, clazz)).toList();
         } catch (Exception e) {
-            log.error("根据前缀模糊查询key失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
+            log.error("根据前缀模糊查询key失败，key为{},异常为{}", prefix != null ? prefix.getPrefix() : null, e.getMessage());
             return null;
         }
     }
 
     public <T> List<T> keysList(KeyPrefix prefix, Class<T> clazz) {
         try {
-            Set<String> keys = keys(prefix);
+            Set<String> keys = scan(prefix);
             if (keys == null || keys.isEmpty()) {
                 return null;
             }
@@ -268,7 +355,7 @@ public class RedisUtils {
                 return list.stream();
             }).toList();
         } catch (Exception e) {
-            log.error("根据前缀模糊查询keysList失败，key为{},异常为{}", prefix.getPrefix(), e.getMessage());
+            log.error("根据前缀模糊查询keysList失败，key为{},异常为{}", prefix != null ? prefix.getPrefix() : null, e.getMessage());
             return null;
         }
     }

@@ -20,7 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.alex.finance", "com.alex.common", "com.alex.utils", "com.alex.api.user"})
+@ComponentScan(basePackages = {"com.alex.finance", "com.alex.common", "com.alex.api.user"})
 @EnableEncryptableProperties
 @BootstrapConfiguration
 // AI Agent：增加 AI 服务 Feign 扫描包，后续 finance 模块可直接注入 AiAnalyzeApi 调用 AI 分析

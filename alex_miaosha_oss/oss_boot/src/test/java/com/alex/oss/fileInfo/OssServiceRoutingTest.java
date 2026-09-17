@@ -7,7 +7,7 @@ import com.alex.oss.config.minio.MinioProperties;
 import com.alex.oss.config.minio.MinioTemplate;
 import com.alex.oss.fileInfo.mapper.FileInfoMapper;
 import com.alex.oss.fileInfo.service.impl.FileInfoServiceImp;
-import com.alex.oss.minio.service.MinioFileService;
+import com.alex.oss.storage.service.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,17 +28,17 @@ import static org.mockito.Mockito.*;
 class OssServiceRoutingTest {
 
     private FileInfoMapper fileInfoMapper;
-    private MinioFileService minioFileService;
-    private MinioFileService garageFileService;
+    private FileStorageService minioFileService;
+    private FileStorageService garageFileService;
     private FileInfoServiceImp fileInfoService;
 
     @BeforeEach
     void setUp() {
         fileInfoMapper = mock(FileInfoMapper.class);
-        minioFileService = mock(MinioFileService.class);
-        garageFileService = mock(MinioFileService.class);
+        minioFileService = mock(FileStorageService.class);
+        garageFileService = mock(FileStorageService.class);
 
-        Map<String, MinioFileService> map = new HashMap<>();
+        Map<String, FileStorageService> map = new HashMap<>();
         map.put("minioFileService", minioFileService);
         map.put("garageFileService", garageFileService);
 

@@ -30,17 +30,29 @@ public class DateUtils {
 
     public static final String SPLIT_STRING = "(中国标准时间)";
 
-    public static String YYYY = "yyyy";
+    public static final String YYYY = "yyyy";
 
-    public static String YYYY_MM = "yyyy-MM";
+    public static final String YYYY_MM = "yyyy-MM";
 
-    public static String YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
-    public static String YYYYMMDD = "yyyyMMdd";
+    public static final String YYYYMMDD = "yyyyMMdd";
 
-    public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+    public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
-    public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+    public static final DateTimeFormatter FORMATTER_YYYY = DateTimeFormatter.ofPattern(YYYY);
+
+    public static final DateTimeFormatter FORMATTER_YYYY_MM = DateTimeFormatter.ofPattern(YYYY_MM);
+
+    public static final DateTimeFormatter FORMATTER_YYYY_MM_DD = DateTimeFormatter.ofPattern(YYYY_MM_DD);
+
+    public static final DateTimeFormatter FORMATTER_YYYYMMDD = DateTimeFormatter.ofPattern(YYYYMMDD);
+
+    public static final DateTimeFormatter FORMATTER_YYYYMMDDHHMMSS = DateTimeFormatter.ofPattern(YYYYMMDDHHMMSS);
+
+    public static final DateTimeFormatter FORMATTER_YYYY_MM_DD_HH_MM_SS = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
 
     //设置私有构造器
     private DateUtils(){}
@@ -51,8 +63,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getNowTimeStr() {
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
-        return LocalDateTime.now().format(dateTimeFormat);
+        return LocalDateTime.now().format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
 
     public static String getNowTimeStr(String dateTimeFormatter) {
@@ -75,8 +86,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getNowTimeStrStartTime() {
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
-        return LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).format(dateTimeFormat);
+        return LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
     /**
      * description:  获取当前时间 string
@@ -84,8 +94,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getTimeStr(LocalDateTime time) {
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
-        return time.format(dateTimeFormat);
+        return time.format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
 
     /**
@@ -113,8 +122,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayStartTime(LocalDate startDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(startDate) + STARTTIME;
+        return FORMATTER_YYYY_MM_DD.format(startDate) + STARTTIME;
     }
 
     /**
@@ -123,8 +131,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayEndTime(LocalDate endDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(endDate) + ENDTIME;
+        return FORMATTER_YYYY_MM_DD.format(endDate) + ENDTIME;
     }
 
     /**
@@ -133,8 +140,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayStartTime(LocalDateTime startDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(startDate) + STARTTIME;
+        return FORMATTER_YYYY_MM_DD.format(startDate) + STARTTIME;
     }
 
     /**
@@ -143,8 +149,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayEndTime(LocalDateTime endDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(endDate) + ENDTIME;
+        return FORMATTER_YYYY_MM_DD.format(endDate) + ENDTIME;
     }
 
     /**
@@ -265,7 +270,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
      */
     public static LocalDateTime parseStringToTime(String oneDay) {
-        return LocalDateTime.parse(oneDay, DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS));
+        return LocalDateTime.parse(oneDay, FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
 
     /**
@@ -535,7 +540,7 @@ public class DateUtils {
     */
     public static LocalDateTime getServerStartDate() {
         long startTime = ManagementFactory.getRuntimeMXBean().getStartTime();
-        return LocalDateTime.ofEpochSecond(startTime, 0, ZoneOffset.ofHours(8));
+        return Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     /**
@@ -546,7 +551,13 @@ public class DateUtils {
      * return:       java.lang.String
     */
     public static String getDatePoor(LocalDateTime endDate, LocalDateTime startDate) {
+        if (endDate == null || startDate == null) {
+            return "";
+        }
         Duration diff = Duration.between(startDate, endDate);
-        return diff.toDays() + "天" + diff.toHours() + "小时" + diff.toMinutes() + "分钟";
+        long days = diff.toDays();
+        long hours = diff.toHours() % 24;
+        long minutes = diff.toMinutes() % 60;
+        return days + "天" + hours + "小时" + minutes + "分钟";
     }
 }

@@ -6,7 +6,7 @@ import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.user.tUserLogin.entity.TUserLogin;
-import com.alex.utils.IpUtils;
+import com.alex.common.utils.ip.IpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

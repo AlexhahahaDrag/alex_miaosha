@@ -43,6 +43,11 @@ public class OssFallbackFactory implements FallbackFactory<OssApi> {
             }
 
             @Override
+            public Result<List<FileInfoVo>> multiUpload(String type, List<MultipartFile> files) throws Exception {
+                throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
+            }
+
+            @Override
             public Result<FileInfoVo> update(Long id, String type, MultipartFile file) throws Exception {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }

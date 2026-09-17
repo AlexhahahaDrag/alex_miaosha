@@ -38,7 +38,7 @@ import com.alex.user.user.service.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
-import com.alex.utils.IpUtils;
+import com.alex.common.utils.ip.IpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

@@ -57,70 +57,10 @@ public class RequestHolder {
         return request.getSession();
     }
 
-//    /**
-//     * @param name
-//     * description:  根据名字获取session的attribute
-//     * author:       alex
-//     * return:       java.lang.Object
-//    */
-//    public static Object getSession(String name) {
-//        log.debug("getSession -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
-//        ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-//        if (null == servletRequestAttributes) {
-//            return null;
-//        }
-//        return servletRequestAttributes.getAttribute(name, RequestAttributes.SCOPE_SESSION);
-//    }
-//
-//    /**
-//     * 添加session
-//     *
-//     * @param name
-//     * @param value
-//     */
-//    public static void setSession(String name, Object value) {
-//        log.debug("setSession -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
-//        ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-//        if (null == servletRequestAttributes) {
-//            return;
-//        }
-//        servletRequestAttributes.setAttribute(name, value, RequestAttributes.SCOPE_SESSION);
-//    }
-//
-//    /**
-//     * 清除指定session
-//     *
-//     * @param name
-//     * return void
-//     */
-//    public static void removeSession(String name) {
-//        log.debug("removeSession -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
-//        ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-//        if (null == servletRequestAttributes) {
-//            return;
-//        }
-//        servletRequestAttributes.removeAttribute(name, RequestAttributes.SCOPE_SESSION);
-//    }
-//
-//    /**
-//     * 获取所有session key
-//     *
-//     * return String[]
-//     */
-//    public static String[] getSessionKeys() {
-//        log.debug("getSessionKeys -- Thread id :{}, name : {}", Thread.currentThread().getId(), Thread.currentThread().getName());
-//        ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-//        if (null == servletRequestAttributes) {
-//            return null;
-//        }
-//        return servletRequestAttributes.getAttributeNames(RequestAttributes.SCOPE_SESSION);
-//    }
-//
-
     /**
      * description: 获取adminId
      * author: alex
-     * return: java.lang.String
+     * return: java.lang.Long
      */
     public static Long getAdminId() {
         HttpServletRequest request = getRequest();
@@ -146,7 +86,7 @@ public class RequestHolder {
     /**
      * description:  检查用户是否登录
      * author:       alex
-     * return:       java.lang.String
+     * return:       java.lang.Long
     */
     public static Long checkLogin() {
         Long adminId = getAdminId();

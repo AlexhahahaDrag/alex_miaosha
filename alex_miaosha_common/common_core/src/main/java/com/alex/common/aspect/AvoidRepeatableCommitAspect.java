@@ -1,11 +1,11 @@
-package com.alex.utils.aspect;
+package com.alex.common.aspect;
 
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.handler.RequestHolder;
 import com.alex.common.redis.key.CommonKey;
-import com.alex.utils.IpUtils;
+import com.alex.common.utils.ip.IpUtils;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
- * description: 处理避免重复提交按钮
+ * description: 处理避免重复提交注解切面
  * author: alex
  * createDate: 2022/12/9 21:35
- * version: 1.0.0
+ * version: 2.0.0
  */
 @Aspect
 @Component
@@ -49,34 +49,42 @@ public class AvoidRepeatableCommitAspect {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
 
+        // 优先使用请求 Token 作为用户唯一凭证，无 Token 时以客户端真实 IP 兜底
+        String token = request != null ? request.getHeader("token") : null;
+        String identity = StringUtils.isNotBlank(token) ? token : ip;
+
         //目标类方法
         String className = method.getDeclaringClass().getName();
         String name = method.getName();
         Object[] args = point.getArgs();
         StringBuilder ipKey = new StringBuilder(String.format("%s#%s", className, name));
-        //转换成 hashCode（optional 入参可能为 null，不能直接 hashCode）
+        // 转换成参数指纹（对 MultipartFile 提取文件名与长度，避免默认 identityHashCode 导致防重失效）
         if (args != null) {
             for (Object arg : args) {
-                ipKey.append(arg == null ? "null" : arg.hashCode());
+                if (arg == null) {
+                    ipKey.append("_null");
+                } else if (arg instanceof org.springframework.web.multipart.MultipartFile) {
+                    org.springframework.web.multipart.MultipartFile f = (org.springframework.web.multipart.MultipartFile) arg;
+                    ipKey.append(String.format("_file:%s:%d", f.getOriginalFilename(), f.getSize()));
+                } else {
+                    ipKey.append("_").append(arg.hashCode());
+                }
             }
         }
         int hashCode = Math.abs(ipKey.toString().hashCode());
 
-        //得到类名的方法
-        String key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEAT_COMMIT, ip, hashCode);
+        String key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEAT_COMMIT, identity, hashCode);
+        log.debug("AvoidRepeatableCommit check: ipKey={}, hashCode={}, key={}", ipKey, hashCode, key);
 
-        log.info("ipKey={}, hashCode={},key={}", ipKey.toString(), hashCode, key);
-
-        //判断是否redis中存在，如果存在
-        String value = redisUtils.get(CommonKey.commonKey.getPrefix() + RedisConstants.SEGMENTATION + key);
-        if (StringUtils.isNotBlank(value)) {
-            log.info("请勿重复提交表单！");
-            return Result.error(ResultEnum.REPEAT_COMMIT);
-        }
-        //设置表单提交时间
         AvoidRepeatableCommit avoidRepeatableCommit = method.getAnnotation(AvoidRepeatableCommit.class);
         long timeout = avoidRepeatableCommit.timeout();
-        redisUtils.setEx(CommonKey.commonKey, key, "1", timeout, TimeUnit.MILLISECONDS);
+
+        // 基于 Redis SET NX PX 强原子抢占，彻底消除 Check-Then-Act 竞态击穿
+        Boolean acquired = redisUtils.setIfAbsent(CommonKey.commonKey, key, "1", timeout, TimeUnit.MILLISECONDS);
+        if (Boolean.FALSE.equals(acquired)) {
+            log.warn("防重复提交拦截触发，请勿频繁提交！key={}", key);
+            return Result.error(ResultEnum.REPEAT_COMMIT);
+        }
         //执行方法
         return point.proceed();
     }

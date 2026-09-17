@@ -61,7 +61,6 @@ public class FileInfoController {
         return Result.success(fileInfoService.queryFileInfo(id));
     }
 
-    // TODO: 2023/1/12 实现多附件上传
     @LogRestRequest(apiName = "新增文件信息表")
     @AvoidRepeatableCommit
     @ApiOperationSupport(order = 30, author = "alex")
@@ -84,6 +83,20 @@ public class FileInfoController {
                                              @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
                                              @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
         return Result.success(fileInfoService.addBatchFileInfo(type, files, isThumbnail, isNormal));
+    }
+
+    @LogRestRequest(apiName = "多附件上传")
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 36, author = "alex")
+    @ApiOperation(value = "多附件上传(并行/校验/Saga补偿)", notes = "多附件并行上传，支持扩展名白名单校验、配额限制及失败补偿", response = Result.class)
+    @PostMapping(value = "/multi-upload")
+    public Result<List<FileInfoVo>> multiUpload(@RequestParam(value = "type", required = false) String type,
+                                                @RequestPart(value = "file", required = false) List<MultipartFile> file,
+                                                @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
+                                                @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+        List<MultipartFile> uploadList = (files != null && !files.isEmpty()) ? files : file;
+        return Result.success(fileInfoService.uploadMultipleFiles(type, uploadList, isThumbnail, isNormal));
     }
 
 

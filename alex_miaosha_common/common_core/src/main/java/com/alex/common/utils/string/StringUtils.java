@@ -257,16 +257,6 @@ public class StringUtils {
     }
 
     /**
-     * @param content
-     *                description: 判断评论是否有效
-     *                author: alex
-     *                return: boolean
-     */
-    public static boolean isCommentSpam(String content) {
-        return content == null;
-    }
-
-    /**
      * description: 获取32位的uuid
      * author: alex
      * return: java.lang.String

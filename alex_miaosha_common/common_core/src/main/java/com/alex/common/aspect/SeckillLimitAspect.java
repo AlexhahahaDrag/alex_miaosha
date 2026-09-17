@@ -1,4 +1,4 @@
-package com.alex.utils.interceptor;
+package com.alex.common.aspect;
 
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
- *description:  避免接口重复提交aop
- *author:       alex
- *createDate:   2021/10/10 13:32
- *version:      1.0.0
+ * description:  秒杀限流aop切面
+ * author:       alex
+ * createDate:   2021/10/10 13:32
+ * version:      2.0.0
  */
 @Aspect
 @Component
@@ -33,10 +33,10 @@ public class SeckillLimitAspect {
 
     /**
      * @param point
-     * description:  过滤AvoidRepeatableCommit，避免表单重复提交
+     * description:  过滤SeckillLimit，限制接口并发与频次
      * author:       alex
      * return:       java.lang.Object
-    */
+     */
     @Around("@annotation(com.alex.common.annotations.SeckillLimit)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         HttpServletRequest request = RequestHolder.getRequest();
@@ -50,22 +50,16 @@ public class SeckillLimitAspect {
         //获取注解
         SeckillLimit seckillLimit = method.getAnnotation(SeckillLimit.class);
         int maxCount = seckillLimit.maxCount();
+        int seconds = seckillLimit.seconds();
 
-        //目标类方法
-        String className = method.getDeclaringClass().getName();
-        String name = method.getName();
-        //得到类名的方法
-        String ipKey = String.format("%s#%s", className, name);
-        //转换成 hashCode
         AccessKey accessKey = AccessKey.withExpire;
-        log.info("ipKey={}, requestURI={},key={}", ipKey, requestURI, accessKey);
-        // TODO: 2022/8/25 添加ip信息
-        //当前获取指定url的访问次数
-        int count = Integer.parseInt(redisUtils.get(accessKey, requestURI));
-        if (count < maxCount) {
-            redisUtils.increase(accessKey, requestURI);
-        } else {
-            log.info("访问太频繁");
+        String ip = com.alex.common.utils.ip.IpUtils.getIpAddr(request);
+        String key = requestURI + ":" + ip;
+
+        // 原子累加并在初次访问时绑定 seconds() 有效期，彻底根治首击 Integer.parseInt(null) 崩溃及无过期死锁
+        Long count = redisUtils.incrementWithExpire(accessKey, key, seconds, java.util.concurrent.TimeUnit.SECONDS);
+        if (count != null && count > maxCount) {
+            log.warn("秒杀接口访问过于频繁: URI={}, IP={}, count={}, limit={}/{}s", requestURI, ip, count, maxCount, seconds);
             return Result.error(ResultEnum.ACCESS_LIMIT_REACHED.getCode(), ResultEnum.ACCESS_LIMIT_REACHED.getValue());
         }
         //执行方法

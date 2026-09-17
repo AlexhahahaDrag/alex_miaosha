@@ -1,4 +1,4 @@
-package com.alex.utils;
+package com.alex.common.utils.ip;
 
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * description:  ip工具类
- * 因为使用静态块，如果初始化的时候报错，系统就找不到这个类，后续就会一直报java.lang.NoClassDefFoundError: Could not initialize class com.alex.blog.utils.utils.IpUtils错
+ * description:  IP 地址与终端信息解析工具类
  * author:       alex
  * createDate:   2021/7/17 21:02
- * version:      1.0.0
+ * version:      2.0.0
  */
 @Slf4j
 public class IpUtils {
@@ -197,7 +196,6 @@ public class IpUtils {
         String cityInfo = getCityInfo(ip);
         log.info("根据ip返回城市信息：{}", cityInfo);
         return cityInfo;
-
     }
 
     /**
@@ -215,11 +213,5 @@ public class IpUtils {
             return null;
         }
         return searcher.search(ip);
-    }
-
-    public static void main(String[] args) throws Exception {
-        String ip = "175.164.89.163";
-        String cityIpString = getCityInfo(ip);
-        System.out.println(cityIpString);
     }
 }

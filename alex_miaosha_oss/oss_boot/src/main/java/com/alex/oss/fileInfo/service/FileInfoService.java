@@ -1,6 +1,7 @@
 package com.alex.oss.fileInfo.service;
 
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
+import com.alex.common.exception.FileException;
 import com.alex.oss.fileInfo.entity.FileInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,11 +27,16 @@ public interface FileInfoService extends IService<FileInfo> {
 
     FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException;
 
-    FileInfoVo addFileInfo(String type, MultipartFile multipartFile, boolean isThumbnail, boolean isNormal) throws Exception;
+    FileInfoVo addFileInfo(String type, MultipartFile multipartFile, boolean isThumbnail, boolean isNormal) throws FileException;
 
-    List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws Exception;
+    List<FileInfoVo> addBatchFileInfo(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws FileException;
 
-    FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws Exception;
+    /**
+     * 多附件并发上传（含扩展名白名单校验、并发加速、自动装配预签名直链与异常补偿清理）
+     */
+    List<FileInfoVo> uploadMultipleFiles(String type, List<MultipartFile> multipartFiles, boolean isThumbnail, boolean isNormal) throws FileException;
+
+    FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws FileException;
 
     Boolean deleteFileInfo(String ids);
 
@@ -38,11 +44,12 @@ public interface FileInfoService extends IService<FileInfo> {
 
     void fileDownload(Long id, javax.servlet.http.HttpServletResponse response);
 
-    /*
-     * @param fileIdList
-     * description: 根据文件id列表获取文件信息
-     * author:      alex
-     * return:      java.util.List<com.alex.api.oss.vo.fileInfo.FileInfoVo>
-    */
+    /**
+     * 根据文件id列表获取文件信息
+     *
+     * @param fileIdList 文件id列表
+     * @return 文件信息列表
+     * @author alex
+     */
     List<FileInfoVo> getFileInfo(List<Long> fileIdList);
 }

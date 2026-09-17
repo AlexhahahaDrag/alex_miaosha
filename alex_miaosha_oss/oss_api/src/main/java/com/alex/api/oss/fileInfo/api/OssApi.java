@@ -57,6 +57,12 @@ public interface OssApi {
     Result<List<FileInfoVo>> addBatch(@RequestParam(value = "type", required = false) String type,
                                       @RequestPart(value = "file") List<MultipartFile> files) throws Exception;
 
+    @ApiOperationSupport(order = 36, author = "alex")
+    @ApiOperation(value = "多附件上传(并行/校验/Saga补偿)", notes = "多附件并行上传，支持扩展名白名单校验、配额限制及失败补偿", response = Result.class)
+    @PostMapping(value = "/multi-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result<List<FileInfoVo>> multiUpload(@RequestParam(value = "type", required = false) String type,
+                                         @RequestPart(value = "file") List<MultipartFile> files) throws Exception;
+
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

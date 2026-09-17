@@ -21,8 +21,21 @@ public class FileException extends RuntimeException{
     private String msg;
 
     public FileException(ResultEnum resultEnum) {
-        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
-        this.code = resultEnum.getCode();
-        this.msg = resultEnum.getValue();
+        super(resultEnum != null ? resultEnum.getValue() : null);
+        log.error("编码：{}，信息：{}", resultEnum != null ? resultEnum.getCode() : null, resultEnum != null ? resultEnum.getValue() : null);
+        this.code = resultEnum != null ? resultEnum.getCode() : null;
+        this.msg = resultEnum != null ? resultEnum.getValue() : null;
+    }
+
+    public FileException(ResultEnum resultEnum, String customMsg) {
+        super(customMsg != null ? customMsg : (resultEnum != null ? resultEnum.getValue() : null));
+        log.error("编码：{}，信息：{} - {}", resultEnum != null ? resultEnum.getCode() : null, resultEnum != null ? resultEnum.getValue() : null, customMsg);
+        this.code = resultEnum != null ? resultEnum.getCode() : null;
+        this.msg = customMsg != null ? customMsg : (resultEnum != null ? resultEnum.getValue() : null);
+    }
+
+    @Override
+    public String getMessage() {
+        return this.msg != null ? this.msg : super.getMessage();
     }
 }
