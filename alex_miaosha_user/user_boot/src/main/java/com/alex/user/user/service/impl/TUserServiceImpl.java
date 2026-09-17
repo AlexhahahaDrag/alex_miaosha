@@ -94,6 +94,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private static final PasswordEncoder BCRYPT_ENCODER = new BCryptPasswordEncoder();
 
+    private static final int MAX_LOGIN_RETRY_LIMIT = 5;
+
     private final TUserMapper tUserMapper;
 
     private final RedisUtils redisUtils;

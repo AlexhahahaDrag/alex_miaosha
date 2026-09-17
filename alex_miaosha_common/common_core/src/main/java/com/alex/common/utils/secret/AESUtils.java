@@ -10,20 +10,22 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * description:  Java使用AES加密算法进行加密解密
- * author:       majf
- * createDate:   2023/9/12 11:51
- * version:      1.0.0
+ * description: Java使用AES加密算法进行加密解密
+ * author: majf
+ * createDate: 2023/9/12 11:51
+ * version: 1.0.0
  */
 @Component
 public class AESUtils {
 
-    private AESUtils(){}
+    private AESUtils() {
+    }
 
     private static EncryptionProperties encryptionProperties;
 
@@ -32,10 +34,12 @@ public class AESUtils {
         AESUtils.encryptionProperties = properties;
     }
 
-    private static Cipher getCipher(String key, String iv, String type, Integer mode) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
+    private static Cipher getCipher(String key, String iv, String type, Integer mode)
+            throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, UnsupportedEncodingException {
         Cipher cipher = Cipher.getInstance("AES/CBC/" + type);
         SecretKeySpec keySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-        IvParameterSpec ips = new IvParameterSpec(iv.getBytes("UTF-8"));
+        IvParameterSpec ips = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         // 初始化为加密模式，并将密钥注入到算法中
         cipher.init(mode, keySpec, ips);
         return cipher;
@@ -80,7 +84,8 @@ public class AESUtils {
         if (encryptionProperties == null) {
             throw new IllegalStateException("EncryptionProperties not initialized");
         }
-        return encrypt(text, encryptionProperties.getKey(), encryptionProperties.getIv(), encryptionProperties.getPadding());
+        return encrypt(text, encryptionProperties.getKey(), encryptionProperties.getIv(),
+                encryptionProperties.getPadding());
     }
 
     /**
@@ -93,6 +98,7 @@ public class AESUtils {
         if (encryptionProperties == null) {
             throw new IllegalStateException("EncryptionProperties not initialized");
         }
-        return decrypt(base64Encrypted, encryptionProperties.getKey(), encryptionProperties.getIv(), encryptionProperties.getPadding());
+        return decrypt(base64Encrypted, encryptionProperties.getKey(), encryptionProperties.getIv(),
+                encryptionProperties.getPadding());
     }
 }

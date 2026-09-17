@@ -26,20 +26,33 @@ public class IpUtils {
 
     private static volatile String cachedLocalHostIp = null;
 
-    public static Searcher searcher;
+    public static volatile Searcher searcher;
 
-    static {
-        try (InputStream inputStream = IpUtils.class.getClassLoader().getResourceAsStream(dbPath)) {
-            if (inputStream == null) {
-                log.error("Failed to find ip2region database at path: {}", dbPath);
-            } else {
-                byte[] cBuff = toByteArray(inputStream);
-                searcher = Searcher.newWithBuffer(cBuff);
-                log.info("Successfully loaded ip2region database from: {}", dbPath);
+    /**
+     * 双重检查锁定 (DCL) 延迟加载 ip2region 数据库缓冲区。
+     * 避免非城市解析类接口（如仅解析 HTTP 请求头的微服务）在启动时无条件常驻 11.07MB 堆内存。
+     */
+    public static Searcher getSearcher() {
+        Searcher result = searcher;
+        if (result == null) {
+            synchronized (IpUtils.class) {
+                result = searcher;
+                if (result == null) {
+                    try (InputStream inputStream = IpUtils.class.getClassLoader().getResourceAsStream(dbPath)) {
+                        if (inputStream == null) {
+                            log.error("Failed to find ip2region database at path: {}", dbPath);
+                        } else {
+                            byte[] cBuff = toByteArray(inputStream);
+                            searcher = result = Searcher.newWithBuffer(cBuff);
+                            log.info("Successfully loaded ip2region database lazily from: {}", dbPath);
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to lazily initialize IpUtils with database `{}`: {}", dbPath, e.getMessage(), e);
+                    }
+                }
             }
-        } catch (Exception e) {
-            log.error("Failed to initialize IpUtils with database `{}`: {}", dbPath, e.getMessage(), e);
         }
+        return result;
     }
 
     private static byte[] toByteArray(InputStream input) throws IOException {
@@ -208,10 +221,11 @@ public class IpUtils {
             log.error("Error: Invalid ip2orgin.db file");
             return null;
         }
-        if (searcher == null) {
+        Searcher currentSearcher = getSearcher();
+        if (currentSearcher == null) {
             log.error("Error: DbConfig or DbSearcher is null");
             return null;
         }
-        return searcher.search(ip);
+        return currentSearcher.search(ip);
     }
 }

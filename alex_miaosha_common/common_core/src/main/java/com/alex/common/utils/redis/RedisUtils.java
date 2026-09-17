@@ -64,7 +64,7 @@ public class RedisUtils {
             return arr;
         } catch (Exception e) {
             log.error("获取列表对象失败，key为{}，异常为{}", key, e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -103,10 +103,13 @@ public class RedisUtils {
         try {
             String realKey = prefix.getPrefix() + SEGMENT + key;
             if (exTime == 0) {
-                //不设置过期时间
-                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
+                // 不设置过期时间
+                redisTemplate.opsForValue().set(realKey,
+                        JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
             } else {
-                redisTemplate.opsForValue().set(realKey, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect), exTime, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(realKey,
+                        JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect), exTime,
+                        TimeUnit.SECONDS);
             }
             return true;
         } catch (Exception e) {
@@ -120,13 +123,13 @@ public class RedisUtils {
      * @param value
      * @param exTime
      * @param timeUnit description:
-     *                 author:      majf
-     *                 return:      boolean
+     *                 author: majf
+     *                 return: boolean
      */
     public void setEx(String key, String value, int exTime, TimeUnit timeUnit) {
         try {
             if (exTime == 0) {
-                //不设置过期时间
+                // 不设置过期时间
                 redisTemplate.opsForValue().set(key, value);
             } else {
                 redisTemplate.opsForValue().set(key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
@@ -142,16 +145,17 @@ public class RedisUtils {
      * @param value
      * @param exTime
      * @param timeUnit  description:
-     *                  author:      majf
-     *                  return:      boolean
+     *                  author: majf
+     *                  return: boolean
      */
     public void setEx(KeyPrefix keyPrefix, String key, String value, long exTime, TimeUnit timeUnit) {
         try {
             if (exTime == 0) {
-                //不设置过期时间
+                // 不设置过期时间
                 redisTemplate.opsForValue().set(keyPrefix.getPrefix() + SEGMENT + key, value);
             } else {
-                redisTemplate.opsForValue().set(keyPrefix.getPrefix() + SEGMENT + key, value, exTime, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
+                redisTemplate.opsForValue().set(keyPrefix.getPrefix() + SEGMENT + key, value, exTime,
+                        timeUnit == null ? TimeUnit.SECONDS : timeUnit);
             }
         } catch (Exception e) {
             log.error("设置对象失败，key为{}，异常为{}", key, e.getMessage());
@@ -159,7 +163,8 @@ public class RedisUtils {
     }
 
     public boolean set(String key, Object value) {
-        redisTemplate.opsForValue().set(key, JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
+        redisTemplate.opsForValue().set(key,
+                JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
         return true;
     }
 
@@ -176,7 +181,8 @@ public class RedisUtils {
     public Boolean setIfAbsent(KeyPrefix prefix, String key, String value, long timeout, TimeUnit timeUnit) {
         try {
             String realKey = (prefix != null ? prefix.getPrefix() + SEGMENT : "") + key;
-            return redisTemplate.opsForValue().setIfAbsent(realKey, value, timeout, timeUnit == null ? TimeUnit.SECONDS : timeUnit);
+            return redisTemplate.opsForValue().setIfAbsent(realKey, value, timeout,
+                    timeUnit == null ? TimeUnit.SECONDS : timeUnit);
         } catch (Exception e) {
             log.error("setIfAbsent设置失败，key为{}，异常为{}", key, e.getMessage());
             return false;
@@ -244,10 +250,10 @@ public class RedisUtils {
     /**
      * @param prefix
      * @param key
-     * description: key值增加1
-     * author: majf
-     * createDate: 2022/7/12 9:57
-     * return: java.lang.Long
+     *               description: key值增加1
+     *               author: majf
+     *               createDate: 2022/7/12 9:57
+     *               return: java.lang.Long
      */
     public void increase(KeyPrefix prefix, String key) {
         try {
@@ -285,7 +291,8 @@ public class RedisUtils {
             return keys;
         }
         try {
-            org.springframework.data.redis.core.ScanOptions options = org.springframework.data.redis.core.ScanOptions.scanOptions()
+            org.springframework.data.redis.core.ScanOptions options = org.springframework.data.redis.core.ScanOptions
+                    .scanOptions()
                     .match(pattern)
                     .count(200)
                     .build();
@@ -334,12 +341,12 @@ public class RedisUtils {
         try {
             Set<String> keys = scan(prefix);
             if (keys == null || keys.isEmpty()) {
-                return null;
+                return Collections.emptyList();
             }
             return keys.parallelStream().map(item -> get(item, clazz)).toList();
         } catch (Exception e) {
             log.error("根据前缀模糊查询key失败，key为{},异常为{}", prefix != null ? prefix.getPrefix() : null, e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -356,7 +363,7 @@ public class RedisUtils {
             }).toList();
         } catch (Exception e) {
             log.error("根据前缀模糊查询keysList失败，key为{},异常为{}", prefix != null ? prefix.getPrefix() : null, e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 }
