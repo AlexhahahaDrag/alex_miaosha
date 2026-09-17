@@ -36,9 +36,9 @@ public class AESUtils {
 
     private static Cipher getCipher(String key, String iv, String type, Integer mode)
             throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, UnsupportedEncodingException {
+            InvalidAlgorithmParameterException {
         Cipher cipher = Cipher.getInstance("AES/CBC/" + type);
-        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
         IvParameterSpec ips = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         // 初始化为加密模式，并将密钥注入到算法中
         cipher.init(mode, keySpec, ips);
@@ -54,7 +54,7 @@ public class AESUtils {
     public static String encrypt(String text, String key, String iv, String type) throws Exception {
         Cipher cipher = getCipher(key, iv, type, Cipher.ENCRYPT_MODE);
         // 将传入的文本加密
-        byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
+        byte[] encrypted = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
         // 将密文进行Base64编码，方便传输
         return Base64Utils.encodeToString(encrypted);
     }
@@ -71,7 +71,7 @@ public class AESUtils {
         byte[] encrypted = Base64Utils.decodeFromString(base64Encrypted);
         // 解密
         byte[] decrypted = cipher.doFinal(encrypted);
-        return new String(decrypted, "UTF-8");
+        return new String(decrypted, StandardCharsets.UTF_8);
     }
 
     /**

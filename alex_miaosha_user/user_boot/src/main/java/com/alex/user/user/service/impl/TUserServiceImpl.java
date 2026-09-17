@@ -393,10 +393,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             log.error("并行读取 Redis 校验数据异常，进行安全降级", e);
         }
         
-        Map<String, Object> result = new HashMap<>(RedisConstants.NUM_ONE);
-        // 如果登录错误超过5次限制，抛出异常
+        Map<String, Object> result = new HashMap<>();
+        // 如果登录错误超过限制，抛出异常
         if (limitCount != null && !limitCount.isBlank()
-                && Integer.parseInt(limitCount) >= RedisConstants.NUM_FIVE) {
+                && Integer.parseInt(limitCount) >= MAX_LOGIN_RETRY_LIMIT) {
             throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
         // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture 闭包内，我们可直接在主线程安全使用它
@@ -694,7 +694,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip +
                 RedisConstants.SEGMENTATION + username;
         String count = redisUtils.get(loginCountKey);
-        int surplusCount = RedisConstants.NUM_FIVE;
+        int surplusCount = MAX_LOGIN_RETRY_LIMIT;
         int exTime = 30;
         if (StringUtils.isNotEmpty(count)) {
             int curCount = Integer.parseInt(count) + 1;
@@ -702,7 +702,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             redisUtils.setEx(loginCountKey, Integer.toString(curCount), exTime, TimeUnit.MINUTES);
         } else {
             surplusCount -= 1;
-            redisUtils.setEx(loginCountKey, String.valueOf(RedisConstants.NUM_ONE), exTime, TimeUnit.MINUTES);
+            redisUtils.setEx(loginCountKey, "1", exTime, TimeUnit.MINUTES);
         }
         return surplusCount;
     }

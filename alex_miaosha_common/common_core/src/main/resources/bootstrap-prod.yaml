@@ -8,7 +8,7 @@ spring:
         server-addr: ${nacos.url}
         file-extension: ${nacos.file-extension}
         group: ${nacos.group}
-        namespace: ${nacos.namaspace}
+        namespace: ${nacos.namespace:${nacos.namaspace}}
         extension-configs:
           - data-id: ${nacos.redis}.${nacos.file-extension}
             group: ${nacos.group}
@@ -44,7 +44,8 @@ spring:
 nacos:
   url: nacos:8848
   group: alex-miaosha-prod
-  namaspace: 439dbcdc-b721-4afd-abee-08184739eb75
+  namespace: 439dbcdc-b721-4afd-abee-08184739eb75
+  namaspace: ${nacos.namespace}
   username: nacos
   password: nacos
   file-extension: yaml
@@ -57,3 +58,4 @@ nacos:
   wechat: wechat
   xxl: xxl
   minio: minio
+  ai-config: ai-config
