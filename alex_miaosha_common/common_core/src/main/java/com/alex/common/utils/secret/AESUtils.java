@@ -34,6 +34,12 @@ public class AESUtils {
         AESUtils.encryptionProperties = properties;
     }
 
+    /**
+     * 初始化 AES-CBC Cipher
+     * 注意：SonarQube S3329 提倡使用动态随机 IV；但当前系统与前端 (alex_miaosha_front) 采用预共享 IV ("1234567890123456") 协议通信。
+     * 为保证现有端到端通信契约不被破坏，此处压制 S3329 告警。
+     */
+    @SuppressWarnings("java:S3329")
     private static Cipher getCipher(String key, String iv, String type, Integer mode)
             throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException {

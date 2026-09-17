@@ -158,10 +158,7 @@ public class StringUtils {
      *          return
      */
     public static boolean isEmpty(String s) {
-        if (s == null || s.length() <= 0) {
-            return true;
-        }
-        return false;
+        return s == null || s.isEmpty();
     }
 
     /**
