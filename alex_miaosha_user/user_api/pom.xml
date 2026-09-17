@@ -20,7 +20,18 @@
     <dependencies>
         <dependency>
             <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_common</artifactId>
+            <artifactId>common_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>common_core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

@@ -8,6 +8,7 @@ import com.alex.oss.fileInfo.entity.FileInfo;
 import com.alex.oss.fileInfo.mapper.FileInfoMapper;
 import com.alex.oss.fileInfo.service.FileInfoService;
 import com.alex.oss.minio.service.MinioFileService;
+import com.alex.oss.minio.service.impl.AbstractS3FileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -51,7 +52,20 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     private MinioFileService getFileService(String fileSystem) {
         String key = StringUtils.isBlank(fileSystem) ? activeFileSystem : fileSystem;
         MinioFileService service = fileServiceMap.get(key + "FileService");
-        return service != null ? service : fileServiceMap.get("minioFileService");
+        if (service != null) {
+            return service;
+        }
+        MinioFileService fallback = fileServiceMap.get(activeFileSystem + "FileService");
+        if (fallback != null) {
+            return fallback;
+        }
+        if (fileServiceMap.get("garageFileService") != null) {
+            return fileServiceMap.get("garageFileService");
+        }
+        if (fileServiceMap.get("minioFileService") != null) {
+            return fileServiceMap.get("minioFileService");
+        }
+        return fileServiceMap.values().stream().findFirst().orElse(null);
     }
 
     @Override
@@ -141,6 +155,47 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     public InputStream fileDownload(Long id) {
         FileInfoVo fileInfo = fileInfoMapper.queryFileInfo(id);
         return getFileService(fileInfo.getFileSystem()).fileDownload(fileInfo);
+    }
+
+    @Override
+    public void fileDownload(Long id, javax.servlet.http.HttpServletResponse response) {
+        FileInfoVo fileInfo = fileInfoMapper.queryFileInfo(id);
+        if (fileInfo == null) {
+            try {
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                response.setHeader("Content-type", "text/html;charset=UTF-8");
+                response.getOutputStream().write("文件不存在".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                log.error("写入 404 响应异常：", e);
+            }
+            return;
+        }
+        MinioFileService service = getFileService(fileInfo.getFileSystem());
+        if (service instanceof AbstractS3FileService s3Service) {
+            s3Service.getTemplate().fileDownload(fileInfo.getBucketName(), fileInfo.getUrl(), false, response);
+        } else if (service != null) {
+            try (InputStream inputStream = service.fileDownload(fileInfo);
+                 java.io.OutputStream outputStream = response.getOutputStream()) {
+                if (inputStream == null) {
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+                response.reset();
+                String fileName = fileInfo.getUrl();
+                String downloadName = fileName.substring(fileName.lastIndexOf("/") + 1);
+                response.setHeader("Content-Disposition", "attachment;filename=" +
+                        java.net.URLEncoder.encode(downloadName, java.nio.charset.StandardCharsets.UTF_8));
+                response.setContentType("application/octet-stream");
+                byte[] buf = new byte[8192];
+                int length;
+                while ((length = inputStream.read(buf)) > 0) {
+                    outputStream.write(buf, 0, length);
+                }
+                outputStream.flush();
+            } catch (IOException e) {
+                log.error("下载流输出异常：", e);
+            }
+        }
     }
 
     private FileInfoVo uploadFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal)

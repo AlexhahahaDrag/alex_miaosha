@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_common</artifactId>
+            <artifactId>common_api</artifactId>
         </dependency>
     </dependencies>
 </project>

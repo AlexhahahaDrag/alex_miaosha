@@ -15,6 +15,9 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:com/alex/osssys/mapper/**/*Mapper.xml
 
+oss:
+  active: garage
+
 garage:
   url: garage
   port: 3900
@@ -22,3 +25,5 @@ garage:
   secretKey: 3f0fb8b2db7d251b79d16acf6b60a6618f89a0f745e5757af50468aa16d49010
   bucketName: alex-miaosha
   region: garage
+  secure: false
+  # publicUrl: https://oss.example.com

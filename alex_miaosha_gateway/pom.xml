@@ -61,13 +61,12 @@
 
         <dependency>
             <groupId>com.alex</groupId>
+            <artifactId>common_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
             <artifactId>user_api</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

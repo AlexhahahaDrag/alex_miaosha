@@ -70,12 +70,12 @@ public interface OssApi {
     Result<Boolean> delete(@RequestParam("ids") String ids);
 
     @ApiOperationSupport(order = 60, author = "alex")
-    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
+    @ApiOperation(value = "文件下载", notes = "文件下载")
     @GetMapping("/fileDownload")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "id", name = "id", required = true, dataTypeClass = Long.class)}
     )
-    Result<InputStream> fileDownload(@RequestParam(value = "id") Long id);
+    void fileDownload(@RequestParam(value = "id") Long id);
 
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "获取文件信息列表", notes = "获取文件信息列表", response = Result.class)

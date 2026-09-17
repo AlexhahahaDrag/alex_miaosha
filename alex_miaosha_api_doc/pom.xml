@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_base</artifactId>
+            <artifactId>common_core</artifactId>
         </dependency>
 
         <dependency>

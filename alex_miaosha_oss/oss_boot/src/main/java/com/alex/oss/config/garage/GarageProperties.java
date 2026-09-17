@@ -26,4 +26,14 @@ public class GarageProperties {
     private String bucketName;
 
     private String region;
+
+    /**
+     * 对外公开访问/预签名 URL 域名或反代地址
+     */
+    private String publicUrl;
+
+    /**
+     * 是否启用 HTTPS 传输（默认 false）
+     */
+    private Boolean secure = false;
 }

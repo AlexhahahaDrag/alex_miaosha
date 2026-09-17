@@ -12,17 +12,14 @@
     <modules>
         <module>alex_miaosha_common</module>
         <module>alex_miaosha_gateway</module>
-        <module>alex_miaosha_base</module>
         <module>alex_miaosha_api_doc</module>
         <module>alex_miaosha_user</module>
-        <module>alex_miaosha_utils</module>
         <module>alex_miaosha_finance</module>
         <!-- AI Agent：统一 AI 能力服务（其它模块通过 ai_api/Feign 调用） -->
         <module>alex_miaosha_ai</module>
         <module>alex_generator</module>
         <module>alex_miaosha_oss</module>
         <module>alex_miaosha_product</module>
-        <module>alex_miaosha_order</module>
     </modules>
 
     <parent>
@@ -50,12 +47,11 @@
         <knife4j.version>3.0.3</knife4j.version>
         <knife4j-appregation.version>2.0.9</knife4j-appregation.version>
         <alex_miaosha_common.version>1.0-SNAPSHOT</alex_miaosha_common.version>
-        <alex_miaosha_base.version>1.0-SNAPSHOT</alex_miaosha_base.version>
-        <alex_miaosha_utils.version>1.0-SNAPSHOT</alex_miaosha_utils.version>
+        <common_api.version>1.0-SNAPSHOT</common_api.version>
+        <common_core.version>1.0-SNAPSHOT</common_core.version>
         <alex_miaosha_user_api.version>1.0-SNAPSHOT</alex_miaosha_user_api.version>
         <alex_miaosha_oss_api.version>1.0-SNAPSHOT</alex_miaosha_oss_api.version>
         <alex_miaosha_finance_api.version>1.0-SNAPSHOT</alex_miaosha_finance_api.version>
-        <alex_miaosha_order_api.version>1.0-SNAPSHOT</alex_miaosha_order_api.version>
         <alex_miaosha_product_api.version>1.0-SNAPSHOT</alex_miaosha_product_api.version>
         <!-- AI Agent：AI 服务 API 模块版本 -->
         <alex_miaosha_ai_api.version>1.0-SNAPSHOT</alex_miaosha_ai_api.version>
@@ -209,20 +205,14 @@
 
             <dependency>
                 <groupId>com.alex</groupId>
-                <artifactId>alex_miaosha_common</artifactId>
-                <version>${alex_miaosha_common.version}</version>
+                <artifactId>common_api</artifactId>
+                <version>${common_api.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.alex</groupId>
-                <artifactId>alex_miaosha_base</artifactId>
-                <version>${alex_miaosha_base.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alex</groupId>
-                <artifactId>alex_miaosha_utils</artifactId>
-                <version>${alex_miaosha_utils.version}</version>
+                <artifactId>common_core</artifactId>
+                <version>${common_core.version}</version>
             </dependency>
 
             <!-- 引入 lombok -->
@@ -236,6 +226,12 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatisplus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
                 <version>${mybatisplus.version}</version>
             </dependency>
 
@@ -478,12 +474,6 @@
                 <groupId>com.alex</groupId>
                 <artifactId>finance_api</artifactId>
                 <version>${alex_miaosha_finance_api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alex</groupId>
-                <artifactId>order_api</artifactId>
-                <version>${alex_miaosha_order_api.version}</version>
             </dependency>
 
             <dependency>

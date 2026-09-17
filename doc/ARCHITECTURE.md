@@ -48,10 +48,8 @@ graph TB
         direction LR
         Finance["财务服务 (Finance)"]
         Product["商品服务 (Product)"]
-        Order["订单服务 (Order)"]
         OSS_Svc["文件服务 (OSS)"]
         AI_Svc["AI 服务 (Agent)"]
-        Mission["任务服务 (Mission)"]
     end
 
     subgraph Unified ["统一管理"]
@@ -166,21 +164,16 @@ graph TB
 | :--- | :--- | :--- | :--- | :--- |
 | **网关** | `alex_miaosha_gateway` | - | 30001 | 统一入口、白名单校验、身份认证、响应加密、限流(预留)、跨域、Swagger 聚合 |
 | **用户** | `alex_miaosha_user` | `user_api` / `user_boot` | 30006 | 用户管理、RBAC 权限、登录认证、Token 刷新、在线用户管理 |
-| **商品** | `alex_miaosha_product` | `product_api` / `product_boot` | 30007 | 商品管理、秒杀库存预热、库存扣减 |
-| **财务** | `alex_miaosha_finance` | `finance_api` / `finance_boot` | 30008 | 财务流水、账目管理 |
-| **OSS** | `alex_miaosha_oss` | `oss_api` / `oss_boot` | 30009 | 文件上传/下载、Minio 对象存储 |
-| **订单** | `alex_miaosha_order` | `order_api` / `order_boot` | - | 秒杀订单、排队、支付状态 |
-| **AI** | `alex_miaosha_ai` | `ai_api` / `ai_boot` | - | 统一 AI 能力封装 (大模型集成) |
-| **任务** | `alex_miaosha_mission` | - | - | 任务/活动管理 |
-| **监控** | `alex_miaosha_monitor` | - | 30099 | Spring Boot Admin、服务健康检查 |
+| **商品** | `alex_miaosha_product` | `product_api` / `product_boot` | 30007 | 商品管理、库存管理、类目与规格属性 |
+| **财务** | `alex_miaosha_finance` | `finance_api` / `finance_boot` | 30008 | 财务流水、礼尚往来人情记账、预付卡与账单核算 |
+| **OSS** | `alex_miaosha_oss` | `oss_api` / `oss_boot` | 30009 | 文件上传/下载、MinIO/阿里云对象存储抽象与流式传输 |
+| **AI** | `alex_miaosha_ai` | `ai_api` / `ai_boot` | 30010 | 统一 AI 能力封装 (DeepSeek 集成 + 规则引擎降级) |
 
 ### 3.2 基础支撑模块
 
 | 模块 | 目录 | 核心能力 |
 | :--- | :--- | :--- |
-| **Common** | `alex_miaosha_common` | Redis 工具、加解密(AES/SM)、统一异常处理、Feign 配置、序列化、Redis Key 定义、秒杀消息体 |
-| **Base** | `alex_miaosha_base` | 通用 Result 封装、基础实体/VO |
-| **Utils** | `alex_miaosha_utils` | 字符串、日期、Bean 工具类 |
+| **Common** | `alex_miaosha_common` | 统一公共底座：下设 `common_api`（纯契约层：Result、BaseVo、枚举、Long2StringSerializer、注解）与 `common_core`（运行时：Undertow、MyBatis-Plus、Redis 工具、AOP 切面、异常捕获、加解密、IpUtils） |
 | **API Doc** | `alex_miaosha_api_doc` | Knife4j 文档聚合配置 |
 | **Generator** | `alex_generator` | MyBatis Plus 代码生成器 |
 

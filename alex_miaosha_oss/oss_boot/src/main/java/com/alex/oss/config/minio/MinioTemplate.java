@@ -1,334 +1,52 @@
 package com.alex.oss.config.minio;
 
-import com.alex.common.utils.string.StringUtils;
-import com.alex.oss.minio.vo.ObjectItem;
-import com.alibaba.fastjson.JSONObject;
-import io.minio.*;
-import io.minio.errors.*;
-import io.minio.http.Method;
-import io.minio.messages.DeleteError;
-import io.minio.messages.DeleteObject;
-import io.minio.messages.Item;
-import lombok.Data;
+import com.alex.oss.config.s3.BaseS3Template;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.tasks.UnsupportedFormatException;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
- * description:
- * author:       majf
- * createDate:   2023/1/12 11:30
- * version:      1.0.0
+ * description:  MinIO 模板类，继承自统一的 BaseS3Template
+ * 继承通用 S3 能力：流式下载不提前关流、Bucket 内存缓存、明确传入流长度、预签名域名映射
+ *
+ * @author majf, alex
+ * @version 2.0.0
  */
 @Configuration
 @Slf4j
 @EnableConfigurationProperties({MinioProperties.class})
-@Data
-public class MinioTemplate implements InitializingBean {
+@Getter
+public class MinioTemplate extends BaseS3Template implements InitializingBean {
 
     private final MinioProperties minioProperties;
 
-    private MinioClient minioClient;
-
-    // AI Agent：使用构造函数注入替代字段注入，提高代码可测试性和安全性
-    // 说明：构造函数注入可以确保依赖不为空，并且便于单元测试
     public MinioTemplate(MinioProperties minioProperties) {
-        Assert.notNull(minioProperties, "MinioProperties must not be null!");
         this.minioProperties = minioProperties;
     }
 
     @Override
     public void afterPropertiesSet() {
+        if (minioProperties == null) {
+            log.warn("[MinioTemplate] 未注入 MinioProperties，跳过 MinIO 初始化");
+            return;
+        }
         String url = minioProperties.getUrl();
         Integer port = minioProperties.getPort();
         String accessKey = minioProperties.getAccessKey();
         String secretKey = minioProperties.getSecretKey();
-        Assert.notNull(url, "minio url can't be null!");
-        Assert.notNull(port, "minio port can't be null!");
-        Assert.notNull(accessKey, "minio url can't be null!");
-        Assert.notNull(secretKey, "minio url can't be null!");
-        minioClient = MinioClient.builder()
-                .endpoint(url, port, false)
-                .credentials(accessKey, secretKey)
-                .build();
-    }
+        String region = minioProperties.getRegion();
+        Boolean secure = minioProperties.getSecure();
+        String publicUrl = minioProperties.getPublicUrl();
 
-    /**
-     * @param name description: 判断bucket是否存在，不存在则创建
-     *             author: majf
-     *             return: void
-     */
-    public void existBucket(String name) {
-        try {
-            boolean exist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(name).build());
-            if (!exist) {
-                makeBucket(name);
-            }
-        } catch (Exception e) {
-            log.error("检查bucket是否存在异常：", e);
+        // 优雅容错检查：如果环境未配置 minio 相关属性（如生产环境主用 garage 时），平稳跳过，不抛异常崩溃应用
+        if (url == null || port == null || accessKey == null || secretKey == null) {
+            log.info("[MinioTemplate] 检测到当前环境未完整配置 minio (url={}, port={})，已安全跳过初始化（若需启用请配置 minio.*）",
+                    url, port);
+            return;
         }
-    }
 
-    /**
-     * @param bucketName description: 创建存储bucket
-     *                   author: majf
-     *                   return: java.lang.Boolean
-     */
-    public void makeBucket(String bucketName) {
-        try {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-        } catch (Exception e) {
-            log.error("创建bucket异常：", e);
-        }
-    }
-
-    /**
-     * 删除存储 bucket
-     *
-     * @param bucketName 存储bucket名称
-     *                   return Boolean
-     */
-    public Boolean removeBucket(String bucketName) {
-        try {
-            minioClient.removeBucket(RemoveBucketArgs.builder()
-                    .bucket(bucketName)
-                    .build());
-        } catch (Exception e) {
-            log.error("删除bucket异常：", e);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @param bucketName  包名称
-     * @param filename    文件名称
-     * @param inputStream description: 上传文件到minio
-     *                    author: majf
-     *                    return: java.util.Map<java.lang.String, java.lang.String>
-     */
-    public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType) throws Exception {
-        existBucket(bucketName);
-        // 上传到minio服务器
-        ObjectWriteResponse objectWriteResponse = minioClient.putObject(PutObjectArgs.builder()
-                .bucket(bucketName)
-                .object(filename)
-                .contentType(contentType)
-                .stream(inputStream, inputStream.available(), -1)
-                .build());
-        log.info("上传文件结果：{}", JSONObject.toJSONString(objectWriteResponse));
-        // 返回地址
-        Map<String, String> resultMap = new HashMap<>();
-        resultMap.put("url", filename);
-        return resultMap;
-    }
-
-    /**
-     * 文件下载
-     *
-     * @param fileName 文件名
-     * @param delete   是否删除
-     */
-    public void fileDownload(String bucketName, String fileName, Boolean delete, HttpServletResponse response) {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            if (StringUtils.isBlank(fileName)) {
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                String data = "文件下载失败";
-                OutputStream ps = response.getOutputStream();
-                ps.write(data.getBytes(StandardCharsets.UTF_8));
-                return;
-            }
-            outputStream = response.getOutputStream();
-            // 获取文件对象
-            inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-            byte[] buf = new byte[1024];
-            int length;
-            response.reset();
-            response.setHeader("Content-Disposition", "attachment;filename=" +
-                    URLEncoder.encode(fileName.substring(fileName.lastIndexOf("/") + 1), StandardCharsets.UTF_8));
-            response.setContentType("application/octet-stream");
-            response.setCharacterEncoding("UTF-8");
-            // 输出文件
-            while ((length = inputStream.read(buf)) > 0) {
-                outputStream.write(buf, 0, length);
-            }
-            inputStream.close();
-            // 判断：下载后是否同时删除minio上的存储文件
-            if (BooleanUtils.isTrue(delete)) {
-                minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileName).build());
-            }
-        } catch (Throwable ex) {
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            String data = "文件下载失败";
-            try {
-                OutputStream ps = response.getOutputStream();
-                ps.write(data.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                // 使用SLF4J logger替代printStackTrace
-                log.error("文件下载异常 - 向响应写入错误信息失败：", e);
-            }
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                // 使用SLF4J logger替代printStackTrace
-                log.error("关闭文件流异常：", e);
-            }
-        }
-    }
-
-    /**
-     * param bucketName
-     * param fileName
-     * param delete     description: 下载文件流
-     * author: alex
-     * return: java.io.InputStream
-     */
-    public InputStream fileDownload(String bucketName, String fileName) {
-        InputStream inputStream = null;
-        try {
-            if (StringUtils.isBlank(fileName)) {
-                return null;
-            }
-            // 获取文件对象
-            inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
-        } catch (ServerException | InternalException | XmlParserException | InvalidResponseException |
-                 InvalidKeyException | NoSuchAlgorithmException | IOException | ErrorResponseException |
-                 InsufficientDataException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                // 使用SLF4J logger替代printStackTrace
-                log.error("关闭文件流异常：", e);
-            }
-        }
-        return inputStream;
-    }
-
-    /**
-     * 查看文件对象
-     *
-     * @param bucketName 存储bucket名称
-     *                   return 存储bucket内文件对象信息
-     */
-    public List<ObjectItem> listObjects(String bucketName) {
-        Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).build());
-        List<ObjectItem> objectItems = new ArrayList<>();
-        try {
-            for (Result<Item> result : results) {
-                Item item = result.get();
-                ObjectItem objectItem = new ObjectItem();
-                objectItem.setObjectName(item.objectName());
-                objectItem.setSize(item.size());
-                objectItems.add(objectItem);
-            }
-        } catch (Exception e) {
-            // 使用SLF4J logger替代printStackTrace
-            log.error("查看文件对象异常：", e);
-            return null;
-        }
-        return objectItems;
-    }
-
-    /**
-     * 批量删除文件对象
-     *
-     * @param bucketName 存储bucket名称
-     * @param objects    对象名称集合
-     */
-    public Map<String, String> removeObjects(String bucketName, List<String> objects) throws Exception {
-        Map<String, String> resultMap = new HashMap<>();
-        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).toList();
-        Iterable<Result<DeleteError>> results = minioClient.removeObjects(
-                RemoveObjectsArgs.builder()
-                        .bucket(bucketName)
-                        .objects(dos)
-                        .build());
-        for (Result<DeleteError> result : results) {
-            DeleteError error = result.get();
-            log.error("Error in deleting object {}; {}", error.objectName(), error.message());
-        }
-        resultMap.put("mes", "删除成功");
-        return resultMap;
-    }
-
-    public String preview(String bucketName, String objectKey) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
-        return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.GET)
-                        .bucket(bucketName)
-                        .object(objectKey)
-                        .expiry(60 * 60, TimeUnit.SECONDS)
-                        .build());
-    }
-
-    // 生成缩略图
-    public Map<String, String> thumbnail(String bucketName, String filename, InputStream inputStream, String contentType) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        // 确保存储桶存在
-        existBucket(bucketName);
-
-        // 创建输出流用于保存生成的缩略图
-        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
-        BufferedImage bufferedImage = ImageIO.read(inputStream);
-        if (bufferedImage != null) {
-            // 使用 Thumbnails 生成缩略图
-            Thumbnails.of(bufferedImage)
-                    .size(200, 200)
-                    .outputFormat("jpg") // 可根据需求指定格式
-                    .toOutputStream(thumbnailStream);
-
-        } else {
-            // 处理无效图像格式的情况
-            throw new UnsupportedFormatException("Invalid image format.");
-        }
-        // 将生成的缩略图数据上传到 MinIO
-        ObjectWriteResponse objectWriteResponse = minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object("thumbnail_" + filename)
-                        .contentType(contentType)
-                        .stream(new ByteArrayInputStream(thumbnailStream.toByteArray()), thumbnailStream.size(), -1)
-                        .build()
-        );
-
-        log.info("上传缩略图结果：{}", JSONObject.toJSONString(objectWriteResponse));
-
-        // 返回生成的缩略图地址
-        Map<String, String> resultMap = new HashMap<>();
-        // TODO (majf) 2025/1/14 17:05 修改文件名称
-        int index = filename.lastIndexOf(".");
-        filename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
-        resultMap.put("url", filename);
-        return resultMap;
+        initClient(url, port, accessKey, secretKey, region, secure, publicUrl);
     }
 }

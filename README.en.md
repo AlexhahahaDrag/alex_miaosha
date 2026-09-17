@@ -38,11 +38,10 @@ The project code is currently hosted on GitHub and Gitee. Welcome to **Star** an
 The system is divided into the following core business and basic modules:
 
 - **`alex_generator`**: Code generation module, supports one-click generation of basic frontend and backend code, greatly improving development efficiency.
-- **`alex_miaosha_base`**: Core infrastructure module, containing basic common configurations and encapsulated constants.
-- **`alex_miaosha_common`**: Public dependency module, providing global exception handling, utilities, etc.
+- **`alex_miaosha_common`**: Unified common foundation module, structured in two tiers: `common_api` (lightweight contract) and `common_core` (runtime framework).
 - **`alex_miaosha_finance`**: Finance/Billing management module, responsible for related financial data statistics and processing.
 - **`alex_miaosha_gateway`**: Microservice API Gateway module, unifying traffic entry, responsible for routing, forwarding, authentication, etc.
-- **`alex_miaosha_order`**: Order module, responsible for generating and controlling the flow of business orders.
+- **`alex_miaosha_ai`**: AI intelligent analysis center, integrating DeepSeek LLM and rule engine for financial diagnostics and gift recommendation.
 - **`alex_miaosha_oss`**: File storage module, integrating object storage services to centrally manage images and attachments.
 - **`alex_miaosha_product`**: Product management module, maintaining information related to goods, categories, attributes, etc.
 - **`alex_miaosha_user`**: User center module, handling user management, role assignment, permission validation, organization management, etc.

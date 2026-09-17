@@ -45,4 +45,43 @@ public class SwaggerConfig {
                 .version("1.0-version")
                 .build();
     }
+
+    /**
+     * 兼容 Springfox 3 + Spring Boot 2.6+：去掉使用 PathPatternParser 的 mapping，避免 documentationPluginsBootstrapper NPE 启动报错
+     */
+    @Bean
+    public static org.springframework.beans.factory.config.BeanPostProcessor springfoxHandlerProviderBeanPostProcessor() {
+        return new org.springframework.beans.factory.config.BeanPostProcessor() {
+            @Override
+            public Object postProcessAfterInitialization(Object bean, String beanName) throws org.springframework.beans.BeansException {
+                if (bean instanceof springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider
+                        || bean instanceof springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider) {
+                    customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
+                }
+                return bean;
+            }
+
+            private <T extends org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping> void customizeSpringfoxHandlerMappings(java.util.List<T> mappings) {
+                java.util.List<T> copy = mappings.stream()
+                        .filter(mapping -> mapping.getPatternParser() == null)
+                        .collect(java.util.stream.Collectors.toList());
+                mappings.clear();
+                mappings.addAll(copy);
+            }
+
+            @SuppressWarnings("unchecked")
+            private java.util.List<org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping> getHandlerMappings(Object bean) {
+                try {
+                    java.lang.reflect.Field field = org.springframework.util.ReflectionUtils.findField(bean.getClass(), "handlerMappings");
+                    if (field == null) {
+                        throw new IllegalStateException("handlerMappings field not found on " + bean.getClass());
+                    }
+                    field.setAccessible(true);
+                    return (java.util.List<org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping>) field.get(bean);
+                } catch (IllegalAccessException | IllegalArgumentException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
+    }
 }

@@ -33,6 +33,8 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: alex-miaosha
+  secure: false
+  # publicUrl: https://oss.example.com # 外部公网访问域名（若配置将替代直链中的物理IP）
 
 garage:
   url: 115.190.181.243
@@ -41,3 +43,5 @@ garage:
   secretKey: 3f0fb8b2db7d251b79d16acf6b60a6618f89a0f745e5757af50468aa16d49010
   bucketName: alex-miaosha
   region: garage
+  secure: false
+  # publicUrl: https://oss.example.com

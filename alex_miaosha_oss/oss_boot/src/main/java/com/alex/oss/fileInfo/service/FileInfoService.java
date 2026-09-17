@@ -36,6 +36,8 @@ public interface FileInfoService extends IService<FileInfo> {
 
     InputStream fileDownload(Long id);
 
+    void fileDownload(Long id, javax.servlet.http.HttpServletResponse response);
+
     /*
      * @param fileIdList
      * description: 根据文件id列表获取文件信息

@@ -53,7 +53,7 @@ public class OssFallbackFactory implements FallbackFactory<OssApi> {
             }
 
             @Override
-            public Result<InputStream> fileDownload(Long id) {
+            public void fileDownload(Long id) {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 

@@ -109,13 +109,13 @@ public class FileInfoController {
 
     @LogRestRequest(apiName = "文件下载")
     @ApiOperationSupport(order = 60, author = "alex")
-    @ApiOperation(value = "文件下载", notes = "文件下载", response = Result.class)
+    @ApiOperation(value = "文件下载", notes = "流式下载文件至客户端")
     @GetMapping("/fileDownload")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "id", name = "id", required = true, dataTypeClass = Long.class)}
     )
-    public Result<InputStream> fileDownload(@RequestParam(value = "id") Long id) {
-        return Result.success(fileInfoService.fileDownload(id));
+    public void fileDownload(@RequestParam(value = "id") Long id, javax.servlet.http.HttpServletResponse response) {
+        fileInfoService.fileDownload(id, response);
     }
 
     @LogRestRequest(apiName = "获取文件信息")

@@ -34,8 +34,10 @@ public class PushConfigure {
     @Bean
     public WxMpConfigStorage wxMpConfigStorage() {
         WxMpDefaultConfigImpl wxMpConfigStorage = new WxMpDefaultConfigImpl();
-        wxMpConfigStorage.setAppId(accountConfig.getAppId());
-        wxMpConfigStorage.setSecret(accountConfig.getSecret());
+        String appId = org.springframework.util.StringUtils.hasText(accountConfig.getAppId()) ? accountConfig.getAppId() : "dummy_app_id";
+        String secret = org.springframework.util.StringUtils.hasText(accountConfig.getSecret()) ? accountConfig.getSecret() : "dummy_secret";
+        wxMpConfigStorage.setAppId(appId);
+        wxMpConfigStorage.setSecret(secret);
         return wxMpConfigStorage;
     }
 }

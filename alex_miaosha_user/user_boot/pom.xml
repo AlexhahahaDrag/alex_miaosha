@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.alex</groupId>
-            <artifactId>alex_miaosha_utils</artifactId>
+            <artifactId>common_core</artifactId>
         </dependency>
     
         <!--druid-->
