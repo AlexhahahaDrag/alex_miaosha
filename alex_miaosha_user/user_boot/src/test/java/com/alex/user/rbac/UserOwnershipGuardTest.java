@@ -39,7 +39,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * RBAC-BE-USER-002: write-path ownership guard must go through scoped queryTUser.
+ * RBAC-BE-USER-002: write-path ownership guard must go through scoped
+ * queryTUser.
  */
 @ExtendWith(MockitoExtension.class)
 public class UserOwnershipGuardTest {
@@ -95,8 +96,7 @@ public class UserOwnershipGuardTest {
                 userPermissionContextService,
                 userDeleteCleanupService,
                 permissionContextCacheService,
-                null
-        );
+                null);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class UserOwnershipGuardTest {
                 "RBAC-BE-USER-002: delete must reject users outside data scope");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "exception message must contain 无权, actual=" + ex.getMsg());
-        verify(tUserMapper, never()).deleteBatchIds(any());
+        verify(tUserMapper, never()).deleteByIds(any());
     }
 
     @Test

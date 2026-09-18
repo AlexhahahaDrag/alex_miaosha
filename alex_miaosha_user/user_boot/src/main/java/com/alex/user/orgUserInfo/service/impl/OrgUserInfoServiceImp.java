@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- * description:  用户公司信息表服务实现类
- * author:       majf
- * createDate:   2024-01-15 15:12:05
- * version:      1.0.0
+ * description: 用户公司信息表服务实现类
+ * author: majf
+ * createDate: 2024-01-15 15:12:05
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -135,7 +135,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
 
     @Override
     public Boolean deleteOrgUserInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
@@ -204,7 +204,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
     /**
      * RBAC-BE-RELATION-004: 对该 userId 的失效（status=0）行按 createTime 倒序，
      * 只保留最近 {@link #MAX_INACTIVE_HISTORY} 条，更早的物理删除（entity 上有 {@code @TableLogic}，
-     * 底层实际按逻辑删处理，与 {@code deleteBatchIds} 在本代码库其它删除口子的语义一致）。
+     * 底层实际按逻辑删处理，与 {@code deleteByIds} 在本代码库其它删除口子的语义一致）。
      * 有效行数量不受影响，始终由 assignSingleOrg 自身逻辑保证 ≤1。
      */
     private void pruneInactiveHistory(Long userId) {
@@ -223,7 +223,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (!staleIds.isEmpty()) {
-            orgUserInfoMapper.deleteBatchIds(staleIds);
+            orgUserInfoMapper.deleteByIds(staleIds);
         }
     }
 

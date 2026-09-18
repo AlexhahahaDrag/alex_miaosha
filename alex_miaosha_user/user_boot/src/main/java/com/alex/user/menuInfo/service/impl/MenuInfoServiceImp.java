@@ -63,10 +63,11 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
 
     /**
      * @param menuInfoVo
-     * description: 查询菜单列表并拼接成父子组结构
-     * author:      majf
-     * return:      java.util.List<com.alex.api.user.menuInfo.vo.MenuInfoVo>
-    */
+     *                   description: 查询菜单列表并拼接成父子组结构
+     *                   author: majf
+     *                   return:
+     *                   java.util.List<com.alex.api.user.menuInfo.vo.MenuInfoVo>
+     */
     @Override
     public List<MenuInfoVo> getList(MenuInfoVo menuInfoVo) {
         boolean isFullQuery = menuInfoVo != null && "1".equals(menuInfoVo.getStatus())
@@ -91,7 +92,8 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         // 有注解的 getList——否则非超管的一次直连调用会把被截断的子集写进全局缓存，
         // 污染其后 1 小时内所有用户（含超管、登录构建上下文）读到的菜单树。
         // 非全量查询（管理端按条件筛选列表）维持走 getList，保留数据范围隔离。
-        List<MenuInfoVo> list = isFullQuery ? menuInfoMapper.getListAll(menuInfoVo) : menuInfoMapper.getList(menuInfoVo);
+        List<MenuInfoVo> list = isFullQuery ? menuInfoMapper.getListAll(menuInfoVo)
+                : menuInfoMapper.getList(menuInfoVo);
         if (list == null || list.isEmpty()) {
             return null;
         }
@@ -139,9 +141,12 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     }
 
     /**
-     * RBAC-BE-MENU-004: load scoped flat list via annotated {@code getList}, then assemble children.
-     * Isolated from login cache {@code menu_all_tree}: never calls {@code getListAll} / Redis write.
-     * Roots: parentId null/0, or parent not present in the scoped result (orphan promotion).
+     * RBAC-BE-MENU-004: load scoped flat list via annotated {@code getList}, then
+     * assemble children.
+     * Isolated from login cache {@code menu_all_tree}: never calls
+     * {@code getListAll} / Redis write.
+     * Roots: parentId null/0, or parent not present in the scoped result (orphan
+     * promotion).
      */
     @Override
     public List<MenuInfoVo> getTree(MenuInfoVo menuInfoVo) {
@@ -271,7 +276,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         if (childMenuCount > 0) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "菜单存在下级菜单，不能删除:");
         }
-        menuInfoMapper.deleteBatchIds(idArr);
+        menuInfoMapper.deleteByIds(idArr);
         clearMenuCache();
         return true;
     }

@@ -6,21 +6,23 @@ import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.common.common.BaseVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 /**
- * description:  角色信息表Vo
- * author:       majf
- * createDate:   2024-01-14 21:56:18
- * version:      1.0.0
+ * description: 角色信息表Vo
+ * author: majf
+ * createDate: 2024-01-14 21:56:18
+ * version: 1.0.0
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode
 @ApiModel(value = "RoleInfoVo", description = "角色信息表Vo")
-public class RoleInfoVo extends BaseVo<RoleInfoVo>{
+public class RoleInfoVo extends BaseVo<RoleInfoVo> {
 
     @ApiModelProperty(value = "角色编码")
     private String roleCode;
@@ -41,13 +43,13 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo>{
     private Long permissionCount;
 
     @ApiModelProperty(value = "权限列表")
-    List<PermissionInfoVo> permissionList;
+    private List<PermissionInfoVo> permissionList;
 
     @ApiModelProperty(value = "角色权限列表")
-    List<RolePermissionInfoVo> rolePermissionInfoVoList;
+    private List<RolePermissionInfoVo> rolePermissionInfoVoList;
 
     @ApiModelProperty(value = "角色用户列表")
-    List<RoleUserInfoVo> roleUserInfoVoList;
+    private List<RoleUserInfoVo> roleUserInfoVoList;
 
     @ApiModelProperty(value = "绑定机构id列表（创建时可选；缺省则绑定登录用户有效机构）")
     private List<String> orgIds;

@@ -115,7 +115,8 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
         for (String permissionId : idArr) {
             assertPermissionAccessible(Long.valueOf(permissionId));
         }
-        // RBAC-BE-PERM-002: cascade-invalidate role-permission in the same TX as delete.
+        // RBAC-BE-PERM-002: cascade-invalidate role-permission in the same TX as
+        // delete.
         List<RolePermissionInfo> activeBindings = rolePermissionInfoService.list(
                 Wrappers.<RolePermissionInfo>lambdaQuery()
                         .in(RolePermissionInfo::getPermissionId, idArr)
@@ -130,7 +131,8 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
                 affectedRoleIds.add(row.getRoleId());
             }
         }
-        // permission_context clear for users on affected roles: route through shared helper.
+        // permission_context clear for users on affected roles: route through shared
+        // helper.
         Set<String> affectedUserIds = new HashSet<>();
         if (!affectedRoleIds.isEmpty()) {
             List<RoleUserInfo> boundUsers = roleUserInfoService.list(
@@ -144,7 +146,7 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
             }
         }
         permissionContextCacheService.invalidateAll(toLongUserIds(affectedUserIds));
-        permissionInfoMapper.deleteBatchIds(idArr);
+        permissionInfoMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -182,7 +184,8 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     }
 
     /**
-     * RBAC-BE-PERM-003: permissionCode must be non-empty and unique table-wide (update excludes self).
+     * RBAC-BE-PERM-003: permissionCode must be non-empty and unique table-wide
+     * (update excludes self).
      */
     private void assertPermissionCodeUnique(String permissionCode, Long excludeId) {
         if (StringUtils.isEmpty(permissionCode)) {
@@ -197,7 +200,8 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
     }
 
     /**
-     * Write-path ownership guard: non-super users must pass a scoped queryPermissionInfo
+     * Write-path ownership guard: non-super users must pass a scoped
+     * queryPermissionInfo
      * before update/delete. Null means outside data scope — never silent success.
      */
     private void assertPermissionAccessible(Long id) {

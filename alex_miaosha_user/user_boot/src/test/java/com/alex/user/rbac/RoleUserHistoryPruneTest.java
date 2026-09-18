@@ -40,8 +40,8 @@ public class RoleUserHistoryPruneTest {
             invalidHistory.add(invalidRow(id, base.plusMinutes(id)));
         }
 
-        PruneTestableRoleUserInfoService service =
-                new PruneTestableRoleUserInfoService(roleUserInfoMapper, invalidHistory);
+        PruneTestableRoleUserInfoService service = new PruneTestableRoleUserInfoService(roleUserInfoMapper,
+                invalidHistory);
 
         Boolean result = service.assignRoles(100L, Arrays.asList(2L, 3L));
 
@@ -49,7 +49,7 @@ public class RoleUserHistoryPruneTest {
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-        org.mockito.Mockito.verify(roleUserInfoMapper).deleteBatchIds(captor.capture());
+        org.mockito.Mockito.verify(roleUserInfoMapper).deleteByIds(captor.capture());
         Collection<Long> deletedIds = captor.getValue();
 
         assertEquals(5, deletedIds.size(), "must delete exactly the 5 oldest inactive rows (10 - keep 5)");
@@ -68,14 +68,14 @@ public class RoleUserHistoryPruneTest {
             invalidHistory.add(invalidRow(id, base.plusMinutes(id)));
         }
 
-        PruneTestableRoleUserInfoService service =
-                new PruneTestableRoleUserInfoService(roleUserInfoMapper, invalidHistory);
+        PruneTestableRoleUserInfoService service = new PruneTestableRoleUserInfoService(roleUserInfoMapper,
+                invalidHistory);
 
         Boolean result = service.assignRoles(100L, Collections.emptyList());
 
         assertTrue(Boolean.TRUE.equals(result), "assignRoles should still return true");
         org.mockito.Mockito.verify(roleUserInfoMapper, never())
-                .deleteBatchIds(org.mockito.ArgumentMatchers.any());
+                .deleteByIds(org.mockito.ArgumentMatchers.any());
     }
 
     private static RoleUserInfo invalidRow(Long id, LocalDateTime createTime) {

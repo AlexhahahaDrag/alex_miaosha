@@ -46,9 +46,9 @@ public class GatewayWebSecurityConfig {
     @Bean
     SecurityWebFilterChain webFluxSecurityFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .csrf(csrf -> csrf.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeExchange(authorizeExchange -> 
                     authorizeExchange
                         // AI Agent：安全加固：显式拒绝 /null/** 路径，防止 CVE-2025-22235 风险

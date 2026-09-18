@@ -44,8 +44,8 @@ public class OrgUserHistoryPruneTest {
             invalidHistory.add(invalidRow(id, base.plusMinutes(id)));
         }
 
-        PruneTestableOrgUserInfoService service =
-                new PruneTestableOrgUserInfoService(orgUserInfoMapper, invalidHistory);
+        PruneTestableOrgUserInfoService service = new PruneTestableOrgUserInfoService(orgUserInfoMapper,
+                invalidHistory);
 
         Boolean result = service.assignSingleOrg(100L, 20L);
 
@@ -53,7 +53,7 @@ public class OrgUserHistoryPruneTest {
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Collection<Long>> captor = ArgumentCaptor.forClass(Collection.class);
-        verify(orgUserInfoMapper).deleteBatchIds(captor.capture());
+        verify(orgUserInfoMapper).deleteByIds(captor.capture());
         Collection<Long> deletedIds = captor.getValue();
 
         assertEquals(5, deletedIds.size(), "must delete exactly the 5 oldest inactive rows (10 - keep 5)");
@@ -72,13 +72,13 @@ public class OrgUserHistoryPruneTest {
             invalidHistory.add(invalidRow(id, base.plusMinutes(id)));
         }
 
-        PruneTestableOrgUserInfoService service =
-                new PruneTestableOrgUserInfoService(orgUserInfoMapper, invalidHistory);
+        PruneTestableOrgUserInfoService service = new PruneTestableOrgUserInfoService(orgUserInfoMapper,
+                invalidHistory);
 
         Boolean result = service.assignSingleOrg(100L, 20L);
 
         assertTrue(Boolean.TRUE.equals(result), "assignSingleOrg should still return true");
-        verify(orgUserInfoMapper, never()).deleteBatchIds(org.mockito.ArgumentMatchers.any());
+        verify(orgUserInfoMapper, never()).deleteByIds(org.mockito.ArgumentMatchers.any());
     }
 
     private static OrgUserInfo invalidRow(Long id, LocalDateTime createTime) {
@@ -95,7 +95,7 @@ public class OrgUserHistoryPruneTest {
      * 只覆盖 pruning 相关的两个查询入口：
      * - listActiveAssignments：无当前有效行，避免干扰本测试关注点
      * - listInvalidHistory：返回预置的失效历史堆积数据
-     * save/updateById 走最小可用桩，deleteBatchIds 走真实 mock 以便断言调用参数。
+     * save/updateById 走最小可用桩，deleteByIds 走真实 mock 以便断言调用参数。
      */
     private static class PruneTestableOrgUserInfoService extends OrgUserInfoServiceImp {
 

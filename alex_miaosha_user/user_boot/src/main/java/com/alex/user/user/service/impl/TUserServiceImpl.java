@@ -159,8 +159,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (user != null && user.getId() != null) {
             applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
             user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
-            user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList() :
-                    user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
+            user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList()
+                    : user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
         }
         return user;
     }
@@ -169,7 +169,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Transactional(rollbackFor = Exception.class)
     public TUser addTUser(TUserVo tUserVo) {
         Map<String, Object> map = getStringObjectMap(tUserVo);
-        //校验username,mobile,email
+        // 校验username,mobile,email
         judgeField(map, null);
         TUser tUser = new TUser();
         BeanUtils.copyProperties(tUserVo, tUser);
@@ -215,7 +215,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (StringUtils.isNotEmpty(tUserVo.getMobile())) {
             map.put(SysConf.MOBILE, tUserVo.getMobile());
         }
-        //校验username,mobile,email
+        // 校验username,mobile,email
         judgeField(map, tUserVo.getId());
         TUser tUser = new TUser();
         BeanUtils.copyProperties(tUserVo, tUser);
@@ -268,7 +268,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     /**
      * C2 修复：校验请求体中要授予的 roleIds 是否可授予。
      * 1) 归属校验——非超管只能授予自己数据范围内可见的角色（复用已挂注解的 queryRoleInfo，
-     *    越权/不存在返回 null 即拒绝，文案含"无权"）；
+     * 越权/不存在返回 null 即拒绝，文案含"无权"）；
      * 2) 硬性规则——非超管一律不得授予 super_super 角色，即使该角色行恰好在其可见范围内。
      * 超管登录不受限制。
      */
@@ -356,7 +356,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         for (String userId : idArr) {
             assertUserAccessible(Long.valueOf(userId));
         }
-        tUserMapper.deleteBatchIds(idArr);
+        tUserMapper.deleteByIds(idArr);
         for (String userId : idArr) {
             userDeleteCleanupService.cleanupAfterUserDeleted(userId);
         }
@@ -364,26 +364,29 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     @Override
-    public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception {
+    public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember)
+            throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("1.参数校验与Redis检查");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new LoginException(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
         String ip = IpUtils.getIpAddr(request);
-        
+
         // 并行从远端 Redis 异步读取校验限制次数与登录信息，消减公网网络 RTT 延迟开销
         final String finalIp = ip;
-        CompletableFuture<String> limitCountFuture = CompletableFuture.supplyAsync(() -> 
-            redisUtils.get(LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + finalIp + RedisConstants.SEGMENTATION + username), 
-            asyncTaskExecutor);
-            
-        CompletableFuture<TUserVo> redisUserFuture = CompletableFuture.supplyAsync(() -> 
-            redisUtils.get(LoginKey.loginAdmin, finalIp + RedisConstants.SEGMENTATION + username, TUserVo.class), 
-            asyncTaskExecutor);
-            
+        CompletableFuture<String> limitCountFuture = CompletableFuture.supplyAsync(
+                () -> redisUtils.get(LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + finalIp
+                        + RedisConstants.SEGMENTATION + username),
+                asyncTaskExecutor);
+
+        CompletableFuture<TUserVo> redisUserFuture = CompletableFuture.supplyAsync(
+                () -> redisUtils.get(LoginKey.loginAdmin, finalIp + RedisConstants.SEGMENTATION + username,
+                        TUserVo.class),
+                asyncTaskExecutor);
+
         CompletableFuture.allOf(limitCountFuture, redisUserFuture).join();
-        
+
         String limitCount = null;
         TUserVo redisUser = null;
         try {
@@ -392,18 +395,20 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         } catch (Exception e) {
             log.error("并行读取 Redis 校验数据异常，进行安全降级", e);
         }
-        
+
         Map<String, Object> result = new HashMap<>();
         // 如果登录错误超过限制，抛出异常
         if (limitCount != null && !limitCount.isBlank()
                 && Integer.parseInt(limitCount) >= MAX_LOGIN_RETRY_LIMIT) {
             throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
-        // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture 闭包内，我们可直接在主线程安全使用它
+        // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture
+        // 闭包内，我们可直接在主线程安全使用它
         String headers = request.getHeader(audience.getTokenHeader());
         if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
             // 更新 token过期时间
-            long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+            long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond
+                    : audience.getExpiresSecond();
             refreshLoginPermissionContext(redisUser);
 
             // headers 为 uuidToken，先取出其对应的 barToken(jwt)
@@ -415,20 +420,28 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 final String finalBarToken = barToken;
                 final TUserVo finalRedisUser = redisUser;
                 final String finalLoginIp = ip;
-                
+
                 // 并行异步更新三大 Token 映射的过期时间，消减多段网络 RTT 的累积延迟
-                CompletableFuture<Void> updateAdminFuture = CompletableFuture.runAsync(() -> 
-                    redisUtils.setEx(LoginKey.loginAdmin, finalLoginIp + RedisConstants.SEGMENTATION + username, JSONObject.toJSONString(finalRedisUser, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS), 
-                    asyncTaskExecutor);
-                    
-                CompletableFuture<Void> updateUuidFuture = CompletableFuture.runAsync(() -> 
-                    redisUtils.setEx(LoginKey.loginUuid, headers, finalBarToken, expiration, TimeUnit.SECONDS), 
-                    asyncTaskExecutor);
-                    
-                CompletableFuture<Void> updateTokenFuture = CompletableFuture.runAsync(() -> 
-                    redisUtils.setEx(LoginKey.loginToken, finalBarToken, JSONObject.toJSONString(finalRedisUser, SerializerFeature.DisableCircularReferenceDetect), expiration, TimeUnit.SECONDS), 
-                    asyncTaskExecutor);
-                    
+                CompletableFuture<Void> updateAdminFuture = CompletableFuture.runAsync(
+                        () -> redisUtils.setEx(LoginKey.loginAdmin,
+                                finalLoginIp + RedisConstants.SEGMENTATION + username,
+                                JSONObject.toJSONString(finalRedisUser,
+                                        SerializerFeature.DisableCircularReferenceDetect),
+                                expiration, TimeUnit.SECONDS),
+                        asyncTaskExecutor);
+
+                CompletableFuture<Void> updateUuidFuture = CompletableFuture.runAsync(
+                        () -> redisUtils.setEx(LoginKey.loginUuid, headers, finalBarToken, expiration,
+                                TimeUnit.SECONDS),
+                        asyncTaskExecutor);
+
+                CompletableFuture<Void> updateTokenFuture = CompletableFuture.runAsync(
+                        () -> redisUtils.setEx(LoginKey.loginToken, finalBarToken,
+                                JSONObject.toJSONString(finalRedisUser,
+                                        SerializerFeature.DisableCircularReferenceDetect),
+                                expiration, TimeUnit.SECONDS),
+                        asyncTaskExecutor);
+
                 CompletableFuture.allOf(updateAdminFuture, updateUuidFuture, updateTokenFuture).join();
 
                 log.info("用户 {} 已登录，更新token过期时间，新过期时间：{} 秒", username, expiration);
@@ -442,7 +455,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         stopWatch.start("2.数据库查询用户");
         TUser admin;
 
-        // 1. 优先使用 username 精确查询（此字段拥有索引 user_uesrname_index 与 t_username_status_IDX，查询极其高效）
+        // 1. 优先使用 username 精确查询（此字段拥有索引 user_uesrname_index 与
+        // t_username_status_IDX，查询极其高效）
         LambdaQueryWrapper<TUser> queryByUsername = Wrappers.<TUser>lambdaQuery()
                 .eq(TUser::getStatus, EStatus.ENABLE.getCode())
                 .eq(TUser::getUsername, username)
@@ -472,36 +486,40 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             LambdaQueryWrapper<TUser> fallbackQuery = Wrappers.<TUser>lambdaQuery()
                     .eq(TUser::getStatus, EStatus.ENABLE.getCode())
                     .last(SysConf.LIMIT_ONE);
-            fallbackQuery.and(qr -> qr.eq(TUser::getEmail, username).or().eq(TUser::getMobile, username).or().eq(TUser::getUsername, username));
+            fallbackQuery.and(qr -> qr.eq(TUser::getEmail, username).or().eq(TUser::getMobile, username).or()
+                    .eq(TUser::getUsername, username));
             admin = this.getOne(fallbackQuery);
         }
 
         if (admin == null) {
-            //设置错误登录次数
-            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            // 设置错误登录次数
+            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
+                    String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         stopWatch.stop();
 
         stopWatch.start("3.BCrypt密码校验");
-        //对密码进行加盐加密验证，采用SHA-256 + 随机盐【动态加盐】 + 密钥对密码进行加密
+        // 对密码进行加盐加密验证，采用SHA-256 + 随机盐【动态加盐】 + 密钥对密码进行加密
         boolean isPassword = BCRYPT_ENCODER.matches(password + admin.getUsername(), admin.getPassword());
         if (!isPassword) {
-            //密码错误，返回提示信息
-            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
+            // 密码错误，返回提示信息
+            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
+                    String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         stopWatch.stop();
 
         stopWatch.start("4.保存登录日志与JWT签发");
         String uuid = StringUtils.getUUID();
         result.put(SysConf.TOKEN, uuid);
-        //保存登录信息
+        // 保存登录信息
         TUserLogin userLogin = saveLoginLog(request, admin, uuid, ip, isRemember);
-        //不返回密码到前端
+        // 不返回密码到前端
         TUserVo tUserVo = new TUserVo();
         BeanUtils.copyProperties(admin, tUserVo, "password");
         // 在维护一张表，用于 uuid - token 互相转换
         long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration, TimeUnit.SECONDS);
+        redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration,
+                TimeUnit.SECONDS);
         stopWatch.stop();
 
         stopWatch.start("5.异步获取头像");
@@ -535,22 +553,25 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             String userJson = mapper.writeValueAsString(tUserVo);
             final String finalUserJson = userJson;
             final String finalWriteIp = ip;
-            
+
             // 并行异步写入远程 Redis 节点，将两次串行写网络 RTT 及带宽限制时间缩短一半
-            CompletableFuture<Void> writeAdminFuture = CompletableFuture.runAsync(() -> 
-                redisUtils.setEx(LoginKey.loginAdmin, finalWriteIp + RedisConstants.SEGMENTATION + username, finalUserJson, expiration, TimeUnit.SECONDS), 
-                asyncTaskExecutor);
-                
-            CompletableFuture<Void> writeTokenFuture = CompletableFuture.runAsync(() -> 
-                redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), finalUserJson, expiration, TimeUnit.SECONDS), 
-                asyncTaskExecutor);
-                
+            CompletableFuture<Void> writeAdminFuture = CompletableFuture.runAsync(
+                    () -> redisUtils.setEx(LoginKey.loginAdmin, finalWriteIp + RedisConstants.SEGMENTATION + username,
+                            finalUserJson, expiration, TimeUnit.SECONDS),
+                    asyncTaskExecutor);
+
+            CompletableFuture<Void> writeTokenFuture = CompletableFuture.runAsync(
+                    () -> redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), finalUserJson, expiration,
+                            TimeUnit.SECONDS),
+                    asyncTaskExecutor);
+
             CompletableFuture.allOf(writeAdminFuture, writeTokenFuture).join();
         } catch (Exception e) {
             log.error("并行写入用户 Redis 缓存失败", e);
             // 降级使用 FastJSON
             String userJson = JSONObject.toJSONString(tUserVo, SerializerFeature.DisableCircularReferenceDetect);
-            redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, userJson, expiration, TimeUnit.SECONDS);
+            redisUtils.setEx(LoginKey.loginAdmin, ip + RedisConstants.SEGMENTATION + username, userJson, expiration,
+                    TimeUnit.SECONDS);
             redisUtils.setEx(LoginKey.loginToken, userLogin.getToken(), userJson, expiration, TimeUnit.SECONDS);
         }
         stopWatch.stop();
@@ -612,7 +633,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     public static void completeLoginResponse(TUserVo userVo, CompletableFuture<Void> avatarFuture,
-                                             UserPermissionContextVo permissionContext) {
+            UserPermissionContextVo permissionContext) {
         // Avatar enrichment is fire-and-forget; do not block login on OSS
         applyPermissionContext(userVo, permissionContext);
     }
@@ -633,11 +654,12 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         userVo.setMenuInfoVoList(context.getMenuList());
     }
 
-    private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip, Boolean isRemember) {
+    private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip,
+            Boolean isRemember) {
         String roleName = "";
         long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
-        String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(), audience.getName()
-                , expiration * 1000, audience.getBase64Secret());
+        String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(),
+                audience.getName(), expiration * 1000, audience.getBase64Secret());
         Map<String, String> map = new HashMap<>();
         String location = null;
         try {
@@ -676,7 +698,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 异步添加在线用户到 redis中
         onlineUserService.addOnlineUserAsync(userLogin, expiration);
         // 设置认证信息到 SecurityContextHolder
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin, userLogin, new ArrayList<>());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLogin,
+                userLogin, new ArrayList<>());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         return userLogin;
@@ -736,7 +759,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Override
     public Result<Boolean> logout(HttpServletRequest request) {
         String uuidToken = request.getHeader(audience.getTokenHeader());
-        if (StringUtils.isEmpty(uuidToken) || "undefined".equalsIgnoreCase(uuidToken) || "null".equalsIgnoreCase(uuidToken)) {
+        if (StringUtils.isEmpty(uuidToken) || "undefined".equalsIgnoreCase(uuidToken)
+                || "null".equalsIgnoreCase(uuidToken)) {
             return Result.error(ResultEnum.PARAM_ERROR);
         } else {
             // 获取在线用户信息
@@ -753,8 +777,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
      * param userLogin
      * param expiration
      * description: 添加在线用户
-     * author:      alex
-     * return:      void
+     * author: alex
+     * return: void
      */
     @Override
     public void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception {
@@ -769,15 +793,17 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .loginTime(DateUtils.getTimeStr(userLogin.getLastLoginTime()))
                 .roleName(null)
                 .username(userLogin.getUsername())
-                .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.SECONDS)))
+                .expireTime(
+                        DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.SECONDS)))
                 .build();
-        //从 Redis中获取IP来源
+        // 从 Redis中获取IP来源
         String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLoginIp());
         if (StringUtils.isEmpty(jsonResult)) {
             String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp());
             if (StringUtils.isNotEmpty(addresses)) {
                 onlineAdmin.setLoginLocation(addresses);
-                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24, TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24,
+                        TimeUnit.SECONDS);
             }
         } else {
             onlineAdmin.setLoginLocation(jsonResult);
@@ -843,7 +869,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         }
         try {
             Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(userVo.getAvatar()));
-            if (fileInfo != null && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode()) && fileInfo.getData() != null && !fileInfo.getData().isEmpty()) {
+            if (fileInfo != null && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode()) && fileInfo.getData() != null
+                    && !fileInfo.getData().isEmpty()) {
                 FileInfoVo vo = fileInfo.getData().get(0);
                 userVo.setAvatarUrl(vo.getPreUrl());
                 userVo.setAvatarThumbnailUrl(vo.getPreThumbnailUrl());
@@ -866,7 +893,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         }
         try {
             Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
-            if (result != null && SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null && !result.getData().isEmpty()) {
+            if (result != null && SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null
+                    && !result.getData().isEmpty()) {
                 Map<Long, List<FileInfoVo>> fileMap = result.getData()
                         .parallelStream()
                         .collect(Collectors.groupingBy(FileInfoVo::getId));
@@ -886,7 +914,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     @Override
     public Boolean authToken(String uuidToken) {
-        if (StringUtils.isEmpty(uuidToken) || "undefined".equalsIgnoreCase(uuidToken) || "null".equalsIgnoreCase(uuidToken)) {
+        if (StringUtils.isEmpty(uuidToken) || "undefined".equalsIgnoreCase(uuidToken)
+                || "null".equalsIgnoreCase(uuidToken)) {
             return false;
         }
         String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
@@ -896,7 +925,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 私钥
         String base64Secret = audience.getBase64Secret();
         String token = barToken.substring(audience.getTokenHead().length());
-        //校验 token
+        // 校验 token
         if (StringUtils.isEmpty(token) || jwtTokenUtils.isExpiration(token, base64Secret)) {
             return false;
         }
@@ -925,8 +954,6 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return true;
     }
 
-
-
     public AuthRequest getAuthRequest(String appName) {
         return switch (appName) {
             case "wechat_mp" -> new AuthWeChatMpRequest(AuthConfig.builder()
@@ -941,11 +968,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                     .scopes(Arrays.asList(
                             AuthBaiduScope.BASIC.getScope(),
                             AuthBaiduScope.SUPER_MSG.getScope(),
-                            AuthBaiduScope.NETDISK.getScope()
-                    ))
+                            AuthBaiduScope.NETDISK.getScope()))
                     .build());
             default -> null;
         };
     }
 }
-

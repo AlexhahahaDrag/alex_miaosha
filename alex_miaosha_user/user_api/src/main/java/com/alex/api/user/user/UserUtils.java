@@ -6,7 +6,7 @@ import com.alex.common.exception.LoginException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
- *description:  用户工具类
- *author:       alex
- *createDate:   2022/8/18 21:46
- *version:      1.0.0
+ * description: 用户工具类
+ * author: alex
+ * createDate: 2022/8/18 21:46
+ * version: 1.0.0
  */
 @Component
 @RequiredArgsConstructor
@@ -32,9 +32,9 @@ public class UserUtils {
 
     /**
      * description: 根据request中的token获取当前用户的id
-     * author:      alex
-     * return:      java.lang.Long
-    */
+     * author: alex
+     * return: java.lang.Long
+     */
     public Long getUserId(HttpServletRequest request) throws LoginException {
         String authInfo = request.getHeader("Authorization");
         if (StringUtils.isEmpty(authInfo)) {
@@ -53,26 +53,27 @@ public class UserUtils {
 
     /**
      * description: 获取当前登录人信息
-     * author:      alex
-     * return:      com.alex.api.user.user.vo.TUserVo
-    */
+     * author: alex
+     * return: com.alex.api.user.user.vo.TUserVo
+     */
     public TUserVo getLoginUser() {
         if (RequestContextHolder.getRequestAttributes() == null) {
             return null;
         }
-        HttpServletRequest request =((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) Objects
+                .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String uuidToken = request.getHeader("Authorization");
         if (StringUtils.isEmpty(uuidToken)) {
             return null;
         }
         String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
         if (barToken == null) {
-            return  null;
+            return null;
         }
         String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
         if (StringUtils.isEmpty(onlineAdminStr)) {
             return null;
         }
-        return JSONObject.parseObject(onlineAdminStr, TUserVo.class);
+        return JSON.parseObject(onlineAdminStr, TUserVo.class);
     }
 }

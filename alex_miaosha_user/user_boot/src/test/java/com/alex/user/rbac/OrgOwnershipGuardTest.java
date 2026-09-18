@@ -28,7 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * RBAC-BE-ORG-001: write-path ownership guard must go through scoped queryOrgInfo.
+ * RBAC-BE-ORG-001: write-path ownership guard must go through scoped
+ * queryOrgInfo.
  */
 @ExtendWith(MockitoExtension.class)
 public class OrgOwnershipGuardTest {
@@ -81,7 +82,7 @@ public class OrgOwnershipGuardTest {
                 "RBAC-BE-ORG-001: delete must reject orgs outside data scope");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "exception message must contain 无权, actual=" + ex.getMsg());
-        verify(orgInfoMapper, never()).deleteBatchIds(any());
+        verify(orgInfoMapper, never()).deleteByIds(any());
     }
 
     @Test

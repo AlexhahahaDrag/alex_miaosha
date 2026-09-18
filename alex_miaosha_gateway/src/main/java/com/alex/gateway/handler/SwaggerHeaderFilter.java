@@ -9,9 +9,9 @@ import org.springframework.web.server.ServerWebExchange;
 
 /**
  * description:
- * author:       majf
- * createDate:   2022/10/9 16:17
- * version:      1.0.0
+ * author: majf
+ * createDate: 2022/10/9 16:17
+ * version: 1.0.0
  */
 @Component
 public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory<SwaggerHeaderFilter.Config> {

@@ -12,5 +12,5 @@ public class CommonKey extends BasePrefix {
         super(prefix);
     }
 
-    public static CommonKey commonKey = new CommonKey("common");
+    public static final CommonKey commonKey = new CommonKey("common");
 }

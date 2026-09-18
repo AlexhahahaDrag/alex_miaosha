@@ -7,11 +7,11 @@ Packaging: P1 plan **R** — Wave1 = A + B; Wave2 (E/D/C) separate
 
 Confirmed choices:
 
-| Item | Choice |
-|------|--------|
-| Delete user | **A1** — soft-delete user + invalidate org/role + clear permission_context + kick session |
-| Data permission | **B1** — reuse handler roles (super / admin* / user); Org needs ORG_ID scope |
-| Order | A → B |
+| Item            | Choice                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| Delete user     | **A1** — soft-delete user + invalidate org/role + clear permission_context + kick session |
+| Data permission | **B1** — reuse handler roles (super / admin\* / user); Org needs ORG_ID scope             |
+| Order           | A → B                                                                                     |
 
 ---
 
@@ -40,7 +40,7 @@ Confirmed choices:
 
 Transactional (`@Transactional(rollbackFor = Exception.class)` on `deleteTUser`):
 
-1. Soft-delete users via existing `tUserMapper.deleteBatchIds` (`@TableLogic`).
+1. Soft-delete users via existing `tUserMapper.deleteByIds` (`@TableLogic`).
 2. Invalidate active org assignments:
    - `OrgUserInfo` where `userId = id` and `status = VALID` → `status = INVALID` (`updateById`).
 3. Invalidate active role assignments:
@@ -93,19 +93,19 @@ Default `USER_IDS` keeps existing mappers unchanged.
 
 ### 4.3 Handler behavior
 
-| Role | `USER_IDS` | `ORG_ID` |
-|------|------------|----------|
-| super* | no filter | no filter |
-| admin* | `field IN (org user_ids subquery)` | `field = loginUser.orgInfoVo.id` (if org missing → degrade to deny-all or user-self; **prefer:** same as today degrade to `getUserWhere` only when USER_IDS; for ORG_ID with null org → `1=0` / impossible equals) |
-| user / default | `field = loginUser.id` | `field = loginUser.orgInfoVo.id` (null org → no rows) |
+| Role           | `USER_IDS`                         | `ORG_ID`                                                                                                                                                                                                           |
+| -------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| super\*        | no filter                          | no filter                                                                                                                                                                                                          |
+| admin\*        | `field IN (org user_ids subquery)` | `field = loginUser.orgInfoVo.id` (if org missing → degrade to deny-all or user-self; **prefer:** same as today degrade to `getUserWhere` only when USER_IDS; for ORG_ID with null org → `1=0` / impossible equals) |
+| user / default | `field = loginUser.id`             | `field = loginUser.orgInfoVo.id` (null org → no rows)                                                                                                                                                              |
 
 Optional hardening (in scope): org-user subquery add `status = '1' AND is_delete = 0`.
 
 ### 4.4 Mapper annotations
 
-| Mapper method | Annotation |
-|---------------|------------|
-| `OrgInfoMapper.getPage` | `@DataPermission(table = "t_org_info", field = "id", scope = Scope.ORG_ID)` |
+| Mapper method            | Annotation                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| `OrgInfoMapper.getPage`  | `@DataPermission(table = "t_org_info", field = "id", scope = Scope.ORG_ID)`          |
 | `RoleInfoMapper.getPage` | `@DataPermission(table = "t_role_info", field = "operator", scope = Scope.USER_IDS)` |
 
 Detail / add / update / delete: **out of Wave1** (same as historical user-list focus on page).

@@ -12,6 +12,10 @@ import org.springframework.context.ApplicationContext;
  */
 public class AutowiredBean {
 
+    private AutowiredBean() {
+        /* This utility class should not be instantiated */
+    }
+
     @Getter
     private static ApplicationContext applicationContext;
 

@@ -31,7 +31,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * RBAC-BE-PERM-002: permission delete must cascade-invalidate role-permission rows
+ * RBAC-BE-PERM-002: permission delete must cascade-invalidate role-permission
+ * rows
  * and clear permission_context for users on affected roles.
  */
 @ExtendWith(MockitoExtension.class)
@@ -57,8 +58,7 @@ public class PermissionDeleteCascadeTest {
                 userUtils,
                 rolePermissionInfoService,
                 roleUserInfoService,
-                permissionContextCacheService
-        );
+                permissionContextCacheService);
     }
 
     @Test
@@ -70,14 +70,14 @@ public class PermissionDeleteCascadeTest {
                 .thenReturn(Collections.singletonList(active));
         when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
         when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
-        when(permissionInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(permissionInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deletePermissionInfo("100"));
 
         assertEquals(SysConf.INVALID_STATUS, active.getStatus(),
                 "RBAC-BE-PERM-002: active role-permission rows must be status-invalidated");
         verify(rolePermissionInfoService).updateById(active);
-        verify(permissionInfoMapper).deleteBatchIds(anyList());
+        verify(permissionInfoMapper).deleteByIds(anyList());
     }
 
     @Test
@@ -92,12 +92,12 @@ public class PermissionDeleteCascadeTest {
         RoleUserInfo boundUser = roleUser(9L, "200", "55", SysConf.VALID_STATUS);
         when(roleUserInfoService.list(any(Wrapper.class)))
                 .thenReturn(Collections.singletonList(boundUser));
-        when(permissionInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(permissionInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deletePermissionInfo("100"));
 
         verify(permissionContextCacheService).invalidateAll(Collections.singleton(55L));
-        verify(permissionInfoMapper).deleteBatchIds(anyList());
+        verify(permissionInfoMapper).deleteByIds(anyList());
     }
 
     @Test

@@ -41,12 +41,12 @@ import java.util.concurrent.ExecutionException;
  * description: 过滤器打印请求地址
  *
  * @SneakyThrows 它是lombok包下的注解 并且继承了Throwable
- * <p>
- * 作用 是为了用try{}catch{}捕捉异常
- * 添加之后会在  代码编译时 自动捕获异常
- * author: majf
- * createDate: 2022/7/29 14:57
- * version: 1.0.0
+ *               <p>
+ *               作用 是为了用try{}catch{}捕捉异常
+ *               添加之后会在 代码编译时 自动捕获异常
+ *               author: majf
+ *               createDate: 2022/7/29 14:57
+ *               version: 1.0.0
  */
 @Component
 @Slf4j
@@ -54,7 +54,7 @@ import java.util.concurrent.ExecutionException;
 public class GatewayFilter implements GlobalFilter, Ordered {
 
     private final GatewayAudience audience;
-    
+
     private final EncryptionUtils encryptionUtils;
 
     private static final PathMatcher antPathMatcher = new AntPathMatcher();
@@ -80,8 +80,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             "application/vnd.ms-powerpoint",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             // 通用二进制文件
-            "application/octet-stream"
-    );
+            "application/octet-stream");
 
     // 需要跳过加密的URL路径模式（文件下载、导出等接口）
     private static final java.util.Set<String> FILE_DOWNLOAD_PATHS = java.util.Set.of(
@@ -93,8 +92,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             "**/*.xls",
             "**/*.pdf",
             "**/*.doc",
-            "**/*.docx"
-    );
+            "**/*.docx");
 
     // SSE 流式响应路径，跳过加密缓冲
     private final GatewaySsePathMatcher ssePathMatcher = new GatewaySsePathMatcher();
@@ -111,7 +109,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 }
             }
         }
-        //白名单校验路径
+        // 白名单校验路径
         if (audience.getWhiteList() != null && !audience.getWhiteList().isEmpty()) {
             for (String white : audience.getWhiteList()) {
                 if (antPathMatcher.match(white, path)) {
@@ -121,7 +119,6 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         }
         log.info("当前请求地址：{}", path);
         ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse response = exchange.getResponse();
         // 得到请求头信息authorization 信息
         String token = Optional.of(request)
                 .map(HttpMessage::getHeaders)
@@ -130,11 +127,10 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         UserApi userApi = AutowiredBean.getBean(UserApi.class);
         CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> {
-                    // 复制主线程的 线程共享数据
-                    RequestContextHolder.setRequestAttributes(attributes);
-                    return userApi.authToken(token);
-                }
-        ).exceptionally(e -> {
+            // 复制主线程的 线程共享数据
+            RequestContextHolder.setRequestAttributes(attributes);
+            return userApi.authToken(token);
+        }).exceptionally(e -> {
             log.info("认证失败：{}", e.getMessage());
             e.getStackTrace();
             return Result.error("403", "认证失败");
@@ -143,11 +139,15 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         Boolean result;
         try {
             result = Optional.ofNullable(completableFuture.get().getData()).orElse(false);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            log.error("获取认证结果被中断", e);
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
             log.error("获取认证结果失败", e);
             throw new RuntimeException(e);
         }
-        return result ? secretOut(exchange, chain) : out(exchange);
+        return Boolean.TRUE.equals(result) ? secretOut(exchange, chain) : out(exchange);
     }
 
     /**
@@ -163,15 +163,17 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     /**
      * 判断响应是否为文件
      * 通过Content-Type和URL路径双重判断
+     * 
      * @param response 响应对象
-     * @param path 请求路径
+     * @param path     请求路径
      * @return true表示是文件，需要跳过加密
      */
     private boolean isFileResponse(ServerHttpResponse response, String path) {
         // 方式1：通过Content-Type判断
-        String contentType = response.getHeaders().getContentType() != null ?
-                response.getHeaders().getContentType().toString().toLowerCase() : "";
-        
+        String contentType = response.getHeaders().getContentType() != null
+                ? response.getHeaders().getContentType().toString().toLowerCase()
+                : "";
+
         // 检查Content-Type是否属于文件类型
         if (!contentType.isEmpty()) {
             for (String fileType : FILE_CONTENT_TYPES) {
@@ -181,7 +183,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 }
             }
         }
-        
+
         // 方式2：通过URL路径判断（备用方案）
         // 如果Content-Type判断不出，则通过路径判断
         for (String pattern : FILE_DOWNLOAD_PATHS) {
@@ -190,7 +192,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -233,10 +235,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         message.addProperty("data", "请先登录！");
         byte[] bits = encryptionUtils.encryptByVersion(
                 JSONObject.toJSONString(message.toString()),
-                isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0
-        );
+                isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0);
         DataBuffer buffer = response.bufferFactory().wrap(bits);
-        //指定编码，否则在浏览器中会中文乱码
+        // 指定编码，否则在浏览器中会中文乱码
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         return response.writeWith(Mono.just(buffer));
     }
@@ -247,7 +248,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getPath().toString();
         String clientCryptoVersion = exchange.getRequest().getHeaders().getFirst(EncryptionUtils.HEADER_CRYPTO_VERSION);
         boolean isV2 = EncryptionUtils.VERSION_2_0.equalsIgnoreCase(clientCryptoVersion);
-        
+
         ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
             @NotNull
             @Override
@@ -257,7 +258,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                     log.info("跳过响应加密处理：{}", path);
                     return super.writeWith(body);
                 }
-                
+
                 // 协议协商：若客户端请求携带 2.0，响应头回写 2.0
                 if (isV2) {
                     getDelegate().getHeaders().set(EncryptionUtils.HEADER_CRYPTO_VERSION, EncryptionUtils.VERSION_2_0);
@@ -276,8 +277,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         try {
                             uppedContent = encryptionUtils.encryptByVersion(
                                     JSONObject.toJSONString(s),
-                                    isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0
-                            );
+                                    isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0);
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;

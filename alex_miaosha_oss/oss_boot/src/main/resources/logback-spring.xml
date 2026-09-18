@@ -30,7 +30,7 @@
         <withJansi>true</withJansi>
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            <charset>${console.encoding:-${sun.stdout.encoding:-GBK}}</charset>
+            <charset>GBK</charset>
         </encoder>
     </appender>
 

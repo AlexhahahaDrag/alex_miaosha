@@ -31,7 +31,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * RBAC-BE-PERM-001: write-path ownership guard must go through scoped queryPermissionInfo.
+ * RBAC-BE-PERM-001: write-path ownership guard must go through scoped
+ * queryPermissionInfo.
  */
 @ExtendWith(MockitoExtension.class)
 public class PermissionOwnershipGuardTest {
@@ -56,8 +57,7 @@ public class PermissionOwnershipGuardTest {
                 userUtils,
                 rolePermissionInfoService,
                 roleUserInfoService,
-                permissionContextCacheService
-        );
+                permissionContextCacheService);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class PermissionOwnershipGuardTest {
                 "RBAC-BE-PERM-001: delete must reject permissions outside data scope");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "exception message must contain 无权, actual=" + ex.getMsg());
-        verify(permissionInfoMapper, never()).deleteBatchIds(any());
+        verify(permissionInfoMapper, never()).deleteByIds(any());
     }
 
     @Test

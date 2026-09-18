@@ -9,15 +9,11 @@ import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.config.s3.BaseS3Template;
 import com.alex.oss.storage.service.FileStorageService;
-import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -55,7 +51,8 @@ public abstract class AbstractS3FileService implements FileStorageService {
     }
 
     @Override
-    public FileInfoVo uploadFile(MultipartFile file, String type, Boolean isThumbnail, Boolean isNormal) throws FileException {
+    public FileInfoVo uploadFile(MultipartFile file, String type, Boolean isThumbnail, Boolean isNormal)
+            throws FileException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         FileInfoVo fileVo = new FileInfoVo();
@@ -75,12 +72,14 @@ public abstract class AbstractS3FileService implements FileStorageService {
 
         try {
             if (Boolean.TRUE.equals(isThumbnail)) {
-                Map<String, String> stringStringMap = getTemplate().thumbnail(bucketName, filename, file.getInputStream(), file.getContentType());
+                Map<String, String> stringStringMap = getTemplate().thumbnail(bucketName, filename,
+                        file.getInputStream(), file.getContentType());
                 fileVo.setThumbnailUrl(stringStringMap.get("url"));
             }
             if (Boolean.TRUE.equals(isNormal)) {
                 // 明确传入 file.getSize() 作为对象长度，避免使用 inputStream.available() 导致的大文件截断
-                Map<String, String> upload = getTemplate().upload(bucketName, filename, file.getInputStream(), file.getSize(), file.getContentType());
+                Map<String, String> upload = getTemplate().upload(bucketName, filename, file.getInputStream(),
+                        file.getSize(), file.getContentType());
                 fileVo.setUrl(upload.get("url"));
             }
         } catch (Exception e) {
@@ -88,7 +87,8 @@ public abstract class AbstractS3FileService implements FileStorageService {
             throw new FileException(ResultEnum.IMAGE_UPLOAD_FAIL, e.getMessage());
         }
         stopWatch.stop();
-        log.info("[{}] 上传耗时：{} ms, 桶: {}, 路径: {}", getFileSystemCode(), stopWatch.getTotalTimeMillis(), bucketName, filename);
+        log.info("[{}] 上传耗时：{} ms, 桶: {}, 路径: {}", getFileSystemCode(), stopWatch.getTotalTimeMillis(), bucketName,
+                filename);
         return fileVo;
     }
 
@@ -152,7 +152,8 @@ public abstract class AbstractS3FileService implements FileStorageService {
             if (normalizedType.endsWith("-bucket") && isValidBucketName(normalizedType)) {
                 return normalizedType;
             }
-            // 3. 规范化动态组装为 normalizedType + "-bucket"，并校验 S3 DNS 合规性 (例如 "order" -> "order-bucket")
+            // 3. 规范化动态组装为 normalizedType + "-bucket"，并校验 S3 DNS 合规性 (例如 "order" ->
+            // "order-bucket")
             String dynamicBucket = normalizedType + "-bucket";
             if (isValidBucketName(dynamicBucket)) {
                 return dynamicBucket;

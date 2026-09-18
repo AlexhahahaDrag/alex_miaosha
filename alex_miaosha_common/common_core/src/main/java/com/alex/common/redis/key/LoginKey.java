@@ -12,17 +12,17 @@ public class LoginKey extends BasePrefix {
         super(prefix);
     }
 
-    public static LoginKey loginKey = new LoginKey("login:in");
+    public static final LoginKey loginKey = new LoginKey("login:in");
 
-    public static LoginKey loginLimitCount = new LoginKey("login:limit_count");
+    public static final LoginKey loginLimitCount = new LoginKey("login:limit_count");
 
-    public static LoginKey loginUuid = new LoginKey("login:uuid");
+    public static final LoginKey loginUuid = new LoginKey("login:uuid");
 
-    public static LoginKey loginToken = new LoginKey("login:token");
+    public static final LoginKey loginToken = new LoginKey("login:token");
 
-    public static LoginKey loginAdmin = new LoginKey("login:admin");
+    public static final LoginKey loginAdmin = new LoginKey("login:admin");
 
-    public static LoginKey loginIpSource = new LoginKey("login:ip_source");
+    public static final LoginKey loginIpSource = new LoginKey("login:ip_source");
 
-    public static LoginKey loginOnlineUser = new LoginKey("login:online_user");
+    public static final LoginKey loginOnlineUser = new LoginKey("login:online_user");
 }

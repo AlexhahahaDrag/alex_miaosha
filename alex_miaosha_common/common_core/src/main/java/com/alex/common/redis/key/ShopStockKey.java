@@ -6,5 +6,5 @@ public class ShopStockKey extends BasePrefix {
         super(prefix);
     }
 
-    public static ShopStockKey shopStockKey = new ShopStockKey("shopStock");
+    public static final ShopStockKey shopStockKey = new ShopStockKey("shopStock");
 }

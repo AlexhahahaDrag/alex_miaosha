@@ -79,8 +79,7 @@ public class RoleDeleteCascadeTest {
                 userUtils,
                 roleOrgInfoService,
                 orgUserInfoService,
-                orgSubtreeLookup
-        );
+                orgSubtreeLookup);
     }
 
     @Test
@@ -94,14 +93,14 @@ public class RoleDeleteCascadeTest {
         when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
         when(roleOrgInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
         when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
-        when(roleInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteRoleInfo("200"));
 
         assertEquals(SysConf.INVALID_STATUS, active.getStatus(),
                 "RBAC-BE-ROLE-002: active role-permission rows must be status-invalidated");
         verify(rolePermissionInfoService).updateById(active);
-        verify(roleInfoMapper).deleteBatchIds(anyList());
+        verify(roleInfoMapper).deleteByIds(anyList());
     }
 
     @Test
@@ -115,14 +114,14 @@ public class RoleDeleteCascadeTest {
                 .thenReturn(Collections.singletonList(activeOrg));
         when(roleOrgInfoService.updateById(any(RoleOrgInfo.class))).thenReturn(true);
         when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
-        when(roleInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteRoleInfo("200"));
 
         assertEquals(SysConf.INVALID_STATUS, activeOrg.getStatus(),
                 "Task 5: active role-org rows must be status-invalidated on delete");
         verify(roleOrgInfoService).updateById(activeOrg);
-        verify(roleInfoMapper).deleteBatchIds(anyList());
+        verify(roleInfoMapper).deleteByIds(anyList());
     }
 
     @Test
@@ -137,13 +136,14 @@ public class RoleDeleteCascadeTest {
         verify(rolePermissionInfoService, never()).list(any(Wrapper.class));
         verify(rolePermissionInfoService, never()).updateById(any(RolePermissionInfo.class));
         verify(rolePermissionInfoService, never()).assignPermissions(any(), anyList());
-        verify(roleInfoMapper, never()).deleteBatchIds(anyList());
+        verify(roleInfoMapper, never()).deleteByIds(anyList());
     }
 
     @Test
     void deleteRoleInfo_invalidatesLeftoverRoleUsers_andClearsPermissionContext() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        // Guard passed (count==0) but dirty leftover valid row still present — harden path.
+        // Guard passed (count==0) but dirty leftover valid row still present — harden
+        // path.
         when(roleUserInfoService.count(any(Wrapper.class))).thenReturn(0L);
         when(rolePermissionInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
         when(roleOrgInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
@@ -152,7 +152,7 @@ public class RoleDeleteCascadeTest {
         when(roleUserInfoService.list(any(Wrapper.class)))
                 .thenReturn(Collections.singletonList(leftover));
         when(roleUserInfoService.updateById(any(RoleUserInfo.class))).thenReturn(true);
-        when(roleInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteRoleInfo("200"));
 

@@ -29,14 +29,15 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- * description:  用户角色信息表服务实现类
- * author:       majf
- * createDate:   2024-01-15 15:12:07
- * version:      1.0.0
+ * description: 用户角色信息表服务实现类
+ * author: majf
+ * createDate: 2024-01-15 15:12:07
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
-public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, RoleUserInfo> implements RoleUserInfoService {
+public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, RoleUserInfo>
+        implements RoleUserInfoService {
 
     private final RoleUserInfoMapper roleUserInfoMapper;
 
@@ -74,7 +75,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
 
     @Override
     public Boolean deleteRoleUserInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
@@ -160,7 +161,7 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (!staleIds.isEmpty()) {
-            roleUserInfoMapper.deleteBatchIds(staleIds);
+            roleUserInfoMapper.deleteByIds(staleIds);
         }
     }
 

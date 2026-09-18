@@ -20,7 +20,6 @@ import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -103,7 +102,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo addFileInfo(String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws FileException {
+    public FileInfoVo addFileInfo(String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
+            throws FileException {
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
@@ -207,7 +207,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
                 uploadFile.setPreUrl(fileService.preview(uploadFile.getBucketName(), uploadFile.getUrl()));
             }
             if (StringUtils.isNotBlank(uploadFile.getThumbnailUrl())) {
-                uploadFile.setPreThumbnailUrl(fileService.preview(uploadFile.getBucketName(), uploadFile.getThumbnailUrl()));
+                uploadFile.setPreThumbnailUrl(
+                        fileService.preview(uploadFile.getBucketName(), uploadFile.getThumbnailUrl()));
             }
         } catch (Exception e) {
             log.warn("装配预签名直链异常：url={}", uploadFile.getUrl(), e);
@@ -229,7 +230,8 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal) throws FileException {
+    public FileInfoVo updateFileInfo(Long id, String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
+            throws FileException {
         FileInfo fileInfo = this.getById(id);
         if (fileInfo == null) {
             throw new FileException(ResultEnum.SYSTEM_NO_AVAILABLE, "文件记录不存在");

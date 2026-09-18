@@ -6,5 +6,5 @@ public class DictKey extends BasePrefix {
         super(prefix);
     }
 
-    public static DictKey dictKey = new DictKey("dict");
+    public static final DictKey dictKey = new DictKey("dict");
 }

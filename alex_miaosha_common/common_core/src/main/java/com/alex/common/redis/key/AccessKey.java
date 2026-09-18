@@ -6,5 +6,5 @@ public class AccessKey extends BasePrefix {
         super(prefix);
     }
 
-    public static AccessKey withExpire = new AccessKey("access");
+    public static final AccessKey withExpire = new AccessKey("access");
 }

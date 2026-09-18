@@ -43,12 +43,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 /**
  * <p>
- * description:  角色信息表服务实现类
- * author:       majf
- * createDate:   2024-01-14 21:56:18
- * version:      1.0.0
+ * description: 角色信息表服务实现类
+ * author: majf
+ * createDate: 2024-01-14 21:56:18
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -82,9 +83,9 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     /**
      * param: id
      * description: 查询角色信息
-     * author:      majf
-     * return:      com.alex.api.user.roleInfo.vo.RoleInfoVo
-    */
+     * author: majf
+     * return: com.alex.api.user.roleInfo.vo.RoleInfoVo
+     */
     @Override
     public RoleInfoVo queryRoleInfo(String id) {
         RoleInfoVo roleInfoVo = roleInfoMapper.queryRoleInfo(id);
@@ -103,8 +104,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         List<RolePermissionInfoVo> rolePermissionInfoVoList = rolePermissionInfoService.getList(rolePermissionInfoVo);
         roleInfoVo.setRolePermissionInfoVoList(rolePermissionInfoVoList);
         List<RoleUserInfoVo> roleUserInfoVoList = roleUserInfoService.list(Wrappers.<RoleUserInfo>lambdaQuery()
-                        .eq(RoleUserInfo::getRoleId, id)
-                        .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS))
+                .eq(RoleUserInfo::getRoleId, id)
+                .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS))
                 .stream()
                 .map(item -> {
                     RoleUserInfoVo vo = new RoleUserInfoVo();
@@ -133,7 +134,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         BeanUtils.copyProperties(roleInfoVo, roleInfo);
         roleInfoMapper.insert(roleInfo);
         roleOrgInfoService.assignOrgs(roleInfo.getId(), bindOrgIds);
-        // Return created id as String to avoid frontend page-lookup race / LIKE mismatch
+        // Return created id as String to avoid frontend page-lookup race / LIKE
+        // mismatch
         return String.valueOf(roleInfo.getId());
     }
 
@@ -151,7 +153,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteRoleInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.stream(ids.split(","))
@@ -172,7 +174,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         if (boundUserCount > 0) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "角色仍绑定用户，不能删除:");
         }
-        // RBAC-BE-ROLE-002: cascade-invalidate role-permission in the same TX as delete.
+        // RBAC-BE-ROLE-002: cascade-invalidate role-permission in the same TX as
+        // delete.
         // Mirror RolePermissionInfoServiceImp.assignPermissions invalidate loop.
         List<RolePermissionInfo> activePermissions = rolePermissionInfoService.list(
                 Wrappers.<RolePermissionInfo>lambdaQuery()
@@ -195,7 +198,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                 throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色机构旧关系失效失败:");
             }
         }
-        // Optional harden: invalidate leftover valid role_user (should be empty after guard).
+        // Optional harden: invalidate leftover valid role_user (should be empty after
+        // guard).
         // Collect user ids for permission_context cache clear.
         Set<String> affectedUserIds = new HashSet<>();
         List<RoleUserInfo> leftoverRoleUsers = roleUserInfoService.list(
@@ -213,7 +217,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         }
         // RBAC-BE-RELATION-002: 级联删除成功后统一走 helper 失效受影响用户的缓存
         permissionContextCacheService.invalidateAll(toLongUserIds(affectedUserIds));
-        roleInfoMapper.deleteBatchIds(idArr);
+        roleInfoMapper.deleteByIds(idArr);
         return true;
     }
 
@@ -237,7 +241,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     }
 
     /**
-     * RBAC-BE-ROLE-003: roleCode must be non-empty and unique table-wide (update excludes self).
+     * RBAC-BE-ROLE-003: roleCode must be non-empty and unique table-wide (update
+     * excludes self).
      */
     private void assertRoleCodeUnique(String roleCode, Long excludeId) {
         if (StringUtils.isEmpty(roleCode)) {
@@ -268,7 +273,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         if (isSuperAdminLogin(loginUser)) {
             return;
         }
-        // Fail-closed via scoped queryRoleInfo (ROLE_ORG_BOUND): null = outside bind-org visibility.
+        // Fail-closed via scoped queryRoleInfo (ROLE_ORG_BOUND): null = outside
+        // bind-org visibility.
         RoleInfoVo visible = roleInfoMapper.queryRoleInfo(String.valueOf(id));
         if (visible == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：角色不在可见绑定机构范围");
@@ -279,7 +285,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
      * C2 修复：授予角色（把用户加入某角色）比改角色名危害更大，必须同时满足两条：
      * 1) 归属校验——非超管只能对自己数据范围内可见的角色执行 assign（复用 assertRoleAccessible）；
      * 2) 硬性规则——非超管一律不得把任何用户授予 super_super 角色，即使该角色行恰好在
-     *    其可见范围内（operator 归属正常不会落在机构管理员范围，这里是纵深防御的第二道闸）。
+     * 其可见范围内（operator 归属正常不会落在机构管理员范围，这里是纵深防御的第二道闸）。
      */
     private void assertRoleGrantable(Long roleId) {
         assertRoleAccessible(roleId);
@@ -322,7 +328,8 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     }
 
     /**
-     * Spec §5.3: each assigned user must have a valid org that intersects the role's
+     * Spec §5.3: each assigned user must have a valid org that intersects the
+     * role's
      * valid org bindings; empty intersection is fail-closed.
      */
     private void assertUsersIntersectRoleOrgs(Long roleId, List<Long> userIds) {
@@ -431,16 +438,18 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
 
     /**
      * @param requireNonEmpty true for create (must bind at least one org);
-     *                        false for assign-orgs (non-super still cannot clear / bind out of scope)
+     *                        false for assign-orgs (non-super still cannot clear /
+     *                        bind out of scope)
      */
     private void assertOrgsInCallerScope(List<Long> orgIds, boolean requireNonEmpty) {
         TUserVo loginUser = userUtils.getLoginUser();
         if (loginUser == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
         }
-        List<Long> normalized = orgIds == null ? Collections.emptyList() : orgIds.stream()
-                .filter(id -> id != null)
-                .collect(Collectors.toList());
+        List<Long> normalized = orgIds == null ? Collections.emptyList()
+                : orgIds.stream()
+                        .filter(id -> id != null)
+                        .collect(Collectors.toList());
         if (requireNonEmpty && normalized.isEmpty()) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "创建角色必须绑定机构");
         }

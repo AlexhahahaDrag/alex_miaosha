@@ -50,7 +50,7 @@ public class MenuDeleteGuardTest {
     }
 
     @Test
-    void deleteMenuInfo_rejectsWhenChildMenusExist_withoutDeleteBatchIds() {
+    void deleteMenuInfo_rejectsWhenChildMenusExist_withoutdeleteByIds() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
         when(menuInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
 
@@ -58,17 +58,17 @@ public class MenuDeleteGuardTest {
                 "RBAC-BE-MENU-002: delete must reject menus that still have children");
         assertTrue(ex.getMsg() != null && (ex.getMsg().contains("子") || ex.getMsg().contains("下级")),
                 "message must mention child menus, actual=" + ex.getMsg());
-        verify(menuInfoMapper, never()).deleteBatchIds(anyList());
+        verify(menuInfoMapper, never()).deleteByIds(anyList());
     }
 
     @Test
     void deleteMenuInfo_allowedWhenNoChildMenus() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
         when(menuInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
-        when(menuInfoMapper.deleteBatchIds(anyList())).thenReturn(1);
+        when(menuInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteMenuInfo("100"));
-        verify(menuInfoMapper).deleteBatchIds(List.of("100"));
+        verify(menuInfoMapper).deleteByIds(List.of("100"));
     }
 
     private static TUserVo loginUser(String roleCode) {

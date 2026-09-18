@@ -3,6 +3,7 @@ package com.alex.common.config;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,11 +23,15 @@ public class FeignConfig implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes != null) {
-            HttpServletRequest request = attributes.getRequest();
-            //添加token
-            requestTemplate.header("Authorization", request.getHeader("Authorization"));
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                //添加token
+                requestTemplate.header("Authorization", request.getHeader("Authorization"));
+            }
+        } catch (Throwable ignored) {
+            // WebFlux / Non-Servlet 环境（如 Gateway）静默跳过 Servlet 上下文获取
         }
     }
 
@@ -37,6 +42,7 @@ public class FeignConfig implements RequestInterceptor {
     }
 
     @Bean
+    @ConditionalOnClass(name = "javax.servlet.ServletRequestListener")
     public RequestContextListener requestContextListener(){
         return new RequestContextListener();
     }

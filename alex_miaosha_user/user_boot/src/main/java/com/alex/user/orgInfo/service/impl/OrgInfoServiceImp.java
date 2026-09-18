@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- * description:  机构表服务实现类
- * author:       alex
- * createDate:   2023-12-15 12:00:32
- * version:      1.0.0
+ * description: 机构表服务实现类
+ * author: alex
+ * createDate: 2023-12-15 12:00:32
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -55,8 +55,10 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
     }
 
     /**
-     * RBAC-BE-ORG-003: load scoped flat list via annotated {@code getList}, then assemble children in memory.
-     * Roots: parentId null/0, or parent not present in the scoped result (orphan promotion).
+     * RBAC-BE-ORG-003: load scoped flat list via annotated {@code getList}, then
+     * assemble children in memory.
+     * Roots: parentId null/0, or parent not present in the scoped result (orphan
+     * promotion).
      */
     @Override
     public List<OrgInfoVo> getTree(OrgInfoVo orgInfoVo) {
@@ -124,7 +126,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
 
     @Override
     public Boolean deleteOrgInfo(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<Long> idArr = parseIds(ids);
@@ -149,13 +151,14 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         if (boundUserCount > 0) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "机构仍绑定用户，不能删除:");
         }
-        orgInfoMapper.deleteBatchIds(idArr);
+        orgInfoMapper.deleteByIds(idArr);
         return true;
     }
 
     /**
      * RBAC-BE-ORG-002: orgCode uniqueness + parent existence + cycle prevention.
-     * Root parent is null or 0 (aligned with PC tree: !parentId || parentId === '0').
+     * Root parent is null or 0 (aligned with PC tree: !parentId || parentId ===
+     * '0').
      */
     private void validateOrgCodeAndHierarchy(OrgInfoVo orgInfoVo) {
         if (orgInfoVo == null) {
@@ -184,7 +187,8 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         if (parent == null || isDeleted(parent)) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不存在");
         }
-        // Walk upward from parent; if self appears in the ancestor chain, a cycle would form.
+        // Walk upward from parent; if self appears in the ancestor chain, a cycle would
+        // form.
         Long cursor = parent.getParentId();
         for (int depth = 0; depth < 64; depth++) {
             if (isRootParent(cursor)) {
