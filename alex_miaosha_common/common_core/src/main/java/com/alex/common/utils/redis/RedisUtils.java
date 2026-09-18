@@ -2,6 +2,7 @@ package com.alex.common.utils.redis;
 
 import com.alex.common.redis.key.KeyPrefix;
 import com.alex.common.utils.bean.BeanUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -59,7 +60,7 @@ public class RedisUtils {
     public <T> List<T> getList(String key, Class<T> clazz) {
         try {
             String result = redisTemplate.opsForValue().get(key);
-            List<T> arr = JSONArray.parseArray(result, clazz);
+            List<T> arr = JSON.parseArray(result, clazz);
             log.debug("获取列表对象成功，key为{}，value为{}", key, arr);
             return arr;
         } catch (Exception e) {
@@ -105,10 +106,10 @@ public class RedisUtils {
             if (exTime == 0) {
                 // 不设置过期时间
                 redisTemplate.opsForValue().set(realKey,
-                        JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
+                        JSON.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
             } else {
                 redisTemplate.opsForValue().set(realKey,
-                        JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect), exTime,
+                        JSON.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect), exTime,
                         TimeUnit.SECONDS);
             }
             return true;
@@ -164,7 +165,7 @@ public class RedisUtils {
 
     public boolean set(String key, Object value) {
         redisTemplate.opsForValue().set(key,
-                JSONObject.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
+                JSON.toJSONString(value, SerializerFeature.DisableCircularReferenceDetect));
         return true;
     }
 
@@ -354,7 +355,7 @@ public class RedisUtils {
         try {
             Set<String> keys = scan(prefix);
             if (keys == null || keys.isEmpty()) {
-                return null;
+                return Collections.emptyList();
             }
             return keys.parallelStream().flatMap(item -> {
                 List<T> list = getList(item, clazz);

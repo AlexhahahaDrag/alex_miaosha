@@ -19,6 +19,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class StringUtils {
 
+    private StringUtils() {
+        /* This utility class should not be instantiated */
+    }
+
     // 下划线正则
     private static final Pattern CAMLE_PATTERN = Pattern.compile("_(\\w)");
 

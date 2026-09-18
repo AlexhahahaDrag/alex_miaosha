@@ -34,6 +34,10 @@ public class AESUtils {
         AESUtils.encryptionProperties = properties;
     }
 
+    public static void setStaticProperties(EncryptionProperties properties) {
+        AESUtils.encryptionProperties = properties;
+    }
+
     /**
      * 初始化 AES-CBC Cipher
      * 注意：SonarQube S3329 提倡使用动态随机 IV；但当前系统与前端 (alex_miaosha_front) 采用预共享 IV ("1234567890123456") 协议通信。

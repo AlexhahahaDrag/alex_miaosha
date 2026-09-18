@@ -147,7 +147,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             log.error("获取认证结果失败", e);
             throw new RuntimeException(e);
         }
-        return result ? secretOut(exchange, chain) : out(response);
+        return result ? secretOut(exchange, chain) : out(exchange);
     }
 
     /**
@@ -218,12 +218,23 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return false;
     }
 
-    private Mono<Void> out(ServerHttpResponse response) {
+    private Mono<Void> out(ServerWebExchange exchange) {
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+        String clientCryptoVersion = request.getHeaders().getFirst(EncryptionUtils.HEADER_CRYPTO_VERSION);
+        boolean isV2 = EncryptionUtils.VERSION_2_0.equalsIgnoreCase(clientCryptoVersion);
+        if (isV2) {
+            response.getHeaders().set(EncryptionUtils.HEADER_CRYPTO_VERSION, EncryptionUtils.VERSION_2_0);
+        }
+
         JsonObject message = new JsonObject();
         message.addProperty("success", false);
         message.addProperty("code", 403);
         message.addProperty("data", "请先登录！");
-        byte[] bits = encryptionUtils.encrypt(JSONObject.toJSONString(message.toString()));
+        byte[] bits = encryptionUtils.encryptByVersion(
+                JSONObject.toJSONString(message.toString()),
+                isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0
+        );
         DataBuffer buffer = response.bufferFactory().wrap(bits);
         //指定编码，否则在浏览器中会中文乱码
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
@@ -234,6 +245,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ServerHttpResponse originalResponse = exchange.getResponse();
         DataBufferFactory bufferFactory = originalResponse.bufferFactory();
         String path = exchange.getRequest().getPath().toString();
+        String clientCryptoVersion = exchange.getRequest().getHeaders().getFirst(EncryptionUtils.HEADER_CRYPTO_VERSION);
+        boolean isV2 = EncryptionUtils.VERSION_2_0.equalsIgnoreCase(clientCryptoVersion);
         
         ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
             @NotNull
@@ -245,6 +258,11 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                     return super.writeWith(body);
                 }
                 
+                // 协议协商：若客户端请求携带 2.0，响应头回写 2.0
+                if (isV2) {
+                    getDelegate().getHeaders().set(EncryptionUtils.HEADER_CRYPTO_VERSION, EncryptionUtils.VERSION_2_0);
+                }
+
                 // 非文件响应，进行加密处理
                 if (body instanceof Flux<? extends DataBuffer> fluxBody) {
                     return super.writeWith(fluxBody.buffer().handle((dataBuffer, sink) -> {
@@ -256,7 +274,10 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                         String s = new String(content, StandardCharsets.UTF_8);
                         byte[] uppedContent;
                         try {
-                            uppedContent = encryptionUtils.encrypt(JSONObject.toJSONString(s));
+                            uppedContent = encryptionUtils.encryptByVersion(
+                                    JSONObject.toJSONString(s),
+                                    isV2 ? EncryptionUtils.VERSION_2_0 : EncryptionUtils.VERSION_1_0
+                            );
                         } catch (Exception e) {
                             sink.error(new RuntimeException(e));
                             return;
