@@ -89,7 +89,9 @@
     <select id="getDayExpense" resultType="com.alex.api.finance.vo.financeAnalysis.AnalysisVo">
         SELECT
         SUBSTR( date_info.date, 9 ) AS info_date,
-        IFNULL( info.amount, 0 ) AS amount
+        IFNULL( info.amount, 0 ) AS amount,
+        IFNULL( info.income_amount, 0 ) AS income_amount,
+        IFNULL( info.expense_amount, 0 ) AS expense_amount
         FROM
         (
         SELECT
@@ -119,13 +121,14 @@
         LEFT JOIN (
         SELECT
         DATE_FORMAT( info_date, '%Y-%m-%d' ) AS dateinfo,
-        sum( CASE income_and_expenses WHEN 'expense' THEN amount ELSE - amount END ) AS amount
+        sum( CASE income_and_expenses WHEN 'expense' THEN amount ELSE - amount END ) AS amount,
+        sum( CASE income_and_expenses WHEN 'income' THEN amount ELSE 0 END ) AS income_amount,
+        sum( CASE income_and_expenses WHEN 'expense' THEN amount ELSE 0 END ) AS expense_amount
         FROM
         finance_info
         WHERE
         info_date >= cast( concat( #{searchDate}, '-01' ) AS datetime )
         AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-        AND type_code != '工资'
         AND is_valid = '1'
         AND is_delete = '0'
         <if test="belongTo != null">
@@ -139,10 +142,12 @@
     </select>
 
     <select id="getMonthExpense" resultType="com.alex.api.finance.vo.financeAnalysis.AnalysisVo">
-        WITH recursive c ( n ) AS ( SELECT 0 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
+        WITH recursive c ( n ) AS ( SELECT 1 UNION ALL SELECT n + 1 FROM c WHERE n &lt; 12 )
         SELECT
         date_info.n as info_Date,
-        ifnull( info.amount, 0 ) AS amount
+        ifnull( info.amount, 0 ) AS amount,
+        ifnull( info.income_amount, 0 ) AS income_amount,
+        ifnull( info.expense_amount, 0 ) AS expense_amount
         FROM
         (
         SELECT
@@ -152,14 +157,15 @@
         ) date_info
         LEFT JOIN (
         SELECT
-        DATE_FORMAT( info_date, '%m' ) AS dateinfo,
-        sum( CASE WHEN income_and_expenses = 'expense' THEN amount ELSE - amount END ) AS amount
+        DATE_FORMAT( info_date, '%c' ) AS dateinfo,
+        sum( CASE WHEN income_and_expenses = 'expense' THEN amount ELSE - amount END ) AS amount,
+        sum( CASE WHEN income_and_expenses = 'income' THEN amount ELSE 0 END ) AS income_amount,
+        sum( CASE WHEN income_and_expenses = 'expense' THEN amount ELSE 0 END ) AS expense_amount
         FROM
         finance_info
         WHERE
         info_date >= cast( concat( SUBSTR( #{searchDate}, 1, 4 ), '-01-01' ) AS datetime )
         AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
-        AND type_code != '工资'
         AND is_valid = '1'
         AND is_delete = '0'
         <if test="belongTo != null">
@@ -167,7 +173,7 @@
         </if>
         GROUP BY
         dateinfo
-        ) info ON info.dateinfo = date_info.n
+        ) info ON info.dateinfo = cast(date_info.n as char)
         ORDER BY
         date_info.n
     </select>

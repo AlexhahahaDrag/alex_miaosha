@@ -24,4 +24,6 @@ public interface FileStorageService {
     InputStream fileDownload(FileInfoVo fileInfo);
 
     String preview(String bucketName, String objectName) throws FileException;
+
+    String preview(String bucketName, String objectName, Boolean isPublic) throws FileException;
 }

@@ -113,10 +113,15 @@ public abstract class AbstractS3FileService implements FileStorageService {
 
     @Override
     public String preview(String bucketName, String objectName) throws FileException {
+        return preview(bucketName, objectName, null);
+    }
+
+    @Override
+    public String preview(String bucketName, String objectName, Boolean isPublic) throws FileException {
         try {
-            return getTemplate().preview(bucketName, objectName);
+            return getTemplate().preview(bucketName, objectName, isPublic);
         } catch (Exception e) {
-            log.error("[{}] 获取文件预览直链异常：bucket={}, object={}", getFileSystemCode(), bucketName, objectName, e);
+            log.error("[{}] 获取文件预览直链异常：bucket={}, object={}, isPublic={}", getFileSystemCode(), bucketName, objectName, isPublic, e);
             throw new FileException(ResultEnum.SYSTEM_NO_AVAILABLE, "生成文件预览直链失败: " + e.getMessage());
         }
     }

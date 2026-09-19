@@ -2,6 +2,7 @@ package com.alex.oss.fileInfo.service.impl;
 
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.enums.ResultEnum;
+import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.exception.FileException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.fileInfo.entity.FileInfo;
@@ -83,22 +84,31 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException,
+    public FileInfoVo queryFileInfo(Long id, Boolean isPublic) throws ServerException, InsufficientDataException, ErrorResponseException,
             IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException,
             InternalException {
         FileInfoVo fileInfoVo = fileInfoMapper.queryFileInfo(id);
         if (fileInfoVo != null) {
             FileStorageService fileService = getFileService(fileInfoVo.getFileSystem());
+            boolean effectivePublic = Boolean.TRUE.equals(isPublic);
+            fileInfoVo.setIsPublic(effectivePublic);
             if (StringUtils.isNotBlank(fileInfoVo.getUrl())) {
-                String url = fileService.preview(fileInfoVo.getBucketName(), fileInfoVo.getUrl());
+                String url = fileService.preview(fileInfoVo.getBucketName(), fileInfoVo.getUrl(), isPublic);
                 fileInfoVo.setPreUrl(url);
             }
             if (StringUtils.isNotBlank(fileInfoVo.getThumbnailUrl())) {
-                String thumbnailUrl = fileService.preview(fileInfoVo.getBucketName(), fileInfoVo.getThumbnailUrl());
+                String thumbnailUrl = fileService.preview(fileInfoVo.getBucketName(), fileInfoVo.getThumbnailUrl(), isPublic);
                 fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
             }
         }
         return fileInfoVo;
+    }
+
+    @Override
+    public FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException,
+            IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException,
+            InternalException {
+        return queryFileInfo(id, null);
     }
 
     @Override
@@ -319,7 +329,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     @Override
-    public List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+    public List<FileInfoVo> getFileInfo(List<Long> fileIdList, Boolean isPublic) {
         if (fileIdList == null || fileIdList.isEmpty()) {
             return Lists.newArrayList();
         }
@@ -332,14 +342,16 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         return fileInfos.parallelStream().map(item -> {
             FileInfoVo fileInfoVo = new FileInfoVo();
             BeanUtils.copyProperties(item, fileInfoVo);
+            boolean effectivePublic = Boolean.TRUE.equals(isPublic);
+            fileInfoVo.setIsPublic(effectivePublic);
             try {
                 FileStorageService fileService = getFileService(item.getFileSystem());
                 if (StringUtils.isNotBlank(item.getUrl())) {
-                    String url = fileService.preview(item.getBucketName(), item.getUrl());
+                    String url = fileService.preview(item.getBucketName(), item.getUrl(), isPublic);
                     fileInfoVo.setPreUrl(url);
                 }
                 if (StringUtils.isNotBlank(item.getThumbnailUrl())) {
-                    String thumbnailUrl = fileService.preview(item.getBucketName(), item.getThumbnailUrl());
+                    String thumbnailUrl = fileService.preview(item.getBucketName(), item.getThumbnailUrl(), isPublic);
                     fileInfoVo.setPreThumbnailUrl(thumbnailUrl);
                 }
             } catch (Exception e) {
@@ -347,5 +359,10 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             }
             return fileInfoVo;
         }).toList();
+    }
+
+    @Override
+    public List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+        return getFileInfo(fileIdList, null);
     }
 }

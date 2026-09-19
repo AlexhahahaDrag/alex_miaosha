@@ -162,4 +162,29 @@ class AbstractS3FileServiceBucketTest {
         assertFalse(service.isValidBucketName("path/traversal")); // 斜杠
         assertFalse(service.isValidBucketName("has..dots")); // 连续点
     }
+
+    @Test
+    @DisplayName("10. 验证 BucketNameEnum 公私分级判定 (isPublicBucket)")
+    void testBucketPublicClassification() {
+        // 公开桶
+        assertTrue(BucketNameEnum.isPublicBucket("user"));
+        assertTrue(BucketNameEnum.isPublicBucket("user-bucket"));
+        assertTrue(BucketNameEnum.isPublicBucket(" USER "));
+        assertTrue(BucketNameEnum.isPublicBucket(" goods "));
+        assertTrue(BucketNameEnum.isPublicBucket("goods-bucket"));
+
+        // 私有桶
+        assertFalse(BucketNameEnum.isPublicBucket("common"));
+        assertFalse(BucketNameEnum.isPublicBucket("common-bucket"));
+        assertFalse(BucketNameEnum.isPublicBucket("finance"));
+        assertFalse(BucketNameEnum.isPublicBucket("finance-bucket"));
+        assertFalse(BucketNameEnum.isPublicBucket("gift"));
+        assertFalse(BucketNameEnum.isPublicBucket("gift-bucket"));
+        assertFalse(BucketNameEnum.isPublicBucket("ai-bucket"));
+
+        // 未知或空值
+        assertFalse(BucketNameEnum.isPublicBucket(null));
+        assertFalse(BucketNameEnum.isPublicBucket(""));
+        assertFalse(BucketNameEnum.isPublicBucket("unknown-bucket"));
+    }
 }

@@ -1,5 +1,6 @@
 package com.alex.oss.config.s3;
 
+import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.storage.vo.ObjectItem;
 import com.alibaba.fastjson.JSONObject;
@@ -39,10 +40,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * description: S3 协议通用基础模板抽象类（兼容 MinIO 与 Garage 等 S3 兼容对象存储）
- * 包含：Bucket 内存缓存机制、流式传输安全规约、预签名公网 CDN 域名映射、流及时释放规约
+ * 包含：Bucket 内存缓存机制、流式传输安全规约、预签名公网 CDN 域名映射、流及时释放规约、存储桶公私分级直通
  *
  * @author alex
- * @version 1.0.0
+ * @version 1.1.0
  */
 @Slf4j
 @Data
@@ -54,6 +55,21 @@ public abstract class BaseS3Template {
      * 已存在的存储桶内存缓存，避免每次写入都重复发起 existBucket 网络探活请求
      */
     protected final Set<String> knownBuckets = ConcurrentHashMap.newKeySet();
+
+    /**
+     * 底座连接地址
+     */
+    protected String url;
+
+    /**
+     * 底座端口
+     */
+    protected Integer port;
+
+    /**
+     * 是否启用 SSL
+     */
+    protected Boolean secure;
 
     /**
      * 外部公网/CDN 访问域名（如 https://oss.example.com），配置后将自动平滑替换预签名直链的主机地址
@@ -72,6 +88,9 @@ public abstract class BaseS3Template {
      */
     protected void initClient(String url, Integer port, String accessKey, String secretKey, String region,
             Boolean secure, String publicUrl) {
+        this.url = url;
+        this.port = port;
+        this.secure = secure;
         this.publicUrl = publicUrl;
         if (StringUtils.isBlank(url) || port == null || StringUtils.isBlank(accessKey)
                 || StringUtils.isBlank(secretKey)) {
@@ -288,14 +307,31 @@ public abstract class BaseS3Template {
     }
 
     /**
-     * 获取预签名预览直链（1小时有效期，支持 publicUrl/CDN 域名自动映射替换）
+     * 获取预览直链：
+     * 1. 若显式指定 isPublic == true，或未指定 (isPublic == null) 且当前桶为公开只读桶（如 user-bucket, goods-bucket），
+     *    直接生成持久免签直链（支持 publicUrl/CDN 映射），彻底根除短期签名过期导致的 400 异常；
+     * 2. 若显式指定 isPublic == false，或当前桶为私有业务桶，生成临时预签名直链（1小时有效期，支持 publicUrl/CDN 域名自动映射替换）。
      */
-    public String preview(String bucketName, String objectKey)
+    public String preview(String bucketName, String objectKey, Boolean isPublic)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
             NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         if (!isInitialized()) {
             throw new IllegalStateException("S3 存储客户端未初始化");
         }
+        if (StringUtils.isBlank(objectKey)) {
+            return null;
+        }
+
+        // 核心规约：仅当显式传入 isPublic == true 时生成免签持久直链；
+        // 当 isPublic 不是 true（即 false 或 null 未传）时，一律生成带过期时效的 S3 预签名直链
+        boolean effectivePublic = Boolean.TRUE.equals(isPublic);
+
+        // 1. 显式指定公开时返回免签直链，永久有效且 CDN/浏览器强缓存友好
+        if (effectivePublic) {
+            return buildPublicDirectUrl(bucketName, objectKey);
+        }
+
+        // 2. 其余情况（包括未传或声明为 false）一律生成带时效签名的预签名直链
         String presignedUrl = minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
@@ -317,6 +353,36 @@ public abstract class BaseS3Template {
             }
         }
         return presignedUrl;
+    }
+
+    /**
+     * 获取预览直链（遵循存储桶默认公私策略）
+     */
+    public String preview(String bucketName, String objectKey)
+            throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,
+            NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
+        return preview(bucketName, objectKey, null);
+    }
+
+    /**
+     * 构造公开桶持久免签访问直链
+     */
+    public String buildPublicDirectUrl(String bucketName, String objectKey) {
+        String base;
+        if (StringUtils.isNotBlank(publicUrl)) {
+            base = publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl;
+        } else if (StringUtils.isNotBlank(url)) {
+            boolean isSecure = Boolean.TRUE.equals(secure);
+            base = (isSecure ? "https://" : "http://") + url
+                    + (port != null && port != 80 && port != 443 ? ":" + port : "");
+        } else {
+            base = "";
+        }
+        String cleanKey = objectKey != null && objectKey.startsWith("/") ? objectKey.substring(1) : objectKey;
+        if (StringUtils.isBlank(base)) {
+            return "/" + bucketName + "/" + (cleanKey != null ? cleanKey : "");
+        }
+        return base + "/" + bucketName + "/" + (cleanKey != null ? cleanKey : "");
     }
 
     /**

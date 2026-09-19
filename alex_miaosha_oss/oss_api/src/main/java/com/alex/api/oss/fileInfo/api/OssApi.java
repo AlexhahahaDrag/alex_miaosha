@@ -87,9 +87,15 @@ public interface OssApi {
     @ApiOperation(value = "获取文件信息列表", notes = "获取文件信息列表", response = Result.class)
     @GetMapping(value = "/getFileInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true, dataTypeClass = List.class)}
+            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true, dataTypeClass = List.class),
+            @ApiImplicitParam(value = "是否公开预览直链 (true-免签直链, false-带时效签名直链, null-遵循存储桶预置策略)", name = "isPublic", dataTypeClass = Boolean.class)}
     )
-    Result<List<FileInfoVo>> getFileInfo(@RequestParam("fileIdList") List<Long> fileIdList);
+    Result<List<FileInfoVo>> getFileInfo(@RequestParam("fileIdList") List<Long> fileIdList,
+                                         @RequestParam(value = "isPublic", required = false) Boolean isPublic);
+
+    default Result<List<FileInfoVo>> getFileInfo(List<Long> fileIdList) {
+        return getFileInfo(fileIdList, null);
+    }
 
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)

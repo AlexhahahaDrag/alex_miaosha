@@ -63,7 +63,7 @@ public class OssFallbackFactory implements FallbackFactory<OssApi> {
             }
 
             @Override
-            public Result<List<FileInfoVo>> getFileInfo(List<Long> fileIdList) {
+            public Result<List<FileInfoVo>> getFileInfo(List<Long> fileIdList, Boolean isPublic) {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 

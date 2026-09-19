@@ -136,9 +136,12 @@ public class FileInfoController {
     @ApiOperation(value = "获取文件信息", notes = "获取文件信息", response = Result.class)
     @GetMapping("/getFileInfo")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true, dataTypeClass = List.class)}
+            @ApiImplicitParam(value = "文件id列表", name = "fileIdList", required = true, dataTypeClass = List.class),
+            @ApiImplicitParam(value = "是否公开预览直链 (true-免签直链, false-带时效签名直链, null-遵循存储桶预置策略)", name = "isPublic", dataTypeClass = Boolean.class)}
     )
-    public Result<List<FileInfoVo>> getFileInfo(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
-        return Result.success(fileInfoService.getFileInfo(fileIdList));
+    public Result<List<FileInfoVo>> getFileInfo(
+            @RequestParam(value = "fileIdList") List<Long> fileIdList,
+            @RequestParam(value = "isPublic", required = false) Boolean isPublic) {
+        return Result.success(fileInfoService.getFileInfo(fileIdList, isPublic));
     }
 }

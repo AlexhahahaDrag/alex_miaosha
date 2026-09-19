@@ -25,7 +25,11 @@ public interface FileInfoService extends IService<FileInfo> {
 
     Page<FileInfoVo> getPage(Long pageNum, Long pageSize, FileInfoVo fileInfoVo);
 
-    FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException;
+    FileInfoVo queryFileInfo(Long id, Boolean isPublic) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException;
+
+    default FileInfoVo queryFileInfo(Long id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        return queryFileInfo(id, null);
+    }
 
     FileInfoVo addFileInfo(String type, MultipartFile multipartFile, boolean isThumbnail, boolean isNormal) throws FileException;
 
@@ -48,8 +52,13 @@ public interface FileInfoService extends IService<FileInfo> {
      * 根据文件id列表获取文件信息
      *
      * @param fileIdList 文件id列表
+     * @param isPublic   是否公开预览直链 (true-免签直链, false-带时效签名直链, null-遵循存储桶预置策略)
      * @return 文件信息列表
      * @author alex
      */
-    List<FileInfoVo> getFileInfo(List<Long> fileIdList);
+    List<FileInfoVo> getFileInfo(List<Long> fileIdList, Boolean isPublic);
+
+    default List<FileInfoVo> getFileInfo(List<Long> fileIdList) {
+        return getFileInfo(fileIdList, null);
+    }
 }

@@ -34,6 +34,12 @@ public class AnalysisVo {
     @ApiModelProperty(name = "amount", value = "钱数")
     private BigDecimal amount;
 
+    @ApiModelProperty(name = "incomeAmount", value = "收入金额")
+    private BigDecimal incomeAmount;
+
+    @ApiModelProperty(name = "expenseAmount", value = "支出金额")
+    private BigDecimal expenseAmount;
+
     @ApiModelProperty(name = "infoDate", value = "业务日期")
     private String infoDate;
 

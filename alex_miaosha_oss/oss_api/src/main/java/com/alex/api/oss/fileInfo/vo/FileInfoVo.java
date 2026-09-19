@@ -45,4 +45,7 @@ public class FileInfoVo extends BaseVo<FileInfoVo>{
 
     @ApiModelProperty(value = "缩略图预览url")
     private String preThumbnailUrl;
+
+    @ApiModelProperty(value = "是否公开预览直链 (true-免签直链, false-带时效签名直链)")
+    private Boolean isPublic;
 }

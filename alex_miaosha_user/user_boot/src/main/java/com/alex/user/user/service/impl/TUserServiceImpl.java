@@ -868,7 +868,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             return;
         }
         try {
-            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(userVo.getAvatar()));
+            Result<List<FileInfoVo>> fileInfo = ossApi.getFileInfo(Lists.newArrayList(userVo.getAvatar()), true);
             if (fileInfo != null && SysConf.RESULT_SUCCESS.equals(fileInfo.getCode()) && fileInfo.getData() != null
                     && !fileInfo.getData().isEmpty()) {
                 FileInfoVo vo = fileInfo.getData().get(0);
@@ -892,7 +892,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             return;
         }
         try {
-            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList);
+            Result<List<FileInfoVo>> result = ossApi.getFileInfo(fileIdList, true);
             if (result != null && SysConf.RESULT_SUCCESS.equals(result.getCode()) && result.getData() != null
                     && !result.getData().isEmpty()) {
                 Map<Long, List<FileInfoVo>> fileMap = result.getData()
