@@ -1,6 +1,7 @@
 package com.alex.finance.finance.controller;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
+import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.validator.group.Insert;
@@ -48,6 +49,16 @@ public class FinanceInfoController {
                                                @RequestParam(value = "pageSize", required = false) Long pageSize,
                                                @RequestBody(required = false) FinanceInfoVo financeInfoVo) {
         return Result.success(financeInfoService.getPage(pageNum, pageSize, financeInfoVo));
+    }
+
+    @ApiOperationSupport(order = 15, author = "alex")
+    @ApiOperation(value = "获取财务信息多维统计汇总", notes = "获取财务信息多维统计汇总", response = Result.class)
+    @PostMapping(value = "/summary")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "查询条件", name = "financeInfoVo", dataTypeClass = FinanceInfoVo.class)}
+    )
+    public Result<FinanceSummaryVo> getSummary(@RequestBody(required = false) FinanceInfoVo financeInfoVo) {
+        return Result.success(financeInfoService.getFinanceSummary(financeInfoVo));
     }
 
     @ApiOperationSupport(order = 20, author = "alex")

@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
+import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,6 +69,28 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     @Override
     public List<FinanceInfoVo> getList(FinanceInfoVo financeInfoVo) {
         return financeInfoMapper.getList(financeInfoVo);
+    }
+
+    @Override
+    public FinanceSummaryVo getFinanceSummary(FinanceInfoVo financeInfoVo) {
+        FinanceSummaryVo summary = financeInfoMapper.getFinanceSummary(financeInfoVo);
+        if (summary == null) {
+            return FinanceSummaryVo.builder()
+                    .totalExpense(BigDecimal.ZERO)
+                    .totalIncome(BigDecimal.ZERO)
+                    .totalBalance(BigDecimal.ZERO)
+                    .totalCount(0L)
+                    .build();
+        }
+        BigDecimal income = summary.getTotalIncome() == null ? BigDecimal.ZERO : summary.getTotalIncome();
+        BigDecimal expense = summary.getTotalExpense() == null ? BigDecimal.ZERO : summary.getTotalExpense();
+        summary.setTotalIncome(income);
+        summary.setTotalExpense(expense);
+        summary.setTotalBalance(income.subtract(expense));
+        if (summary.getTotalCount() == null) {
+            summary.setTotalCount(0L);
+        }
+        return summary;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.alex.finance.finance.mapper;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
+import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.user.annotation.DataPermission;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,6 +23,9 @@ public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
     @DataPermission(table = "finance_info", field = "belong_to")
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
+
+    @DataPermission(table = "finance_info", field = "belong_to")
+    FinanceSummaryVo getFinanceSummary(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(@Param("id") String id);
 }

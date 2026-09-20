@@ -1,6 +1,7 @@
 package com.alex.finance.finance.service;
 
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
+import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,6 +21,8 @@ public interface FinanceInfoService extends IService<FinanceInfo> {
     Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo);
 
     List<FinanceInfoVo> getList(FinanceInfoVo financeInfoVo);
+
+    FinanceSummaryVo getFinanceSummary(FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(String id);
 
