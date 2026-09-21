@@ -457,7 +457,7 @@ public class GiftRecordFixture {
 - [ ] Jacoco 阈值卡入 CI
 - [ ] PIT 突变测试基线
 - [ ] PR 评论自动贴覆盖率 / 失败截图
-- [ ] 周度审计：用 graphify 比对 service 方法和 case 列表，漏测告警
+- [ ] 周度审计：依据 Ponytail TechSpec 领域契约与 Service 接口矩阵进行全用例覆盖度核对，漏测告警
 
 ---
 

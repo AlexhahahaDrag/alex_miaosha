@@ -73,7 +73,7 @@
 | --- | --- | --- | --- | --- |
 | W1 | 解读前后 gift 表行数 | `ai_insight_does_not_insert_gift_records` | `gift_record_info_t` / `gift_person_info_t` / `gift_event_info_t` count **不变** | 集成（前后 SQL count） |
 | W2 | 解读不触发 gift 写 API | `ai_flow_no_gift_crud_http` | 网络仅 `/ai/chat/stream`（+ analysis 读接口）；无 POST/PUT/DELETE gift-* | E2E network 断言 |
-| W3 | 前端无 gift 写封装调用 | `gift_ai_module_no_import_gift_mutations` | `src/views/finance/gift/ai/**` 不 import record/person/event 的 add/update/delete | 静态 grep / graphify |
+| W3 | 前端无 gift 写封装调用 | `gift_ai_module_no_import_gift_mutations` | `src/views/finance/gift/ai/**` 不 import record/person/event 的 add/update/delete | 静态 grep / 架构契约检查 |
 | W4 | AI 服务无 gift mapper | `ai_boot_no_gift_datasource` | `alex_miaosha_ai` 不依赖 finance gift 模块 | 架构审查 |
 
 ---

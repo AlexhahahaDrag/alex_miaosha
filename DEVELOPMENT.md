@@ -48,3 +48,9 @@ mvn clean -pl alex_miaosha_finance/finance_boot -am "-Dtest=GiftRecordBusinessRu
 - 在进行 Stream 映射操作时，避免直接使用可能带有 `@Nullable` 属性的实例方法引用（如 `String::trim`），因为编译器（如 ECJ 等）会对方法引用的接收者 `this` 进行非空校验，从而报 `Null type safety: parameter 'this' ... needs unchecked conversion` 的警告或错误。
 - 推荐使用显式的 Lambda 表达式或带非空校验的表达式进行转换，例如：`.map(s -> s == null ? "" : s.trim())`。
 
+### 历史单表随礼菜单下线 (2026-09-19)
+
+- 原挂载于「个人财务」下的「个人随礼信息」(`personalGift`, `/selfFinance/personalGift`) 菜单已全面下线清理，人情记账业务统一由顶级独立模块「礼尚往来管理」(`gift`, `/finance/gift`) 承载。
+- 捕获 `InterruptedException` 时必须显式调用 `Thread.currentThread().interrupt()` 恢复中断标志位（SonarQube `java:S2142` 红线）。
+
+
