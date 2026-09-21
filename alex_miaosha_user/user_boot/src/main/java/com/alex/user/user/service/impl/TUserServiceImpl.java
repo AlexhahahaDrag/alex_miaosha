@@ -540,7 +540,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         UserPermissionContextVo permissionContext = userPermissionContextService.buildContext(tUserVo.getId(), false);
         stopWatch.stop();
 
-        stopWatch.start("7.装配权限(不等待头像)");
+        stopWatch.start("7.装配权限与同步头像");
         completeLoginResponse(tUserVo, avatarFuture, permissionContext);
         stopWatch.stop();
 
@@ -634,7 +634,13 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     public static void completeLoginResponse(TUserVo userVo, CompletableFuture<Void> avatarFuture,
             UserPermissionContextVo permissionContext) {
-        // Avatar enrichment is fire-and-forget; do not block login on OSS
+        if (avatarFuture != null) {
+            try {
+                avatarFuture.get(600, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                log.warn("登录异步获取头像超时或异常，安全降级继续登录主流程: {}", e.getMessage());
+            }
+        }
         applyPermissionContext(userVo, permissionContext);
     }
 

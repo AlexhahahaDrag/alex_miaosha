@@ -153,6 +153,44 @@ public class UserPermissionContextServiceTest {
     }
 
     @Test
+    public void testCompleteLoginResponseWaitsForAvatarFuture() {
+        TUserVo userVo = new TUserVo();
+        UserPermissionContextVo context = new UserPermissionContextVo();
+        CompletableFuture<Void> avatarFuture = CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) {
+            }
+            userVo.setAvatarUrl("http://oss.example.com/cap_avatar.png");
+        });
+
+        TUserServiceImpl.completeLoginResponse(userVo, avatarFuture, context);
+
+        assertEquals("http://oss.example.com/cap_avatar.png", userVo.getAvatarUrl(), "avatarUrl should be populated after awaiting avatarFuture");
+        assertSame(context, userVo.getPermissionContext());
+    }
+
+    @Test
+    public void testCompleteLoginResponseHandlesAvatarTimeoutGracefully() {
+        TUserVo userVo = new TUserVo();
+        UserPermissionContextVo context = new UserPermissionContextVo();
+        CompletableFuture<Void> slowAvatarFuture = CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ignored) {
+            }
+            userVo.setAvatarUrl("http://oss.example.com/late.png");
+        });
+
+        long start = System.currentTimeMillis();
+        TUserServiceImpl.completeLoginResponse(userVo, slowAvatarFuture, context);
+        long elapsed = System.currentTimeMillis() - start;
+
+        org.junit.jupiter.api.Assertions.assertTrue(elapsed < 1200, "Should gracefully timeout without blocking for 1500ms");
+        assertSame(context, userVo.getPermissionContext());
+    }
+
+    @Test
     public void testRefreshLoginPermissionContextRebuildsCachedUserContext() {
         Long userId = 1003L;
         TUserVo cachedUser = new TUserVo();

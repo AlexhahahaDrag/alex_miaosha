@@ -25,11 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * description: S3 协议通用基础模板抽象类（兼容 MinIO 与 Garage 等 S3 兼容对象存储）
@@ -379,10 +382,31 @@ public abstract class BaseS3Template {
             base = "";
         }
         String cleanKey = objectKey != null && objectKey.startsWith("/") ? objectKey.substring(1) : objectKey;
+        String encodedKey = encodePathKey(cleanKey);
         if (StringUtils.isBlank(base)) {
-            return "/" + bucketName + "/" + (cleanKey != null ? cleanKey : "");
+            return "/" + bucketName + "/" + (encodedKey != null ? encodedKey : "");
         }
-        return base + "/" + bucketName + "/" + (cleanKey != null ? cleanKey : "");
+        return base + "/" + bucketName + "/" + (encodedKey != null ? encodedKey : "");
+    }
+
+    /**
+     * 对对象路径按段执行 URL 编码（避免双重编码，并将空格转为 %20）
+     */
+    public static String encodePathKey(String pathKey) {
+        if (StringUtils.isBlank(pathKey)) {
+            return pathKey;
+        }
+        return Arrays.stream(pathKey.split("/"))
+                .map(segment -> {
+                    try {
+                        String raw = URLDecoder.decode(segment, StandardCharsets.UTF_8.name());
+                        return URLEncoder.encode(raw, StandardCharsets.UTF_8.name())
+                                .replace("+", "%20");
+                    } catch (Exception e) {
+                        return segment;
+                    }
+                })
+                .collect(Collectors.joining("/"));
     }
 
     /**

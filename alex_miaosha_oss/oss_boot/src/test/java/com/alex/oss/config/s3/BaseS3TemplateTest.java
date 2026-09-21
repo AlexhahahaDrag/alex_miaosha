@@ -134,6 +134,24 @@ class BaseS3TemplateTest {
     }
 
     @Test
+    @DisplayName("验证配置 Nginx publicUrl 时中文文件名被正确 URL 编码且移除 3900 端口")
+    void testChineseCharactersUrlEncodedWithNginxPublicUrl() throws Exception {
+        MinioClient mockClient = mock(MinioClient.class);
+        TestS3Template template = new TestS3Template();
+        template.setTestClient(mockClient, "http://115.190.181.243");
+
+        String rawChineseKey = "user/2026-03-08/微信图片_2026-03-08_141653_644_1772977303808.jpg";
+        String directUrl = template.preview("user-bucket", rawChineseKey, true);
+
+        assertEquals("http://115.190.181.243/user-bucket/user/2026-03-08/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-03-08_141653_644_1772977303808.jpg", directUrl);
+
+        // 验证已编码的 URL 不会发生二次编码 (Double-encoding prevention)
+        String alreadyEncodedKey = "user/2026-03-08/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-03-08_141653_644_1772977303808.jpg";
+        String secondCallUrl = template.preview("user-bucket", alreadyEncodedKey, true);
+        assertEquals("http://115.190.181.243/user-bucket/user/2026-03-08/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-03-08_141653_644_1772977303808.jpg", secondCallUrl);
+    }
+
+    @Test
     @DisplayName("验证当 isPublic 不是 true 时（false 或 null），不论什么桶一律生成带过期时效的 S3 预签名直链")
     void testDynamicIsPublicMatrix() throws Exception {
         MinioClient mockClient = mock(MinioClient.class);

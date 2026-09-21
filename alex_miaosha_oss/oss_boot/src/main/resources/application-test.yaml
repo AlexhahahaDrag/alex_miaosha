@@ -26,4 +26,4 @@ garage:
   bucketName: alex-miaosha
   region: garage
   secure: false
-  # publicUrl: https://oss.example.com
+  publicUrl: http://115.190.181.243
