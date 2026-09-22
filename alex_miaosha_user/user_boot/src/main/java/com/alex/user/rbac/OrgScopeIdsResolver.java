@@ -46,7 +46,7 @@ public class OrgScopeIdsResolver {
             return false;
         }
         for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
+            if (role != null && RbacRoleCodes.isSuperRole(role.getRoleCode())) {
                 return true;
             }
         }
@@ -62,7 +62,7 @@ public class OrgScopeIdsResolver {
             return false;
         }
         for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.ADMIN.equals(role.getRoleCode())) {
+            if (role != null && RbacRoleCodes.isAdminRole(role.getRoleCode())) {
                 return true;
             }
         }

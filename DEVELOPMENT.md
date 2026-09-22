@@ -22,7 +22,7 @@
 ### 数据权限（与 org RBAC 对齐）
 
 - `@DataPermission.scope()` 使用独立枚举 `DataPermissionScope`：`USER_OWNER`/`USER_IDS`（管理员机构成员子查询、普通用户本人）、`ORG_SHARED`（礼尚往来家庭共享）、`ORG_ID`（机构树，管理员扩子孙）。
-- 角色判定必须精确匹配 `RbacRoleCodes`（`super_super` / `admin` / `user`），禁止 `code.contains("super|admin|user")`。
+- 角色判定必须通过 `RbacRoleCodes` 统一工具方法（`isSuperRole` / `isAdminRole` / `isUserRole`），机构管理员支持 `admin` 及以 `_admin` 结尾的垂直业务管理员角色（如 `org_user_admin`、`family_admin`、`gift_admin`、`shop_admin` 等），普通用户支持 `user` 及以 `_user` 结尾的角色，严禁随意在业务中使用 `code.contains("super|admin|user")` 模糊判定。
 - 礼尚往来 mapper 使用 `scope = ORG_SHARED`，并配置 `alias` 与 `orgField`；删除用户/角色/菜单/权限/机构走 org 分支的 ownership + 级联，不使用 gift 的裸 `deleteByIds`。
 
 ### 回礼实现

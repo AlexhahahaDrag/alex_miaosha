@@ -396,11 +396,11 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
         boolean isAdmin = false;
         boolean isUser = false;
         for (String code : roleCodes) {
-            if (RbacRoleCodes.SUPER.equals(code)) {
+            if (RbacRoleCodes.isSuperRole(code)) {
                 isSuper = true;
-            } else if (RbacRoleCodes.ADMIN.equals(code)) {
+            } else if (RbacRoleCodes.isAdminRole(code)) {
                 isAdmin = true;
-            } else if (RbacRoleCodes.USER.equals(code)) {
+            } else if (RbacRoleCodes.isUserRole(code)) {
                 isUser = true;
             }
         }

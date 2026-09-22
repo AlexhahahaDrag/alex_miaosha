@@ -133,8 +133,19 @@ public class DataPermissionScopeHandlerTest {
     void badmin_must_not_be_treated_as_admin() {
         DataPermissionHandlerImpl handler = handler(user(1L, 20L, "badmin"));
         Expression result = handler.getSqlSegment(null, USER_IDS_MS);
-        // admin 走机构成员 IN；普通用户走 self EqualsTo
+        // badmin 没有 _admin 后缀，不属于合法 admin；普通用户走 self EqualsTo
         assertTrue(result instanceof EqualsTo, "RBAC-BE-SCOPE-001: badmin must use user self-id filter");
+    }
+
+    @Test
+    void vertical_admins_must_be_treated_as_org_admin() {
+        for (String roleCode : Arrays.asList("family_admin", "gift_admin", "org_user_admin", "shop_admin")) {
+            DataPermissionHandlerImpl handler = handler(user(2L, 20L, roleCode));
+            Expression result = handler.getSqlSegment(null, USER_IDS_MS);
+            assertTrue(result instanceof InExpression, roleCode + " must produce InExpression for org members");
+            String sql = result.toString();
+            assertTrue(sql.contains("alex_user.t_org_user_info"), "subselect for " + roleCode + " must query t_org_user_info");
+        }
     }
 
     private static DataPermissionHandlerImpl handler(TUserVo loginUser) {
