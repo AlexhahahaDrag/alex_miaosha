@@ -77,6 +77,10 @@
         from finance_info
         <where>
             finance_info.is_delete = 0
+            <!-- 统计时默认剔除内部转账流水（除非用户在查询条件中明确指定转账类别） -->
+            <if test="(financeInfoVo == null or (financeInfoVo.typeCode == null or financeInfoVo.typeCode == '')) and (financeInfoVo == null or (financeInfoVo.bigTypeCode == null or financeInfoVo.bigTypeCode == ''))">
+                and (finance_info.type_code is null or finance_info.type_code != '转账')
+            </if>
             <include refid="queryInfo"/>
         </where>
     </select>

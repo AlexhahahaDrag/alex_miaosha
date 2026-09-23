@@ -64,7 +64,7 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
 
     @Override
     public Expression getSqlSegment(Expression where, String mappedStatementId) {
-        if (IS_PROCESSING.get()) {
+        if (Boolean.TRUE.equals(IS_PROCESSING.get())) {
             return where;
         }
         try {
@@ -164,9 +164,10 @@ public class DataPermissionHandlerImpl implements DataPermissionHandler {
             impossible.setRightExpression(new LongValue(-1L));
             return where == null ? impossible : new AndExpression(where, impossible);
         }
-        Expression condition = isAdmin
-                ? buildIdListExpression(resolveTargetTable(annotation), annotation.field(), buildAdminOrgScopeIds(selfOrgId))
-                : buildIdListExpression(resolveTargetTable(annotation), annotation.field(), Collections.singletonList(selfOrgId));
+        List<Long> orgIds = isAdmin
+                ? buildAdminOrgScopeIds(selfOrgId)
+                : Collections.singletonList(selfOrgId);
+        Expression condition = buildIdListExpression(resolveTargetTable(annotation), annotation.field(), orgIds);
         return where == null ? condition : new AndExpression(where, condition);
     }
 

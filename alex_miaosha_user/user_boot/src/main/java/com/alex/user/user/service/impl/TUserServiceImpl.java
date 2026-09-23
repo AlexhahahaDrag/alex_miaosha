@@ -149,6 +149,20 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             return userPage;
         }
         setAvatarUrls(records);
+        for (TUserVo record : records) {
+            if (record.getId() != null) {
+                List<RoleInfoVo> roleList = roleUserInfoService.getRoleInfoList(record.getId(), false);
+                record.setRoleInfoVoList(roleList);
+                if (roleList != null && !roleList.isEmpty()) {
+                    if (StringUtils.isEmpty(record.getRoleName())) {
+                        record.setRoleName(roleList.stream().map(RoleInfoVo::getRoleName).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
+                    }
+                    if (StringUtils.isEmpty(record.getRoleCode())) {
+                        record.setRoleCode(roleList.stream().map(RoleInfoVo::getRoleCode).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
+                    }
+                }
+            }
+        }
         return userPage;
     }
 

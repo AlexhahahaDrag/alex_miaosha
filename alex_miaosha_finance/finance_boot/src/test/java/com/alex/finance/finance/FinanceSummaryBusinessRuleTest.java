@@ -73,4 +73,26 @@ class FinanceSummaryBusinessRuleTest {
         assertEquals(BigDecimal.ZERO, result.getTotalBalance());
         assertEquals(0L, result.getTotalCount());
     }
+
+    @Test
+    void testSummaryNetBalanceAccountingLogic() {
+        FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+
+        // 真实日常账单剔除转账后的数值模拟：支出 857,538.10，收入 984,349.51，结余 +126,811.41，笔数 4,913
+        FinanceSummaryVo mockAgg = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("857538.10"))
+                .totalIncome(new BigDecimal("984349.51"))
+                .totalCount(4913L)
+                .build();
+
+        when(mapper.getFinanceSummary(any())).thenReturn(mockAgg);
+
+        FinanceSummaryVo result = service.getFinanceSummary(new FinanceInfoVo());
+        assertNotNull(result);
+        assertEquals(new BigDecimal("984349.51"), result.getTotalIncome());
+        assertEquals(new BigDecimal("857538.10"), result.getTotalExpense());
+        assertEquals(new BigDecimal("126811.41"), result.getTotalBalance());
+        assertEquals(4913L, result.getTotalCount());
+    }
 }

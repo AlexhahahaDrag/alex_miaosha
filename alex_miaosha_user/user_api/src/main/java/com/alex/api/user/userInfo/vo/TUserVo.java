@@ -129,4 +129,10 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "所属机构编码")
     private String orgCode;
+
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
+    @ApiModelProperty(value = "角色编码")
+    private String roleCode;
 }
