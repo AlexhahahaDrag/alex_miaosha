@@ -112,7 +112,14 @@
             and show_in_home like concat('%', #{menuInfoVo.showInHome}, '%')
           </if>
           <if test = "menuInfoVo.parentId != null">
-            and parent_id = #{menuInfoVo.parentId}
+            <choose>
+              <when test = "menuInfoVo.parentId == 0 or menuInfoVo.parentId == '0'">
+                and (parent_id is null or parent_id = 0)
+              </when>
+              <otherwise>
+                and parent_id = #{menuInfoVo.parentId}
+              </otherwise>
+            </choose>
           </if>
           <if test = "menuInfoVo.summary != null">
             and summary like concat('%', #{menuInfoVo.summary}, '%')

@@ -80,5 +80,20 @@ class LocalDateTimeFormatConfigTest {
         assertEquals(dt, deserialized.getDateTime());
         assertEquals(d, deserialized.getDate());
         assertEquals(t, deserialized.getTime());
+
+        // 验证兼容反序列化 ISO 格式（含 'T'）
+        String isoJson = "{\"dateTime\":\"2024-08-25T00:00:00\",\"date\":\"2024-08-25\",\"time\":\"00:00:00\"}";
+        SampleTimeModel isoDeserialized = mapper.readValue(isoJson, SampleTimeModel.class);
+        assertEquals(LocalDateTime.of(2024, 8, 25, 0, 0, 0), isoDeserialized.getDateTime());
+
+        // 验证兼容反序列化带毫秒的 ISO 格式
+        String isoMillisJson = "{\"dateTime\":\"2024-08-25T12:30:45.123\",\"date\":\"2024-08-25\",\"time\":\"12:30:45\"}";
+        SampleTimeModel isoMillisDeserialized = mapper.readValue(isoMillisJson, SampleTimeModel.class);
+        assertEquals(LocalDateTime.of(2024, 8, 25, 12, 30, 45, 123000000), isoMillisDeserialized.getDateTime());
+
+        // 验证兼容反序列化纯日期格式（自动补齐 00:00:00）
+        String dateOnlyJson = "{\"dateTime\":\"2024-08-25\",\"date\":\"2024-08-25\",\"time\":\"00:00:00\"}";
+        SampleTimeModel dateOnlyDeserialized = mapper.readValue(dateOnlyJson, SampleTimeModel.class);
+        assertEquals(LocalDateTime.of(2024, 8, 25, 0, 0, 0), dateOnlyDeserialized.getDateTime());
     }
 }
