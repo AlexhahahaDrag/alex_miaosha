@@ -139,9 +139,11 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final ObjectProvider<ObjectMapper> objectMapper;
 
     @Override
-    public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception {
+    public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
         TUserVo curUser = userUtils.getLoginUser();
-        log.info("当前用户:{}", curUser.getNickName());
+        if (curUser != null) {
+            log.info("当前用户:{}", curUser.getNickName());
+        }
         Page<TUserVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
         Page<TUserVo> userPage = tUserMapper.getPage(page, tUserVo);
         List<TUserVo> records = userPage.getRecords();
@@ -149,21 +151,31 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             return userPage;
         }
         setAvatarUrls(records);
-        for (TUserVo record : records) {
-            if (record.getId() != null) {
-                List<RoleInfoVo> roleList = roleUserInfoService.getRoleInfoList(record.getId(), false);
-                record.setRoleInfoVoList(roleList);
-                if (roleList != null && !roleList.isEmpty()) {
-                    if (StringUtils.isEmpty(record.getRoleName())) {
-                        record.setRoleName(roleList.stream().map(RoleInfoVo::getRoleName).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
-                    }
-                    if (StringUtils.isEmpty(record.getRoleCode())) {
-                        record.setRoleCode(roleList.stream().map(RoleInfoVo::getRoleCode).filter(StringUtils::isNotEmpty).collect(Collectors.joining(",")));
-                    }
-                }
-            }
-        }
+        records.forEach(this::populateRoleInfo);
         return userPage;
+    }
+
+    private void populateRoleInfo(TUserVo record) {
+        if (record == null || record.getId() == null) {
+            return;
+        }
+        List<RoleInfoVo> roleList = roleUserInfoService.getRoleInfoList(record.getId(), false);
+        record.setRoleInfoVoList(roleList);
+        if (roleList == null || roleList.isEmpty()) {
+            return;
+        }
+        if (StringUtils.isEmpty(record.getRoleName())) {
+            record.setRoleName(roleList.stream()
+                    .map(RoleInfoVo::getRoleName)
+                    .filter(StringUtils::isNotEmpty)
+                    .collect(Collectors.joining(",")));
+        }
+        if (StringUtils.isEmpty(record.getRoleCode())) {
+            record.setRoleCode(roleList.stream()
+                    .map(RoleInfoVo::getRoleCode)
+                    .filter(StringUtils::isNotEmpty)
+                    .collect(Collectors.joining(",")));
+        }
     }
 
     @Override
@@ -399,15 +411,15 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                         TUserVo.class),
                 asyncTaskExecutor);
 
-        CompletableFuture.allOf(limitCountFuture, redisUserFuture).join();
-
-        String limitCount = null;
-        TUserVo redisUser = null;
+        String limitCount;
+        TUserVo redisUser;
         try {
-            limitCount = limitCountFuture.get();
-            redisUser = redisUserFuture.get();
-        } catch (Exception e) {
-            log.error("并行读取 Redis 校验数据异常，进行安全降级", e);
+            CompletableFuture.allOf(limitCountFuture, redisUserFuture).join();
+            limitCount = limitCountFuture.join();
+            redisUser = redisUserFuture.join();
+        } catch (CompletionException e) {
+            log.error("并行读取 Redis 校验数据异常", e);
+            throw new LoginException(ResultEnum.SYSTEM_ERROR.getCode(), "并行读取登录校验数据失败");
         }
 
         Map<String, Object> result = new HashMap<>();

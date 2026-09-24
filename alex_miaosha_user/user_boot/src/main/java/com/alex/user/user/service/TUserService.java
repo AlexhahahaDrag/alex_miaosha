@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public interface TUserService extends IService<TUser> {
 
-    Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) throws Exception;
+    Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo);
 
     TUserVo queryTUser(String id);
 

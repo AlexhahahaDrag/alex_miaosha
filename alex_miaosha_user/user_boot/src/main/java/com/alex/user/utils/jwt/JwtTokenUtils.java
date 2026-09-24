@@ -42,20 +42,20 @@ public class JwtTokenUtils {
         }
     }
 
-    /*
+    /**
      * @param username       用户名
      * @param adminId        用户id
      * @param roleName       角色
      * @param audience       jwt配置
      * @param issuer         发行人
-     * @param TTLMillis      过期时间
+     * @param ttlMillis      过期时间
      * @param base64Security
      * description:  生成jwt
      * author:       alex
      * return:       java.lang.String
      */
     public String createJwt(String username, Long adminId, String roleName,
-                            String audience, String issuer, long TTLMillis, String base64Security) {
+                            String audience, String issuer, long ttlMillis, String base64Security) {
         //HS256是一种对称算法，双方之间仅共享一个密钥
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         //生成签名密钥
@@ -72,12 +72,12 @@ public class JwtTokenUtils {
                 .signWith(signatureAlgorithm, signKey);
         long nowMillis = System.currentTimeMillis();
         //添加过期时间
-        if (TTLMillis >= 0) {
-            builder.setExpiration(new Date(nowMillis + TTLMillis));
+        if (ttlMillis >= 0) {
+            builder.setExpiration(new Date(nowMillis + ttlMillis));
         }
         //生成 jwt
         return builder.compact();
-    }
+    }   
 
     /**
      *
@@ -135,12 +135,12 @@ public class JwtTokenUtils {
     /**
      * param token
      * param base64Security
-     * @param TTLMillis
+     * @param ttlMillis
      * description: 刷新token
      * author: alex
      * return: java.lang.String
      */
-    public String refreshToken(String token, String base64Security, long TTLMillis) {
+    public String refreshToken(String token, String base64Security, long ttlMillis) {
         String refreshedToken = null;
         if (!isExpiration(token, base64Security)) {
             try {
