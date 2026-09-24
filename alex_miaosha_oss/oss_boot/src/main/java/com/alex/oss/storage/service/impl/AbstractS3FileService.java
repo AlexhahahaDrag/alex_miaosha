@@ -28,7 +28,12 @@ import java.util.regex.Pattern;
 @Slf4j
 public abstract class AbstractS3FileService implements FileStorageService {
 
-    protected static final String YYYYMMDD = "YYYY-MM-dd";
+    protected static final String YYYYMMDD = "yyyy-MM-dd";
+
+    /**
+     * S3 规范虚拟目录分隔符（S3 Object Key 标准必须固定使用正斜杠，严禁使用操作系统的 File.separator）
+     */
+    protected static final String S3_PATH_DELIMITER = "/";
 
     /**
      * 获取当前实现的 S3 模板实例
@@ -51,6 +56,7 @@ public abstract class AbstractS3FileService implements FileStorageService {
     }
 
     @Override
+    @SuppressWarnings("java:S1075") // S3 对象键路径规范强制使用正斜杠 "/" 作为虚拟目录分隔符，禁止使用操作系统的 File.separator
     public FileInfoVo uploadFile(MultipartFile file, String type, Boolean isThumbnail, Boolean isNormal)
             throws FileException {
         StopWatch stopWatch = new StopWatch();
@@ -65,8 +71,8 @@ public abstract class AbstractS3FileService implements FileStorageService {
         fileVo.setBucketName(bucketName);
         fileVo.setFileSystem(getFileSystemCode());
 
-        // 名称为/分隔的时候，会在 S3 存储中创建虚拟目录去存储文件
-        String filename = type + "/" + DateUtils.getNowTimeStr(YYYYMMDD) + "/" +
+        // 名称为 / 分隔的时候，会在 S3 存储中创建虚拟目录去存储文件
+        String filename = type + S3_PATH_DELIMITER + DateUtils.getNowTimeStr(YYYYMMDD) + S3_PATH_DELIMITER +
                 (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
                 SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
 

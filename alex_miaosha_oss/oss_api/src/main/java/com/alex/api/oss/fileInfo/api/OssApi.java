@@ -4,6 +4,7 @@ import com.alex.api.oss.fileInfo.fallback.OssFallbackFactory;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.config.FeignConfig;
+import com.alex.common.exception.FileException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiImplicitParam;
@@ -49,26 +50,26 @@ public interface OssApi {
     @ApiOperation(value = "新增文件信息表", notes = "新增文件信息表", response = Result.class)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<FileInfoVo> add(@RequestParam(value = "type", required = false) String type,
-                           @RequestPart(value = "file") MultipartFile file) throws Exception;
+                           @RequestPart(value = "file") MultipartFile file) throws FileException;
 
     @ApiOperationSupport(order = 35, author = "alex")
     @ApiOperation(value = "批量新增文件信息", notes = "批量新增文件信息", response = Result.class)
     @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<List<FileInfoVo>> addBatch(@RequestParam(value = "type", required = false) String type,
-                                      @RequestPart(value = "file") List<MultipartFile> files) throws Exception;
+                                      @RequestPart(value = "file") List<MultipartFile> files) throws FileException;
 
     @ApiOperationSupport(order = 36, author = "alex")
     @ApiOperation(value = "多附件上传(并行/校验/Saga补偿)", notes = "多附件并行上传，支持扩展名白名单校验、配额限制及失败补偿", response = Result.class)
     @PostMapping(value = "/multi-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<List<FileInfoVo>> multiUpload(@RequestParam(value = "type", required = false) String type,
-                                         @RequestPart(value = "file") List<MultipartFile> files) throws Exception;
+                                         @RequestPart(value = "file") List<MultipartFile> files) throws FileException;
 
     @ApiOperationSupport(order = 40, author = "alex")
     @ApiOperation(value = "修改文件信息表", notes = "修改文件信息表", response = Result.class)
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<FileInfoVo> update(@RequestParam(value = "id") Long id,
                               @RequestParam(value = "type", required = false) String type,
-                              @RequestPart(value = "file") MultipartFile file) throws Exception;
+                              @RequestPart(value = "file") MultipartFile file) throws FileException;
 
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除文件信息表", notes = "刪除文件信息表", response = Result.class)
@@ -101,5 +102,5 @@ public interface OssApi {
     @ApiOperation(value = "新增缩略图文件信息表", notes = "新增缩略图文件信息表", response = Result.class)
     @PostMapping(value = "addThumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<FileInfoVo> addThumbnail(@RequestParam(value = "type", required = false) String type,
-                                    @RequestPart(value = "file") MultipartFile file) throws Exception;
+                                    @RequestPart(value = "file") MultipartFile file) throws FileException;
 }

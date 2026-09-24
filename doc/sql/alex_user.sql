@@ -268,6 +268,13 @@ INSERT INTO `t_permission_info` VALUES (1747520680119422977, 'user:rolePermissio
 INSERT INTO `t_permission_info` VALUES (1761018029702856705, 'finance:shopFinance', '店财务管理', NULL, '1', NULL, '2024-02-23 21:19:51', NULL, NULL, NULL, NULL, 0, NULL, '2024-02-23 21:19:51', '/finance/shopFinance', 5);
 INSERT INTO `t_permission_info` VALUES (1767387206030704642, 'finance:shopStock', '店铺库存', NULL, '1', NULL, '2024-03-12 11:08:41', NULL, '2024-03-12 16:49:31', NULL, NULL, 0, NULL, '2024-03-12 16:49:31', '/finance/shopStock', 5);
 INSERT INTO `t_permission_info` VALUES (1767387239002128385, 'finance:shopStock:detail', '店铺库存详情', NULL, '1', NULL, '2024-03-12 11:08:49', NULL, NULL, NULL, NULL, 0, NULL, '2024-03-12 11:08:49', '/finance/shopStock/shopStockDetail', 5);
+INSERT INTO `t_permission_info` VALUES (2026081900000000001, 'role:add', '新增角色', '角色管理页面新增角色按钮', '1', NULL, '2026-08-19 10:00:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-08-19 10:00:00', NULL, 1746531627376271361);
+INSERT INTO `t_permission_info` VALUES (2026081900000000002, 'role:edit', '编辑角色', '角色管理页面编辑角色按钮', '1', NULL, '2026-08-19 10:00:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-08-19 10:00:00', NULL, 1746531627376271361);
+INSERT INTO `t_permission_info` VALUES (2026081900000000003, 'role:auth', '角色授权', '角色管理页面权限授权按钮', '1', NULL, '2026-08-19 10:00:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-08-19 10:00:00', NULL, 1746531627376271361);
+INSERT INTO `t_permission_info` VALUES (2026081900000000004, 'role:delete', '删除角色', '角色管理页面删除角色按钮', '1', NULL, '2026-08-19 10:00:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-08-19 10:00:00', NULL, 1746531627376271361);
+INSERT INTO `t_permission_info` VALUES (2026092300000000001, 'user:add', '新增用户', '用户管理页面新增用户按钮', '1', NULL, '2026-09-23 09:30:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-09-23 09:30:00', NULL, 10);
+INSERT INTO `t_permission_info` VALUES (2026092300000000002, 'user:edit', '编辑用户', '用户管理页面编辑用户按钮', '1', NULL, '2026-09-23 09:30:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-09-23 09:30:00', NULL, 10);
+INSERT INTO `t_permission_info` VALUES (2026092300000000003, 'user:delete', '删除用户', '用户管理页面删除用户按钮', '1', NULL, '2026-09-23 09:30:00', NULL, NULL, NULL, NULL, 0, NULL, '2026-09-23 09:30:00', NULL, 10);
 
 -- ----------------------------
 -- Table structure for t_role_info
@@ -346,6 +353,29 @@ CREATE TABLE `t_role_user_info`  (
 INSERT INTO `t_role_user_info` VALUES (3, '1746681834919378946', '1759760891393945602', NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL);
 
 -- ----------------------------
+-- Table structure for t_role_org_info
+-- ----------------------------
+DROP TABLE IF EXISTS `t_role_org_info`;
+CREATE TABLE `t_role_org_info` (
+  `id` bigint NOT NULL,
+  `role_id` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '角色id',
+  `org_id` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '机构id',
+  `summary` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `status` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '状态,字典(is_valid) 1：有效,0:失效)',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除',
+  `operator` bigint NULL DEFAULT NULL COMMENT '修改人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_role_org_active` (`role_id`, `org_id`, `status`, `is_delete`)
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色机构信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for t_user
 -- ----------------------------
 DROP TABLE IF EXISTS `t_user`;
@@ -415,5 +445,35 @@ CREATE TABLE `t_user_login`  (
   `login_location` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '登录地址',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户登录表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Incremental Button Permissions Grants
+-- ----------------------------
+-- 为 admin, family_admin, org_user_admin 等角色幂等授予按钮级权限
+INSERT INTO `t_role_permission_info` (`id`, `role_id`, `permission_id`, `summary`, `status`, `is_delete`, `create_time`, `operate_time`)
+SELECT
+  (2026092350000000000 + ri.id + pi.id) AS `id`,
+  CAST(ri.id AS CHAR) AS `role_id`,
+  CAST(pi.id AS CHAR) AS `permission_id`,
+  CONCAT('init: grant ', pi.permission_code, ' to ', ri.role_code) AS `summary`,
+  '1' AS `status`,
+  0 AS `is_delete`,
+  NOW(),
+  NOW()
+FROM `t_permission_info` pi
+CROSS JOIN `t_role_info` ri
+WHERE pi.permission_code IN ('user:add', 'user:edit', 'user:delete', 'role:add', 'role:edit', 'role:auth', 'role:delete')
+  AND pi.is_delete = 0
+  AND pi.status = '1'
+  AND ri.role_code IN ('admin', 'family_admin', 'org_user_admin')
+  AND ri.is_delete = 0
+  AND ri.status = '1'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `t_role_permission_info` existing
+    WHERE existing.role_id = CAST(ri.id AS CHAR)
+      AND existing.permission_id = CAST(pi.id AS CHAR)
+      AND existing.is_delete = 0
+  );
 
 SET FOREIGN_KEY_CHECKS = 1;

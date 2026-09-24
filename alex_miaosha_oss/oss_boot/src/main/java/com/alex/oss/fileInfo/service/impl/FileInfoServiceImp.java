@@ -140,6 +140,29 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     @Override
     public List<FileInfoVo> uploadMultipleFiles(String type, List<MultipartFile> multipartFiles, boolean isThumbnail,
             boolean isNormal) throws FileException {
+        validateBatchFiles(multipartFiles);
+
+        // 异步并发上传 S3 + Saga 补偿清理机制
+        List<String> uploadedPaths = Collections.synchronizedList(new ArrayList<>());
+        try {
+            List<CompletableFuture<FileInfoVo>> futures = multipartFiles.stream()
+                    .map(file -> CompletableFuture.supplyAsync(
+                            () -> uploadAndTrackFile(type, file, isThumbnail, isNormal, uploadedPaths)))
+                    .toList();
+
+            List<FileInfoVo> uploadedVos = new ArrayList<>();
+            for (CompletableFuture<FileInfoVo> future : futures) {
+                uploadedVos.add(future.join());
+            }
+
+            saveBatchFileInfo(uploadedVos);
+            return uploadedVos;
+        } catch (Exception e) {
+            throw handleBatchUploadException(e, uploadedPaths, type);
+        }
+    }
+
+    private void validateBatchFiles(List<MultipartFile> multipartFiles) throws FileException {
         if (multipartFiles == null || multipartFiles.isEmpty()) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
@@ -147,67 +170,61 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
             log.warn("多附件批量上传超过上限限制：数量={}", multipartFiles.size());
             throw new FileException(ResultEnum.PARAM_ERROR, "单次最多支持上传 " + MAX_BATCH_FILE_COUNT + " 个附件");
         }
-
-        // 严格后缀白名单校验
         for (MultipartFile file : multipartFiles) {
-            if (file == null || file.isEmpty()) {
-                throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
-            }
-            String originalFilename = file.getOriginalFilename();
-            String suffix = StringUtils.isBlank(originalFilename) || !originalFilename.contains(".")
-                    ? ""
-                    : originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
-            if (!ALLOWED_EXTENSIONS.contains(suffix)) {
-                log.warn("检测到不支持或违规的文件格式：fileName={}", originalFilename);
-                throw new FileException(ResultEnum.PARAM_ERROR, "不支持的文件格式: ." + suffix);
-            }
+            validateSingleFileExtension(file);
         }
+    }
 
-        // 异步并发上传 S3 + Saga 补偿清理机制
-        List<String> uploadedPaths = Collections.synchronizedList(new ArrayList<>());
-        List<FileInfoVo> uploadedVos = new ArrayList<>();
+    private void validateSingleFileExtension(MultipartFile file) throws FileException {
+        if (file == null || file.isEmpty()) {
+            throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
+        }
+        String originalFilename = file.getOriginalFilename();
+        String suffix = StringUtils.isBlank(originalFilename) || !originalFilename.contains(".")
+                ? ""
+                : originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
+        if (!ALLOWED_EXTENSIONS.contains(suffix)) {
+            log.warn("检测到不支持或违规的文件格式：fileName={}", originalFilename);
+            throw new FileException(ResultEnum.PARAM_ERROR, "不支持的文件格式: ." + suffix);
+        }
+    }
+
+    private FileInfoVo uploadAndTrackFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal,
+            List<String> uploadedPaths) {
         try {
-            List<CompletableFuture<FileInfoVo>> futures = multipartFiles.stream()
-                    .map(file -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            FileInfoVo vo = uploadFile(type, file, isThumbnail, isNormal);
-                            if (vo.getUrl() != null) {
-                                uploadedPaths.add(vo.getUrl());
-                            }
-                            if (vo.getThumbnailUrl() != null) {
-                                uploadedPaths.add(vo.getThumbnailUrl());
-                            }
-                            return vo;
-                        } catch (Exception e) {
-                            throw new CompletionException(e);
-                        }
-                    }))
-                    .toList();
-
-            for (CompletableFuture<FileInfoVo> future : futures) {
-                uploadedVos.add(future.join());
+            FileInfoVo vo = uploadFile(type, file, isThumbnail, isNormal);
+            if (vo.getUrl() != null) {
+                uploadedPaths.add(vo.getUrl());
             }
-
-            // 批量落库
-            for (FileInfoVo uploadFile : uploadedVos) {
-                FileInfo fileInfo = new FileInfo();
-                BeanUtils.copyProperties(uploadFile, fileInfo);
-                fileInfoMapper.insert(fileInfo);
-                uploadFile.setId(fileInfo.getId());
-
-                // 补全预签名预览直链
-                fillPreUrlsSafely(uploadFile);
+            if (vo.getThumbnailUrl() != null) {
+                uploadedPaths.add(vo.getThumbnailUrl());
             }
-            return uploadedVos;
+            return vo;
         } catch (Exception e) {
-            log.error("多附件批量上传异常，触发 Saga 补偿清理：paths={}", uploadedPaths, e);
-            rollbackUploadedFilesSafely(uploadedPaths, type);
-            Throwable cause = e instanceof CompletionException ? e.getCause() : e;
-            if (cause instanceof FileException fileEx) {
-                throw fileEx;
-            }
-            throw new FileException(ResultEnum.IMAGE_UPLOAD_FAIL, cause != null ? cause.getMessage() : e.getMessage());
+            throw new CompletionException(e);
         }
+    }
+
+    private void saveBatchFileInfo(List<FileInfoVo> uploadedVos) {
+        for (FileInfoVo uploadFile : uploadedVos) {
+            FileInfo fileInfo = new FileInfo();
+            BeanUtils.copyProperties(uploadFile, fileInfo);
+            fileInfoMapper.insert(fileInfo);
+            uploadFile.setId(fileInfo.getId());
+
+            // 补全预签名预览直链
+            fillPreUrlsSafely(uploadFile);
+        }
+    }
+
+    private FileException handleBatchUploadException(Exception e, List<String> uploadedPaths, String type) {
+        log.error("多附件批量上传异常，触发 Saga 补偿清理：paths={}", uploadedPaths, e);
+        rollbackUploadedFilesSafely(uploadedPaths, type);
+        Throwable cause = e instanceof CompletionException ? e.getCause() : e;
+        if (cause instanceof FileException fileEx) {
+            return fileEx;
+        }
+        return new FileException(ResultEnum.IMAGE_UPLOAD_FAIL, cause != null ? cause.getMessage() : e.getMessage());
     }
 
     private void fillPreUrlsSafely(FileInfoVo uploadFile) {

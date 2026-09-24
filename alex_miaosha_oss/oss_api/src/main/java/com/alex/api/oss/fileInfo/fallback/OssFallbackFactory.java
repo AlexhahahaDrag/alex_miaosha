@@ -3,6 +3,7 @@ package com.alex.api.oss.fileInfo.fallback;
 import com.alex.api.oss.fileInfo.vo.FileInfoVo;
 import com.alex.base.common.Result;
 import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.FileException;
 import com.alex.common.exception.SystemException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -33,22 +34,22 @@ public class OssFallbackFactory implements FallbackFactory<OssApi> {
             }
 
             @Override
-            public Result<FileInfoVo> add(String type, MultipartFile file) throws Exception {
+            public Result<FileInfoVo> add(String type, MultipartFile file) throws FileException {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 
             @Override
-            public Result<List<FileInfoVo>> addBatch(String type, List<MultipartFile> files) throws Exception {
+            public Result<List<FileInfoVo>> addBatch(String type, List<MultipartFile> files) throws FileException {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 
             @Override
-            public Result<List<FileInfoVo>> multiUpload(String type, List<MultipartFile> files) throws Exception {
+            public Result<List<FileInfoVo>> multiUpload(String type, List<MultipartFile> files) throws FileException {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 
             @Override
-            public Result<FileInfoVo> update(Long id, String type, MultipartFile file) throws Exception {
+            public Result<FileInfoVo> update(Long id, String type, MultipartFile file) throws FileException {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
 
@@ -68,7 +69,7 @@ public class OssFallbackFactory implements FallbackFactory<OssApi> {
             }
 
             @Override
-            public Result<FileInfoVo> addThumbnail(String type, MultipartFile file) throws Exception {
+            public Result<FileInfoVo> addThumbnail(String type, MultipartFile file) throws FileException {
                 throw new SystemException(ResultEnum.SYSTEM_NO_AVAILABLE, "oss");
             }
         };

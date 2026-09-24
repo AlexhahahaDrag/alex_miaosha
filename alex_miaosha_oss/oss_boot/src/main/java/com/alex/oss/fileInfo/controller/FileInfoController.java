@@ -5,6 +5,7 @@ import com.alex.base.common.Result;
 import com.alex.common.annotations.LogRestRequest;
 import com.alex.oss.fileInfo.service.FileInfoService;
 import com.alex.common.annotations.AvoidRepeatableCommit;
+import com.alex.common.exception.FileException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
@@ -69,7 +70,7 @@ public class FileInfoController {
     public Result<FileInfoVo> add(@RequestParam(value = "type", required = false) String type,
                                   @RequestPart(value = "file") MultipartFile file,
                                   @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
-                                  @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+                                  @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws FileException {
         return Result.success(fileInfoService.addFileInfo(type, file, isThumbnail, isNormal));
     }
 
@@ -81,7 +82,7 @@ public class FileInfoController {
     public Result<List<FileInfoVo>> addBatch(@RequestParam(value = "type", required = false) String type,
                                              @RequestPart(value = "file") List<MultipartFile> files,
                                              @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
-                                             @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+                                             @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws FileException {
         return Result.success(fileInfoService.addBatchFileInfo(type, files, isThumbnail, isNormal));
     }
 
@@ -94,7 +95,7 @@ public class FileInfoController {
                                                 @RequestPart(value = "file", required = false) List<MultipartFile> file,
                                                 @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                                 @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
-                                                @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+                                                @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws FileException {
         List<MultipartFile> uploadList = (files != null && !files.isEmpty()) ? files : file;
         return Result.success(fileInfoService.uploadMultipleFiles(type, uploadList, isThumbnail, isNormal));
     }
@@ -108,7 +109,7 @@ public class FileInfoController {
                                      @RequestParam(value = "type", required = false) String type,
                                      @RequestPart(value = "file") MultipartFile file,
                                      @RequestParam(value = "isThumbnail", required = false, defaultValue = "true") boolean isThumbnail,
-                                     @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws Exception {
+                                     @RequestParam(value = "isNormal", required = false, defaultValue = "true") boolean isNormal) throws FileException {
         return Result.success(fileInfoService.updateFileInfo(id, type, file, isThumbnail, isNormal));
     }
 
