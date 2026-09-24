@@ -73,31 +73,33 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         Map<Long, OrgInfoVo> byId = new HashMap<>(list.size() * 2);
         Set<Long> ids = new HashSet<>(list.size() * 2);
         for (OrgInfoVo node : list) {
-            if (node == null || node.getId() == null) {
-                continue;
+            if (node != null && node.getId() != null) {
+                node.setChildren(new ArrayList<>());
+                byId.put(node.getId(), node);
+                ids.add(node.getId());
             }
-            node.setChildren(new ArrayList<>());
-            byId.put(node.getId(), node);
-            ids.add(node.getId());
         }
         List<OrgInfoVo> roots = new ArrayList<>();
         for (OrgInfoVo node : list) {
-            if (node == null || node.getId() == null) {
-                continue;
-            }
-            Long parentId = node.getParentId();
-            if (isRootParent(parentId) || !ids.contains(parentId)) {
-                roots.add(node);
-                continue;
-            }
-            OrgInfoVo parent = byId.get(parentId);
-            if (parent != null) {
-                parent.getChildren().add(node);
-            } else {
-                roots.add(node);
+            if (node != null && node.getId() != null) {
+                attachToTree(node, byId, ids, roots);
             }
         }
         return roots;
+    }
+
+    private static void attachToTree(OrgInfoVo node, Map<Long, OrgInfoVo> byId, Set<Long> ids, List<OrgInfoVo> roots) {
+        Long parentId = node.getParentId();
+        if (isRootParent(parentId) || !ids.contains(parentId)) {
+            roots.add(node);
+            return;
+        }
+        OrgInfoVo parent = byId.get(parentId);
+        if (parent != null) {
+            parent.getChildren().add(node);
+        } else {
+            roots.add(node);
+        }
     }
 
     @Override
@@ -187,22 +189,28 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
         if (parent == null || isDeleted(parent)) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不存在");
         }
-        // Walk upward from parent; if self appears in the ancestor chain, a cycle would
-        // form.
-        Long cursor = parent.getParentId();
+        // Walk upward from parent; if self appears in the ancestor chain, a cycle would form.
+        if (hasAncestorCycle(selfId, parent.getParentId())) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构父子关系不能成环");
+        }
+    }
+
+    private boolean hasAncestorCycle(Long selfId, Long startCursor) {
+        Long cursor = startCursor;
         for (int depth = 0; depth < 64; depth++) {
             if (isRootParent(cursor)) {
-                return;
+                return false;
             }
             if (selfId != null && selfId.equals(cursor)) {
-                throw new SystemException(ResultEnum.PARAM_ERROR, "机构父子关系不能成环");
+                return true;
             }
             OrgInfo ancestor = orgInfoMapper.selectById(cursor);
             if (ancestor == null || isDeleted(ancestor)) {
-                return;
+                return false;
             }
             cursor = ancestor.getParentId();
         }
+        return false;
     }
 
     private static boolean isRootParent(Long parentId) {

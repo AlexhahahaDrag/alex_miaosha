@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -171,6 +172,33 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
         if (roleId == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "角色用户分配参数错误:");
         }
+        Set<Long> previousUserIds = deactivatePreviousAssignments(roleId);
+        Set<Long> uniqueUserIds = (userIds == null) ? Collections.emptySet()
+                : userIds.stream().filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new));
+        if (uniqueUserIds.isEmpty()) {
+            if (!previousUserIds.isEmpty()) {
+                permissionContextCacheService.invalidateAll(previousUserIds);
+            }
+            return true;
+        }
+        List<RoleUserInfo> newAssignments = uniqueUserIds.stream().map(userId -> {
+            RoleUserInfo roleUserInfo = new RoleUserInfo();
+            roleUserInfo.setUserId(String.valueOf(userId));
+            roleUserInfo.setRoleId(String.valueOf(roleId));
+            roleUserInfo.setStatus(SysConf.VALID_STATUS);
+            return roleUserInfo;
+        }).collect(Collectors.toList());
+        if (!saveBatch(newAssignments)) {
+            throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户新关系保存失败:");
+        }
+        // RBAC-BE-RELATION-002/SCOPE-004: 失效被移除与被分配用户的 permission_context 缓存
+        Set<Long> affectedUserIds = new LinkedHashSet<>(previousUserIds);
+        affectedUserIds.addAll(uniqueUserIds);
+        permissionContextCacheService.invalidateAll(affectedUserIds);
+        return true;
+    }
+
+    private Set<Long> deactivatePreviousAssignments(Long roleId) {
         List<RoleUserInfo> activeAssignments = list(Wrappers.<RoleUserInfo>lambdaQuery()
                 .eq(RoleUserInfo::getRoleId, String.valueOf(roleId))
                 .eq(RoleUserInfo::getStatus, SysConf.VALID_STATUS));
@@ -185,41 +213,9 @@ public class RoleUserInfoServiceImp extends ServiceImpl<RoleUserInfoMapper, Role
                 throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户旧关系失效失败:");
             }
         }
-        if (userIds == null || userIds.isEmpty()) {
-            if (!previousUserIds.isEmpty()) {
-                permissionContextCacheService.invalidateAll(previousUserIds);
-            }
-            return true;
-        }
-        Set<Long> uniqueUserIds = new LinkedHashSet<>();
-        for (Long userId : userIds) {
-            if (userId != null) {
-                uniqueUserIds.add(userId);
-            }
-        }
-        if (uniqueUserIds.isEmpty()) {
-            if (!previousUserIds.isEmpty()) {
-                permissionContextCacheService.invalidateAll(previousUserIds);
-            }
-            return true;
-        }
-        List<RoleUserInfo> newAssignments = new ArrayList<>();
-        for (Long userId : uniqueUserIds) {
-            RoleUserInfo roleUserInfo = new RoleUserInfo();
-            roleUserInfo.setUserId(String.valueOf(userId));
-            roleUserInfo.setRoleId(String.valueOf(roleId));
-            roleUserInfo.setStatus(SysConf.VALID_STATUS);
-            newAssignments.add(roleUserInfo);
-        }
-        if (!saveBatch(newAssignments)) {
-            throw new SystemException(ResultEnum.SYSTEM_ERROR, "角色用户新关系保存失败:");
-        }
-        // RBAC-BE-RELATION-002/SCOPE-004: 失效被移除与被分配用户的 permission_context 缓存
-        Set<Long> affectedUserIds = new LinkedHashSet<>(previousUserIds);
-        affectedUserIds.addAll(uniqueUserIds);
-        permissionContextCacheService.invalidateAll(affectedUserIds);
-        return true;
+        return previousUserIds;
     }
+
 
     @Override
     public List<RoleInfoVo> getRoleInfoList(Long userId, boolean hasPermission) {

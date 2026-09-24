@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -341,31 +342,26 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
                 .filter(id -> !StringUtils.isEmpty(id))
                 .collect(Collectors.toSet());
         for (Long userId : userIds) {
-            if (userId == null) {
-                continue;
-            }
-            Set<String> userOrgIds = new HashSet<>();
-            List<OrgInfoVo> orgs = orgUserInfoService.getOrgInfoList(userId);
-            if (orgs != null) {
-                for (OrgInfoVo org : orgs) {
-                    if (org != null && org.getId() != null) {
-                        userOrgIds.add(String.valueOf(org.getId()));
-                    }
-                }
-            }
-            boolean intersects = false;
-            for (String orgId : userOrgIds) {
-                if (roleOrgIds.contains(orgId)) {
-                    intersects = true;
-                    break;
-                }
-            }
-            if (!intersects) {
+            if (userId != null && !hasOrgIntersection(userId, roleOrgIds)) {
                 throw new SystemException(ResultEnum.PARAM_ERROR,
                         "无权分配：用户机构与角色绑定机构无交集");
             }
         }
     }
+
+    private boolean hasOrgIntersection(Long userId, Set<String> roleOrgIds) {
+        List<OrgInfoVo> orgs = orgUserInfoService.getOrgInfoList(userId);
+        if (orgs == null || orgs.isEmpty()) {
+            return false;
+        }
+        return orgs.stream()
+                .filter(Objects::nonNull)
+                .map(OrgInfoVo::getId)
+                .filter(Objects::nonNull)
+                .map(String::valueOf)
+                .anyMatch(roleOrgIds::contains);
+    }
+
 
     @Override
     public Boolean assignPermissions(Long roleId, List<Long> permissionIds) {
@@ -448,7 +444,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         }
         List<Long> normalized = orgIds == null ? Collections.emptyList()
                 : orgIds.stream()
-                        .filter(id -> id != null)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
         if (requireNonEmpty && normalized.isEmpty()) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "创建角色必须绑定机构");

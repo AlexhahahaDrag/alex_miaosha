@@ -161,31 +161,33 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         Map<Long, MenuInfoVo> byId = new HashMap<>(list.size() * 2);
         Set<Long> ids = new HashSet<>(list.size() * 2);
         for (MenuInfoVo node : list) {
-            if (node == null || node.getId() == null) {
-                continue;
+            if (node != null && node.getId() != null) {
+                node.setChildren(new ArrayList<>());
+                byId.put(node.getId(), node);
+                ids.add(node.getId());
             }
-            node.setChildren(new ArrayList<>());
-            byId.put(node.getId(), node);
-            ids.add(node.getId());
         }
         List<MenuInfoVo> roots = new ArrayList<>();
         for (MenuInfoVo node : list) {
-            if (node == null || node.getId() == null) {
-                continue;
-            }
-            Long parentId = node.getParentId();
-            if (isRootParent(parentId) || !ids.contains(parentId)) {
-                roots.add(node);
-                continue;
-            }
-            MenuInfoVo parent = byId.get(parentId);
-            if (parent != null) {
-                parent.getChildren().add(node);
-            } else {
-                roots.add(node);
+            if (node != null && node.getId() != null) {
+                attachToTree(node, byId, ids, roots);
             }
         }
         return roots;
+    }
+
+    private static void attachToTree(MenuInfoVo node, Map<Long, MenuInfoVo> byId, Set<Long> ids, List<MenuInfoVo> roots) {
+        Long parentId = node.getParentId();
+        if (isRootParent(parentId) || !ids.contains(parentId)) {
+            roots.add(node);
+            return;
+        }
+        MenuInfoVo parent = byId.get(parentId);
+        if (parent != null) {
+            parent.getChildren().add(node);
+        } else {
+            roots.add(node);
+        }
     }
 
     private static boolean isRootParent(Long parentId) {

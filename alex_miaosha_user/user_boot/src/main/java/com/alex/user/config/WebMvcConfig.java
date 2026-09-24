@@ -18,13 +18,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * description:
- * author: majf
- * createDate: 2022/10/8 17:34
- * version: 1.0.0
+ * Web MVC 与 Actuator 端点映射配置
+ *
+ * @author majf, alex
+ * @version 1.0.0
  */
 @Configuration
-public class WebMvcConfigurer {
+public class WebMvcConfig {
 
     @Bean
     public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
