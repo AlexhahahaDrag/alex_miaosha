@@ -16,11 +16,13 @@ import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
+import com.alex.common.exception.FinanceException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, GiftRecordInfo>
@@ -288,7 +291,8 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
             workbook.write(response.getOutputStream());
             response.getOutputStream().flush();
         } catch (java.io.IOException e) {
-            throw new RuntimeException("导出Excel失败", e);
+            log.error("导出Excel失败: {}", e.getMessage(), e);
+            throw new FinanceException("500", "导出Excel失败: " + e.getMessage());
         }
     }
 

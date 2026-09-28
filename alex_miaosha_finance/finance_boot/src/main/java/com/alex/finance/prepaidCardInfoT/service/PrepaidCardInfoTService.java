@@ -24,13 +24,13 @@ public interface PrepaidCardInfoTService extends IService<PrepaidCardInfoT> {
 
     PrepaidCardInfoTVo queryPrepaidCardInfoT(Long id);
 
-    PrepaidCardInfoTVo addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception;
+    PrepaidCardInfoTVo addPrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo);
 
     Boolean updatePrepaidCardInfoT(PrepaidCardInfoTVo prepaidCardInfoTVo);
 
     Boolean deletePrepaidCardInfoT(String ids);
 
-    Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception;
+    Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo);
 
     /**
      * 仪表盘总览

@@ -5,6 +5,8 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoImportVo;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.cpnCouponInfo.entity.CpnCouponInfo;
 import com.alex.finance.cpnCouponInfo.mapper.CpnCouponInfoMapper;
@@ -184,13 +186,13 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         // 验证文件
         if (file == null || file.isEmpty()) {
             log.warn("上传的文件为空");
-            throw new RuntimeException("上传的文件不能为空");
+            throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "上传的文件不能为空");
         }
         
         String fileName = file.getOriginalFilename();
         if (fileName == null || (!fileName.endsWith(".xlsx") && !fileName.endsWith(".xls"))) {
             log.warn("文件格式不正确: {}", fileName);
-            throw new RuntimeException("只支持 .xlsx 或 .xls 格式的Excel文件");
+            throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "只支持 .xlsx 或 .xls 格式的Excel文件");
         }
         
         // 解析Excel文件
@@ -299,7 +301,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
             return result.getList();
         } catch (Exception e) {
             log.error("Excel 解析失败", e);
-            throw new RuntimeException("Excel文件解析失败: " + e.getMessage());
+            throw new FinanceException("500", "Excel文件解析失败: " + e.getMessage());
         }
     }
 

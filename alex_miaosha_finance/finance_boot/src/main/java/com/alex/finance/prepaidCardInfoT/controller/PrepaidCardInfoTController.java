@@ -77,7 +77,7 @@ public class PrepaidCardInfoTController {
     @ApiOperationSupport(order = 30, author = "alex")
     @ApiOperation(value = "新增消费卡信息表", notes = "新增消费卡信息表", response = Result.class)
     @PostMapping
-    public Result<PrepaidCardInfoTVo> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) throws Exception {
+    public Result<PrepaidCardInfoTVo> add(@Validated({Insert.class}) @RequestBody PrepaidCardInfoTVo prepaidCardInfoTVo) {
         return Result.success(prepaidCardInfoTService.addPrepaidCardInfoT(prepaidCardInfoTVo));
     }
 
@@ -101,7 +101,7 @@ public class PrepaidCardInfoTController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "消费/充值信息", name = "prepaidCardConsumeVo", dataTypeClass = PrepaidCardConsumeVo.class, required = true)
     })
-    public Result<Boolean> consumeAndRecharge(@RequestBody @Validated PrepaidCardConsumeVo prepaidCardConsumeVo) throws Exception {
+    public Result<Boolean> consumeAndRecharge(@RequestBody @Validated PrepaidCardConsumeVo prepaidCardConsumeVo) {
         try {
             if (prepaidCardConsumeVo == null) {
                 log.warn("消费/充值请求参数为空");
