@@ -207,7 +207,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         boolean res;
         switch (prepaidCardConsumeVo.getType()) {
             case "consume" -> {
-                consumeAmount = prepaidCardConsumeVo.getConsumeAmount().multiply(new BigDecimal("-1"));
+                consumeAmount = prepaidCardConsumeVo.getConsumeAmount().negate();
                 res = consume(prepaidCardConsumeVo);
             }
             case "recharge" -> {

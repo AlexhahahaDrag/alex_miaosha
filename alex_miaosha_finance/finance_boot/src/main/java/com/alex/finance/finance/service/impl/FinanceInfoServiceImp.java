@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,14 +56,12 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         Result<List<TUserVo>> list = userApi.getList(new TUserVo());
         Map<Long, TUserVo> userMap = Optional.ofNullable(list)
                 .map(item -> item.getData().stream()
-                        .collect(Collectors.toMap(TUserVo::getId, vo -> vo, (newVal, oldVal) -> newVal)))
+                        .collect(Collectors.toMap(TUserVo::getId, Function.identity(), (newVal, oldVal) -> newVal)))
                 .orElse(new HashMap<>());
-        List<FinanceInfoVo> financeInfoVos = result.getRecords().stream().peek(
-                finance -> {
-                    TUserVo tUserVo = userMap.get(finance.getBelongTo());
-                    finance.setBelongToName(tUserVo == null ? null : (StringUtils.isEmpty(tUserVo.getNickName()) ? tUserVo.getUsername() : tUserVo.getNickName()));
-                }).toList();
-        result.setRecords(financeInfoVos);
+        result.getRecords().forEach(finance -> {
+            TUserVo tUserVo = userMap.get(finance.getBelongTo());
+            finance.setBelongToName(tUserVo == null ? null : (StringUtils.isNotEmpty(tUserVo.getNickName()) ? tUserVo.getNickName() : tUserVo.getUsername()));
+        });
         return result;
     }
 

@@ -467,3 +467,30 @@ DEALLOCATE PREPARE gift_person_avatar_stmt;
 USE alex_finance;
 
 DROP TABLE IF EXISTS `alex_finance`.`gift_relation_info_t`;
+
+-- -----------------------------------------------------------------------------
+-- 9. Incremental 2026-09-28：事由分类个性化配置表 gift_event_type_user_config_t
+-- -----------------------------------------------------------------------------
+USE alex_finance;
+
+CREATE TABLE IF NOT EXISTS `alex_finance`.`gift_event_type_user_config_t` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `option_id` bigint NOT NULL COMMENT '关联的事由分类选项ID',
+  `org_id` bigint DEFAULT NULL COMMENT '机构/家庭组ID',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '启用状态(1:启用, 0:停用)',
+  `custom_amount` decimal(10,2) DEFAULT NULL COMMENT '个性化推荐金额',
+  `creator` bigint DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updater` bigint DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `operator` bigint DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '操作时间',
+  `deleter` bigint DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除标识',
+  PRIMARY KEY (`id`),
+  KEY `idx_org_option` (`org_id`, `option_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='事由分类个性化配置表';
+

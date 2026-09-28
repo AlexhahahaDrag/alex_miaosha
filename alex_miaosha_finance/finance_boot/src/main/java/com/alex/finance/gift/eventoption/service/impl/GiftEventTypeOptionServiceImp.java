@@ -24,7 +24,6 @@ import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.eventoption.entity.GiftEventTypeUserConfig;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeUserConfigMapper;
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,25 +42,17 @@ public class GiftEventTypeOptionServiceImp
         implements GiftEventTypeOptionService {
 
     private static final int MAX_LABEL_LENGTH = 20;
+    private static final BigDecimal DEFAULT_FALLBACK_AMOUNT = new BigDecimal("500.00");
+    private static final BigDecimal MULTIPLIER_0_8 = new BigDecimal("0.80");
+    private static final BigDecimal MULTIPLIER_1_0 = new BigDecimal("1.00");
+    private static final BigDecimal MULTIPLIER_1_5 = new BigDecimal("1.50");
+    private static final BigDecimal MULTIPLIER_2_0 = new BigDecimal("2.00");
 
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftEventInfoMapper giftEventInfoMapper;
     private final GiftEventTypePresetSupport giftEventTypePresetSupport;
     private final GiftRecordInfoMapper giftRecordInfoMapper;
     private final GiftEventTypeUserConfigMapper giftEventTypeUserConfigMapper;
-
-    @PostConstruct
-    public void initTable() {
-        try {
-            giftEventTypeUserConfigMapper.createTableIfNotExists();
-        } catch (Exception e) {
-            log.warn("初始化 gift_event_type_user_config_t 提示: {}", e.getMessage());
-        }
-        try {
-            giftEventTypeUserConfigMapper.addMissingAuditColumns();
-        } catch (Exception ignored) {
-        }
-    }
 
     @Override
     public GiftEventTypeOptionsVo listEventTypeOptions() {
@@ -102,16 +94,12 @@ public class GiftEventTypeOptionServiceImp
                 .collect(Collectors.groupingBy(GiftEventInfo::getEventType, Collectors.counting()));
 
         // 2. 查询当前机构的个性化状态与金额覆写配置
-        List<GiftEventTypeUserConfig> configs = List.of();
-        try {
-            configs = giftEventTypeUserConfigMapper.selectList(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
-                    .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
-                    .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
-                    .eq(GiftEventTypeUserConfig::getIsDelete, 0));
-        } catch (Exception ignored) {
-        }
+        List<GiftEventTypeUserConfig> configs = giftEventTypeUserConfigMapper.selectList(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
+                .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
+                .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
+                .eq(GiftEventTypeUserConfig::getIsDelete, 0));
         Map<Long, GiftEventTypeUserConfig> configMap = configs == null ? Collections.emptyMap()
-                : configs.stream().collect(Collectors.toMap(GiftEventTypeUserConfig::getOptionId, c -> c, (c1, c2) -> c1));
+                : configs.stream().collect(Collectors.toMap(GiftEventTypeUserConfig::getOptionId, Function.identity(), (c1, c2) -> c1));
 
         List<GiftEventTypeItemVo> enrichedPresets = new ArrayList<>();
         for (GiftEventTypeItemVo p : finalPresets) {
@@ -168,7 +156,7 @@ public class GiftEventTypeOptionServiceImp
         // 1. 如果是系统预设分类 (SYSTEM)，保存/更新到租户个性化配置表 gift_event_type_user_config_t
         boolean isSystem = existing == null
                 || GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(existing.getOptionType())
-                || Long.valueOf(0L).equals(existing.getUserId());
+                || (existing.getUserId() != null && existing.getUserId() == 0L);
 
         if (isSystem) {
             GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
@@ -210,7 +198,7 @@ public class GiftEventTypeOptionServiceImp
             return null;
         }
         GiftEventTypeOption option = getById(eventTypeOptionId);
-        if (option == null || option.getIsDelete() != null && option.getIsDelete() == 1) {
+        if (option == null || (option.getIsDelete() != null && option.getIsDelete() == 1)) {
             throw GiftExceptions.param("事由类型选项不存在");
         }
         if (GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
@@ -316,17 +304,14 @@ public class GiftEventTypeOptionServiceImp
         BigDecimal defaultAmount = BigDecimal.ZERO;
         Long optionId = findEventTypeOptionId(orgId, eventType);
         if (optionId != null) {
-            try {
-                GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
-                        .eq(GiftEventTypeUserConfig::getOptionId, optionId)
-                        .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
-                        .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
-                        .eq(GiftEventTypeUserConfig::getIsDelete, 0)
-                        .last("LIMIT 1"));
-                if (config != null && config.getCustomAmount() != null) {
-                    defaultAmount = config.getCustomAmount();
-                }
-            } catch (Exception ignored) {
+            GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
+                    .eq(GiftEventTypeUserConfig::getOptionId, optionId)
+                    .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
+                    .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
+                    .eq(GiftEventTypeUserConfig::getIsDelete, 0)
+                    .last("LIMIT 1"));
+            if (config != null && config.getCustomAmount() != null) {
+                defaultAmount = config.getCustomAmount();
             }
             if (defaultAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 GiftEventTypeOption option = getById(optionId);
@@ -336,7 +321,7 @@ public class GiftEventTypeOptionServiceImp
             }
         }
         if (defaultAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            defaultAmount = new BigDecimal("500.00");
+            defaultAmount = DEFAULT_FALLBACK_AMOUNT;
         }
 
         List<Long> eventIds = giftEventInfoMapper.selectList(
@@ -378,10 +363,10 @@ public class GiftEventTypeOptionServiceImp
         BigDecimal baseAmount = averageAmount.compareTo(BigDecimal.ZERO) > 0 ? averageAmount : defaultAmount;
         
         List<BigDecimal> recommendations = List.of(
-            roundAmount(baseAmount.multiply(new BigDecimal("0.80"))),
-            roundAmount(baseAmount.multiply(new BigDecimal("1.00"))),
-            roundAmount(baseAmount.multiply(new BigDecimal("1.50"))),
-            roundAmount(baseAmount.multiply(new BigDecimal("2.00")))
+            roundAmount(baseAmount.multiply(MULTIPLIER_0_8)),
+            roundAmount(baseAmount.multiply(MULTIPLIER_1_0)),
+            roundAmount(baseAmount.multiply(MULTIPLIER_1_5)),
+            roundAmount(baseAmount.multiply(MULTIPLIER_2_0))
         );
 
         return new GiftRecordRecommendAmountVo()
@@ -398,8 +383,7 @@ public class GiftEventTypeOptionServiceImp
         double valDouble = val.doubleValue();
         if (valDouble > 100) {
             return BigDecimal.valueOf(Math.round(valDouble / 50.0) * 50);
-        } else {
-            return BigDecimal.valueOf(Math.round(valDouble / 10.0) * 10);
         }
+        return BigDecimal.valueOf(Math.round(valDouble / 10.0) * 10);
     }
 }
