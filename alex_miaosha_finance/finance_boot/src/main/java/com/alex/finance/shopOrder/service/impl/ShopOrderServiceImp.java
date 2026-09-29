@@ -1,5 +1,6 @@
 package com.alex.finance.shopOrder.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.shopOrder.vo.ShopOrderVo;
 import com.alex.api.finance.shopOrderDetail.vo.ShopOrderDetailVo;
 import com.alex.base.constants.SysConf;
@@ -126,7 +127,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         // 1.保存订单数据
         // 计算商品总数
         BigDecimal saleCount = shopOrderDetailVoList.parallelStream().map(ShopOrderDetailVo::getSaleNum).reduce(BigDecimal.ZERO, BigDecimal::add);
-        shopOrderVo.setSaleDate(LocalDateTime.now());
+        shopOrderVo.setSaleDate(DateUtils.now());
         ShopOrder shopOrder = new ShopOrder();
         BeanUtils.copyProperties(shopOrderVo, shopOrder);
         String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));

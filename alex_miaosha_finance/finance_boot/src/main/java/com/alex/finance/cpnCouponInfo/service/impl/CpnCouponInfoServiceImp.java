@@ -1,5 +1,6 @@
 package com.alex.finance.cpnCouponInfo.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.result.ExcelImportResult;
@@ -42,6 +43,12 @@ import java.util.Objects;
 public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, CpnCouponInfo> implements CpnCouponInfoService {
 
     private final CpnCouponInfoMapper cpnCouponInfoMapper;
+    private final com.alex.finance.cpnCouponInfo.service.CouponAiService couponAiService;
+
+    @Override
+    public com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanVo generateAiPlan(com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanReq req) {
+        return couponAiService.generatePlan(req);
+    }
 
     @Override
     public Page<CpnCouponInfoVo> getPage(Long pageNum, Long pageSize, CpnCouponInfoVo cpnCouponInfoVo) {
@@ -62,7 +69,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
     public CpnCouponInfoVo queryCpnCouponInfo(Long id) {
         CpnCouponInfoVo vo = cpnCouponInfoMapper.queryCpnCouponInfo(id);
         if (vo != null) {
-            vo.setExpireStatus(calcExpireStatus(vo.getEndDate(), LocalDateTime.now()));
+            vo.setExpireStatus(calcExpireStatus(vo.getEndDate(), DateUtils.now()));
         }
         return vo;
     }
@@ -100,7 +107,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         if (list == null || list.isEmpty()) {
             return;
         }
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         for (CpnCouponInfoVo item : list) {
             if (item == null) {
                 continue;
@@ -329,7 +336,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
             if (StringUtils.isNotEmpty(importVo.getStartDate())) {
                 entity.setStartDate(LocalDateTime.parse(importVo.getStartDate(), formatter));
             } else {
-                entity.setStartDate(LocalDateTime.now());
+                entity.setStartDate(DateUtils.now());
             }
             if (StringUtils.isNotEmpty(importVo.getEndDate())) {
                 entity.setEndDate(LocalDateTime.parse(importVo.getEndDate(), formatter));
@@ -339,7 +346,7 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
                     importVo.getStartDate(), importVo.getEndDate(), e.getMessage());
             // 日期解析失败时，如果开始时间为空，设置为当前时间
             if (entity.getStartDate() == null) {
-                entity.setStartDate(LocalDateTime.now());
+                entity.setStartDate(DateUtils.now());
             }
         }
         

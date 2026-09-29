@@ -35,6 +35,8 @@ public class PmsShopProductController {
 
     private final PmsShopProductService pmsShopProductService;
 
+    private final com.alex.product.service.ProductAiService productAiService;
+
     @LogRestRequest(apiName = "获取商品网上商品信息分页")
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商品网上商品信息分页", notes = "获取商品网上商品信息分页", response = Result.class)
@@ -129,5 +131,16 @@ public class PmsShopProductController {
     public Result<Boolean> updateCompareInfo(@RequestParam(value = "skuId") String skuId,
                                              @RequestParam(value = "chooseId") Long chooseId) {
         return Result.success(pmsShopProductService.updateCompareInfo(skuId, chooseId));
+    }
+
+    /**
+     * 商品秒杀营销文案与核心卖点 AI 生成
+     */
+    @LogRestRequest(apiName = "商品秒杀营销文案AI生成")
+    @ApiOperationSupport(order = 90, author = "alex")
+    @ApiOperation(value = "商品秒杀营销文案AI生成", notes = "根据商品与促销参数智能生成高转化营销文案与核心卖点", response = Result.class)
+    @PostMapping(value = "/ai-copy")
+    public Result<com.alex.api.product.vo.pmsShopProduct.ProductAiCopyVo> aiCopy(@RequestBody com.alex.api.product.vo.pmsShopProduct.ProductAiCopyReq req) {
+        return Result.success(productAiService.generateMarketingCopy(req));
     }
 }

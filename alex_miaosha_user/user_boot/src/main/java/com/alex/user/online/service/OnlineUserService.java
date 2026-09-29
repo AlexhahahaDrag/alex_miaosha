@@ -71,7 +71,7 @@ public class OnlineUserService {
                 .loginTime(DateUtils.getTimeStr(userLogin.getLastLoginTime()))
                 .roleName(null)
                 .username(userLogin.getUsername())
-                .expireTime(DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.MICROS)))
+                .expireTime(DateUtils.getTimeStr(DateUtils.addTime(DateUtils.now(), expiration, ChronoUnit.MICROS)))
                 .build();
     }
 

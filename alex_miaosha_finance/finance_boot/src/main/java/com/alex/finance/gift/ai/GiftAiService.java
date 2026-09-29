@@ -1,5 +1,6 @@
 package com.alex.finance.gift.ai;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.ai.api.AiAnalyzeApi;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
@@ -96,7 +97,7 @@ public class GiftAiService {
 
         // 4. 默认时间与方向兜底
         if (vo.getPayTime() == null) {
-            vo.setPayTime(LocalDateTime.now());
+            vo.setPayTime(DateUtils.now());
         }
         if (!StringUtils.hasText(vo.getDirection())) {
             vo.setDirection("GIVE");

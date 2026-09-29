@@ -1,5 +1,6 @@
 package com.alex.finance.gift.eventoption.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeItemVo;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeOptionRowVo;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeOptionsVo;
@@ -153,42 +154,52 @@ public class GiftEventTypeOptionServiceImp
         GiftEventTypeOption existing = getById(option.getId());
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
         Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
-        Long userId = loginUser.getId();
 
-        // 1. 如果是系统预设分类 (SYSTEM)，保存/更新到租户个性化配置表 gift_event_type_user_config_t
-        boolean isSystem = existing == null
+        if (isSystemOption(existing)) {
+            return saveOrUpdateSystemConfig(option, existing, orgId, loginUser.getId());
+        }
+        return updateCustomOption(option, existing, orgId);
+    }
+
+    private boolean isSystemOption(GiftEventTypeOption existing) {
+        return existing == null
                 || GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(existing.getOptionType())
                 || (existing.getUserId() != null && existing.getUserId() == 0L);
+    }
 
-        if (isSystem) {
-            GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
-                    .eq(GiftEventTypeUserConfig::getOptionId, option.getId())
-                    .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
-                    .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
-                    .eq(GiftEventTypeUserConfig::getIsDelete, 0)
-                    .last("LIMIT 1"));
-            if (config != null) {
-                if (option.getStatus() != null) {
-                    config.setStatus(option.getStatus());
-                }
-                if (option.getDefaultAmount() != null) {
-                    config.setCustomAmount(option.getDefaultAmount());
-                }
-                giftEventTypeUserConfigMapper.updateById(config);
-            } else {
-                config = new GiftEventTypeUserConfig()
-                        .setOptionId(option.getId())
-                        .setOrgId(orgId)
-                        .setUserId(userId)
-                        .setStatus(option.getStatus() == null ? (existing != null ? existing.getStatus() : 1) : option.getStatus())
-                        .setCustomAmount(option.getDefaultAmount() == null ? (existing != null ? existing.getDefaultAmount() : null) : option.getDefaultAmount());
-                giftEventTypeUserConfigMapper.insert(config);
+    private boolean saveOrUpdateSystemConfig(GiftEventTypeOption option, GiftEventTypeOption existing, Long orgId, Long userId) {
+        GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
+                .eq(GiftEventTypeUserConfig::getOptionId, option.getId())
+                .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
+                .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
+                .eq(GiftEventTypeUserConfig::getIsDelete, 0)
+                .last("LIMIT 1"));
+        if (config != null) {
+            if (option.getStatus() != null) {
+                config.setStatus(option.getStatus());
             }
+            if (option.getDefaultAmount() != null) {
+                config.setCustomAmount(option.getDefaultAmount());
+            }
+            giftEventTypeUserConfigMapper.updateById(config);
             return true;
         }
 
-        // 2. 如果是自定义分类 (CUSTOM)，更新机构自身的选项
-        if (orgId != null && !orgId.equals(existing.getOrgId())) {
+        Integer defaultStatus = existing != null ? existing.getStatus() : 1;
+        BigDecimal defaultAmount = existing != null ? existing.getDefaultAmount() : null;
+
+        GiftEventTypeUserConfig newConfig = new GiftEventTypeUserConfig()
+                .setOptionId(option.getId())
+                .setOrgId(orgId)
+                .setUserId(userId)
+                .setStatus(option.getStatus() != null ? option.getStatus() : defaultStatus)
+                .setCustomAmount(option.getDefaultAmount() != null ? option.getDefaultAmount() : defaultAmount);
+        giftEventTypeUserConfigMapper.insert(newConfig);
+        return true;
+    }
+
+    private boolean updateCustomOption(GiftEventTypeOption option, GiftEventTypeOption existing, Long orgId) {
+        if (orgId != null && existing != null && !orgId.equals(existing.getOrgId())) {
             throw GiftExceptions.forbidden("无权修改其他机构的分类");
         }
         return updateById(option);
@@ -261,7 +272,7 @@ public class GiftEventTypeOptionServiceImp
 
     private void upsertLabel(Long orgId, Long userId, String label) {
         GiftEventTypeOption existing = findActiveCustomOption(orgId, label);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         if (existing != null) {
             existing.setLastUsedTime(now);
             updateById(existing);
@@ -287,7 +298,7 @@ public class GiftEventTypeOptionServiceImp
         option.setOptionType(GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM);
         option.setEventLabel(label);
         option.setSortOrder(0);
-        option.setLastUsedTime(LocalDateTime.now());
+        option.setLastUsedTime(DateUtils.now());
         save(option);
     }
 

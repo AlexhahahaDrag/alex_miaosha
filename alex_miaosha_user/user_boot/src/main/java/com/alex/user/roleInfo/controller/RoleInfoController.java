@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 public class RoleInfoController {
 
     private final RoleInfoService roleInfoService;
+    private final com.alex.user.roleInfo.service.RoleAiService roleAiService;
 
     @LogRestRequest(apiName = "获取角色信息表分页")
     @ApiOperationSupport(order = 10, author = "majf")
@@ -106,5 +107,13 @@ public class RoleInfoController {
     @PostMapping("/assign-orgs")
     public Result<Boolean> assignOrgs(@RequestBody RoleOrgAssignRequest request) {
         return Result.success(roleInfoService.assignOrgs(request.getRoleId(), request.getOrgIds()));
+    }
+
+    @LogRestRequest(apiName = "AI智能推荐角色权限")
+    @ApiOperationSupport(order = 90, author = "alex")
+    @ApiOperation(value = "AI智能推荐角色权限", notes = "根据岗位名称与职责描述推荐匹配的菜单与功能权限", response = Result.class)
+    @PostMapping("/ai-recommend-permissions")
+    public Result<com.alex.api.user.roleInfo.vo.RoleAiRecommendVo> aiRecommendPermissions(@RequestBody com.alex.api.user.roleInfo.vo.RoleAiRecommendReq request) {
+        return Result.success(roleAiService.recommendPermissions(request));
     }
 }

@@ -1,5 +1,6 @@
 package com.alex.common.utils.date;
 
+import com.alex.common.utils.date.DateUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class DateUtilsTest {
     @Test
     @DisplayName("验证 getDatePoor 对同时间及 Null 安全容错")
     void testGetDatePoor_NullAndZero() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         assertEquals("0天0小时0分钟", DateUtils.getDatePoor(now, now));
         assertEquals("", DateUtils.getDatePoor(null, now));
         assertEquals("", DateUtils.getDatePoor(now, null));

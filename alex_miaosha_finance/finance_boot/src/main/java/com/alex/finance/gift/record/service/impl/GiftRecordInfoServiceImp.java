@@ -1,5 +1,6 @@
 package com.alex.finance.gift.record.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
@@ -531,7 +532,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
                     .setUserId(vo.getUserId())
                     .setEventName(eventName)
                     .setEventType(eventType)
-                    .setEventTime(vo.getPayTime() != null ? vo.getPayTime() : LocalDateTime.now())
+                    .setEventTime(vo.getPayTime() != null ? vo.getPayTime() : DateUtils.now())
                     .setHostPersonId(contactPersonId)
                     .setRemark("人情关系智能助手自动生成的事由");
 

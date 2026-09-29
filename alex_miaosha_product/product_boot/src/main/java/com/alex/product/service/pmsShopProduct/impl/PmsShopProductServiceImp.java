@@ -80,7 +80,7 @@ public class PmsShopProductServiceImp extends ServiceImpl<PmsShopProductMapper, 
     public List<PmsShopProductVo> getProductHisInfo(String skuId, String startTime) {
         // 默认取近一个月的数据
         if (StringUtils.isEmpty(startTime)) {
-            startTime = DateUtils.getToDayStartTimeMinusNDay(LocalDateTime.now(), 30);
+            startTime = DateUtils.getToDayStartTimeMinusNDay(DateUtils.now(), 30);
         }
         return pmsShopProductMapper.getProductHisInfo(skuId, startTime);
     }

@@ -1,5 +1,6 @@
 package com.alex.finance.cpnUserCouponInfo.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponInfoVo;
 import com.alex.api.finance.cpnUserCouponInfo.vo.CpnUserCouponRedeemReq;
@@ -98,7 +99,7 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
             throw new FinanceException(ResultEnum.PARAM_ERROR);
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         LocalDateTime redeemTime = req.getRedemptionTime() == null ? now : req.getRedemptionTime();
 
         // 1) 先通过 CpnCouponInfoMapper.getList 判断是否存在“可核销数量”
@@ -160,7 +161,7 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         record.setUserCouponId(req.getUserCouponId());
         record.setUserId(req.getUserId());
         record.setOrderId(req.getCouponId());
-        record.setRedemptionTime(LocalDateTime.now());
+        record.setRedemptionTime(DateUtils.now());
         record.setRedemptionQuantity(-req.getRedemptionQuantity());
         record.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "取消核销");
 

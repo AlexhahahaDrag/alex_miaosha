@@ -153,4 +153,18 @@ public class CpnCouponInfoController {
     public void downloadTemplate(HttpServletResponse response) throws Exception {
         cpnCouponInfoService.downloadTemplate(response);
     }
+
+    /**
+     * 优惠券 AI 智能策划
+     *
+     * @param req 策划参数
+     * @return 策划方案
+     */
+    @LogRestRequest(apiName = "优惠券AI智能策划")
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "优惠券AI智能策划", notes = "根据预算与营销目标AI生成优惠券策略方案", response = Result.class)
+    @PostMapping(value = "/ai-plan")
+    public Result<com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanVo> aiPlan(@RequestBody com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanReq req) {
+        return Result.success(cpnCouponInfoService.generateAiPlan(req));
+    }
 }

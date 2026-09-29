@@ -96,6 +96,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>ai_api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

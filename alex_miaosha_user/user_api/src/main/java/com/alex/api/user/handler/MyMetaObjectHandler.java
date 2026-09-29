@@ -1,5 +1,6 @@
 package com.alex.api.user.handler;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.common.BaseVo;
@@ -27,7 +28,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         if (metaObject.hasSetter("isValid")) {
             this.strictInsertFill(metaObject, "isValid", Integer.class, 1);
         }
@@ -56,7 +57,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         if (metaObject.hasSetter("operateTime")) {
             metaObject.setValue("operateTime", null);
             this.strictUpdateFill(metaObject, "operateTime", LocalDateTime.class,  now);

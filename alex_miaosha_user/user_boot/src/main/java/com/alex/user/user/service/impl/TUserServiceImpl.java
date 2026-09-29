@@ -708,7 +708,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .userId(admin.getId())
                 .username(admin.getUsername())
                 .nickName(admin.getNickName())
-                .lastLoginTime(LocalDateTime.now())
+                .lastLoginTime(DateUtils.now())
                 .tokenId(uuid)
                 .token(token)
                 .os(os)
@@ -826,7 +826,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                 .roleName(null)
                 .username(userLogin.getUsername())
                 .expireTime(
-                        DateUtils.getTimeStr(DateUtils.addTime(LocalDateTime.now(), expiration, ChronoUnit.SECONDS)))
+                        DateUtils.getTimeStr(DateUtils.addTime(DateUtils.now(), expiration, ChronoUnit.SECONDS)))
                 .build();
         // 从 Redis中获取IP来源
         String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLoginIp());

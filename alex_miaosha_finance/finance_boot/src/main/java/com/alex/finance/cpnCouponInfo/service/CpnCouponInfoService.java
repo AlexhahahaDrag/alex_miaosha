@@ -46,4 +46,12 @@ public interface CpnCouponInfoService extends IService<CpnCouponInfo> {
      * @throws Exception 异常
      */
     void downloadTemplate(HttpServletResponse response) throws Exception;
+
+    /**
+     * 优惠券 AI 智能策划
+     *
+     * @param req 策划参数
+     * @return 策划方案
+     */
+    com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanVo generateAiPlan(com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanReq req);
 }

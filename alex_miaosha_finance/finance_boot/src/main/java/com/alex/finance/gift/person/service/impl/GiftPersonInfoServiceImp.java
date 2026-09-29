@@ -1,5 +1,6 @@
 package com.alex.finance.gift.person.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.person.query.GiftPersonQuery;
 import com.alex.api.finance.gift.person.vo.GiftPersonBusinessVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonInfoVo;
@@ -92,7 +93,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
         long activeCount = 0;
         long pendingMaintenanceCount = 0;
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         LocalDateTime ninetyDaysAgo = now.minusDays(90);
         LocalDateTime oneEightyDaysAgo = now.minusDays(180);
 
@@ -175,8 +176,8 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize),
                 query);
         if (page.getRecords() != null) {
-            LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
-            LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
+            LocalDateTime ninetyDaysAgo = DateUtils.now().minusDays(90);
+            LocalDateTime oneEightyDaysAgo = DateUtils.now().minusDays(180);
             for (GiftPersonBusinessVo vo : page.getRecords()) {
                 if (vo.getLatestRecordTime() != null) {
                     if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
@@ -474,8 +475,8 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
         // Calculate relationStatus
         if (vo.getLatestRecordTime() != null) {
-            LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
-            LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
+            LocalDateTime ninetyDaysAgo = DateUtils.now().minusDays(90);
+            LocalDateTime oneEightyDaysAgo = DateUtils.now().minusDays(180);
             if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
                 vo.setRelationStatus("ACTIVE");
             } else if (vo.getLatestRecordTime().isBefore(oneEightyDaysAgo)) {

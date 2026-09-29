@@ -1,5 +1,6 @@
 package com.alex.finance.gift.event.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.event.query.GiftEventQuery;
 import com.alex.api.finance.gift.event.vo.GiftEventBusinessVo;
 import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +59,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     public GiftEventSummaryVo getSummary() {
         List<GiftEventInfo> events = getBaseMapper().listEntities(null);
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         long monthPendingCount = events.stream()
                 .filter(event -> event.getEventTime() != null)
                 .filter(event -> event.getEventTime().getYear() == now.getYear() && event.getEventTime().getMonth() == now.getMonth())
@@ -172,7 +174,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         vo.setTotalAmount(giveAmount.add(receiveAmount));
         vo.setParticipantCount((long) participantIds.size());
         vo.setLocationText(StringUtils.hasText(event.getRemark()) ? event.getRemark() : "-");
-        vo.setEventStatus(event.getEventTime() != null && event.getEventTime().isAfter(LocalDateTime.now()) ? "PENDING" : "FINISHED");
+        vo.setEventStatus(event.getEventTime() != null && event.getEventTime().isAfter(LocalDateTime.now(ZoneId.systemDefault())) ? "PENDING" : "FINISHED");
         return vo;
     }
 

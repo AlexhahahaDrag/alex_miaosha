@@ -1,5 +1,6 @@
 package com.alex.finance.prepaidCardInfoT.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidDashboardOverviewVo;
@@ -221,7 +222,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         if (res) {
             // 添加消费充值记录
             PrepaidConsumeRecordTVo prepaidConsumeRecordTVo = new PrepaidConsumeRecordTVo();
-            prepaidConsumeRecordTVo.setConsumeTime(prepaidCardConsumeVo.getConsumeTime() == null ? LocalDateTime.now() : prepaidCardConsumeVo.getConsumeTime());
+            prepaidConsumeRecordTVo.setConsumeTime(prepaidCardConsumeVo.getConsumeTime() == null ? DateUtils.now() : prepaidCardConsumeVo.getConsumeTime());
             prepaidConsumeRecordTVo.setCardId(prepaidCardConsumeVo.getId());
             prepaidConsumeRecordTVo.setAmount(consumeAmount);
             prepaidConsumeRecordTVo.setDescription(prepaidCardConsumeVo.getDescription() == null ?

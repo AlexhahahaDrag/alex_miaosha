@@ -26,8 +26,8 @@ public class ShopFinanceNoticeJob {
         log.info("===============开始调用店铺财务当日统计信息查询===================");
         long startTime = System.nanoTime();
         shopFinanceAnalysisService.getCurShopFinanceInfo(
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern(YYYYMMDD)),
-                DateUtils.addDay(LocalDateTime.now(), 1).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
+                DateUtils.now().format(DateTimeFormatter.ofPattern(YYYYMMDD)),
+                DateUtils.addDay(DateUtils.now(), 1).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
                 "day");
         log.info("===============结束调用店铺财务当日统计信息查询===================耗时：{}", Duration.ofNanos(System.nanoTime() - startTime));
     }
@@ -37,8 +37,8 @@ public class ShopFinanceNoticeJob {
         log.info("===============开始调用店铺财务当月统计信息查询===================");
         long startTime = System.nanoTime();
         shopFinanceAnalysisService.getCurShopFinanceInfo(
-                LocalDateTime.now().with(TemporalAdjusters.firstDayOfMonth()).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
-                LocalDateTime.now().with(TemporalAdjusters.firstDayOfNextMonth()).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
+                DateUtils.now().with(TemporalAdjusters.firstDayOfMonth()).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
+                DateUtils.now().with(TemporalAdjusters.firstDayOfNextMonth()).format(DateTimeFormatter.ofPattern(YYYYMMDD)),
                 "month");
         log.info("===============结束调用店铺财务当月统计信息查询===================耗时：{}", Duration.ofNanos(System.nanoTime() - startTime));
     }

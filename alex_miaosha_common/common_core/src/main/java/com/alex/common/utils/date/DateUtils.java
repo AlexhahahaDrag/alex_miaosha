@@ -20,6 +20,8 @@ import java.util.List;
 @Slf4j
 public class DateUtils {
 
+    public static final ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
+
     public static final String STARTTIME = " 00:00:00";
 
     public static final String ENDTIME = " 23:59:59";
@@ -57,18 +59,22 @@ public class DateUtils {
     //设置私有构造器
     private DateUtils(){}
 
+    public static LocalDateTime now() {
+        return LocalDateTime.now(DEFAULT_ZONE);
+    }
+
     /**
      * description:  获取当前时间 string
      * author:       alex
      * return:       java.lang.String
      */
     public static String getNowTimeStr() {
-        return LocalDateTime.now().format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
+        return now().format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
 
     public static String getNowTimeStr(String dateTimeFormatter) {
         DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(dateTimeFormatter);
-        return LocalDateTime.now().format(dateTimeFormat);
+        return now().format(dateTimeFormat);
     }
 
     /**
@@ -77,7 +83,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static Long getNowTimeLong() {
-        return LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        return now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
 
     /**
@@ -86,7 +92,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getNowTimeStrStartTime() {
-        return LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
+        return now().withHour(0).withMinute(0).withSecond(0).withNano(0).format(FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
     /**
      * description:  获取当前时间 string
@@ -113,7 +119,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
      */
     public static LocalDateTime getNowDate() {
-        return LocalDateTime.now();
+        return now();
     }
 
     /**
@@ -199,7 +205,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
     */
     public static LocalDateTime findWeekStartTime() {
-        return LocalDateTime.now().with(TemporalAdjusters.previous(DayOfWeek.SUNDAY)).plusDays(1).withHour(0).withMinute(0).withSecond(0);
+        return now().with(TemporalAdjusters.previous(DayOfWeek.SUNDAY)).plusDays(1).withHour(0).withMinute(0).withSecond(0);
     }
 
     /**
@@ -208,7 +214,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
     */
     public static LocalDateTime findWeekEndTime() {
-        return LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).minusDays(1).withHour(23).withMinute(59).withSecond(59);
+        return now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).minusDays(1).withHour(23).withMinute(59).withSecond(59);
     }
 
     /**
@@ -279,7 +285,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
     */
     public static LocalDateTime findMonthStartTime() {
-        return LocalDateTime.now().with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
+        return now().with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0);
     }
 
     /**
@@ -288,7 +294,7 @@ public class DateUtils {
      * return:       java.time.LocalDateTime
      */
     public static LocalDateTime findMonthEndTime() {
-        return LocalDateTime.now().with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).withHour(23).withMinute(59).withSecond(59);
+        return now().with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).withHour(23).withMinute(59).withSecond(59);
     }
 
     /**
@@ -297,7 +303,7 @@ public class DateUtils {
      * return:       int
     */
     public static int getCurrentMonthDays() {
-        return LocalDateTime.now().with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).getDayOfMonth();
+        return now().with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).getDayOfMonth();
     }
 
     /**
@@ -319,7 +325,7 @@ public class DateUtils {
     }
 
     public static int getMonthDays(int year, int month) {
-        return LocalDateTime.now().withYear(year).withMonth(month).with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).getDayOfMonth();
+        return now().withYear(year).withMonth(month).with(TemporalAdjusters.firstDayOfNextMonth()).minusDays(1).getDayOfMonth();
     }
 
     /**
@@ -397,7 +403,7 @@ public class DateUtils {
      * return:       int
     */
     public static int getYear() {
-        return LocalDateTime.now().getYear();
+        return now().getYear();
     }
 
     /**
@@ -406,7 +412,7 @@ public class DateUtils {
      * return:       int
     */
     public static int getMonth() {
-        return LocalDateTime.now().getMonthValue();
+        return now().getMonthValue();
     }
 
     /**
@@ -415,7 +421,7 @@ public class DateUtils {
      * return:       int
     */
     public static int getDay() {
-        return LocalDateTime.now().getDayOfMonth();
+        return now().getDayOfMonth();
     }
 
     /*
@@ -426,7 +432,7 @@ public class DateUtils {
     */
     public static String addHour(double hour) {
         long time = (long) (hour * 60 * 60 * 1000);
-        return getTimeStr(addTime(LocalDateTime.now(), time, ChronoUnit.MILLIS));
+        return getTimeStr(addTime(now(), time, ChronoUnit.MILLIS));
     }
 
     /**
@@ -476,7 +482,7 @@ public class DateUtils {
      * return:       java.util.List<java.lang.String>
     */
     public static List<String> getDaysByN(int n, String formatter) {
-        return getDaysByN(LocalDateTime.now(), n, formatter);
+        return getDaysByN(now(), n, formatter);
     }
 
     /**
@@ -530,7 +536,7 @@ public class DateUtils {
      * return:       long
     */
     public static long diffDiffNowAndSunday() {
-        return diffDayByTwoDays(getTimeStr(LocalDateTime.now()), getWeekEndTimeStr());
+        return diffDayByTwoDays(getTimeStr(now()), getWeekEndTimeStr());
     }
 
     /**

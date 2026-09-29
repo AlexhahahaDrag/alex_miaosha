@@ -1,5 +1,6 @@
 package com.alex.finance.gift.personoption.service.impl;
 
+import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationItemVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionRowVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionsVo;
@@ -161,7 +162,7 @@ public class GiftPersonRelationOptionServiceImp
 
     private void upsertLabel(Long userId, Long orgId, String label) {
         GiftPersonRelationOption existing = findActiveCustomOption(userId, label);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateUtils.now();
         if (existing != null) {
             existing.setLastUsedTime(now);
             updateById(existing);
@@ -187,7 +188,7 @@ public class GiftPersonRelationOptionServiceImp
         option.setOptionType(GiftRelationOptionConstants.OPTION_TYPE_CUSTOM);
         option.setRelationLabel(label);
         option.setSortOrder(0);
-        option.setLastUsedTime(LocalDateTime.now());
+        option.setLastUsedTime(DateUtils.now());
         save(option);
     }
 
