@@ -60,6 +60,8 @@
 | **`alex_generator`** | **敏捷开发工具**：基于模板引擎，实现代码自动化产出。             |
 | **`alex_common`**    | **统一公共底座**：双层架构（`common_api` 轻量契约 + `common_core` 运行时底座）。 |
 
+> _注：微服务接口文档已全面由统一网关 `alex_gateway`（基于 `SwaggerResourceConfig`）动态聚合各子服务文档并接入 Apifox，历史独立的 `alex_miaosha_api_doc` 聚合微服务已废弃下线。_
+
 ---
 
 ## 🛠️ 技术选型
@@ -73,7 +75,7 @@
 | **MyBatis-Plus**     | 极简持久层开发，支持 Lambda 表达式。            |
 | **Nacos**            | 同时具备服务注册与分布式配置管理能力。          |
 | **Redis & RabbitMQ** | 缓存性能与异步流量削峰的核心基石。              |
-| **Knife4j**          | 基于 Swagger 的交互式文档，极致的后端调试体验。 |
+| **Knife4j**          | 基于 Swagger 的交互式文档，由网关动态聚合各服务。 |
 
 ### 前端核心
 

@@ -147,7 +147,7 @@ public class JwtTokenUtils {
                 Claims claims = parseJwt(token, base64Security);
                 refreshedToken = createJwt(claims.getSubject(), claims.get(SysConf.ADMIN_ID, Long.class),
                         claims.get(SysConf.ROLE, String.class),
-                        claims.getAudience(), claims.getIssuer(), TTLMillis, base64Security);
+                        claims.getAudience(), claims.getIssuer(), ttlMillis, base64Security);
             } catch (Exception e) {
                 log.error("刷新token报错：{}", e.getMessage());
                 return null;

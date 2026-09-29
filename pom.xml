@@ -12,7 +12,6 @@
     <modules>
         <module>alex_miaosha_common</module>
         <module>alex_miaosha_gateway</module>
-        <module>alex_miaosha_api_doc</module>
         <module>alex_miaosha_user</module>
         <module>alex_miaosha_finance</module>
         <!-- AI Agent：统一 AI 能力服务（其它模块通过 ai_api/Feign 调用） -->
@@ -45,7 +44,6 @@
         <alibaba.version>2021.0.6.2</alibaba.version>
         <nacos.version>2.4.3</nacos.version>
         <knife4j.version>3.0.3</knife4j.version>
-        <knife4j-appregation.version>2.0.9</knife4j-appregation.version>
         <alex_miaosha_common.version>1.0-SNAPSHOT</alex_miaosha_common.version>
         <common_api.version>1.0-SNAPSHOT</common_api.version>
         <common_core.version>1.0-SNAPSHOT</common_core.version>
@@ -187,13 +185,6 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
-            </dependency>
-
-             <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-aggregation-spring-boot-starter</artifactId>
-                 <!--在引用时请在maven中央仓库搜索aggregation最新版本号-->
-                 <version>${knife4j-appregation.version}</version>
             </dependency>
 
             <!--feign-->
