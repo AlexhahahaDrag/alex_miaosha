@@ -1,5 +1,6 @@
 package com.alex.finance.gift.eventoption.service.impl;
 
+import com.alex.base.constants.SysConf;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeItemVo;
 import com.alex.api.finance.gift.event.vo.GiftEventTypeOptionRowVo;
@@ -173,7 +174,7 @@ public class GiftEventTypeOptionServiceImp
                 .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
                 .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
                 .eq(GiftEventTypeUserConfig::getIsDelete, 0)
-                .last("LIMIT 1"));
+                .last(SysConf.LIMIT_ONE));
         if (config != null) {
             if (option.getStatus() != null) {
                 config.setStatus(option.getStatus());
@@ -307,7 +308,7 @@ public class GiftEventTypeOptionServiceImp
                 .eq(GiftEventTypeOption::getOrgId, orgId)
                 .eq(GiftEventTypeOption::getOptionType, GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM)
                 .eq(GiftEventTypeOption::getEventLabel, label)
-                .last("LIMIT 1"));
+                .last(SysConf.LIMIT_ONE));
     }
 
     @Override
@@ -322,7 +323,7 @@ public class GiftEventTypeOptionServiceImp
                     .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
                     .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
                     .eq(GiftEventTypeUserConfig::getIsDelete, 0)
-                    .last("LIMIT 1"));
+                    .last(SysConf.LIMIT_ONE));
             if (config != null && config.getCustomAmount() != null) {
                 defaultAmount = config.getCustomAmount();
             }

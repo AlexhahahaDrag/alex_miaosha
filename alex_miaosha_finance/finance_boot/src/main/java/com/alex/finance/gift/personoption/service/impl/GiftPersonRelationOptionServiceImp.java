@@ -1,5 +1,6 @@
 package com.alex.finance.gift.personoption.service.impl;
 
+import com.alex.base.constants.SysConf;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationItemVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionRowVo;
@@ -150,7 +151,7 @@ public class GiftPersonRelationOptionServiceImp
             GiftPersonInfo sample = giftPersonInfoMapper.selectOne(new LambdaQueryWrapper<GiftPersonInfo>()
                     .eq(GiftPersonInfo::getUserId, userId)
                     .eq(GiftPersonInfo::getIsDelete, 0)
-                    .last("LIMIT 1"));
+                    .last(SysConf.LIMIT_ONE));
             targetOrgId = sample == null ? null : sample.getOrgId();
         }
         for (String label : labels) {
@@ -197,6 +198,6 @@ public class GiftPersonRelationOptionServiceImp
                 .eq(GiftPersonRelationOption::getUserId, userId)
                 .eq(GiftPersonRelationOption::getOptionType, GiftRelationOptionConstants.OPTION_TYPE_CUSTOM)
                 .eq(GiftPersonRelationOption::getRelationLabel, label)
-                .last("LIMIT 1"));
+                .last(SysConf.LIMIT_ONE));
     }
 }
