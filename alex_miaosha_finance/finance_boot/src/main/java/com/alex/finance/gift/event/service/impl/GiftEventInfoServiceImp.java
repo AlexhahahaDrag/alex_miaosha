@@ -16,8 +16,8 @@ import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
+import com.alex.common.exception.FinanceException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
-import com.alex.finance.gift.support.GiftExceptions;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -107,7 +107,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     @Override
     public Boolean updateGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
         if (giftEventInfoVo == null || giftEventInfoVo.getId() == null) {
-            throw GiftExceptions.param("事由ID不能为空");
+            throw FinanceException.param("事由ID不能为空");
         }
         GiftEventInfo existing = getById(giftEventInfoVo.getId());
         giftDataScopeSupport.assertEventAccessible(existing);
@@ -149,7 +149,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
                     .map(Long::valueOf)
                     .toList();
         } catch (NumberFormatException ex) {
-            throw GiftExceptions.param("事由ID格式不合法");
+            throw FinanceException.param("事由ID格式不合法");
         }
     }
 

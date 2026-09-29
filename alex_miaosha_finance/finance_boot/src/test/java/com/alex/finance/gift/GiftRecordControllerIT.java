@@ -5,7 +5,7 @@ import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.common.exception.handler.GlobalExceptionHandler;
 import com.alex.finance.gift.record.controller.GiftRecordInfoController;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
-import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.common.exception.FinanceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +71,7 @@ class GiftRecordControllerIT {
     @Test
     void add_should_return_error_when_service_rejects_invalid_amount() throws Exception {
         when(giftRecordInfoService.addGiftRecordInfo(any()))
-                .thenThrow(GiftExceptions.param("礼金金额必须大于0"));
+                .thenThrow(FinanceException.param("礼金金额必须大于0"));
 
         mockMvc.perform(post("/api/v1/gift-record-info-t")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class GiftRecordControllerIT {
     @Test
     void markReturned_should_return_error_when_service_rejects_cross_user() throws Exception {
         when(giftRecordInfoService.markReturned(9L))
-                .thenThrow(GiftExceptions.forbidden("无权访问其他用户的礼金记录"));
+                .thenThrow(FinanceException.forbidden("无权访问其他用户的礼金记录"));
 
         mockMvc.perform(put("/api/v1/gift-record-info-t/mark-returned")
                         .param("receiveRecordId", "9"))

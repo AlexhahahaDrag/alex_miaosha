@@ -23,8 +23,8 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
 import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
+import com.alex.common.exception.FinanceException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
-import com.alex.finance.gift.support.GiftExceptions;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -242,7 +242,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         if (giftPersonInfoVo == null || giftPersonInfoVo.getId() == null) {
-            throw GiftExceptions.param("亲友ID不能为空");
+            throw FinanceException.param("亲友ID不能为空");
         }
         GiftPersonInfo existing = getById(giftPersonInfoVo.getId());
         giftDataScopeSupport.assertPersonAccessible(existing);
@@ -446,7 +446,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     .map(Long::valueOf)
                     .toList();
         } catch (NumberFormatException ex) {
-            throw GiftExceptions.param("亲友ID格式不合法");
+            throw FinanceException.param("亲友ID格式不合法");
         }
     }
 

@@ -18,7 +18,6 @@ import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
-import com.alex.finance.gift.support.GiftExceptions;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import static com.alex.finance.gift.support.GiftRecordConstants.*;
 import com.alex.common.exception.FinanceException;
@@ -150,7 +149,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftRecordInfo(GiftRecordInfoVo giftRecordInfoVo) {
         if (giftRecordInfoVo == null || giftRecordInfoVo.getId() == null) {
-            throw GiftExceptions.param("礼金记录ID不能为空");
+            throw FinanceException.param("礼金记录ID不能为空");
         }
         GiftRecordInfo existing = getById(giftRecordInfoVo.getId());
         giftDataScopeSupport.assertRecordAccessible(existing);
@@ -196,15 +195,15 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     @Override
     public BigDecimal calculatePendingReturnAmount(Long receiveRecordId) {
         if (receiveRecordId == null) {
-            throw GiftExceptions.param("原始收礼记录不能为空");
+            throw FinanceException.param("原始收礼记录不能为空");
         }
         GiftRecordInfo receiveRecord = getById(receiveRecordId);
         if (receiveRecord == null) {
-            throw GiftExceptions.param("礼金记录不存在");
+            throw FinanceException.param("礼金记录不存在");
         }
         giftDataScopeSupport.assertRecordAccessible(receiveRecord);
         if (!DIRECTION_RECEIVE.equals(receiveRecord.getDirection())) {
-            throw GiftExceptions.param("原始记录必须是收礼记录");
+            throw FinanceException.param("原始记录必须是收礼记录");
         }
         BigDecimal receiveAmount = receiveRecord.getAmount() == null ? BigDecimal.ZERO : receiveRecord.getAmount();
         BigDecimal returnedAmount = getBaseMapper().sumReturnAmountByRelatedRecordId(receiveRecordId);
@@ -216,15 +215,15 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public Boolean markReturned(Long receiveRecordId) {
         if (receiveRecordId == null) {
-            throw GiftExceptions.param("原始收礼记录不能为空");
+            throw FinanceException.param("原始收礼记录不能为空");
         }
         GiftRecordInfo receiveRecord = getById(receiveRecordId);
         if (receiveRecord == null) {
-            throw GiftExceptions.param("礼金记录不存在");
+            throw FinanceException.param("礼金记录不存在");
         }
         giftDataScopeSupport.assertRecordAccessible(receiveRecord);
         if (!DIRECTION_RECEIVE.equals(receiveRecord.getDirection())) {
-            throw GiftExceptions.param("仅收礼记录可标记已回礼");
+            throw FinanceException.param("仅收礼记录可标记已回礼");
         }
         if (receiveRecord.getReturnedFlag() != null && receiveRecord.getReturnedFlag() == 1) {
             return true;
@@ -345,21 +344,21 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
 
     private void validateDirection(GiftRecordInfoVo vo) {
         if (vo == null || !StringUtils.hasText(vo.getDirection())) {
-            throw GiftExceptions.param("礼金方向不能为空");
+            throw FinanceException.param("礼金方向不能为空");
         }
         if (!DIRECTION_GIVE.equals(vo.getDirection())
                 && !DIRECTION_RECEIVE.equals(vo.getDirection())
                 && !DIRECTION_RETURN.equals(vo.getDirection())) {
-            throw GiftExceptions.param("礼金方向不合法");
+            throw FinanceException.param("礼金方向不合法");
         }
         if (DIRECTION_RETURN.equals(vo.getDirection()) && vo.getRelatedRecordId() == null) {
-            throw GiftExceptions.param("回礼记录必须关联原始收礼记录");
+            throw FinanceException.param("回礼记录必须关联原始收礼记录");
         }
     }
 
     private void validateAmount(GiftRecordInfoVo vo) {
         if (vo == null || vo.getAmount() == null || vo.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw GiftExceptions.param("礼金金额必须大于0");
+            throw FinanceException.param("礼金金额必须大于0");
         }
     }
 
@@ -387,15 +386,15 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         }
         Long relatedRecordId = vo.getRelatedRecordId();
         if (vo.getId() != null && vo.getId().equals(relatedRecordId)) {
-            throw GiftExceptions.param("回礼记录不能关联自身");
+            throw FinanceException.param("回礼记录不能关联自身");
         }
         GiftRecordInfo related = getById(relatedRecordId);
         if (related == null) {
-            throw GiftExceptions.param("关联的收礼记录不存在");
+            throw FinanceException.param("关联的收礼记录不存在");
         }
         giftDataScopeSupport.assertRecordAccessible(related);
         if (!DIRECTION_RECEIVE.equals(related.getDirection())) {
-            throw GiftExceptions.param("回礼记录只能关联收礼记录");
+            throw FinanceException.param("回礼记录只能关联收礼记录");
         }
     }
 
@@ -414,7 +413,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
                     .map(Long::valueOf)
                     .toList();
         } catch (NumberFormatException ex) {
-            throw GiftExceptions.param("礼金记录ID格式不合法");
+            throw FinanceException.param("礼金记录ID格式不合法");
         }
     }
 

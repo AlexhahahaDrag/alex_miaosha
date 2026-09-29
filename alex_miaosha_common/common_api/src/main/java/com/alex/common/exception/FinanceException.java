@@ -32,4 +32,16 @@ public class FinanceException extends RuntimeException{
         this.code = code;
         this.msg = message;
     }
+
+    public static FinanceException param(String message) {
+        return new FinanceException(ResultEnum.PARAM_ERROR.getCode(), message);
+    }
+
+    public static FinanceException forbidden(String message) {
+        return new FinanceException(ResultEnum.UNAUTHORIZED.getCode(), message);
+    }
+
+    public static FinanceException notLogin() {
+        return new FinanceException(ResultEnum.USER_NO_LOGIN);
+    }
 }

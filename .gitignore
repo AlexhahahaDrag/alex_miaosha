@@ -56,7 +56,7 @@ qodana.yaml
 .worktrees/
 
 # graphify
-graphify-out/cache
+graphify-out/
 
 # env variables
 .env

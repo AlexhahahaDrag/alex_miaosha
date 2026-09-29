@@ -12,8 +12,8 @@ import com.alex.finance.gift.personoption.entity.GiftPersonRelationOption;
 import com.alex.finance.gift.personoption.mapper.GiftPersonRelationOptionMapper;
 import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
-import com.alex.finance.gift.support.GiftExceptions;
-import com.alex.finance.gift.support.GiftRelationOptionConstants;
+import com.alex.common.exception.FinanceException;
+import com.alex.finance.gift.support.GiftOptionConstants;
 import com.alex.finance.gift.support.GiftRelationPresetSupport;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,9 +59,9 @@ public class GiftPersonRelationOptionServiceImp
                 GiftPersonRelationItemVo item = new GiftPersonRelationItemVo()
                         .setId(row.getId())
                         .setName(row.getRelationLabel());
-                if (GiftRelationOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
+                if (GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
                     presets.add(item);
-                } else if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())
+                } else if (GiftOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())
                         && row.getRelationLabel() != null
                         && customNames.add(row.getRelationLabel().trim())) {
                     customs.add(item);
@@ -80,18 +80,18 @@ public class GiftPersonRelationOptionServiceImp
         }
         GiftPersonRelationOption option = getById(relationOptionId);
         if (option == null || Integer.valueOf(1).equals(option.getIsDelete())) {
-            throw GiftExceptions.param("关系选项不存在");
+            throw FinanceException.param("关系选项不存在");
         }
-        if (GiftRelationOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
+        if (GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
             return option.getRelationCode();
         }
-        if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
+        if (GiftOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
             if (!canAccessCustomOption(option, ownerUserId)) {
-                throw GiftExceptions.forbidden("无权使用该自定义关系");
+                throw FinanceException.forbidden("无权使用该自定义关系");
             }
             return option.getRelationLabel();
         }
-        throw GiftExceptions.param("关系选项类型不合法");
+        throw FinanceException.param("关系选项类型不合法");
     }
 
     private boolean canAccessCustomOption(GiftPersonRelationOption option, Long ownerUserId) {
@@ -128,10 +128,10 @@ public class GiftPersonRelationOptionServiceImp
         }
         String label = relationType.trim();
         if (label.length() > MAX_LABEL_LENGTH) {
-            throw GiftExceptions.param("自定义关系最多20个字符");
+            throw FinanceException.param("自定义关系最多20个字符");
         }
         if (giftRelationPresetSupport.isPresetLabel(label)) {
-            throw GiftExceptions.param("请从常用关系中选择「" + label + "」");
+            throw FinanceException.param("请从常用关系中选择「" + label + "」");
         }
         upsertLabel(userId, orgId, label);
     }
@@ -176,7 +176,7 @@ public class GiftPersonRelationOptionServiceImp
         GiftPersonRelationOption option = new GiftPersonRelationOption();
         option.setUserId(userId);
         option.setOrgId(orgId);
-        option.setOptionType(GiftRelationOptionConstants.OPTION_TYPE_CUSTOM);
+        option.setOptionType(GiftOptionConstants.OPTION_TYPE_CUSTOM);
         option.setRelationLabel(label);
         option.setSortOrder(0);
         option.setLastUsedTime(now);
@@ -190,7 +190,7 @@ public class GiftPersonRelationOptionServiceImp
         GiftPersonRelationOption option = new GiftPersonRelationOption();
         option.setUserId(userId);
         option.setOrgId(orgId);
-        option.setOptionType(GiftRelationOptionConstants.OPTION_TYPE_CUSTOM);
+        option.setOptionType(GiftOptionConstants.OPTION_TYPE_CUSTOM);
         option.setRelationLabel(label);
         option.setSortOrder(0);
         option.setLastUsedTime(DateUtils.now());
@@ -200,7 +200,7 @@ public class GiftPersonRelationOptionServiceImp
     private GiftPersonRelationOption findActiveCustomOption(Long userId, String label) {
         return getOne(new LambdaQueryWrapper<GiftPersonRelationOption>()
                 .eq(GiftPersonRelationOption::getUserId, userId)
-                .eq(GiftPersonRelationOption::getOptionType, GiftRelationOptionConstants.OPTION_TYPE_CUSTOM)
+                .eq(GiftPersonRelationOption::getOptionType, GiftOptionConstants.OPTION_TYPE_CUSTOM)
                 .eq(GiftPersonRelationOption::getRelationLabel, label)
                 .last(SysConf.LIMIT_ONE));
     }

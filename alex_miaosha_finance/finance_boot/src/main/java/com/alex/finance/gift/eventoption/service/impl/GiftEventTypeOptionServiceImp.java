@@ -11,9 +11,9 @@ import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
 import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
-import com.alex.finance.gift.support.GiftEventTypeOptionConstants;
+import com.alex.finance.gift.support.GiftOptionConstants;
 import com.alex.finance.gift.support.GiftEventTypePresetSupport;
-import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.common.exception.FinanceException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -70,9 +70,9 @@ public class GiftEventTypeOptionServiceImp
         List<GiftEventTypeItemVo> customs = new ArrayList<>();
         if (rows != null) {
             for (GiftEventTypeOptionRowVo row : rows) {
-                if (GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
+                if (GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
                     presets.add(toItemVo(row));
-                } else if (GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
+                } else if (GiftOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
                     customs.add(toItemVo(row));
                 }
             }
@@ -163,7 +163,7 @@ public class GiftEventTypeOptionServiceImp
     @Override
     public boolean updateOption(GiftEventTypeOption option) {
         if (option == null || option.getId() == null) {
-            throw GiftExceptions.param("选项ID不能为空");
+            throw FinanceException.param("选项ID不能为空");
         }
         GiftEventTypeOption existing = getById(option.getId());
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
@@ -177,7 +177,7 @@ public class GiftEventTypeOptionServiceImp
 
     private boolean isSystemOption(GiftEventTypeOption existing) {
         return existing == null
-                || GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(existing.getOptionType())
+                || GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(existing.getOptionType())
                 || (existing.getUserId() != null && existing.getUserId() == 0L);
     }
 
@@ -214,7 +214,7 @@ public class GiftEventTypeOptionServiceImp
 
     private boolean updateCustomOption(GiftEventTypeOption option, GiftEventTypeOption existing, Long orgId) {
         if (orgId != null && existing != null && !orgId.equals(existing.getOrgId())) {
-            throw GiftExceptions.forbidden("无权修改其他机构的分类");
+            throw FinanceException.forbidden("无权修改其他机构的分类");
         }
         return updateById(option);
     }
@@ -226,18 +226,18 @@ public class GiftEventTypeOptionServiceImp
         }
         GiftEventTypeOption option = getById(eventTypeOptionId);
         if (option == null || (option.getIsDelete() != null && option.getIsDelete() == 1)) {
-            throw GiftExceptions.param("事由类型选项不存在");
+            throw FinanceException.param("事由类型选项不存在");
         }
-        if (GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
+        if (GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
             return option.getEventCode();
         }
-        if (GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
+        if (GiftOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
             if (orgId == null || !orgId.equals(option.getOrgId())) {
-                throw GiftExceptions.forbidden("无权使用该自定义事由类型");
+                throw FinanceException.forbidden("无权使用该自定义事由类型");
             }
             return option.getEventLabel();
         }
-        throw GiftExceptions.param("事由类型选项不合法");
+        throw FinanceException.param("事由类型选项不合法");
     }
 
     @Override
@@ -255,10 +255,10 @@ public class GiftEventTypeOptionServiceImp
         }
         String label = eventType.trim();
         if (label.length() > MAX_LABEL_LENGTH) {
-            throw GiftExceptions.param("自定义事由类型最多20个字符");
+            throw FinanceException.param("自定义事由类型最多20个字符");
         }
         if (giftEventTypePresetSupport.isPresetLabel(label)) {
-            throw GiftExceptions.param("请从常用类型中选择「" + label + "」");
+            throw FinanceException.param("请从常用类型中选择「" + label + "」");
         }
         upsertLabel(orgId, userId, label);
     }
@@ -295,7 +295,7 @@ public class GiftEventTypeOptionServiceImp
         GiftEventTypeOption option = new GiftEventTypeOption();
         option.setOrgId(orgId);
         option.setUserId(userId);
-        option.setOptionType(GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM);
+        option.setOptionType(GiftOptionConstants.OPTION_TYPE_CUSTOM);
         option.setEventLabel(label);
         option.setSortOrder(0);
         option.setLastUsedTime(now);
@@ -309,7 +309,7 @@ public class GiftEventTypeOptionServiceImp
         GiftEventTypeOption option = new GiftEventTypeOption();
         option.setOrgId(orgId);
         option.setUserId(userId);
-        option.setOptionType(GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM);
+        option.setOptionType(GiftOptionConstants.OPTION_TYPE_CUSTOM);
         option.setEventLabel(label);
         option.setSortOrder(0);
         option.setLastUsedTime(DateUtils.now());
@@ -319,7 +319,7 @@ public class GiftEventTypeOptionServiceImp
     private GiftEventTypeOption findActiveCustomOption(Long orgId, String label) {
         return getOne(new LambdaQueryWrapper<GiftEventTypeOption>()
                 .eq(GiftEventTypeOption::getOrgId, orgId)
-                .eq(GiftEventTypeOption::getOptionType, GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM)
+                .eq(GiftEventTypeOption::getOptionType, GiftOptionConstants.OPTION_TYPE_CUSTOM)
                 .eq(GiftEventTypeOption::getEventLabel, label)
                 .last(SysConf.LIMIT_ONE));
     }
