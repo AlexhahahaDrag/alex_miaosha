@@ -18,6 +18,7 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +68,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
                 .count();
         BigDecimal totalAmount = records.stream().map(this::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
         long activePersonCount = records.stream()
-                .flatMap(record -> java.util.stream.Stream.of(record.getGiverPersonId(), record.getReceiverPersonId()))
+                .flatMap(r -> Stream.of(r.getGiverPersonId(), r.getReceiverPersonId()))
                 .filter(Objects::nonNull)
                 .distinct()
                 .count();
@@ -155,18 +157,19 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         GiftEventBusinessVo vo = new GiftEventBusinessVo();
         BeanUtils.copyProperties(event, vo);
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate().stream()
-                .filter(record -> event.getId() != null && event.getId().equals(record.getEventId()))
+                .filter(r -> event.getId() != null && event.getId().equals(r.getEventId()))
                 .toList();
         BigDecimal giveAmount = records.stream()
-                .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_GIVE.equals(r.getDirection())
+                        || GiftRecordConstants.DIRECTION_RETURN.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal receiveAmount = records.stream()
-                .filter(record -> "RECEIVE".equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         Set<Long> participantIds = records.stream()
-                .map(record -> "RECEIVE".equals(record.getDirection()) ? record.getGiverPersonId() : record.getReceiverPersonId())
+                .map(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()) ? r.getGiverPersonId() : r.getReceiverPersonId())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         vo.setGiveAmount(giveAmount);
@@ -178,8 +181,8 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         return vo;
     }
 
-    private BigDecimal amount(GiftRecordInfoVo record) {
-        return record.getAmount() == null ? BigDecimal.ZERO : record.getAmount();
+    private BigDecimal amount(GiftRecordInfoVo r) {
+        return r.getAmount() == null ? BigDecimal.ZERO : r.getAmount();
     }
 
     private void fillOwner(GiftEventInfoVo vo) {

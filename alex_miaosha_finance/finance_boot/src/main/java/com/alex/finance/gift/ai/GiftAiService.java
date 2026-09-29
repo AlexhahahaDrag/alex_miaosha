@@ -23,6 +23,7 @@ import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftEventTypePresetSupport;
+import com.alex.finance.gift.support.GiftRecordConstants;
 import com.alex.finance.gift.support.GiftRelationPresetSupport;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -100,7 +101,7 @@ public class GiftAiService {
             vo.setPayTime(DateUtils.now());
         }
         if (!StringUtils.hasText(vo.getDirection())) {
-            vo.setDirection("GIVE");
+            vo.setDirection(GiftRecordConstants.DIRECTION_GIVE);
         }
 
         return vo;
@@ -151,7 +152,7 @@ public class GiftAiService {
                     }
                     if (root.hasNonNull("direction")) {
                         String dir = root.get("direction").asText().trim().toUpperCase();
-                        if ("GIVE".equals(dir) || "RECEIVE".equals(dir) || "RETURN".equals(dir)) {
+                        if (GiftRecordConstants.isValidDirection(dir)) {
                             vo.setDirection(dir);
                         }
                     }
@@ -191,11 +192,11 @@ public class GiftAiService {
         if (!StringUtils.hasText(vo.getDirection())) {
             if (text.contains("收礼") || text.contains("收到") || text.contains("收了") || text.contains("给了我")
                     || text.contains("塞给我") || text.contains("随礼给我")) {
-                vo.setDirection("RECEIVE");
+                vo.setDirection(GiftRecordConstants.DIRECTION_RECEIVE);
             } else if (text.contains("回礼") || text.contains("还礼") || text.contains("回赠")) {
-                vo.setDirection("RETURN");
+                vo.setDirection(GiftRecordConstants.DIRECTION_RETURN);
             } else {
-                vo.setDirection("GIVE");
+                vo.setDirection(GiftRecordConstants.DIRECTION_GIVE);
             }
         }
 
@@ -258,7 +259,7 @@ public class GiftAiService {
 
         // 5. 姓名抽取
         if (!StringUtils.hasText(vo.getPersonName())) {
-            Matcher m = "RECEIVE".equals(vo.getDirection()) ? PERSON_RECEIVE_PATTERN.matcher(text) : PERSON_GIVE_PATTERN.matcher(text);
+            Matcher m = GiftRecordConstants.DIRECTION_RECEIVE.equals(vo.getDirection()) ? PERSON_RECEIVE_PATTERN.matcher(text) : PERSON_GIVE_PATTERN.matcher(text);
             if (m.find()) {
                 vo.setPersonName(m.group(1).trim());
             } else {
@@ -431,7 +432,7 @@ public class GiftAiService {
                     if (r.getAmount() == null) {
                         continue;
                     }
-                    if ("RECEIVE".equalsIgnoreCase(r.getDirection()) || personId.equals(r.getGiverPersonId())) {
+                    if (GiftRecordConstants.DIRECTION_RECEIVE.equalsIgnoreCase(r.getDirection()) || personId.equals(r.getGiverPersonId())) {
                         totalReceived = totalReceived.add(r.getAmount());
                     } else {
                         totalGiven = totalGiven.add(r.getAmount());
@@ -461,7 +462,7 @@ public class GiftAiService {
                 + "【往来背景】\n"
                 + "- 对方姓名/称谓：" + personName + " (" + relation + ")\n"
                 + "- 当前事由：" + (StringUtils.hasText(eventType) ? eventType : "礼尚往来") + "\n"
-                + "- 往来方向：" + ("RETURN".equalsIgnoreCase(direction) ? "回礼" : "随礼/送礼") + "\n"
+                + "- 往来方向：" + (GiftRecordConstants.DIRECTION_RETURN.equalsIgnoreCase(direction) ? "回礼" : "随礼/送礼") + "\n"
                 + "- 往期最近一次金额：" + (lastAmount != null ? lastAmount + "元" : "暂无") + "\n"
                 + "- 历史累计收礼：" + totalReceived + "元，历史累计随礼：" + totalGiven + "元\n"
                 + "- 系统基准推荐金额：" + vo.getDefaultAmount() + "元，参考档位：" + vo.getRecommendations() + "\n\n"
@@ -508,7 +509,7 @@ public class GiftAiService {
                                          String eventType, String direction, BigDecimal lastAmount,
                                          BigDecimal totalGiven, BigDecimal totalReceived) {
         String reasoning;
-        if ("RETURN".equalsIgnoreCase(direction) && lastAmount != null && lastAmount.compareTo(BigDecimal.ZERO) > 0) {
+        if (GiftRecordConstants.DIRECTION_RETURN.equalsIgnoreCase(direction) && lastAmount != null && lastAmount.compareTo(BigDecimal.ZERO) > 0) {
             reasoning = String.format("按传统人情礼尚往来原则，对方往期曾随礼 %s 元。回礼讲究往来平衡、略有添彩，建议持平或适度上浮（如 +100~200元），兼顾通胀与长久情谊。", lastAmount.toPlainString());
         } else if (lastAmount != null && lastAmount.compareTo(BigDecimal.ZERO) > 0) {
             reasoning = String.format("参考与【%s】往期随礼金额 %s 元及当前【%s】事由的普遍档位，推荐选用吉利双数档位，既合乎礼数，亦显亲厚。", personName, lastAmount.toPlainString(), eventType != null ? eventType : "礼尚往来");

@@ -70,81 +70,94 @@ public class GiftEventTypeOptionServiceImp
         List<GiftEventTypeItemVo> customs = new ArrayList<>();
         if (rows != null) {
             for (GiftEventTypeOptionRowVo row : rows) {
-                GiftEventTypeItemVo item = new GiftEventTypeItemVo()
-                        .setId(row.getId())
-                        .setName(row.getEventLabel())
-                        .setEventCode(row.getEventCode())
-                        .setCategory(row.getCategory())
-                        .setIcon(row.getIcon())
-                        .setStatus(row.getStatus())
-                        .setUseCount(row.getUseCount())
-                        .setDefaultAmount(row.getDefaultAmount())
-                        .setSortOrder(row.getSortOrder());
                 if (GiftEventTypeOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
-                    presets.add(item);
-                    continue;
-                }
-                if (GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
-                    customs.add(item);
+                    presets.add(toItemVo(row));
+                } else if (GiftEventTypeOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
+                    customs.add(toItemVo(row));
                 }
             }
         }
         List<GiftEventTypeItemVo> finalPresets = giftEventTypePresetSupport.ensurePresets(presets);
+        Map<String, Long> countMap = loadEventCountMap();
+        Map<Long, GiftEventTypeUserConfig> configMap = loadConfigMap(orgId);
 
-        // 1. 统一从与事件列表同源的 listEntities 查询中动态统计事件分类频次（自动继承数据权限）
-        List<GiftEventInfo> events = giftEventInfoMapper.listEntities(null);
-        Map<String, Long> countMap = (events == null ? List.<GiftEventInfo>of() : events).stream()
-                .filter(e -> StringUtils.hasText(e.getEventType()))
-                .collect(Collectors.groupingBy(GiftEventInfo::getEventType, Collectors.counting()));
+        List<GiftEventTypeItemVo> enrichedPresets = finalPresets.stream()
+                .map(p -> enrichPreset(p, countMap, configMap))
+                .collect(Collectors.toList());
 
-        // 2. 查询当前机构的个性化状态与金额覆写配置
-        List<GiftEventTypeUserConfig> configs = giftEventTypeUserConfigMapper.selectList(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
-                .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
-                .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
-                .eq(GiftEventTypeUserConfig::getIsDelete, 0));
-        Map<Long, GiftEventTypeUserConfig> configMap = configs == null ? Collections.emptyMap()
-                : configs.stream().collect(Collectors.toMap(GiftEventTypeUserConfig::getOptionId, Function.identity(), (c1, c2) -> c1));
-
-        List<GiftEventTypeItemVo> enrichedPresets = new ArrayList<>();
-        for (GiftEventTypeItemVo p : finalPresets) {
-            long c1 = countMap.getOrDefault(p.getEventCode(), 0L);
-            long c2 = countMap.getOrDefault(p.getName(), 0L);
-            int total = (int) (c1 + c2);
-
-            GiftEventTypeUserConfig cfg = configMap.get(p.getId());
-            Integer status = (cfg != null && cfg.getStatus() != null) ? cfg.getStatus() : p.getStatus();
-            BigDecimal amount = (cfg != null && cfg.getCustomAmount() != null) ? cfg.getCustomAmount() : p.getDefaultAmount();
-
-            enrichedPresets.add(new GiftEventTypeItemVo()
-                    .setId(p.getId())
-                    .setName(p.getName())
-                    .setEventCode(p.getEventCode())
-                    .setCategory(p.getCategory())
-                    .setIcon(p.getIcon())
-                    .setStatus(status)
-                    .setUseCount(total)
-                    .setDefaultAmount(amount)
-                    .setSortOrder(p.getSortOrder()));
-        }
-
-        List<GiftEventTypeItemVo> enrichedCustoms = new ArrayList<>();
-        for (GiftEventTypeItemVo c : customs) {
-            int total = countMap.getOrDefault(c.getName(), 0L).intValue();
-            enrichedCustoms.add(new GiftEventTypeItemVo()
-                    .setId(c.getId())
-                    .setName(c.getName())
-                    .setEventCode(c.getEventCode())
-                    .setCategory(c.getCategory())
-                    .setIcon(c.getIcon())
-                    .setStatus(c.getStatus())
-                    .setUseCount(total)
-                    .setDefaultAmount(c.getDefaultAmount())
-                    .setSortOrder(c.getSortOrder()));
-        }
+        List<GiftEventTypeItemVo> enrichedCustoms = customs.stream()
+                .map(c -> enrichCustom(c, countMap))
+                .collect(Collectors.toList());
 
         return new GiftEventTypeOptionsVo()
                 .setPresets(enrichedPresets)
                 .setCustoms(enrichedCustoms);
+    }
+
+    private static GiftEventTypeItemVo toItemVo(GiftEventTypeOptionRowVo row) {
+        return new GiftEventTypeItemVo()
+                .setId(row.getId())
+                .setName(row.getEventLabel())
+                .setEventCode(row.getEventCode())
+                .setCategory(row.getCategory())
+                .setIcon(row.getIcon())
+                .setStatus(row.getStatus())
+                .setUseCount(row.getUseCount())
+                .setDefaultAmount(row.getDefaultAmount())
+                .setSortOrder(row.getSortOrder());
+    }
+
+    private static GiftEventTypeItemVo enrichPreset(GiftEventTypeItemVo p, Map<String, Long> countMap, Map<Long, GiftEventTypeUserConfig> configMap) {
+        long c1 = countMap.getOrDefault(p.getEventCode(), 0L);
+        long c2 = countMap.getOrDefault(p.getName(), 0L);
+        GiftEventTypeUserConfig cfg = configMap.get(p.getId());
+        Integer status = (cfg != null && cfg.getStatus() != null) ? cfg.getStatus() : p.getStatus();
+        BigDecimal amount = (cfg != null && cfg.getCustomAmount() != null) ? cfg.getCustomAmount() : p.getDefaultAmount();
+
+        return new GiftEventTypeItemVo()
+                .setId(p.getId())
+                .setName(p.getName())
+                .setEventCode(p.getEventCode())
+                .setCategory(p.getCategory())
+                .setIcon(p.getIcon())
+                .setStatus(status)
+                .setUseCount((int) (c1 + c2))
+                .setDefaultAmount(amount)
+                .setSortOrder(p.getSortOrder());
+    }
+
+    private static GiftEventTypeItemVo enrichCustom(GiftEventTypeItemVo c, Map<String, Long> countMap) {
+        return new GiftEventTypeItemVo()
+                .setId(c.getId())
+                .setName(c.getName())
+                .setEventCode(c.getEventCode())
+                .setCategory(c.getCategory())
+                .setIcon(c.getIcon())
+                .setStatus(c.getStatus())
+                .setUseCount(countMap.getOrDefault(c.getName(), 0L).intValue())
+                .setDefaultAmount(c.getDefaultAmount())
+                .setSortOrder(c.getSortOrder());
+    }
+
+    private Map<String, Long> loadEventCountMap() {
+        List<GiftEventInfo> events = giftEventInfoMapper.listEntities(null);
+        if (events == null || events.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return events.stream()
+                .filter(e -> StringUtils.hasText(e.getEventType()))
+                .collect(Collectors.groupingBy(GiftEventInfo::getEventType, Collectors.counting()));
+    }
+
+    private Map<Long, GiftEventTypeUserConfig> loadConfigMap(Long orgId) {
+        List<GiftEventTypeUserConfig> configs = giftEventTypeUserConfigMapper.selectList(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
+                .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
+                .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
+                .eq(GiftEventTypeUserConfig::getIsDelete, 0));
+        if (configs == null || configs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return configs.stream().collect(Collectors.toMap(GiftEventTypeUserConfig::getOptionId, Function.identity(), (c1, c2) -> c1));
     }
 
     @Override

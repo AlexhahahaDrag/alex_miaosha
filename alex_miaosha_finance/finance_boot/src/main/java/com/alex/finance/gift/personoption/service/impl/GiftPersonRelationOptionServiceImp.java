@@ -23,7 +23,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +53,7 @@ public class GiftPersonRelationOptionServiceImp
     private GiftPersonRelationOptionsVo toRelationOptionsVo(List<GiftPersonRelationOptionRowVo> rows) {
         List<GiftPersonRelationItemVo> presets = new ArrayList<>();
         List<GiftPersonRelationItemVo> customs = new ArrayList<>();
-        java.util.Set<String> customNames = new java.util.HashSet<>();
+        Set<String> customNames = new HashSet<>();
         if (rows != null) {
             for (GiftPersonRelationOptionRowVo row : rows) {
                 GiftPersonRelationItemVo item = new GiftPersonRelationItemVo()
@@ -59,12 +61,10 @@ public class GiftPersonRelationOptionServiceImp
                         .setName(row.getRelationLabel());
                 if (GiftRelationOptionConstants.OPTION_TYPE_SYSTEM.equals(row.getOptionType())) {
                     presets.add(item);
-                    continue;
-                }
-                if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())) {
-                    if (row.getRelationLabel() != null && customNames.add(row.getRelationLabel().trim())) {
-                        customs.add(item);
-                    }
+                } else if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(row.getOptionType())
+                        && row.getRelationLabel() != null
+                        && customNames.add(row.getRelationLabel().trim())) {
+                    customs.add(item);
                 }
             }
         }
@@ -79,30 +79,34 @@ public class GiftPersonRelationOptionServiceImp
             return null;
         }
         GiftPersonRelationOption option = getById(relationOptionId);
-        if (option == null || option.getIsDelete() != null && option.getIsDelete() == 1) {
+        if (option == null || Integer.valueOf(1).equals(option.getIsDelete())) {
             throw GiftExceptions.param("关系选项不存在");
         }
         if (GiftRelationOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
             return option.getRelationCode();
         }
         if (GiftRelationOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
-            TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
-            if (giftDataScopeSupport.isSuper(loginUser)) {
-                return option.getRelationLabel();
+            if (!canAccessCustomOption(option, ownerUserId)) {
+                throw GiftExceptions.forbidden("无权使用该自定义关系");
             }
-            Long myOrgId = giftDataScopeSupport.loginOrgId(loginUser);
-            if (myOrgId != null && myOrgId.equals(option.getOrgId())) {
-                return option.getRelationLabel();
-            }
-            if (ownerUserId != null && ownerUserId.equals(option.getUserId())) {
-                return option.getRelationLabel();
-            }
-            if (loginUser.getId().equals(option.getUserId())) {
-                return option.getRelationLabel();
-            }
-            throw GiftExceptions.forbidden("无权使用该自定义关系");
+            return option.getRelationLabel();
         }
         throw GiftExceptions.param("关系选项类型不合法");
+    }
+
+    private boolean canAccessCustomOption(GiftPersonRelationOption option, Long ownerUserId) {
+        TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+        if (giftDataScopeSupport.isSuper(loginUser)) {
+            return true;
+        }
+        Long myOrgId = giftDataScopeSupport.loginOrgId(loginUser);
+        if (myOrgId != null && myOrgId.equals(option.getOrgId())) {
+            return true;
+        }
+        if (ownerUserId != null && ownerUserId.equals(option.getUserId())) {
+            return true;
+        }
+        return loginUser.getId().equals(option.getUserId());
     }
 
     @Override

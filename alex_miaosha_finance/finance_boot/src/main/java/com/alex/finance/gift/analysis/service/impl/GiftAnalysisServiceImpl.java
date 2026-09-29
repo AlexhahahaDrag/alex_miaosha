@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.alex.finance.gift.support.GiftRecordConstants;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -23,10 +24,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GiftAnalysisServiceImpl implements GiftAnalysisService {
-
-    private static final String DIRECTION_GIVE = "GIVE";
-    private static final String DIRECTION_RECEIVE = "RECEIVE";
-    private static final String DIRECTION_RETURN = "RETURN";
 
     private final GiftRecordInfoService giftRecordInfoService;
     private final GiftEventInfoService giftEventInfoService;
@@ -93,12 +90,7 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
 
     /** 方向参数白名单：非法值按"全部"处理 */
     private String normalizeDirection(String direction) {
-        if (DIRECTION_GIVE.equals(direction)
-                || DIRECTION_RECEIVE.equals(direction)
-                || DIRECTION_RETURN.equals(direction)) {
-            return direction;
-        }
-        return null;
+        return GiftRecordConstants.normalizeDirection(direction);
     }
 
     private BigDecimal defaultAmount(BigDecimal amount) {

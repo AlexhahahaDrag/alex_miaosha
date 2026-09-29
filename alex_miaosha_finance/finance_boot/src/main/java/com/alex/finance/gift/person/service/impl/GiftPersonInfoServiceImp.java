@@ -25,6 +25,7 @@ import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionServic
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -82,11 +83,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
 
         BigDecimal receiveSum = records.stream()
-                .filter(record -> "RECEIVE".equals(record.getDirection()))
+                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal giveSum = records.stream()
-                .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
+                        || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal netAmount = receiveSum.subtract(giveSum);
@@ -111,11 +113,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     .toList();
 
             BigDecimal personReceive = personRecords.stream()
-                    .filter(record -> "RECEIVE".equals(record.getDirection()))
+                    .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
                     .map(this::amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal personGive = personRecords.stream()
-                    .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                    .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
+                            || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
                     .map(this::amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal personNet = personReceive.subtract(personGive);
@@ -152,7 +155,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal pendingReturnAmount = records.stream()
-                .filter(record -> "RECEIVE".equals(record.getDirection()))
+                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
                 .filter(record -> record.getReturnedFlag() == null || record.getReturnedFlag() == 0)
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -454,11 +457,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 .filter(record -> personInRecord(record, person.getId()))
                 .toList();
         BigDecimal giveAmount = personRecords.stream()
-                .filter(record -> "GIVE".equals(record.getDirection()) || "RETURN".equals(record.getDirection()))
+                .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
+                        || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal receiveAmount = personRecords.stream()
-                .filter(record -> "RECEIVE".equals(record.getDirection()))
+                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         Optional<GiftRecordInfoVo> latest = personRecords.stream()

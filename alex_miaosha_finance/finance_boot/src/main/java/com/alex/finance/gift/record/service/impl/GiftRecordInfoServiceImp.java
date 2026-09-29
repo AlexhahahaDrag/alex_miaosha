@@ -19,6 +19,8 @@ import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.finance.gift.support.GiftRecordConstants;
+import static com.alex.finance.gift.support.GiftRecordConstants.*;
 import com.alex.common.exception.FinanceException;
 import com.alex.api.finance.gift.record.query.GiftRecordAiParseReq;
 import com.alex.api.finance.gift.record.vo.GiftRecordAiParseVo;
@@ -49,10 +51,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, GiftRecordInfo>
         implements GiftRecordInfoService {
-
-    private static final String DIRECTION_GIVE = "GIVE";
-    private static final String DIRECTION_RECEIVE = "RECEIVE";
-    private static final String DIRECTION_RETURN = "RETURN";
 
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonInfoMapper giftPersonInfoMapper;
@@ -453,12 +451,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
 
     /** 方向参数白名单校验：非法值一律按"全部"处理，防止外部输入直接进 SQL 条件 */
     private String normalizeDirection(String direction) {
-        if (DIRECTION_GIVE.equals(direction)
-                || DIRECTION_RECEIVE.equals(direction)
-                || DIRECTION_RETURN.equals(direction)) {
-            return direction;
-        }
-        return null;
+        return GiftRecordConstants.normalizeDirection(direction);
     }
 
     private void autoResolveOrCreateEvent(GiftRecordInfoVo vo) {
@@ -498,7 +491,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
             return;
         }
 
-        Long contactPersonId = "GIVE".equals(vo.getDirection()) ? vo.getReceiverPersonId() : vo.getGiverPersonId();
+        Long contactPersonId = DIRECTION_GIVE.equals(vo.getDirection()) ? vo.getReceiverPersonId() : vo.getGiverPersonId();
         if (contactPersonId == null) {
             return;
         }
