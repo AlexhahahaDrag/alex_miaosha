@@ -3,7 +3,6 @@ package com.alex.api.user.handler;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.common.BaseVo;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  *description:  设置新增和修改的默认时间
@@ -44,7 +42,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         }
         TUserVo loginUser = userUtils.getLoginUser();
         log.info("insertFill loginUser:{}", loginUser);
-        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(BaseVo::getId).orElse(null);
+        Long id = loginUser != null ? loginUser.getId() : null;
         if (id != null) {
             if (metaObject.hasSetter("creator")) {
                 this.strictInsertFill(metaObject, "creator", Long.class, id);
@@ -66,7 +64,8 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             metaObject.setValue("updateTime", null);
             this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class,  now);
         }
-        Long id = Optional.ofNullable(userUtils.getLoginUser()).map(BaseVo::getId).orElse(null);
+        TUserVo loginUser = userUtils.getLoginUser();
+        Long id = loginUser != null ? loginUser.getId() : null;
         if (id != null) {
             if (metaObject.hasSetter("updater")) {
                 metaObject.setValue("updater", null);

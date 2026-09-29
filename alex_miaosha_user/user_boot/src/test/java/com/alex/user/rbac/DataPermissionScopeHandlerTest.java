@@ -14,6 +14,8 @@ import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,30 +170,6 @@ public class DataPermissionScopeHandlerTest {
         role.setRoleCode(roleCode);
         user.setRoleInfoVoList(Collections.singletonList(role));
         return user;
-    }
-
-    private static void assertNull(Object actual, String message) {
-        if (actual != null) {
-            throw new AssertionError(message + ", expected null, actual: " + actual);
-        }
-    }
-
-    private static void assertNotNull(Object actual, String message) {
-        if (actual == null) {
-            throw new AssertionError(message + ", expected non-null");
-        }
-    }
-
-    private static void assertTrue(boolean condition, String message) {
-        if (!condition) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (expected == null ? actual != null : !expected.equals(actual)) {
-            throw new AssertionError(message + ", expected: " + expected + ", actual: " + actual);
-        }
     }
 
     /**

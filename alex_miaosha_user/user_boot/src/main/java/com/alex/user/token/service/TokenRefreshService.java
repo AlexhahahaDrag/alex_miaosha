@@ -61,7 +61,7 @@ public class TokenRefreshService {
             }
 
         } catch (Exception e) {
-            log.error("异步刷新token失败，uuidToken: {}, 错误: {}", uuidToken, e.getMessage(), e);
+            log.error("异步刷新token失败，uuidToken: {}", uuidToken, e);
         }
     }
 
@@ -95,7 +95,7 @@ public class TokenRefreshService {
             log.info("开始刷新token，uuidToken: {}", uuidToken);
 
             // 生成新 token
-            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000);
+            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000L);
 
             // 更新 Redis中的token映射
             redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
@@ -117,7 +117,7 @@ public class TokenRefreshService {
             }
 
         } catch (Exception e) {
-            log.error("刷新token失败，uuidToken: {}, 错误: {}", uuidToken, e.getMessage(), e);
+            log.error("刷新token失败，uuidToken: {}", uuidToken, e);
         }
     }
 }
