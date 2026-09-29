@@ -51,6 +51,7 @@ qodana.yaml
 *.njsproj
 *.sln
 *.sw?
+*.code-workspace
 
 .worktrees/
 

@@ -1,6 +1,8 @@
 package com.alex.finance.gift.record.controller;
 
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
+import com.alex.api.finance.gift.record.query.GiftRecordAiParseReq;
+import com.alex.api.finance.gift.record.vo.GiftRecordAiParseVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.base.common.Result;
@@ -101,6 +103,13 @@ public class GiftRecordInfoController {
     @PutMapping(value = "/mark-returned")
     public Result<Boolean> markReturned(@RequestParam("receiveRecordId") Long receiveRecordId) {
         return Result.success(giftRecordInfoService.markReturned(receiveRecordId));
+    }
+
+    @ApiOperationSupport(order = 75, author = "alex")
+    @ApiOperation(value = "AI 自然语言快速记账解析", response = Result.class)
+    @PostMapping(value = "/ai-parse")
+    public Result<GiftRecordAiParseVo> aiParse(@Validated @RequestBody GiftRecordAiParseReq req) {
+        return Result.success(giftRecordInfoService.aiParse(req));
     }
 
     @ApiOperationSupport(order = 80, author = "alex")

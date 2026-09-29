@@ -10,7 +10,7 @@
 - 前端开发中，对于已配置由 `unplugin-auto-import` 和 `unplugin-vue-components` 插件自动导入和注册的常用 API（如 `ref`, `computed`, `watch`） and 常用组件（如 Vant、Ant Design Vue），严禁在文件中手动重复显式 `import`。
 - 移动端开发中，格式化日期/时间推荐优先引入并使用 `@alex_miaosha_mobile/src/utils/dayjs/index.ts` 中封装好的工具函数。
 - 移动端导航栏配置，建议统一使用 `const info = ref<Pick<NavBarConfig, 'title' | 'rightButton' | 'leftPath'>>(...)` 的响应式配置模式。
-- 修改关键代码后，若涉及业务逻辑、模型字段或契约变更，需同步更新 `D:\project\my_alex_brain` 知识库对应端文档，且同步更新对应的 `DEVELOPMENT.md` 或 `.cursorrules` 文件。
+- 修改关键代码后，若涉及业务逻辑、模型字段或契约变更，需同步更新 `F:\workplace\project\myself\my_alex_brain` 知识库对应端文档，且同步更新对应的规范规约文件。
 - 新增功能开发前必须先阅读项目根目录的 `TESTING_STANDARD.md`，按测试金字塔分层落地（后端 单元 70%/集成 25%/AI 5%，PC 端 60/25/15，移动端 55/25/20），并在 `tests/checklists/{feature}.md` 中沿用 `gift.md` 样板补齐字段边界（七点法）、状态机、权限矩阵与"不测理由"。
 - AI/E2E 测试统一使用 Midscene + Playwright 组合：所有可交互 DOM 必须挂 `data-testid` 并禁止用中文文案做精确匹配；等待必须用 `waitForResponse` / `waitForSelector` / `aiWaitFor`，禁用 `Thread.sleep` 或 `waitForTimeout`；测试数据需 try/finally 通过 API 清理，禁止直接连 dev 库跑 CRUD 残留脏数据。
 - 在制定任何方案（Implementation Plan 或重构方案）后，**必须立即终止工具调用并结束当前 Turn（回合）**，严禁在未获得用户通过 "Proceed" 或显式消息授权前自动执行后续的文件修改或命令运行。
@@ -28,4 +28,4 @@
 - 微服务在 Nacos 中的注册服务名分别为：用户微服务 `alex-miaosha@@alex-user-dev`（主端口 `30006`），商品微服务 `alex-miaosha@@alex-product-dev`（主端口 `30007`），财务微服务 `alex-miaosha@@alex-finance-dev`（主端口 `30008`），OSS 存储微服务 `alex-miaosha@@alex-oss-dev`（主端口 `30009`），AI 智能分析微服务 `alex-ai-dev`（主端口 `30010`，采用 DeepSeek + 规则引擎降级双路由）。
 - Redis 缓存了所有的登录态和共享菜单树（Key 类似 `LoginKey:login:in:menu_all_tree`），在前端/后端做菜单重组或过滤渲染时，严禁修改/污染原始 children 的内存结构以防止 Redis 缓存共享干扰。
 - 管理端菜单树 `GET/POST /menu-info/tree`（`MenuInfoServiceImp#getTree`）必须走带 `@DataPermission` 的 scoped `getList` 在内存拼 `children`，禁止调用 `getListAll`，禁止读写 `menu_all_tree`（该键仅服务登录全量缓存）。
-- 项目专属外部全栈工程知识库位于 `D:\project\my_alex_brain`，采用 Ponytail 矩阵编排（入口 `Home.md`、`00-System/` 系统底座与架构全景、`01-Standards/` 跨端工程规约、`02-Features/` 各垂直业务自闭环包包含 PRD/TechSpec/历史方案/避坑SOP）。AI 与开发者在修改程序中的业务逻辑、模型字段、API契约或排错后，**必须在同一会话中同步更新 `D:\project\my_alex_brain` 对应功能包或规范文档**，确保知识库与代码逻辑保持 100% 同步一致。
+- 项目专属外部全栈工程知识库位于 `F:\workplace\project\myself\my_alex_brain`，采用 Ponytail 矩阵编排（入口 `Home.md`、`00-System/` 系统底座与架构全景、`01-Standards/` 跨端工程规约、`02-Features/` 各垂直业务自闭环包包含 PRD/TechSpec/历史方案/避坑SOP）。AI 与开发者在修改程序中的业务逻辑、模型字段、API契约或排错后，**必须在同一会话中同步更新 `F:\workplace\project\myself\my_alex_brain` 对应功能包或规范文档**，确保知识库与代码逻辑保持 100% 同步一致。

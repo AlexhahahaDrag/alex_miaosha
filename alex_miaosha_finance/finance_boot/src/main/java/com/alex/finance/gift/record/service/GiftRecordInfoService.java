@@ -1,6 +1,8 @@
 package com.alex.finance.gift.record.service;
 
+import com.alex.api.finance.gift.record.query.GiftRecordAiParseReq;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
+import com.alex.api.finance.gift.record.vo.GiftRecordAiParseVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordInfoVo;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
@@ -38,6 +40,8 @@ public interface GiftRecordInfoService extends IService<GiftRecordInfo> {
     BigDecimal calculatePendingReturnAmount(Long receiveRecordId);
 
     Boolean markReturned(Long receiveRecordId);
+
+    GiftRecordAiParseVo aiParse(GiftRecordAiParseReq req);
 
     void exportGiftRecordInfo(GiftRecordQuery query, javax.servlet.http.HttpServletResponse response);
 }

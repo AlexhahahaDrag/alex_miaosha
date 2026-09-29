@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import com.alex.finance.gift.ai.GiftAiService;
 import com.alex.api.finance.gift.event.vo.GiftRecordRecommendAmountVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
@@ -53,6 +54,7 @@ public class GiftEventTypeOptionServiceImp
     private final GiftEventTypePresetSupport giftEventTypePresetSupport;
     private final GiftRecordInfoMapper giftRecordInfoMapper;
     private final GiftEventTypeUserConfigMapper giftEventTypeUserConfigMapper;
+    private final GiftAiService giftAiService;
 
     @Override
     public GiftEventTypeOptionsVo listEventTypeOptions() {
@@ -369,11 +371,20 @@ public class GiftEventTypeOptionServiceImp
             roundAmount(baseAmount.multiply(MULTIPLIER_2_0))
         );
 
-        return new GiftRecordRecommendAmountVo()
+        GiftRecordRecommendAmountVo vo = new GiftRecordRecommendAmountVo()
                 .setAverageAmount(averageAmount)
                 .setLatestAmount(latestAmount)
                 .setDefaultAmount(defaultAmount)
                 .setRecommendations(recommendations);
+
+        try {
+            TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
+            giftAiService.enrichRecommendWithAi(vo, personId, eventType, direction, orgId, loginUser.getId());
+        } catch (Exception e) {
+            log.warn("Enrich recommend amount with AI failed: {}", e.getMessage());
+        }
+
+        return vo;
     }
 
     private BigDecimal roundAmount(BigDecimal val) {

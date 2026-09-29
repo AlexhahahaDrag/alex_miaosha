@@ -24,4 +24,10 @@ public class GiftRecordRecommendAmountVo {
 
     @ApiModelProperty(value = "梯度推荐金额列表")
     private List<BigDecimal> recommendations;
+
+    @ApiModelProperty(value = "AI人情决策建议与理由（可选）")
+    private String aiReasoning;
+
+    @ApiModelProperty(value = "智能礼仪贺词/温馨提示（可选）")
+    private String aiGreetingTip;
 }

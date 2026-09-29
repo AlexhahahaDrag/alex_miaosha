@@ -56,6 +56,11 @@
 
         <dependency>
             <groupId>com.alex</groupId>
+            <artifactId>ai_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alex</groupId>
             <artifactId>finance_api</artifactId>
         </dependency>
 

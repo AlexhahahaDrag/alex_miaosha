@@ -16,9 +16,12 @@ import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.eventoption.entity.GiftEventTypeOption;
 import com.alex.finance.gift.eventoption.mapper.GiftEventTypeOptionMapper;
-import com.alex.common.exception.FinanceException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftExceptions;
+import com.alex.common.exception.FinanceException;
+import com.alex.api.finance.gift.record.query.GiftRecordAiParseReq;
+import com.alex.api.finance.gift.record.vo.GiftRecordAiParseVo;
+import com.alex.finance.gift.ai.GiftAiService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +57,19 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     private final GiftPersonInfoMapper giftPersonInfoMapper;
     private final GiftEventInfoMapper giftEventInfoMapper;
     private final GiftEventTypeOptionMapper giftEventTypeOptionMapper;
+    private final GiftAiService giftAiService;
+
+    public GiftRecordInfoServiceImp(
+            GiftDataScopeSupport giftDataScopeSupport,
+            GiftPersonInfoMapper giftPersonInfoMapper,
+            GiftEventInfoMapper giftEventInfoMapper,
+            GiftEventTypeOptionMapper giftEventTypeOptionMapper) {
+        this.giftDataScopeSupport = giftDataScopeSupport;
+        this.giftPersonInfoMapper = giftPersonInfoMapper;
+        this.giftEventInfoMapper = giftEventInfoMapper;
+        this.giftEventTypeOptionMapper = giftEventTypeOptionMapper;
+        this.giftAiService = null;
+    }
 
     @Override
     public Page<GiftRecordInfoVo> getPage(Long pageNum, Long pageSize, GiftRecordQuery query) {
@@ -522,5 +538,10 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
             giftEventInfoMapper.insert(newEvent);
             vo.setEventId(newEvent.getId());
         }
+    }
+
+    @Override
+    public GiftRecordAiParseVo aiParse(GiftRecordAiParseReq req) {
+        return giftAiService != null ? giftAiService.parseQuickLedger(req) : new GiftRecordAiParseVo();
     }
 }

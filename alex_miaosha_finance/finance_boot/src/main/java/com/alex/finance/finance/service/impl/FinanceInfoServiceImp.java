@@ -58,10 +58,9 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                 .map(item -> item.getData().stream()
                         .collect(Collectors.toMap(TUserVo::getId, Function.identity(), (newVal, oldVal) -> newVal)))
                 .orElse(new HashMap<>());
-        result.getRecords().forEach(finance -> {
-            TUserVo tUserVo = userMap.get(finance.getBelongTo());
-            finance.setBelongToName(tUserVo == null ? null : (StringUtils.isNotEmpty(tUserVo.getNickName()) ? tUserVo.getNickName() : tUserVo.getUsername()));
-        });
+        result.getRecords().forEach(finance -> 
+            finance.setBelongToName(resolveUserName(userMap.get(finance.getBelongTo())))
+        );
         return result;
     }
 
@@ -167,6 +166,13 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         importParams.setDictHandler(iExcelDictHandler);
         result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportFinanceInfoVo.class, importParams);
         return result.getList();
+    }
+
+    private String resolveUserName(TUserVo user) {
+        if (user == null) {
+            return null;
+        }
+        return StringUtils.isNotEmpty(user.getNickName()) ? user.getNickName() : user.getUsername();
     }
 }
 
