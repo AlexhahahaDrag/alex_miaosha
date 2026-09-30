@@ -460,11 +460,11 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                 .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
                         || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
                 .map(this::amount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b == null ? BigDecimal.ZERO : b));
         BigDecimal receiveAmount = personRecords.stream()
                 .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
                 .map(this::amount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b == null ? BigDecimal.ZERO : b));
         Optional<GiftRecordInfoVo> latest = personRecords.stream()
                 .max(Comparator.comparing(GiftRecordInfoVo::getPayTime,
                         Comparator.nullsFirst(Comparator.naturalOrder())));
