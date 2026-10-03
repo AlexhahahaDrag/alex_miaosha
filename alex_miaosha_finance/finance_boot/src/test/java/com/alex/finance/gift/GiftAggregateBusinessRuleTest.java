@@ -216,6 +216,7 @@ class GiftAggregateBusinessRuleTest {
                     new GiftDataScopeSupport(mock(UserUtils.class)),
                     mock(GiftPersonInfoMapper.class),
                     mock(GiftEventInfoMapper.class),
+                    null,
                     null);
             GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
             // getSummary 已下沉为 SQL 聚合：按方向分组模拟 sumDirectionAgg 的返回行

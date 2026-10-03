@@ -143,6 +143,7 @@ class GiftDeleteStringIdTest {
                     new GiftDataScopeSupport(loginUserUtils()),
                     mock(GiftPersonInfoMapper.class),
                     mock(GiftEventInfoMapper.class),
+                    null,
                     null);
             ReflectionTestUtils.setField(this, "baseMapper", mock(GiftRecordInfoMapper.class));
         }

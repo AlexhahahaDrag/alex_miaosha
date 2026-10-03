@@ -57,18 +57,6 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
     private final GiftEventTypeOptionMapper giftEventTypeOptionMapper;
     private final GiftAiService giftAiService;
 
-    public GiftRecordInfoServiceImp(
-            GiftDataScopeSupport giftDataScopeSupport,
-            GiftPersonInfoMapper giftPersonInfoMapper,
-            GiftEventInfoMapper giftEventInfoMapper,
-            GiftEventTypeOptionMapper giftEventTypeOptionMapper) {
-        this.giftDataScopeSupport = giftDataScopeSupport;
-        this.giftPersonInfoMapper = giftPersonInfoMapper;
-        this.giftEventInfoMapper = giftEventInfoMapper;
-        this.giftEventTypeOptionMapper = giftEventTypeOptionMapper;
-        this.giftAiService = null;
-    }
-
     @Override
     public Page<GiftRecordInfoVo> getPage(Long pageNum, Long pageSize, GiftRecordQuery query) {
         return getBaseMapper().getPage(

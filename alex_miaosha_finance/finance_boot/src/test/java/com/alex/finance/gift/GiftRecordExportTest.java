@@ -52,6 +52,7 @@ class GiftRecordExportTest {
                 new GiftDataScopeSupport(loginUserUtils()),
                 mock(GiftPersonInfoMapper.class),
                 mock(GiftEventInfoMapper.class),
+                null,
                 null);
         ReflectionTestUtils.setField(service, "baseMapper", mapper);
 

@@ -133,6 +133,7 @@ class GiftOwnershipTest {
                     new GiftDataScopeSupport(userUtils),
                     mock(GiftPersonInfoMapper.class),
                     mock(GiftEventInfoMapper.class),
+                    null,
                     null);
             GiftRecordInfoMapper mapper = mock(GiftRecordInfoMapper.class);
             when(mapper.insert(any(GiftRecordInfo.class))).thenAnswer(invocation -> {

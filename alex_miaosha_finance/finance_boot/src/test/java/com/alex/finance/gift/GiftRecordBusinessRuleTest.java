@@ -46,6 +46,7 @@ class GiftRecordBusinessRuleTest {
                 new GiftDataScopeSupport(userUtils),
                 giftPersonInfoMapper,
                 giftEventInfoMapper,
+                null,
                 null);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
         lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());

@@ -58,7 +58,7 @@ class GiftRecordInfoServiceIT {
     @BeforeEach
     void setUp() {
         GiftDataScopeSupport giftDataScopeSupport = new GiftDataScopeSupport(userUtils);
-        service = new GiftRecordInfoServiceImp(giftDataScopeSupport, giftPersonInfoMapper, giftEventInfoMapper, null);
+        service = new GiftRecordInfoServiceImp(giftDataScopeSupport, giftPersonInfoMapper, giftEventInfoMapper, null, null);
         ReflectionTestUtils.setField(service, "baseMapper", giftRecordInfoMapper);
         // lenient：部分用例在触达登录态/insert 之前即因参数校验抛出，属预期路径
         lenient().when(userUtils.getLoginUser()).thenReturn(loginUser());
