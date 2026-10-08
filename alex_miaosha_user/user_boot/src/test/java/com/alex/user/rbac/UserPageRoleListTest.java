@@ -1,7 +1,6 @@
 package com.alex.user.rbac;
 
 import com.alex.api.oss.fileInfo.api.OssApi;
-import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
@@ -93,8 +92,7 @@ public class UserPageRoleListTest {
                 userPermissionContextService,
                 userDeleteCleanupService,
                 permissionContextCacheService,
-                null
-        );
+                null);
     }
 
     @Test
@@ -110,7 +108,7 @@ public class UserPageRoleListTest {
 
         Page<TUserVo> mapperPage = new Page<>(1, 10);
         mapperPage.setRecords(Collections.singletonList(user1));
-        when(tUserMapper.getPage(any(Page.class), any())).thenReturn(mapperPage);
+        when(tUserMapper.getPage(any(), any())).thenReturn(mapperPage);
 
         RoleInfoVo role1 = new RoleInfoVo();
         role1.setId(11L);

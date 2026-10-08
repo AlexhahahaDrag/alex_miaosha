@@ -88,7 +88,7 @@ public class RoleCodeUniquenessTest {
 
     @Test
     void addRoleInfo_rejectsDuplicateRoleCode_withoutInsert() {
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(1L);
 
         RoleInfoVo vo = new RoleInfoVo();
         vo.setRoleCode("DUP-ROLE");
@@ -103,7 +103,7 @@ public class RoleCodeUniquenessTest {
 
     @Test
     void addRoleInfo_allowsUniqueRoleCode() {
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(0L);
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
         when(roleInfoMapper.insert(any(RoleInfo.class))).thenAnswer(inv -> {
             RoleInfo entity = inv.getArgument(0);
@@ -125,7 +125,7 @@ public class RoleCodeUniquenessTest {
     @Test
     void updateRoleInfo_rejectsDuplicateRoleCode_afterOwnership_withoutUpdate() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(1L);
 
         RoleInfoVo vo = new RoleInfoVo();
         vo.setId(200L);
@@ -141,7 +141,7 @@ public class RoleCodeUniquenessTest {
     @Test
     void updateRoleInfo_allowsSameRoleCodeForSelf() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(0L);
         when(roleInfoMapper.updateById(any(RoleInfo.class))).thenReturn(1);
 
         RoleInfoVo vo = new RoleInfoVo();
@@ -162,7 +162,7 @@ public class RoleCodeUniquenessTest {
         vo.setRoleCode("ANY");
 
         assertThrows(SystemException.class, () -> service.updateRoleInfo(vo));
-        verify(roleInfoMapper, never()).selectCount(any(Wrapper.class));
+        verify(roleInfoMapper, never()).selectCount(any());
         verify(roleInfoMapper, never()).updateById(any(RoleInfo.class));
     }
 

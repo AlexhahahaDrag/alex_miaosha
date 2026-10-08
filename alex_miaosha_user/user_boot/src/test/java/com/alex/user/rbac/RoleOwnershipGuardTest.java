@@ -93,7 +93,7 @@ public class RoleOwnershipGuardTest {
                 when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
                 RoleInfoVo visible = targetRole(200L);
                 when(roleInfoMapper.queryRoleInfo("200")).thenReturn(visible);
-                when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+                when(roleInfoMapper.selectCount(any())).thenReturn(0L);
                 when(roleInfoMapper.updateById(any(RoleInfo.class))).thenReturn(1);
 
                 assertDoesNotThrow(() -> service.updateRoleInfo(targetRole(200L)));
@@ -115,7 +115,7 @@ public class RoleOwnershipGuardTest {
         @Test
         void updateRoleInfo_superAdmin_bypassesScopedQuery() {
                 when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-                when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+                when(roleInfoMapper.selectCount(any())).thenReturn(0L);
                 when(roleInfoMapper.updateById(any(RoleInfo.class))).thenReturn(1);
 
                 assertDoesNotThrow(() -> service.updateRoleInfo(targetRole(200L)));

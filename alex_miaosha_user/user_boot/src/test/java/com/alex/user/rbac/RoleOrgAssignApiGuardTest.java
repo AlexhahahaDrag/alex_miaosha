@@ -104,7 +104,7 @@ public class RoleOrgAssignApiGuardTest {
 
     @Test
     void addRoleInfo_denied_whenNoOrgIdsAndNoLoginOrg() {
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(0L);
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN, null));
 
         RoleInfoVo vo = new RoleInfoVo();
@@ -122,7 +122,7 @@ public class RoleOrgAssignApiGuardTest {
 
     @Test
     void addRoleInfo_bindsDefaultLoginOrg_whenOrgIdsAbsent() {
-        when(roleInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(roleInfoMapper.selectCount(any())).thenReturn(0L);
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN, 20L));
         when(orgSubtreeLookup.findDescendantOrgIds(20L)).thenReturn(Collections.emptyList());
         when(roleInfoMapper.insert(any(RoleInfo.class))).thenAnswer(inv -> {

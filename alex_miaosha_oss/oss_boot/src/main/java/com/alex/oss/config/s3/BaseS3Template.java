@@ -1,9 +1,7 @@
 package com.alex.oss.config.s3;
 
-import com.alex.common.enums.BucketNameEnum;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.oss.storage.vo.ObjectItem;
-import com.alibaba.fastjson.JSONObject;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
@@ -311,9 +309,11 @@ public abstract class BaseS3Template {
 
     /**
      * 获取预览直链：
-     * 1. 若显式指定 isPublic == true，或未指定 (isPublic == null) 且当前桶为公开只读桶（如 user-bucket, goods-bucket），
-     *    直接生成持久免签直链（支持 publicUrl/CDN 映射），彻底根除短期签名过期导致的 400 异常；
-     * 2. 若显式指定 isPublic == false，或当前桶为私有业务桶，生成临时预签名直链（1小时有效期，支持 publicUrl/CDN 域名自动映射替换）。
+     * 1. 若显式指定 isPublic == true，或未指定 (isPublic == null) 且当前桶为公开只读桶（如 user-bucket,
+     * goods-bucket），
+     * 直接生成持久免签直链（支持 publicUrl/CDN 映射），彻底根除短期签名过期导致的 400 异常；
+     * 2. 若显式指定 isPublic == false，或当前桶为私有业务桶，生成临时预签名直链（1小时有效期，支持 publicUrl/CDN
+     * 域名自动映射替换）。
      */
     public String preview(String bucketName, String objectKey, Boolean isPublic)
             throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException,

@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -73,7 +74,7 @@ public class PermissionInfoServiceRegressionTest {
 
         @Test
         void regression_addPermissionInfo_rejectsDuplicatePermissionCode() {
-                when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+                when(permissionInfoMapper.selectCount(any())).thenReturn(1L);
 
                 PermissionInfoVo vo = new PermissionInfoVo();
                 vo.setPermissionCode("DUP-PERM");
@@ -107,12 +108,12 @@ public class PermissionInfoServiceRegressionTest {
                 when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
 
                 RolePermissionInfo activeRolePermission = rolePermission(1L, "200", "100", SysConf.VALID_STATUS);
-                when(rolePermissionInfoService.list(any(Wrapper.class)))
+                when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any()))
                                 .thenReturn(Collections.singletonList(activeRolePermission));
                 when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
 
                 RoleUserInfo boundUser = roleUser(9L, "200", "55", SysConf.VALID_STATUS);
-                when(roleUserInfoService.list(any(Wrapper.class)))
+                when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any()))
                                 .thenReturn(Collections.singletonList(boundUser));
                 when(permissionInfoMapper.deleteByIds(anyList())).thenReturn(1);
 

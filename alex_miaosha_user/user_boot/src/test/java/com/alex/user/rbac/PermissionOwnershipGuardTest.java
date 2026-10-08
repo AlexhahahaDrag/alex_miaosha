@@ -78,7 +78,7 @@ public class PermissionOwnershipGuardTest {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
         PermissionInfoVo visible = targetPermission(200L);
         when(permissionInfoMapper.queryPermissionInfo(200L)).thenReturn(visible);
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(0L);
         when(permissionInfoMapper.updateById(any(PermissionInfo.class))).thenReturn(1);
 
         assertDoesNotThrow(() -> service.updatePermissionInfo(targetPermission(200L)));
@@ -100,7 +100,7 @@ public class PermissionOwnershipGuardTest {
     @Test
     void updatePermissionInfo_superAdmin_bypassesScopedQuery() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(0L);
         when(permissionInfoMapper.updateById(any(PermissionInfo.class))).thenReturn(1);
 
         assertDoesNotThrow(() -> service.updatePermissionInfo(targetPermission(200L)));

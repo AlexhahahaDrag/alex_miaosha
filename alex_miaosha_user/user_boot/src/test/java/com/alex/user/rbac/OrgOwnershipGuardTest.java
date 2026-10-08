@@ -66,7 +66,7 @@ public class OrgOwnershipGuardTest {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
         OrgInfoVo visible = targetOrg(200L);
         when(orgInfoMapper.queryOrgInfo("200")).thenReturn(visible);
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
         when(orgInfoMapper.updateById(any(OrgInfo.class))).thenReturn(1);
 
         assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L)));
@@ -100,7 +100,7 @@ public class OrgOwnershipGuardTest {
     @Test
     void updateOrgInfo_superAdmin_bypassesScopedQuery() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
         when(orgInfoMapper.updateById(any(OrgInfo.class))).thenReturn(1);
 
         assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L)));

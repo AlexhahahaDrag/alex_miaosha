@@ -53,21 +53,21 @@ public class OrgDeleteGuardTest {
     @Test
     void deleteOrgInfo_rejectsWhenChildOrgsExist_withoutdeleteByIds() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(1L);
 
         SystemException ex = assertThrows(SystemException.class, () -> service.deleteOrgInfo("100"),
                 "RBAC-BE-ORG-004: delete must reject orgs that still have child orgs");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("下级"),
                 "message must mention 下级机构, actual=" + ex.getMsg());
         verify(orgInfoMapper, never()).deleteByIds(anyList());
-        verify(orgUserInfoService, never()).count(any(Wrapper.class));
+        verify(orgUserInfoService, never()).count(any());
     }
 
     @Test
     void deleteOrgInfo_rejectsWhenBoundUsersExist_withoutdeleteByIds() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
-        when(orgUserInfoService.count(any(Wrapper.class))).thenReturn(1L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
+        when(orgUserInfoService.count(any())).thenReturn(1L);
 
         SystemException ex = assertThrows(SystemException.class, () -> service.deleteOrgInfo("100"),
                 "RBAC-BE-ORG-004: delete must reject orgs that still have bound users");
@@ -79,8 +79,8 @@ public class OrgDeleteGuardTest {
     @Test
     void deleteOrgInfo_allowedWhenNoChildOrgsAndNoBoundUsers() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
-        when(orgUserInfoService.count(any(Wrapper.class))).thenReturn(0L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
+        when(orgUserInfoService.count(any())).thenReturn(0L);
         when(orgInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteOrgInfo("100"));
@@ -96,8 +96,8 @@ public class OrgDeleteGuardTest {
                 "ownership guard must run before child/bound-user guards");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "message must mention 无权, actual=" + ex.getMsg());
-        verify(orgInfoMapper, never()).selectCount(any(Wrapper.class));
-        verify(orgUserInfoService, never()).count(any(Wrapper.class));
+        verify(orgInfoMapper, never()).selectCount(any());
+        verify(orgUserInfoService, never()).count(any());
         verify(orgInfoMapper, never()).deleteByIds(anyList());
     }
 

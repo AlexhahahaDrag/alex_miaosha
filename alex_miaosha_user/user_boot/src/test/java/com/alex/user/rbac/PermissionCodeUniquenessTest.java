@@ -73,7 +73,7 @@ public class PermissionCodeUniquenessTest {
 
     @Test
     void addPermissionInfo_rejectsDuplicatePermissionCode_withoutInsert() {
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(1L);
 
         PermissionInfoVo vo = new PermissionInfoVo();
         vo.setPermissionCode("DUP-PERM");
@@ -88,7 +88,7 @@ public class PermissionCodeUniquenessTest {
 
     @Test
     void addPermissionInfo_allowsUniquePermissionCode() {
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(0L);
         when(permissionInfoMapper.insert(any(PermissionInfo.class))).thenAnswer(inv -> {
             PermissionInfo entity = inv.getArgument(0);
             entity.setId(99L);
@@ -106,7 +106,7 @@ public class PermissionCodeUniquenessTest {
     @Test
     void updatePermissionInfo_rejectsDuplicatePermissionCode_afterOwnership_withoutUpdate() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(1L);
 
         PermissionInfoVo vo = new PermissionInfoVo();
         vo.setId(200L);
@@ -122,7 +122,7 @@ public class PermissionCodeUniquenessTest {
     @Test
     void updatePermissionInfo_allowsSamePermissionCodeForSelf() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(permissionInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(permissionInfoMapper.selectCount(any())).thenReturn(0L);
         when(permissionInfoMapper.updateById(any(PermissionInfo.class))).thenReturn(1);
 
         PermissionInfoVo vo = new PermissionInfoVo();
@@ -143,7 +143,7 @@ public class PermissionCodeUniquenessTest {
         vo.setPermissionCode("ANY");
 
         assertThrows(SystemException.class, () -> service.updatePermissionInfo(vo));
-        verify(permissionInfoMapper, never()).selectCount(any(Wrapper.class));
+        verify(permissionInfoMapper, never()).selectCount(any());
         verify(permissionInfoMapper, never()).updateById(any(PermissionInfo.class));
     }
 

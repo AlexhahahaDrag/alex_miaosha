@@ -93,7 +93,7 @@ public class DictInfoServiceImp extends ServiceImpl<DictInfoMapper, DictInfo> im
     }
 
     @Override
-    public Boolean deleteDictInfo(String ids) {
+    public boolean deleteDictInfo(String ids) {
         if (StringUtils.isEmpty(ids)) {
             return true;
         }

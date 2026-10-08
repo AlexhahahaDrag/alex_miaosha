@@ -52,7 +52,7 @@ public class MenuDeleteGuardTest {
     @Test
     void deleteMenuInfo_rejectsWhenChildMenusExist_withoutdeleteByIds() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(menuInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(menuInfoMapper.selectCount(any())).thenReturn(1L);
 
         SystemException ex = assertThrows(SystemException.class, () -> service.deleteMenuInfo("100"),
                 "RBAC-BE-MENU-002: delete must reject menus that still have children");
@@ -64,7 +64,7 @@ public class MenuDeleteGuardTest {
     @Test
     void deleteMenuInfo_allowedWhenNoChildMenus() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(menuInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(menuInfoMapper.selectCount(any())).thenReturn(0L);
         when(menuInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteMenuInfo("100"));

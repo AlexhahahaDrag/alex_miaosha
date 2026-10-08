@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,14 +86,14 @@ public class RoleDeleteCascadeTest {
     @Test
     void deleteRoleInfo_invalidatesActiveRolePermissions_whenNoBoundUsers() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(roleUserInfoService.count(any(Wrapper.class))).thenReturn(0L);
+        when(roleUserInfoService.count(any())).thenReturn(0L);
 
         RolePermissionInfo active = rolePermission(1L, "200", "100", SysConf.VALID_STATUS);
-        when(rolePermissionInfoService.list(any(Wrapper.class)))
+        when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any()))
                 .thenReturn(Collections.singletonList(active));
         when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
-        when(roleOrgInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
-        when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+        when(roleOrgInfoService.list(ArgumentMatchers.<Wrapper<RoleOrgInfo>>any())).thenReturn(Collections.emptyList());
+        when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any())).thenReturn(Collections.emptyList());
         when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteRoleInfo("200"));
@@ -106,14 +107,14 @@ public class RoleDeleteCascadeTest {
     @Test
     void deleteRoleInfo_invalidatesActiveRoleOrgs_whenNoBoundUsers() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(roleUserInfoService.count(any(Wrapper.class))).thenReturn(0L);
-        when(rolePermissionInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+        when(roleUserInfoService.count(any())).thenReturn(0L);
+        when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any())).thenReturn(Collections.emptyList());
 
         RoleOrgInfo activeOrg = roleOrg(3L, "200", "20", SysConf.VALID_STATUS);
-        when(roleOrgInfoService.list(any(Wrapper.class)))
+        when(roleOrgInfoService.list(ArgumentMatchers.<Wrapper<RoleOrgInfo>>any()))
                 .thenReturn(Collections.singletonList(activeOrg));
         when(roleOrgInfoService.updateById(any(RoleOrgInfo.class))).thenReturn(true);
-        when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+        when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any())).thenReturn(Collections.emptyList());
         when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deleteRoleInfo("200"));
@@ -127,13 +128,13 @@ public class RoleDeleteCascadeTest {
     @Test
     void deleteRoleInfo_rejectsWhenBoundUsers_withoutCascade() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(roleUserInfoService.count(any(Wrapper.class))).thenReturn(1L);
+        when(roleUserInfoService.count(any())).thenReturn(1L);
 
         SystemException ex = assertThrows(SystemException.class, () -> service.deleteRoleInfo("200"),
                 "bound active users must still block role delete");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("绑定"),
                 "message should mention bound users, actual=" + ex.getMsg());
-        verify(rolePermissionInfoService, never()).list(any(Wrapper.class));
+        verify(rolePermissionInfoService, never()).list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any());
         verify(rolePermissionInfoService, never()).updateById(any(RolePermissionInfo.class));
         verify(rolePermissionInfoService, never()).assignPermissions(any(), anyList());
         verify(roleInfoMapper, never()).deleteByIds(anyList());
@@ -144,12 +145,12 @@ public class RoleDeleteCascadeTest {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
         // Guard passed (count==0) but dirty leftover valid row still present — harden
         // path.
-        when(roleUserInfoService.count(any(Wrapper.class))).thenReturn(0L);
-        when(rolePermissionInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
-        when(roleOrgInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+        when(roleUserInfoService.count(any())).thenReturn(0L);
+        when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any())).thenReturn(Collections.emptyList());
+        when(roleOrgInfoService.list(ArgumentMatchers.<Wrapper<RoleOrgInfo>>any())).thenReturn(Collections.emptyList());
 
         RoleUserInfo leftover = roleUser(9L, "200", "55", SysConf.VALID_STATUS);
-        when(roleUserInfoService.list(any(Wrapper.class)))
+        when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any()))
                 .thenReturn(Collections.singletonList(leftover));
         when(roleUserInfoService.updateById(any(RoleUserInfo.class))).thenReturn(true);
         when(roleInfoMapper.deleteByIds(anyList())).thenReturn(1);

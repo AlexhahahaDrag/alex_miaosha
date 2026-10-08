@@ -48,7 +48,7 @@ public class OrgStructureValidationTest {
 
     @Test
     void addOrgInfo_rejectsDuplicateOrgCode_withoutInsert() {
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(1L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(1L);
 
         OrgInfoVo vo = new OrgInfoVo();
         vo.setOrgCode("DUP-CODE");
@@ -65,7 +65,7 @@ public class OrgStructureValidationTest {
     @Test
     void updateOrgInfo_rejectsSelfAsParent_withoutUpdate() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
 
         OrgInfoVo vo = new OrgInfoVo();
         vo.setId(100L);
@@ -83,7 +83,7 @@ public class OrgStructureValidationTest {
     void updateOrgInfo_rejectsCycle_withoutUpdate() {
         // A(1) -> parent B(2); B.parentId = A(1) => cycle
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(orgInfoMapper.selectCount(any(Wrapper.class))).thenReturn(0L);
+        when(orgInfoMapper.selectCount(any())).thenReturn(0L);
 
         OrgInfo parentB = new OrgInfo();
         parentB.setId(2L);

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * 在线用户管理服务
  *
  * @author alex
- * createDate 2024/12/19
+ *         createDate 2024/12/19
  * @version 1.0.0
  */
 @Service
@@ -33,7 +32,7 @@ public class OnlineUserService {
     /**
      * 异步添加在线用户
      *
-     * @param userLogin 用户登录信息
+     * @param userLogin  用户登录信息
      * @param expiration 过期时间
      */
     @Async("onlineUserExecutor")
@@ -45,7 +44,8 @@ public class OnlineUserService {
             // 获取 IP地址信息
             enrichIpLocation(onlineAdmin, userLogin.getLoginIp(), expiration);
             // 存储到 Redis
-            redisUtils.setEx(LoginKey.loginOnlineUser, userLogin.getTokenId(), String.valueOf(onlineAdmin), (int) expiration, TimeUnit.SECONDS);
+            redisUtils.setEx(LoginKey.loginOnlineUser, userLogin.getTokenId(), String.valueOf(onlineAdmin),
+                    (int) expiration, TimeUnit.SECONDS);
             log.debug("异步添加在线用户成功，用户: {}, tokenId: {}", userLogin.getUsername(), userLogin.getTokenId());
         } catch (Exception e) {
             log.error("异步添加在线用户失败，用户: {}, 错误: {}", userLogin.getUsername(), e.getMessage(), e);
@@ -55,7 +55,7 @@ public class OnlineUserService {
     /**
      * 构建在线用户信息
      *
-     * @param userLogin 用户登录信息
+     * @param userLogin  用户登录信息
      * @param expiration 过期时间
      * @return OnlineAdmin
      */
@@ -79,8 +79,8 @@ public class OnlineUserService {
      * 丰富 IP地址信息
      *
      * @param onlineAdmin 在线用户信息
-     * @param loginIp 登录 IP
-     * @param expiration 过期时间
+     * @param loginIp     登录 IP
+     * @param expiration  过期时间
      */
     private void enrichIpLocation(OnlineAdmin onlineAdmin, String loginIp, long expiration) {
         try {

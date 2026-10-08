@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,10 +67,10 @@ public class PermissionDeleteCascadeTest {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
 
         RolePermissionInfo active = rolePermission(1L, "200", "100", SysConf.VALID_STATUS);
-        when(rolePermissionInfoService.list(any(Wrapper.class)))
+        when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any()))
                 .thenReturn(Collections.singletonList(active));
         when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
-        when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+        when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any())).thenReturn(Collections.emptyList());
         when(permissionInfoMapper.deleteByIds(anyList())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.deletePermissionInfo("100"));
@@ -85,12 +86,12 @@ public class PermissionDeleteCascadeTest {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
 
         RolePermissionInfo active = rolePermission(1L, "200", "100", SysConf.VALID_STATUS);
-        when(rolePermissionInfoService.list(any(Wrapper.class)))
+        when(rolePermissionInfoService.list(ArgumentMatchers.<Wrapper<RolePermissionInfo>>any()))
                 .thenReturn(Collections.singletonList(active));
         when(rolePermissionInfoService.updateById(any(RolePermissionInfo.class))).thenReturn(true);
 
         RoleUserInfo boundUser = roleUser(9L, "200", "55", SysConf.VALID_STATUS);
-        when(roleUserInfoService.list(any(Wrapper.class)))
+        when(roleUserInfoService.list(ArgumentMatchers.<Wrapper<RoleUserInfo>>any()))
                 .thenReturn(Collections.singletonList(boundUser));
         when(permissionInfoMapper.deleteByIds(anyList())).thenReturn(1);
 

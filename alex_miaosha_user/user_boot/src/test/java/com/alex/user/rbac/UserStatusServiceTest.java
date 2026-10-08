@@ -107,7 +107,7 @@ public class UserStatusServiceTest {
     @Test
     void updateUserStatus_updatesOnlyStatusField() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
-        when(tUserMapper.update(isNull(), any(Wrapper.class))).thenReturn(1);
+        when(tUserMapper.update(isNull(), any())).thenReturn(1);
 
         assertDoesNotThrow(() -> service.updateUserStatus(200L, SysConf.INVALID_STATUS));
 
@@ -139,7 +139,7 @@ public class UserStatusServiceTest {
                 "RBAC-BE-USER-003: status update must reject users outside data scope");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "exception message must contain 无权, actual=" + ex.getMsg());
-        verify(tUserMapper, never()).update(isNull(), any(Wrapper.class));
+        verify(tUserMapper, never()).update(isNull(), any());
         verify(permissionContextCacheService, never()).invalidate(any());
     }
 
@@ -152,7 +152,7 @@ public class UserStatusServiceTest {
                 "status must be 1 or 0");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("状态"),
                 "exception message must mention 状态, actual=" + ex.getMsg());
-        verify(tUserMapper, never()).update(isNull(), any(Wrapper.class));
+        verify(tUserMapper, never()).update(isNull(), any());
         verify(permissionContextCacheService, never()).invalidate(any());
     }
 

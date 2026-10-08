@@ -20,10 +20,10 @@ import java.util.List;
 
 /**
  * <p>
- * description:  购物车表服务实现类
- * author:       alex
- * createDate:   2024-04-03 11:36:19
- * version:      1.0.0
+ * description: 购物车表服务实现类
+ * author: alex
+ * createDate: 2024-04-03 11:36:19
+ * version: 1.0.0
  */
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,6 @@ public class ShopCartServiceImp extends ServiceImpl<ShopCartMapper, ShopCart> im
     @Override
     public Boolean addShopCart(ShopCartVo shopCartVo) {
         // 根据人员和商品id查询商品是否存在
-        // TODO: 2024/4/14 后期修改成按照机构编码校验 
         Wrapper<ShopCart> query = Wrappers.<ShopCart>lambdaQuery()
                 .eq(ShopCart::getShopId, shopCartVo.getShopId());
         List<ShopCart> list = this.list(query);
@@ -68,7 +67,7 @@ public class ShopCartServiceImp extends ServiceImpl<ShopCartMapper, ShopCart> im
 
     @Override
     public Boolean deleteShopCart(String ids) {
-        if(StringUtils.isEmpty(ids)) {
+        if (StringUtils.isEmpty(ids)) {
             return true;
         }
         List<String> idArr = Arrays.asList(ids.split(","));
@@ -79,7 +78,7 @@ public class ShopCartServiceImp extends ServiceImpl<ShopCartMapper, ShopCart> im
     @Override
     public List<ShopCartVo> list(String ids) {
         List<Long> id = null;
-        if(!StringUtils.isEmpty(ids)) {
+        if (!StringUtils.isEmpty(ids)) {
             id = Arrays.stream(ids.split(",")).map(Long::valueOf).toList();
         }
         return shopCartMapper.list(id);
