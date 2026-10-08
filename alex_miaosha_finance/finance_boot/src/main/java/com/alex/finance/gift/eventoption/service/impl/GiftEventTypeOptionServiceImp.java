@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -327,29 +328,7 @@ public class GiftEventTypeOptionServiceImp
     @Override
     public GiftRecordRecommendAmountVo getRecommendAmount(Long personId, String eventType, String direction) {
         Long orgId = resolveOrgId();
-        
-        BigDecimal defaultAmount = BigDecimal.ZERO;
-        Long optionId = findEventTypeOptionId(orgId, eventType);
-        if (optionId != null) {
-            GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
-                    .eq(GiftEventTypeUserConfig::getOptionId, optionId)
-                    .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
-                    .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
-                    .eq(GiftEventTypeUserConfig::getIsDelete, 0)
-                    .last(SysConf.LIMIT_ONE));
-            if (config != null && config.getCustomAmount() != null) {
-                defaultAmount = config.getCustomAmount();
-            }
-            if (defaultAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                GiftEventTypeOption option = getById(optionId);
-                if (option != null && option.getDefaultAmount() != null) {
-                    defaultAmount = option.getDefaultAmount();
-                }
-            }
-        }
-        if (defaultAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            defaultAmount = DEFAULT_FALLBACK_AMOUNT;
-        }
+        BigDecimal defaultAmount = resolveDefaultAmount(orgId, eventType);
 
         List<Long> eventIds = giftEventInfoMapper.selectList(
             new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftEventInfo>()
@@ -357,59 +336,80 @@ public class GiftEventTypeOptionServiceImp
                 .eq("is_delete", 0)
         ).stream().map(GiftEventInfo::getId).toList();
 
-        BigDecimal averageAmount = BigDecimal.ZERO;
-        BigDecimal latestAmount = BigDecimal.ZERO;
+        GiftRecordRecommendAmountVo vo = new GiftRecordRecommendAmountVo()
+                .setAverageAmount(BigDecimal.ZERO)
+                .setLatestAmount(BigDecimal.ZERO)
+                .setDefaultAmount(defaultAmount);
 
-        if (personId != null && !eventIds.isEmpty()) {
-            com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftRecordInfo> query = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
-            query.eq("is_delete", 0)
-                 .in("event_id", eventIds)
-                 .and(wrapper -> wrapper.eq("giver_person_id", personId).or().eq("receiver_person_id", personId));
-            if (StringUtils.hasText(direction)) {
-                query.eq("direction", direction);
-            }
-            query.orderByDesc("pay_time");
+        fillHistoricalAmounts(vo, personId, eventIds, direction);
 
-            List<GiftRecordInfo> records = giftRecordInfoMapper.selectList(query);
-            if (records != null && !records.isEmpty()) {
-                latestAmount = records.get(0).getAmount();
-                BigDecimal total = BigDecimal.ZERO;
-                int count = 0;
-                for (GiftRecordInfo r : records) {
-                    if (r.getAmount() != null) {
-                        total = total.add(r.getAmount());
-                        count++;
-                    }
-                }
-                if (count > 0) {
-                    averageAmount = total.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-                }
-            }
-        }
+        BigDecimal baseAmount = vo.getAverageAmount().compareTo(BigDecimal.ZERO) > 0 ? vo.getAverageAmount() : defaultAmount;
 
-        BigDecimal baseAmount = averageAmount.compareTo(BigDecimal.ZERO) > 0 ? averageAmount : defaultAmount;
-        
-        List<BigDecimal> recommendations = List.of(
+        vo.setRecommendations(List.of(
             roundAmount(baseAmount.multiply(MULTIPLIER_0_8)),
             roundAmount(baseAmount.multiply(MULTIPLIER_1_0)),
             roundAmount(baseAmount.multiply(MULTIPLIER_1_5)),
             roundAmount(baseAmount.multiply(MULTIPLIER_2_0))
-        );
+        ));
 
-        GiftRecordRecommendAmountVo vo = new GiftRecordRecommendAmountVo()
-                .setAverageAmount(averageAmount)
-                .setLatestAmount(latestAmount)
-                .setDefaultAmount(defaultAmount)
-                .setRecommendations(recommendations);
+        enrichWithAiQuietly(vo, personId, eventType, direction, orgId);
+        return vo;
+    }
 
+    private BigDecimal resolveDefaultAmount(Long orgId, String eventType) {
+        Long optionId = findEventTypeOptionId(orgId, eventType);
+        if (optionId == null) {
+            return DEFAULT_FALLBACK_AMOUNT;
+        }
+        GiftEventTypeUserConfig config = giftEventTypeUserConfigMapper.selectOne(new LambdaQueryWrapper<GiftEventTypeUserConfig>()
+                .eq(GiftEventTypeUserConfig::getOptionId, optionId)
+                .eq(orgId != null, GiftEventTypeUserConfig::getOrgId, orgId)
+                .isNull(orgId == null, GiftEventTypeUserConfig::getOrgId)
+                .eq(GiftEventTypeUserConfig::getIsDelete, 0)
+                .last(SysConf.LIMIT_ONE));
+        if (config != null && config.getCustomAmount() != null && config.getCustomAmount().compareTo(BigDecimal.ZERO) > 0) {
+            return config.getCustomAmount();
+        }
+        GiftEventTypeOption option = getById(optionId);
+        if (option != null && option.getDefaultAmount() != null && option.getDefaultAmount().compareTo(BigDecimal.ZERO) > 0) {
+            return option.getDefaultAmount();
+        }
+        return DEFAULT_FALLBACK_AMOUNT;
+    }
+
+    private void fillHistoricalAmounts(GiftRecordRecommendAmountVo vo, Long personId, List<Long> eventIds, String direction) {
+        if (personId == null || eventIds.isEmpty()) {
+            return;
+        }
+        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<GiftRecordInfo> query = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+        query.eq("is_delete", 0)
+             .in("event_id", eventIds)
+             .and(wrapper -> wrapper.eq("giver_person_id", personId).or().eq("receiver_person_id", personId))
+             .eq(StringUtils.hasText(direction), "direction", direction)
+             .orderByDesc("pay_time");
+
+        List<GiftRecordInfo> records = giftRecordInfoMapper.selectList(query);
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        vo.setLatestAmount(records.get(0).getAmount());
+        List<BigDecimal> amounts = records.stream()
+                .map(GiftRecordInfo::getAmount)
+                .filter(Objects::nonNull)
+                .toList();
+        if (!amounts.isEmpty()) {
+            BigDecimal total = amounts.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+            vo.setAverageAmount(total.divide(BigDecimal.valueOf(amounts.size()), 2, RoundingMode.HALF_UP));
+        }
+    }
+
+    private void enrichWithAiQuietly(GiftRecordRecommendAmountVo vo, Long personId, String eventType, String direction, Long orgId) {
         try {
             TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
             giftAiService.enrichRecommendWithAi(vo, personId, eventType, direction, orgId, loginUser.getId());
         } catch (Exception e) {
             log.warn("Enrich recommend amount with AI failed: {}", e.getMessage());
         }
-
-        return vo;
     }
 
     private BigDecimal roundAmount(BigDecimal val) {

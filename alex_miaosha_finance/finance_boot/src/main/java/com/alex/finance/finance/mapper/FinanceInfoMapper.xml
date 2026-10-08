@@ -93,6 +93,12 @@
             <if test = "financeInfoVo.typeCode != null and financeInfoVo.typeCode != ''">
                 and finance_info.type_code like concat('%', #{financeInfoVo.typeCode}, '%')
             </if>
+            <if test = "financeInfoVo.typeCodes != null and financeInfoVo.typeCodes.size() > 0">
+                and finance_info.type_code in
+                <foreach collection="financeInfoVo.typeCodes" item="tCode" open="(" separator="," close=")">
+                    #{tCode}
+                </foreach>
+            </if>
             <if test = "financeInfoVo.bigTypeCode != null and financeInfoVo.bigTypeCode != ''">
                 and (finance_info.type_code like concat('%', #{financeInfoVo.bigTypeCode}, '%')
                 or finance_info.name like concat('%', #{financeInfoVo.bigTypeCode}, '%')
@@ -128,4 +134,24 @@
             </if>
         </if>
     </sql>
+
+    <select id="selectRecentCategories" resultType="java.lang.String">
+        SELECT DISTINCT finance_info.type_code
+        FROM finance_info
+        WHERE finance_info.is_delete = 0
+          AND finance_info.is_valid = '1'
+          AND finance_info.type_code IS NOT NULL
+          AND finance_info.type_code != ''
+          AND finance_info.type_code != '转账'
+          <if test="startDate != null">
+              AND finance_info.info_date &gt;= #{startDate}
+          </if>
+          <if test="endDate != null">
+              AND finance_info.info_date &lt; DATE_ADD(#{endDate}, interval 1 day)
+          </if>
+          <if test="belongTo != null">
+              AND finance_info.belong_to = #{belongTo}
+          </if>
+        ORDER BY finance_info.type_code ASC
+    </select>
 </mapper>

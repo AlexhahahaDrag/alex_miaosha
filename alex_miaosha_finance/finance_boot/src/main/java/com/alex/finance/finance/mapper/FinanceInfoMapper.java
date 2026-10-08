@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -28,5 +29,10 @@ public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
     FinanceSummaryVo getFinanceSummary(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(@Param("id") String id);
+
+    @DataPermission(table = "finance_info", field = "belong_to")
+    List<String> selectRecentCategories(@Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate,
+                                        @Param("belongTo") Long belongTo);
 }
 

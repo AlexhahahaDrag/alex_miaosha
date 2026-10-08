@@ -62,4 +62,40 @@ class EncryptionUtilsVersionTest {
         byte[] encryptedBytes = disabledUtils.encryptByVersion(plain, "2.0");
         assertEquals(plain, new String(encryptedBytes, StandardCharsets.UTF_8));
     }
+
+    @Test
+    @DisplayName("加密模式配置：AUTO 模式下依客户端 Header 动态协商")
+    void testModeAutoResolution() {
+        EncryptionProperties properties = new EncryptionProperties();
+        properties.setMode(EncryptionProperties.MODE_AUTO);
+        EncryptionUtils utils = new EncryptionUtils(properties);
+
+        assertEquals("2.0", utils.resolveVersion("2.0"));
+        assertEquals("1.0", utils.resolveVersion("1.0"));
+        assertEquals("1.0", utils.resolveVersion(null));
+        assertEquals("1.0", utils.resolveVersion(""));
+    }
+
+    @Test
+    @DisplayName("加密模式配置：FORCE_V1 强制降级到 1.0 (AES-CBC)，忽略客户端版本")
+    void testModeForceV1Resolution() {
+        EncryptionProperties properties = new EncryptionProperties();
+        properties.setMode(EncryptionProperties.MODE_FORCE_V1);
+        EncryptionUtils utils = new EncryptionUtils(properties);
+
+        assertEquals("1.0", utils.resolveVersion("2.0"));
+        assertEquals("1.0", utils.resolveVersion(null));
+    }
+
+    @Test
+    @DisplayName("加密模式配置：FORCE_V2 强制升级到 2.0 (AES-GCM)，即使客户端未声明")
+    void testModeForceV2Resolution() {
+        EncryptionProperties properties = new EncryptionProperties();
+        properties.setMode(EncryptionProperties.MODE_FORCE_V2);
+        EncryptionUtils utils = new EncryptionUtils(properties);
+
+        assertEquals("2.0", utils.resolveVersion("1.0"));
+        assertEquals("2.0", utils.resolveVersion(null));
+        assertEquals("2.0", utils.resolveVersion("2.0"));
+    }
 }

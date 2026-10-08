@@ -15,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * description: 财务信息表Vo
@@ -77,4 +78,7 @@ public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
     @ApiModelProperty(value = "销售订单id")
     private Long shopOrderId;
+
+    @ApiModelProperty(value = "类别编码列表(多选过滤)")
+    private List<String> typeCodes;
 }

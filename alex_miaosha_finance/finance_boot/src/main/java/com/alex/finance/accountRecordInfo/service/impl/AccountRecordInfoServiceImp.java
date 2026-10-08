@@ -31,7 +31,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
 
     private final AccountRecordInfoMapper accountRecordInfoMapper;
 
-    @Value("${accountNotice.difDay}")
+    @Value("${accountNotice.difDay:3}")
     private Integer difDay;
 
     private final WeChatService weChatService;

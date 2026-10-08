@@ -1,0 +1,49 @@
+package com.alex.api.finance.vo.finance;
+
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
+import lombok.experimental.Accessors;
+
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * description: 保存月度零花钱预算配置请求体
+ * author: alex
+ * createDate: 2026-10-08
+ * version: 1.0.0
+ */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ApiModel(value = "FinanceBudgetSaveReq", description = "保存月度零花钱预算配置请求体")
+public class FinanceBudgetSaveReq implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "归属用户ID(为空自动获取当前登录用户)")
+    private Long belongTo;
+
+    @NotBlank(message = "月份不能为空")
+    @ApiModelProperty(value = "年月 (格式: YYYY-MM)", required = true, example = "2026-10")
+    private String yearMonth;
+
+    @NotNull(message = "预算金额不能为空")
+    @DecimalMin(value = "0.00", message = "预算金额不能为负数")
+    @ApiModelProperty(value = "月度零花钱预算金额", required = true)
+    private BigDecimal budgetAmount;
+
+    @ApiModelProperty(value = "纳入统计的类别编码列表(为空表示统计全部非转账支出)")
+    private List<String> categoryCodes;
+}

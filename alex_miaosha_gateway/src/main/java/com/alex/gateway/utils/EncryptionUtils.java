@@ -28,6 +28,16 @@ public class EncryptionUtils {
     private final EncryptionProperties encryptionProperties;
 
     /**
+     * 依据配置模式与客户端请求头版本解析实际生效版本
+     *
+     * @param clientVersion 客户端请求头传入的版本
+     * @return 实际生效版本（"1.0" 或 "2.0"）
+     */
+    public String resolveVersion(String clientVersion) {
+        return encryptionProperties.resolveEffectiveVersion(clientVersion);
+    }
+
+    /**
      * 加密字符串 (默认 v1.0 AES-CBC 模式)
      * 
      * @param content 要加密的内容

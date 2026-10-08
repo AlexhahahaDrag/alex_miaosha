@@ -230,4 +230,28 @@ CREATE TABLE `t_shop_stock`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '商店库存表' ROW_FORMAT = DYNAMIC;
 
+-- ----------------------------
+-- Table structure for finance_budget_info
+-- ----------------------------
+DROP TABLE IF EXISTS `finance_budget_info`;
+CREATE TABLE `finance_budget_info`  (
+  `id` bigint NOT NULL COMMENT 'id',
+  `belong_to` bigint NOT NULL COMMENT '属于(用户ID)',
+  `year_month` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '月份(格式: YYYY-MM)',
+  `budget_amount` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '月度零花钱预算金额',
+  `category_codes` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '纳入统计的支出类别编码列表(逗号分隔，为空表示统计全部非转账支出)',
+  `is_valid` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT '1' COMMENT '是否有效(1:有效 0:无效)',
+  `is_delete` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT '0' COMMENT '是否删除(0:未删除 1:已删除)',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `year_month` ASC, `is_delete` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '财务月度零花钱与分类预算表' ROW_FORMAT = DYNAMIC;
+
 SET FOREIGN_KEY_CHECKS = 1;
