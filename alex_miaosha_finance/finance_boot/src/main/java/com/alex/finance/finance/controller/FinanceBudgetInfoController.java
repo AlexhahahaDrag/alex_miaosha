@@ -39,14 +39,16 @@ public class FinanceBudgetInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "预算月份(YYYY-MM，如 2026-10，为空默认当月)", name = "budgetMonth", dataTypeClass = String.class),
             @ApiImplicitParam(value = "年月(兼容老参数)", name = "yearMonth", dataTypeClass = String.class),
-            @ApiImplicitParam(value = "归属用户ID(可选，为空自动获取登录用户)", name = "belongTo", dataTypeClass = Long.class)
+            @ApiImplicitParam(value = "家庭组/机构ID(可选，为空自动获取登录用户所在机构)", name = "orgId", dataTypeClass = Long.class),
+            @ApiImplicitParam(value = "归属用户ID(可选，用于过滤指定成员)", name = "belongTo", dataTypeClass = Long.class)
     })
     public Result<FinanceBudgetStatusVo> getBudgetStatus(
             @RequestParam(value = "budgetMonth", required = false) String budgetMonth,
             @RequestParam(value = "yearMonth", required = false) String yearMonth,
+            @RequestParam(value = "orgId", required = false) Long orgId,
             @RequestParam(value = "belongTo", required = false) Long belongTo) {
         String targetMonth = StringUtils.isNotBlank(budgetMonth) ? budgetMonth : yearMonth;
-        return Result.success(financeBudgetInfoService.getMonthlyBudgetStatus(targetMonth, belongTo));
+        return Result.success(financeBudgetInfoService.getMonthlyBudgetStatus(targetMonth, orgId, belongTo));
     }
 
     @ApiOperationSupport(order = 15, author = "alex")

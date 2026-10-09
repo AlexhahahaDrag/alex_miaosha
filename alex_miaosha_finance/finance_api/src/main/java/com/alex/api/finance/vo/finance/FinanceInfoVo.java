@@ -29,6 +29,10 @@ import java.util.List;
 @ApiModel(value = "FinanceInfoVo", description = "财务信息表Vo")
 public class FinanceInfoVo extends BaseVo<FinanceInfoVo> {
 
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(name = "orgId", value = "家庭组/机构ID")
+    private Long orgId;
+
     @NotBlank(groups = {Insert.class, Update.class}, message = "名称不能为空！")
     @ApiModelProperty(name = "name", value = "名称")
     private String name;

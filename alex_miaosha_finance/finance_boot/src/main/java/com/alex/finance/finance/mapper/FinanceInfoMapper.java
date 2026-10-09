@@ -3,6 +3,7 @@ package com.alex.finance.finance.mapper;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.user.annotation.DataPermission;
+import com.alex.api.user.annotation.DataPermissionScope;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -19,18 +20,18 @@ import java.util.List;
  */
 public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
-    @DataPermission(table = "finance_info", field = "belong_to")
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     Page<FinanceInfoVo> getPage(@Param("page") Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
-    @DataPermission(table = "finance_info", field = "belong_to")
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
-    @DataPermission(table = "finance_info", field = "belong_to")
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     FinanceSummaryVo getFinanceSummary(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(@Param("id") String id);
 
-    @DataPermission(table = "finance_info", field = "belong_to")
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
     List<String> selectRecentCategories(@Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate,
                                         @Param("belongTo") Long belongTo);

@@ -3,7 +3,6 @@ package com.alex.finance.finance.mapper;
 import com.alex.finance.finance.entity.FinanceBudgetInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 /**
  * description: 月度零花钱预算表 Mapper
@@ -14,14 +13,12 @@ import org.apache.ibatis.annotations.Select;
 public interface FinanceBudgetInfoMapper extends BaseMapper<FinanceBudgetInfo> {
 
     /**
-     * 查询指定月份配置
+     * 查询指定月份配置 (按家庭组机构)
      */
-    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND budget_month = #{budgetMonth} AND (is_delete = '0' OR is_delete = 0) LIMIT 1")
-    FinanceBudgetInfo selectByMonth(@Param("belongTo") Long belongTo, @Param("budgetMonth") String budgetMonth);
+    FinanceBudgetInfo selectByMonth(@Param("orgId") Long orgId, @Param("budgetMonth") String budgetMonth);
 
     /**
-     * 查询指定月份之前的最近一条历史配置 (继承基准)
+     * 查询指定月份之前的最近一条历史配置 (继承基准，按家庭组机构)
      */
-    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND budget_month < #{budgetMonth} AND (is_delete = '0' OR is_delete = 0) ORDER BY budget_month DESC LIMIT 1")
-    FinanceBudgetInfo selectLatestBefore(@Param("belongTo") Long belongTo, @Param("budgetMonth") String budgetMonth);
+    FinanceBudgetInfo selectLatestBefore(@Param("orgId") Long orgId, @Param("budgetMonth") String budgetMonth);
 }

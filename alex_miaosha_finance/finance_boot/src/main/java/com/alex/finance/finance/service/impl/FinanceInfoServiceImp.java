@@ -11,6 +11,7 @@ import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.api.user.user.UserUtils;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.FinanceInfoService;
@@ -19,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +47,9 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     private final IExcelDictHandlerImpl iExcelDictHandler;
 
     private final UserApi userApi;
+
+    @Autowired(required = false)
+    private UserUtils userUtils;
 
     @Override
     public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
@@ -100,6 +105,10 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     public FinanceInfo addFinanceInfo(FinanceInfoVo financeInfoVo) {
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
+        if (financeInfo.getOrgId() == null) {
+            Long userOrgId = userUtils != null ? userUtils.getOrgId() : null;
+            financeInfo.setOrgId(userOrgId != null ? userOrgId : 20L);
+        }
         financeInfoMapper.insert(financeInfo);
         return financeInfo;
     }
@@ -134,11 +143,19 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (excelInfo == null || excelInfo.isEmpty()) {
             return true;
         }
+        Long defaultOrgId = userUtils != null ? userUtils.getOrgId() : null;
+        if (defaultOrgId == null) {
+            defaultOrgId = 20L;
+        }
+        final Long finalOrgId = defaultOrgId;
         //将导入文件转化为bean
         List<FinanceInfo> financeList = excelInfo.parallelStream()
                 .map(item -> {
                     FinanceInfo financeInfo = new FinanceInfo();
                     BeanUtils.copyProperties(item, financeInfo);
+                    if (financeInfo.getOrgId() == null) {
+                        financeInfo.setOrgId(finalOrgId);
+                    }
                     return financeInfo;
                 }).toList();
         this.saveBatch(financeList);

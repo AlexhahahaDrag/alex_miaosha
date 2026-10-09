@@ -2,7 +2,7 @@
 
 > **关联项目**：`alex_miaosha_finance`（后端）+ `alex_miaosha_front`（PC）+ `alex_miaosha_mobile`（移动端）
 > **关联文档**：`TESTING_STANDARD.md`、`doc/sql/alex_finance.sql`、`my_alex_brain/02-Features/05-SelfFinance-个人资产财务/TechSpec-零花钱预算与分类消费契约.md`
-> **最后更新**：2026-10-08
+> **最后更新**：2026-10-09
 
 ---
 
@@ -11,11 +11,11 @@
 | 项 | 内容 |
 | --- | --- |
 | 模块名 | finance_budget（零花钱预算与分类消费统计） |
-| 后端路径 | `finance_api`：`FinanceBudgetStatusVo`, `FinanceBudgetSaveReq`<br>`finance_boot`：`FinanceBudgetInfo`, `FinanceBudgetInfoService`, `FinanceBudgetInfoController` |
+| 后端路径 | `finance_api`：`FinanceBudgetStatusVo`, `FinanceBudgetSaveReq`<br>`finance_boot`：`FinanceBudgetInfo`, `FinanceBudgetInfoService`, `FinanceBudgetInfoController`, `FinanceBudgetInfoMapper.xml` |
 | PC 路径 | `alex_miaosha_front`：`src/views/finance/financeManager/` |
 | 移动端路径 | `alex_miaosha_mobile`：`src/views/finance/financeManager/` |
-| API | `GET /finance-budget/status?budgetMonth={YYYY-MM}&belongTo={userId}`<br>`POST /finance-budget/save` |
-| 数据库表 | `finance_budget_info`（列名 `budget_month`，含标准 BaseEntity 审计字段及唯一索引） |
+| API | `GET /finance-budget/status?budgetMonth={YYYY-MM}&orgId={orgId}&belongTo={userId}`<br>`POST /finance-budget/save` |
+| 数据库表 | `finance_budget_info`（核心列 `org_id`, `belong_to`, `budget_month`，唯一索引 `(org_id, budget_month, is_delete)`） |
 
 ---
 
@@ -32,6 +32,9 @@
 | F7 | `budgetMonth` | 格式非法（如 `2026-13` 或空串） | 后端严格校验拦截，抛出友好提示（兼顾兼容老参数 `yearMonth`） |
 | F8 | `incomeAndExpenses` | `expense` / `income` / `expense,income` | 独立字段承载收支方向，支持单选（仅支出/仅收入）与多选（支出+收入），多选时求和（`totalExpense + totalIncome`） |
 | F9 | `categoryCodes` 脏数据自愈 | 包含 `"支出"`、`"收入"`、`"expense"`、`"income"` | 读写链路自动清洗剥离，避免误匹配类别导致有效消费漏算为 0 |
+| F10 | `orgId` | 家庭组/机构ID边界 | 预算主隔离维度，支持传参注入与从当前登录上下文 `userUtils.getOrgId()` 自动解析（兜底 20L） |
+| F11 | `belongTo` | 预留个人字段 | 可空，当非空时预留为家庭组下特定个人专属子预算，当为空时按家庭组全员流水汇总 |
+| F12 | `finance_info.orgId` & `ORG_SHARED` | 记账与流水查询数据权限 | 物理新增 `org_id` 列，Mapper 升级为 `ORG_SHARED` 作用域，同家庭组全员流水与分类实时共享，跨机构严格物理隔离 |
 
 ---
 
@@ -42,16 +45,16 @@
 | 首次使用（无任何配置） | 当前月无记录 & 历史月无记录 | 返回默认 0 预算，`isInherited = false` |
 | 次月继承（Ponytail 查询回溯） | 上月设为 2000，当月未单独设置 | 查询自动回溯最近月记录，返回 2000，`isInherited = true` |
 | 当月个性化修改 | 当月保存新预算 3000 | 仅更新/插入当月快照，历史月份数据不受任何影响，`isInherited = false` |
-| 隔月跳跃继承 | 2026-05 设置，2026-06/07 未设置，2026-08 查询 | 2026-08 自动向上继承 2026-05 的配置 |
+| 隔月跳跃继承 | 2026-05 设置，2026-06/07 未设置，2026-08 查询 | 2026-08 自动向上继承 2026-05 的配置（基于 `org_id` 作用域） |
 
 ---
 
 ## 3. 权限与隔离矩阵
 
-| Persona | 当前用户自身预算 | 跨用户查询与设置 | 期望行为 |
+| Persona | 当前家庭组/机构预算 | 跨家庭组查询与设置 | 期望行为 |
 | --- | --- | --- | --- |
-| 普通用户 A | 可读写归属于 A 的零花钱配置 | 传入 B 的 belongTo | 隔离保护，默认限定当前登录上下文或所属归属人 |
-| 超级管理员 | 可为指定用户设定/查询预算 | 指定任意有效 `belongTo` | 正确读取/保存指定用户预算状态 |
+| 普通用户 A | 可读写其所属机构/家庭组的零花钱配置 | 传入其他机构的 orgId | 隔离保护，默认限定当前登录上下文所属家庭组/机构 |
+| 超级管理员 | 可为指定家庭组/机构设定/查询预算 | 指定任意有效 `orgId` | 正确读取/保存指定家庭组预算状态 |
 
 ---
 

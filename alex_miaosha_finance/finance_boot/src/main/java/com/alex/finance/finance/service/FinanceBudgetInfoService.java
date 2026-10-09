@@ -18,10 +18,18 @@ public interface FinanceBudgetInfoService extends IService<FinanceBudgetInfo> {
     /**
      * 获取指定月份的零花钱预算与消费实时统计状态
      * @param budgetMonth 预算月份 (如 2026-10)，为空默认当月
-     * @param belongTo 归属用户ID
+     * @param orgId 家庭组/机构ID (为空自动从登录人解析)
+     * @param belongTo 归属用户ID (可选，用于过滤单人实际支出)
      * @return 零花钱预算状态
      */
-    FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long belongTo);
+    FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long orgId, Long belongTo);
+
+    /**
+     * 兼容重载
+     */
+    default FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long belongTo) {
+        return getMonthlyBudgetStatus(budgetMonth, null, belongTo);
+    }
 
     /**
      * 保存或更新指定月份的零花钱预算及分类配置

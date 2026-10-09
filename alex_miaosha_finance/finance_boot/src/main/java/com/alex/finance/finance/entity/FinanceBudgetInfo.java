@@ -25,7 +25,11 @@ import java.math.BigDecimal;
 @ApiModel(value = "FinanceBudgetInfo 对象", description = "月度零花钱预算表")
 public class FinanceBudgetInfo extends BaseEntity<FinanceBudgetInfo> {
 
-    @ApiModelProperty(value = "属于(用户ID)")
+    @ApiModelProperty(value = "家庭组/机构ID")
+    @TableField("org_id")
+    private Long orgId;
+
+    @ApiModelProperty(value = "属于(用户ID，预留家庭组下特定个人)")
     @TableField("belong_to")
     private Long belongTo;
 

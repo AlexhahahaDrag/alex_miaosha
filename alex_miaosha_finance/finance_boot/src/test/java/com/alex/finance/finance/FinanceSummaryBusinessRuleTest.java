@@ -95,4 +95,45 @@ class FinanceSummaryBusinessRuleTest {
         assertEquals(new BigDecimal("126811.41"), result.getTotalBalance());
         assertEquals(4913L, result.getTotalCount());
     }
+
+    @Test
+    void testAddFinanceInfoWithExplicitOrgId() {
+        FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+
+        FinanceInfoVo req = new FinanceInfoVo();
+        req.setName("电费");
+        req.setOrgId(88L);
+        com.alex.finance.finance.entity.FinanceInfo entity = service.addFinanceInfo(req);
+        assertNotNull(entity);
+        assertEquals(88L, entity.getOrgId());
+    }
+
+    @Test
+    void testAddFinanceInfoWithUserUtilsAutoResolution() {
+        FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
+        com.alex.api.user.user.UserUtils userUtils = mock(com.alex.api.user.user.UserUtils.class);
+        when(userUtils.getOrgId()).thenReturn(66L);
+
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        ReflectionTestUtils.setField(service, "userUtils", userUtils);
+
+        FinanceInfoVo req = new FinanceInfoVo();
+        req.setName("水费");
+        com.alex.finance.finance.entity.FinanceInfo entity = service.addFinanceInfo(req);
+        assertNotNull(entity);
+        assertEquals(66L, entity.getOrgId());
+    }
+
+    @Test
+    void testAddFinanceInfoFallbackToDefaultOrgId() {
+        FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+
+        FinanceInfoVo req = new FinanceInfoVo();
+        req.setName("燃气费");
+        com.alex.finance.finance.entity.FinanceInfo entity = service.addFinanceInfo(req);
+        assertNotNull(entity);
+        assertEquals(20L, entity.getOrgId());
+    }
 }

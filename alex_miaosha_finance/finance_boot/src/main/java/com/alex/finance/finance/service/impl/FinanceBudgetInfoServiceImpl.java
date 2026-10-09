@@ -12,7 +12,6 @@ import com.alex.finance.finance.mapper.FinanceBudgetInfoMapper;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.FinanceBudgetInfoService;
 import com.alex.finance.finance.service.FinanceInfoService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -56,23 +53,22 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     private UserUtils userUtils;
 
     @Override
-    public FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long belongTo) {
+    public FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long orgId, Long belongTo) {
         if (StringUtils.isBlank(budgetMonth)) {
             budgetMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
-        if (belongTo == null && userUtils != null) {
-            try {
-                ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                if (attrs != null) {
-                    belongTo = userUtils.getUserId(attrs.getRequest());
-                }
-            } catch (Exception e) {
-                log.debug("未能从当前上下文自动解析登录用户: {}", e.getMessage());
-            }
+        Long targetOrgId = orgId;
+        if (targetOrgId == null && userUtils != null) {
+            targetOrgId = userUtils.getOrgId();
+        }
+        if (targetOrgId == null) {
+            targetOrgId = 20L;
         }
 
-        // 1. 先查当月独立配置
-        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(belongTo, budgetMonth);
+        boolean isExplicitMember = (belongTo != null);
+
+        // 1. 先查当月独立配置 (按家庭组机构)
+        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(targetOrgId, budgetMonth);
         BigDecimal budgetAmount = BigDecimal.ZERO;
         String categoryCodesStr = null;
         String incomeAndExpenses = "expense";
@@ -85,11 +81,10 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             if (StringUtils.isNotBlank(current.getIncomeAndExpenses())) {
                 incomeAndExpenses = current.getIncomeAndExpenses();
             }
-            isInherited = false;
             recordId = current.getId();
         } else {
-            // 2. 当月无配置时，向上回退查最近的历史月份（自然继承上个月的配置）
-            FinanceBudgetInfo history = financeBudgetInfoMapper.selectLatestBefore(belongTo, budgetMonth);
+            // 2. 当月无配置时，向上回退查最近的历史月份（自然继承上个月的配置，按家庭组机构）
+            FinanceBudgetInfo history = financeBudgetInfoMapper.selectLatestBefore(targetOrgId, budgetMonth);
             if (history != null) {
                 budgetAmount = history.getBudgetAmount() != null ? history.getBudgetAmount() : BigDecimal.ZERO;
                 categoryCodesStr = history.getCategoryCodes();
@@ -112,7 +107,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
                     .collect(Collectors.toList());
         }
 
-        // 4. 统计当月在指定分类下的实际收支
+        // 4. 统计当月在指定分类下的实际收支 (家庭组模式下 belongTo 保持 null，由 @DataPermission 自动按机构全员聚合)
         YearMonth ym = YearMonth.parse(budgetMonth);
         LocalDate monthStart = ym.atDay(1);
         LocalDate monthEnd = ym.atEndOfMonth();
@@ -121,7 +116,11 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         String normalizedDirection = String.join(",", directions);
 
         FinanceInfoVo queryVo = new FinanceInfoVo();
-        queryVo.setBelongTo(belongTo);
+        if (isExplicitMember) {
+            queryVo.setBelongTo(belongTo);
+        } else {
+            queryVo.setBelongTo(null);
+        }
         queryVo.setInfoDateStart(monthStart);
         queryVo.setInfoDateEnd(monthEnd);
         queryVo.setIsValid("1");
@@ -168,6 +167,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
 
         return FinanceBudgetStatusVo.builder()
                 .id(recordId)
+                .orgId(targetOrgId)
                 .belongTo(belongTo)
                 .budgetMonth(budgetMonth)
                 .incomeAndExpenses(normalizedDirection)
@@ -189,20 +189,15 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         if (req == null || StringUtils.isBlank(budgetMonth)) {
             throw new IllegalArgumentException("预算月份不能为空！");
         }
-        Long belongTo = req.getBelongTo();
-        if (belongTo == null && userUtils != null) {
-            try {
-                ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                if (attrs != null) {
-                    belongTo = userUtils.getUserId(attrs.getRequest());
-                }
-            } catch (Exception e) {
-                log.debug("未能自动获取归属人: {}", e.getMessage());
-            }
+        Long targetOrgId = req.getOrgId();
+        if (targetOrgId == null && userUtils != null) {
+            targetOrgId = userUtils.getOrgId();
         }
-        if (belongTo == null) {
-            throw new IllegalArgumentException("归属人ID不能为空！");
+        if (targetOrgId == null) {
+            targetOrgId = 20L;
         }
+
+        Long belongTo = req.getBelongTo() != null ? req.getBelongTo() : (userUtils != null ? userUtils.getUserId() : null);
 
         Set<String> directions = parseIncomeAndExpenses(req.getIncomeAndExpenses());
         String incomeAndExpenses = String.join(",", directions);
@@ -221,8 +216,10 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             }
         }
 
-        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(belongTo, budgetMonth);
+        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(targetOrgId, budgetMonth);
         if (exist != null) {
+            exist.setOrgId(targetOrgId);
+            exist.setBelongTo(belongTo);
             exist.setBudgetAmount(req.getBudgetAmount());
             exist.setIncomeAndExpenses(incomeAndExpenses);
             exist.setCategoryCodes(categoryCodesStr);
@@ -230,6 +227,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             financeBudgetInfoMapper.updateById(exist);
         } else {
             FinanceBudgetInfo newBudget = new FinanceBudgetInfo();
+            newBudget.setOrgId(targetOrgId);
             newBudget.setBelongTo(belongTo);
             newBudget.setBudgetMonth(budgetMonth);
             newBudget.setIncomeAndExpenses(incomeAndExpenses);
@@ -287,16 +285,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         if (StringUtils.isBlank(budgetMonth)) {
             budgetMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
-        if (belongTo == null && userUtils != null) {
-            try {
-                ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                if (attrs != null) {
-                    belongTo = userUtils.getUserId(attrs.getRequest());
-                }
-            } catch (Exception e) {
-                log.debug("未能自动获取归属人: {}", e.getMessage());
-            }
-        }
+        // belongTo 为 null 时，由 @DataPermission 自然提取全家庭组/机构已有分类
         if (financeInfoMapper == null) {
             return Collections.emptyList();
         }

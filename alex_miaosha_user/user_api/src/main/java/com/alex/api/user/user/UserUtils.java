@@ -52,6 +52,24 @@ public class UserUtils {
     }
 
     /**
+     * description: 从当前请求上下文中直接获取当前登录用户的id
+     * author: alex
+     * return: java.lang.Long
+     */
+    public Long getUserId() {
+        if (RequestContextHolder.getRequestAttributes() == null) {
+            return null;
+        }
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) Objects
+                    .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            return getUserId(request);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * description: 获取当前登录人信息
      * author: alex
      * return: com.alex.api.user.user.vo.TUserVo
@@ -75,5 +93,18 @@ public class UserUtils {
             return null;
         }
         return JSON.parseObject(onlineAdminStr, TUserVo.class);
+    }
+
+    /**
+     * description: 获取当前登录人所在机构/家庭组ID
+     * author: alex
+     * return: java.lang.Long
+     */
+    public Long getOrgId() {
+        TUserVo loginUser = getLoginUser();
+        if (loginUser == null) {
+            return null;
+        }
+        return loginUser.getOrgInfoVo() != null ? loginUser.getOrgInfoVo().getId() : loginUser.getOrgId();
     }
 }

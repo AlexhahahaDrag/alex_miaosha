@@ -33,7 +33,11 @@ public class FinanceBudgetStatusVo implements Serializable {
     private Long id;
 
     @JsonSerialize(using = Long2StringSerializer.class)
-    @ApiModelProperty(value = "归属用户ID")
+    @ApiModelProperty(value = "家庭组/机构ID")
+    private Long orgId;
+
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "归属用户ID(可选)")
     private Long belongTo;
 
     @ApiModelProperty(value = "预算月份 (格式: YYYY-MM)")

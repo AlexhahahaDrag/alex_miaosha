@@ -27,13 +27,18 @@ class FinanceBudgetServiceTest {
 
     private FinanceBudgetInfoMapper financeBudgetInfoMapper;
     private FinanceInfoService financeInfoService;
+    private com.alex.api.user.user.UserUtils userUtils;
     private FinanceBudgetInfoServiceImpl budgetService;
 
     @BeforeEach
     void setUp() {
         financeBudgetInfoMapper = mock(FinanceBudgetInfoMapper.class);
         financeInfoService = mock(FinanceInfoService.class);
+        userUtils = mock(com.alex.api.user.user.UserUtils.class);
+        when(userUtils.getOrgId()).thenReturn(20L);
+        when(userUtils.getUserId()).thenReturn(1001L);
         budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService);
+        org.springframework.test.util.ReflectionTestUtils.setField(budgetService, "userUtils", userUtils);
     }
 
     @Test
@@ -44,11 +49,12 @@ class FinanceBudgetServiceTest {
 
         FinanceBudgetInfo current = new FinanceBudgetInfo();
         current.setId(10L);
+        current.setOrgId(20L);
         current.setBelongTo(userId);
         current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("2000.00"));
         current.setCategoryCodes("餐饮,休闲娱乐");
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("600.00"))
@@ -77,16 +83,17 @@ class FinanceBudgetServiceTest {
         String month = "2026-10";
 
         // 当月未配置
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(null);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(null);
 
         // 9月份历史配置
         FinanceBudgetInfo septHistory = new FinanceBudgetInfo();
         septHistory.setId(9L);
+        septHistory.setOrgId(20L);
         septHistory.setBelongTo(userId);
         septHistory.setBudgetMonth("2026-09");
         septHistory.setBudgetAmount(new BigDecimal("1800.00"));
         septHistory.setCategoryCodes("餐饮,日常交通");
-        when(financeBudgetInfoMapper.selectLatestBefore(eq(userId), eq(month))).thenReturn(septHistory);
+        when(financeBudgetInfoMapper.selectLatestBefore(eq(20L), eq(month))).thenReturn(septHistory);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("900.00"))
@@ -113,8 +120,8 @@ class FinanceBudgetServiceTest {
         Long userId = 9999L;
         String month = "2026-10";
 
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(null);
-        when(financeBudgetInfoMapper.selectLatestBefore(eq(userId), eq(month))).thenReturn(null);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(null);
+        when(financeBudgetInfoMapper.selectLatestBefore(eq(20L), eq(month))).thenReturn(null);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(BigDecimal.ZERO)
@@ -141,11 +148,12 @@ class FinanceBudgetServiceTest {
         String month = "2026-10";
 
         FinanceBudgetInfo current = new FinanceBudgetInfo();
+        current.setOrgId(20L);
         current.setBelongTo(userId);
         current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("1000.00"));
         current.setCategoryCodes("餐饮");
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("1250.00")) // 超支 250
@@ -176,7 +184,8 @@ class FinanceBudgetServiceTest {
         // 场景 A: 已存在记录
         FinanceBudgetInfo exist = new FinanceBudgetInfo();
         exist.setId(88L);
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(exist);
+        exist.setOrgId(20L);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(exist);
 
         Boolean result = budgetService.saveMonthlyBudget(req);
         Assertions.assertTrue(result);
@@ -185,7 +194,7 @@ class FinanceBudgetServiceTest {
         Assertions.assertEquals(new BigDecimal("3000.00"), exist.getBudgetAmount());
 
         // 场景 B: 不存在记录
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq("2026-11"))).thenReturn(null);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq("2026-11"))).thenReturn(null);
         req.setBudgetMonth("2026-11");
         budgetService.saveMonthlyBudget(req);
         verify(financeBudgetInfoMapper, times(1)).insert(any(FinanceBudgetInfo.class));
@@ -200,12 +209,13 @@ class FinanceBudgetServiceTest {
         // 模拟用户历史误配置：分类存入了 "支出"
         FinanceBudgetInfo current = new FinanceBudgetInfo();
         current.setId(11L);
+        current.setOrgId(20L);
         current.setBelongTo(userId);
         current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("3000.00"));
         current.setCategoryCodes("支出"); // 误把"支出"存入
         current.setIncomeAndExpenses("expense");
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("19.31"))
@@ -237,12 +247,13 @@ class FinanceBudgetServiceTest {
 
         FinanceBudgetInfo current = new FinanceBudgetInfo();
         current.setId(12L);
+        current.setOrgId(20L);
         current.setBelongTo(userId);
         current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("5000.00"));
         current.setCategoryCodes("餐饮,工资");
         current.setIncomeAndExpenses("expense,income");
-        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
 
         FinanceSummaryVo summary = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("1200.00"))
@@ -260,6 +271,73 @@ class FinanceBudgetServiceTest {
         Assertions.assertEquals(new BigDecimal("4700.00"), status.getActualExpense());
         Assertions.assertEquals("expense,income", status.getIncomeAndExpenses());
         Assertions.assertNull(voCaptor.getValue().getIncomeAndExpenses()); // 双选时不限制单个收支方向
+    }
+
+    @Test
+    @DisplayName("家庭组/全机构聚合：未指定单人时(belongTo为null)，queryVo.belongTo保持为null交给@DataPermission全员聚合")
+    void testFamilyGroupOrgWideBudgetAggregationWhenBelongToNull() {
+        String month = "2026-10";
+
+        // 模拟全局/家庭组默认预算
+        FinanceBudgetInfo groupBudget = new FinanceBudgetInfo();
+        groupBudget.setId(15L);
+        groupBudget.setBudgetMonth(month);
+        groupBudget.setBudgetAmount(new BigDecimal("3000.00"));
+        groupBudget.setIncomeAndExpenses("expense,income");
+        when(financeBudgetInfoMapper.selectByMonth(any(), eq(month))).thenReturn(groupBudget);
+
+        // 模拟同家庭组下全员合计数据（臭屁宝+小袋子）
+        FinanceSummaryVo groupSummary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("19.31"))
+                .totalIncome(new BigDecimal("6139.71"))
+                .totalCount(3L)
+                .build();
+
+        ArgumentCaptor<FinanceInfoVo> voCaptor = ArgumentCaptor.forClass(FinanceInfoVo.class);
+        when(financeInfoService.getFinanceSummary(voCaptor.capture())).thenReturn(groupSummary);
+
+        // 入参 belongTo 传 null，表示全家庭组统计
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, null);
+
+        Assertions.assertNotNull(status);
+        // 全家庭组总流水：19.31 + 6139.71 = 6159.02
+        Assertions.assertEquals(new BigDecimal("6159.02"), status.getActualExpense());
+        // 关键断言：queryVo 的 belongTo 必须为 null，确保触发底层 @DataPermission 机构过滤
+        Assertions.assertNull(voCaptor.getValue().getBelongTo());
+    }
+
+    @Test
+    @DisplayName("家庭组机构自动解析：当orgId为null且userUtils可用时，自动解析当前登录用户所在机构ID")
+    void testUserUtilsAutoResolutionForOrgIdWhenOrgIdNull() {
+        String month = "2026-10";
+        Long mockOrgId = 99L;
+
+        com.alex.api.user.user.UserUtils mockUserUtils = mock(com.alex.api.user.user.UserUtils.class);
+        when(mockUserUtils.getOrgId()).thenReturn(mockOrgId);
+        org.springframework.test.util.ReflectionTestUtils.setField(budgetService, "userUtils", mockUserUtils);
+
+        FinanceBudgetInfo orgBudget = new FinanceBudgetInfo();
+        orgBudget.setId(18L);
+        orgBudget.setOrgId(mockOrgId);
+        orgBudget.setBudgetMonth(month);
+        orgBudget.setBudgetAmount(new BigDecimal("1000.00"));
+        orgBudget.setIncomeAndExpenses("expense");
+        when(financeBudgetInfoMapper.selectByMonth(eq(mockOrgId), eq(month))).thenReturn(orgBudget);
+
+        FinanceSummaryVo summary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("200.00"))
+                .totalIncome(BigDecimal.ZERO)
+                .totalCount(2L)
+                .build();
+        when(financeInfoService.getFinanceSummary(any(FinanceInfoVo.class))).thenReturn(summary);
+
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, null, null);
+
+        Assertions.assertNotNull(status);
+        Assertions.assertEquals(new BigDecimal("1000.00"), status.getBudgetAmount());
+        Assertions.assertEquals(mockOrgId, status.getOrgId());
+        verify(mockUserUtils, times(1)).getOrgId();
+        verify(financeBudgetInfoMapper).selectByMonth(eq(mockOrgId), eq(month));
     }
 }
 

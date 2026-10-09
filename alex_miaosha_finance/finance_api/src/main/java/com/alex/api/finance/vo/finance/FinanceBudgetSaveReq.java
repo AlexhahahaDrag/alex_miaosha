@@ -32,7 +32,11 @@ public class FinanceBudgetSaveReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonSerialize(using = Long2StringSerializer.class)
-    @ApiModelProperty(value = "归属用户ID(为空自动获取当前登录用户)")
+    @ApiModelProperty(value = "家庭组/机构ID(为空自动获取当前登录用户的家庭组)")
+    private Long orgId;
+
+    @JsonSerialize(using = Long2StringSerializer.class)
+    @ApiModelProperty(value = "归属用户ID(可选，预留家庭组下特定个人)")
     private Long belongTo;
 
     @NotBlank(message = "预算月份不能为空")

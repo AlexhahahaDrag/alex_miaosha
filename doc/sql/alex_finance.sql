@@ -102,6 +102,7 @@ CREATE TABLE `finance_base_info`  (
 DROP TABLE IF EXISTS `finance_info`;
 CREATE TABLE `finance_info`  (
   `id` bigint NOT NULL COMMENT 'id',
+  `org_id` bigint NOT NULL DEFAULT 20 COMMENT '家庭组/机构ID',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '名称',
   `type_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '类别',
   `amount` decimal(10, 2) NULL DEFAULT NULL COMMENT '钱数',
@@ -120,6 +121,7 @@ CREATE TABLE `finance_info`  (
   `belong_to` bigint NULL DEFAULT NULL COMMENT '属于',
   `info_date` datetime NULL DEFAULT NULL COMMENT '业务日期',
   PRIMARY KEY (`id`) USING BTREE,
+  INDEX `finance_info_org_id_IDX`(`org_id` ASC, `is_valid` ASC, `is_delete` ASC, `info_date` ASC) USING BTREE,
   INDEX `finance_status_info_date_IDX`(`is_valid` ASC, `is_delete` ASC, `info_date` ASC) USING BTREE,
   INDEX `finance_info_from_source_IDX`(`from_source` ASC, `belong_to` ASC, `is_valid` ASC, `is_delete` ASC, `info_date` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '财务表' ROW_FORMAT = DYNAMIC;
@@ -236,7 +238,8 @@ CREATE TABLE `t_shop_stock`  (
 DROP TABLE IF EXISTS `finance_budget_info`;
 CREATE TABLE `finance_budget_info`  (
   `id` bigint NOT NULL COMMENT 'id',
-  `belong_to` bigint NOT NULL COMMENT '属于(用户ID)',
+  `org_id` bigint NOT NULL DEFAULT 20 COMMENT '家庭组/机构ID',
+  `belong_to` bigint NULL DEFAULT NULL COMMENT '属于(用户ID，预留家庭组下特定个人)',
   `budget_month` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '预算月份(格式: YYYY-MM)',
   `income_and_expenses` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'expense' COMMENT '收支类型(expense:支出, income:收入)',
   `budget_amount` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '月度零花钱预算金额',
@@ -252,7 +255,8 @@ CREATE TABLE `finance_budget_info`  (
   `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
   `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `budget_month` ASC, `is_delete` ASC) USING BTREE
+  UNIQUE INDEX `finance_budget_org_month_IDX`(`org_id` ASC, `budget_month` ASC, `is_delete` ASC) USING BTREE,
+  INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `budget_month` ASC, `is_delete` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '财务月度零花钱与分类预算表' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;
