@@ -35,14 +35,27 @@ public class FinanceBudgetSaveReq implements Serializable {
     @ApiModelProperty(value = "归属用户ID(为空自动获取当前登录用户)")
     private Long belongTo;
 
-    @NotBlank(message = "月份不能为空")
-    @ApiModelProperty(value = "年月 (格式: YYYY-MM)", required = true, example = "2026-10")
-    private String yearMonth;
+    @NotBlank(message = "预算月份不能为空")
+    @ApiModelProperty(value = "预算月份 (格式: YYYY-MM)", required = true, example = "2026-10")
+    private String budgetMonth;
+
+    public void setYearMonth(String yearMonth) {
+        if (this.budgetMonth == null) {
+            this.budgetMonth = yearMonth;
+        }
+    }
+
+    public String getYearMonth() {
+        return this.budgetMonth;
+    }
 
     @NotNull(message = "预算金额不能为空")
     @DecimalMin(value = "0.00", message = "预算金额不能为负数")
     @ApiModelProperty(value = "月度零花钱预算金额", required = true)
     private BigDecimal budgetAmount;
+
+    @ApiModelProperty(value = "收支类型(expense:支出, income:收入，为空默认expense)")
+    private String incomeAndExpenses;
 
     @ApiModelProperty(value = "纳入统计的类别编码列表(为空表示统计全部非转账支出)")
     private List<String> categoryCodes;

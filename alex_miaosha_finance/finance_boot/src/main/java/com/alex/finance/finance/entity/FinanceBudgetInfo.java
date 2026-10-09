@@ -29,9 +29,22 @@ public class FinanceBudgetInfo extends BaseEntity<FinanceBudgetInfo> {
     @TableField("belong_to")
     private Long belongTo;
 
-    @ApiModelProperty(value = "月份 (YYYY-MM)")
-    @TableField("year_month")
-    private String yearMonth;
+    @ApiModelProperty(value = "预算月份 (YYYY-MM)")
+    @TableField("budget_month")
+    private String budgetMonth;
+
+    public String getYearMonth() {
+        return this.budgetMonth;
+    }
+
+    public FinanceBudgetInfo setYearMonth(String yearMonth) {
+        this.budgetMonth = yearMonth;
+        return this;
+    }
+
+    @ApiModelProperty(value = "收支类型 (expense:支出, income:收入)")
+    @TableField("income_and_expenses")
+    private String incomeAndExpenses;
 
     @ApiModelProperty(value = "月度零花钱预算金额")
     @TableField("budget_amount")

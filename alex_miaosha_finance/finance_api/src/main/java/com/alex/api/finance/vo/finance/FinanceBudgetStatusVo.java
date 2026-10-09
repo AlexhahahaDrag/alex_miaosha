@@ -36,11 +36,22 @@ public class FinanceBudgetStatusVo implements Serializable {
     @ApiModelProperty(value = "归属用户ID")
     private Long belongTo;
 
-    @ApiModelProperty(value = "年月 (格式: YYYY-MM)")
-    private String yearMonth;
+    @ApiModelProperty(value = "预算月份 (格式: YYYY-MM)")
+    private String budgetMonth;
+
+    public String getYearMonth() {
+        return this.budgetMonth;
+    }
+
+    public void setYearMonth(String yearMonth) {
+        this.budgetMonth = yearMonth;
+    }
 
     @ApiModelProperty(value = "月度零花钱预算金额")
     private BigDecimal budgetAmount;
+
+    @ApiModelProperty(value = "收支类型(expense:支出, income:收入)")
+    private String incomeAndExpenses;
 
     @ApiModelProperty(value = "纳入统计的类别编码列表")
     private List<String> categoryCodes;

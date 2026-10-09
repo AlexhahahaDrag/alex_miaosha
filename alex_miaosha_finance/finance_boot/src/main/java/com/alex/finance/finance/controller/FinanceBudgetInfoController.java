@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,26 +37,32 @@ public class FinanceBudgetInfoController {
     @ApiOperation(value = "获取指定月份零花钱预算与消费进度状态", notes = "当月未设置时自动继承最近历史月配置", response = Result.class)
     @GetMapping("/status")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "年月(YYYY-MM，如 2026-10，为空默认当月)", name = "yearMonth", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "预算月份(YYYY-MM，如 2026-10，为空默认当月)", name = "budgetMonth", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "年月(兼容老参数)", name = "yearMonth", dataTypeClass = String.class),
             @ApiImplicitParam(value = "归属用户ID(可选，为空自动获取登录用户)", name = "belongTo", dataTypeClass = Long.class)
     })
     public Result<FinanceBudgetStatusVo> getBudgetStatus(
+            @RequestParam(value = "budgetMonth", required = false) String budgetMonth,
             @RequestParam(value = "yearMonth", required = false) String yearMonth,
             @RequestParam(value = "belongTo", required = false) Long belongTo) {
-        return Result.success(financeBudgetInfoService.getMonthlyBudgetStatus(yearMonth, belongTo));
+        String targetMonth = StringUtils.isNotBlank(budgetMonth) ? budgetMonth : yearMonth;
+        return Result.success(financeBudgetInfoService.getMonthlyBudgetStatus(targetMonth, belongTo));
     }
 
     @ApiOperationSupport(order = 15, author = "alex")
     @ApiOperation(value = "获取近两月已有记账分类", notes = "获取上月及本月已有记账分类", response = Result.class)
     @GetMapping("/categories")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "年月(YYYY-MM，如 2026-10，为空默认当月)", name = "yearMonth", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "预算月份(YYYY-MM，如 2026-10，为空默认当月)", name = "budgetMonth", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "年月(兼容老参数)", name = "yearMonth", dataTypeClass = String.class),
             @ApiImplicitParam(value = "归属用户ID(可选，为空自动获取登录用户)", name = "belongTo", dataTypeClass = Long.class)
     })
     public Result<List<String>> getCategories(
+            @RequestParam(value = "budgetMonth", required = false) String budgetMonth,
             @RequestParam(value = "yearMonth", required = false) String yearMonth,
             @RequestParam(value = "belongTo", required = false) Long belongTo) {
-        return Result.success(financeBudgetInfoService.getRecentCategories(yearMonth, belongTo));
+        String targetMonth = StringUtils.isNotBlank(budgetMonth) ? budgetMonth : yearMonth;
+        return Result.success(financeBudgetInfoService.getRecentCategories(targetMonth, belongTo));
     }
 
     @AvoidRepeatableCommit

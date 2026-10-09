@@ -16,12 +16,12 @@ public interface FinanceBudgetInfoMapper extends BaseMapper<FinanceBudgetInfo> {
     /**
      * 查询指定月份配置
      */
-    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND year_month = #{yearMonth} AND (is_delete = '0' OR is_delete = 0) LIMIT 1")
-    FinanceBudgetInfo selectByMonth(@Param("belongTo") Long belongTo, @Param("yearMonth") String yearMonth);
+    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND budget_month = #{budgetMonth} AND (is_delete = '0' OR is_delete = 0) LIMIT 1")
+    FinanceBudgetInfo selectByMonth(@Param("belongTo") Long belongTo, @Param("budgetMonth") String budgetMonth);
 
     /**
      * 查询指定月份之前的最近一条历史配置 (继承基准)
      */
-    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND year_month < #{yearMonth} AND (is_delete = '0' OR is_delete = 0) ORDER BY year_month DESC LIMIT 1")
-    FinanceBudgetInfo selectLatestBefore(@Param("belongTo") Long belongTo, @Param("yearMonth") String yearMonth);
+    @Select("SELECT * FROM finance_budget_info WHERE belong_to = #{belongTo} AND budget_month < #{budgetMonth} AND (is_delete = '0' OR is_delete = 0) ORDER BY budget_month DESC LIMIT 1")
+    FinanceBudgetInfo selectLatestBefore(@Param("belongTo") Long belongTo, @Param("budgetMonth") String budgetMonth);
 }

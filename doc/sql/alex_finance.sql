@@ -237,7 +237,8 @@ DROP TABLE IF EXISTS `finance_budget_info`;
 CREATE TABLE `finance_budget_info`  (
   `id` bigint NOT NULL COMMENT 'id',
   `belong_to` bigint NOT NULL COMMENT '属于(用户ID)',
-  `year_month` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '月份(格式: YYYY-MM)',
+  `budget_month` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '预算月份(格式: YYYY-MM)',
+  `income_and_expenses` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'expense' COMMENT '收支类型(expense:支出, income:收入)',
   `budget_amount` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '月度零花钱预算金额',
   `category_codes` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '纳入统计的支出类别编码列表(逗号分隔，为空表示统计全部非转账支出)',
   `is_valid` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT '1' COMMENT '是否有效(1:有效 0:无效)',
@@ -251,7 +252,7 @@ CREATE TABLE `finance_budget_info`  (
   `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
   `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `year_month` ASC, `is_delete` ASC) USING BTREE
+  UNIQUE INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `budget_month` ASC, `is_delete` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '财务月度零花钱与分类预算表' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

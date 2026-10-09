@@ -56,9 +56,9 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     private UserUtils userUtils;
 
     @Override
-    public FinanceBudgetStatusVo getMonthlyBudgetStatus(String yearMonth, Long belongTo) {
-        if (StringUtils.isBlank(yearMonth)) {
-            yearMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+    public FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long belongTo) {
+        if (StringUtils.isBlank(budgetMonth)) {
+            budgetMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
         if (belongTo == null && userUtils != null) {
             try {
@@ -72,55 +72,86 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         }
 
         // 1. 先查当月独立配置
-        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(belongTo, yearMonth);
+        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(belongTo, budgetMonth);
         BigDecimal budgetAmount = BigDecimal.ZERO;
         String categoryCodesStr = null;
+        String incomeAndExpenses = "expense";
         boolean isInherited = false;
         Long recordId = null;
 
         if (current != null) {
             budgetAmount = current.getBudgetAmount() != null ? current.getBudgetAmount() : BigDecimal.ZERO;
             categoryCodesStr = current.getCategoryCodes();
+            if (StringUtils.isNotBlank(current.getIncomeAndExpenses())) {
+                incomeAndExpenses = current.getIncomeAndExpenses();
+            }
             isInherited = false;
             recordId = current.getId();
         } else {
             // 2. 当月无配置时，向上回退查最近的历史月份（自然继承上个月的配置）
-            FinanceBudgetInfo history = financeBudgetInfoMapper.selectLatestBefore(belongTo, yearMonth);
+            FinanceBudgetInfo history = financeBudgetInfoMapper.selectLatestBefore(belongTo, budgetMonth);
             if (history != null) {
                 budgetAmount = history.getBudgetAmount() != null ? history.getBudgetAmount() : BigDecimal.ZERO;
                 categoryCodesStr = history.getCategoryCodes();
+                if (StringUtils.isNotBlank(history.getIncomeAndExpenses())) {
+                    incomeAndExpenses = history.getIncomeAndExpenses();
+                }
                 isInherited = true;
             }
         }
 
-        // 3. 解析分类列表
+        // 3. 解析分类列表 (纯净真实分类，过滤掉混入的收支类型关键字)
         List<String> categoryCodes = new ArrayList<>();
         if (StringUtils.isNotBlank(categoryCodesStr)) {
             categoryCodes = Arrays.stream(categoryCodesStr.split(","))
                     .map(String::trim)
                     .filter(StringUtils::isNotBlank)
+                    .filter(c -> !c.equalsIgnoreCase("支出") && !c.equalsIgnoreCase("收入")
+                            && !c.equalsIgnoreCase("expense") && !c.equalsIgnoreCase("income"))
                     .distinct()
                     .collect(Collectors.toList());
         }
 
-        // 4. 统计当月在指定分类下的实际支出
-        YearMonth ym = YearMonth.parse(yearMonth);
+        // 4. 统计当月在指定分类下的实际收支
+        YearMonth ym = YearMonth.parse(budgetMonth);
         LocalDate monthStart = ym.atDay(1);
         LocalDate monthEnd = ym.atEndOfMonth();
+
+        Set<String> directions = parseIncomeAndExpenses(incomeAndExpenses);
+        String normalizedDirection = String.join(",", directions);
 
         FinanceInfoVo queryVo = new FinanceInfoVo();
         queryVo.setBelongTo(belongTo);
         queryVo.setInfoDateStart(monthStart);
         queryVo.setInfoDateEnd(monthEnd);
-        queryVo.setIncomeAndExpenses("expense");
         queryVo.setIsValid("1");
         if (!categoryCodes.isEmpty()) {
             queryVo.setTypeCodes(categoryCodes);
         }
 
-        FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
-        BigDecimal actualExpense = (summary != null && summary.getTotalExpense() != null)
-                ? summary.getTotalExpense() : BigDecimal.ZERO;
+        BigDecimal actualExpense = BigDecimal.ZERO;
+        if (directions.contains("expense") && directions.contains("income")) {
+            // 支出与收入均选中: 查询所有符合分类的收支流水并求和
+            queryVo.setIncomeAndExpenses(null);
+            FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
+            if (summary != null) {
+                BigDecimal exp = summary.getTotalExpense() != null ? summary.getTotalExpense() : BigDecimal.ZERO;
+                BigDecimal inc = summary.getTotalIncome() != null ? summary.getTotalIncome() : BigDecimal.ZERO;
+                actualExpense = exp.add(inc);
+            }
+        } else if (directions.contains("income")) {
+            queryVo.setIncomeAndExpenses("income");
+            FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
+            if (summary != null) {
+                actualExpense = summary.getTotalIncome() != null ? summary.getTotalIncome() : BigDecimal.ZERO;
+            }
+        } else {
+            queryVo.setIncomeAndExpenses("expense");
+            FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
+            if (summary != null) {
+                actualExpense = summary.getTotalExpense() != null ? summary.getTotalExpense() : BigDecimal.ZERO;
+            }
+        }
 
         // 5. 计算剩余与百分比
         BigDecimal remainingAmount = budgetAmount.subtract(actualExpense);
@@ -138,7 +169,8 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         return FinanceBudgetStatusVo.builder()
                 .id(recordId)
                 .belongTo(belongTo)
-                .yearMonth(yearMonth)
+                .budgetMonth(budgetMonth)
+                .incomeAndExpenses(normalizedDirection)
                 .budgetAmount(budgetAmount)
                 .categoryCodes(categoryCodes)
                 .categoryNames(categoryNames)
@@ -153,8 +185,9 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveMonthlyBudget(FinanceBudgetSaveReq req) {
-        if (req == null || StringUtils.isBlank(req.getYearMonth())) {
-            throw new IllegalArgumentException("年份月份不能为空！");
+        String budgetMonth = req != null ? req.getBudgetMonth() : null;
+        if (req == null || StringUtils.isBlank(budgetMonth)) {
+            throw new IllegalArgumentException("预算月份不能为空！");
         }
         Long belongTo = req.getBelongTo();
         if (belongTo == null && userUtils != null) {
@@ -171,31 +204,59 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             throw new IllegalArgumentException("归属人ID不能为空！");
         }
 
+        Set<String> directions = parseIncomeAndExpenses(req.getIncomeAndExpenses());
+        String incomeAndExpenses = String.join(",", directions);
+
         String categoryCodesStr = null;
         if (req.getCategoryCodes() != null && !req.getCategoryCodes().isEmpty()) {
             categoryCodesStr = req.getCategoryCodes().stream()
                     .filter(StringUtils::isNotBlank)
                     .map(String::trim)
+                    .filter(c -> !c.equalsIgnoreCase("支出") && !c.equalsIgnoreCase("收入")
+                            && !c.equalsIgnoreCase("expense") && !c.equalsIgnoreCase("income"))
                     .distinct()
                     .collect(Collectors.joining(","));
+            if (StringUtils.isBlank(categoryCodesStr)) {
+                categoryCodesStr = null;
+            }
         }
 
-        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(belongTo, req.getYearMonth());
+        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(belongTo, budgetMonth);
         if (exist != null) {
             exist.setBudgetAmount(req.getBudgetAmount());
+            exist.setIncomeAndExpenses(incomeAndExpenses);
             exist.setCategoryCodes(categoryCodesStr);
             exist.setIsValid("1");
             financeBudgetInfoMapper.updateById(exist);
         } else {
             FinanceBudgetInfo newBudget = new FinanceBudgetInfo();
             newBudget.setBelongTo(belongTo);
-            newBudget.setYearMonth(req.getYearMonth());
+            newBudget.setBudgetMonth(budgetMonth);
+            newBudget.setIncomeAndExpenses(incomeAndExpenses);
             newBudget.setBudgetAmount(req.getBudgetAmount());
             newBudget.setCategoryCodes(categoryCodesStr);
             newBudget.setIsValid("1");
             financeBudgetInfoMapper.insert(newBudget);
         }
         return true;
+    }
+
+    private Set<String> parseIncomeAndExpenses(String directionStr) {
+        Set<String> result = new LinkedHashSet<>();
+        if (StringUtils.isNotBlank(directionStr)) {
+            for (String part : directionStr.split(",")) {
+                String trimmed = part.trim().toLowerCase();
+                if ("expense".equals(trimmed) || "支出".equals(trimmed)) {
+                    result.add("expense");
+                } else if ("income".equals(trimmed) || "收入".equals(trimmed)) {
+                    result.add("income");
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            result.add("expense");
+        }
+        return result;
     }
 
     private List<String> mapCategoryNames(List<String> categoryCodes) {
@@ -222,9 +283,9 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     }
 
     @Override
-    public List<String> getRecentCategories(String yearMonth, Long belongTo) {
-        if (StringUtils.isBlank(yearMonth)) {
-            yearMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+    public List<String> getRecentCategories(String budgetMonth, Long belongTo) {
+        if (StringUtils.isBlank(budgetMonth)) {
+            budgetMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         }
         if (belongTo == null && userUtils != null) {
             try {
@@ -240,7 +301,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             return Collections.emptyList();
         }
         try {
-            YearMonth ym = YearMonth.parse(yearMonth);
+            YearMonth ym = YearMonth.parse(budgetMonth);
             LocalDate startDate = ym.minusMonths(1).atDay(1);
             LocalDate endDate = ym.atEndOfMonth();
             List<String> list = financeInfoMapper.selectRecentCategories(startDate, endDate, belongTo);

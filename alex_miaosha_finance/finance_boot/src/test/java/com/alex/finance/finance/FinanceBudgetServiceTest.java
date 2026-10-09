@@ -45,7 +45,7 @@ class FinanceBudgetServiceTest {
         FinanceBudgetInfo current = new FinanceBudgetInfo();
         current.setId(10L);
         current.setBelongTo(userId);
-        current.setYearMonth(month);
+        current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("2000.00"));
         current.setCategoryCodes("餐饮,休闲娱乐");
         when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
@@ -60,6 +60,7 @@ class FinanceBudgetServiceTest {
         FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
 
         Assertions.assertNotNull(status);
+        Assertions.assertEquals(month, status.getBudgetMonth());
         Assertions.assertEquals(new BigDecimal("2000.00"), status.getBudgetAmount());
         Assertions.assertEquals(new BigDecimal("600.00"), status.getActualExpense());
         Assertions.assertEquals(new BigDecimal("1400.00"), status.getRemainingAmount());
@@ -82,7 +83,7 @@ class FinanceBudgetServiceTest {
         FinanceBudgetInfo septHistory = new FinanceBudgetInfo();
         septHistory.setId(9L);
         septHistory.setBelongTo(userId);
-        septHistory.setYearMonth("2026-09");
+        septHistory.setBudgetMonth("2026-09");
         septHistory.setBudgetAmount(new BigDecimal("1800.00"));
         septHistory.setCategoryCodes("餐饮,日常交通");
         when(financeBudgetInfoMapper.selectLatestBefore(eq(userId), eq(month))).thenReturn(septHistory);
@@ -97,6 +98,7 @@ class FinanceBudgetServiceTest {
         FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
 
         Assertions.assertNotNull(status);
+        Assertions.assertEquals(month, status.getBudgetMonth());
         Assertions.assertEquals(new BigDecimal("1800.00"), status.getBudgetAmount());
         Assertions.assertEquals(new BigDecimal("900.00"), status.getActualExpense());
         Assertions.assertEquals(new BigDecimal("900.00"), status.getRemainingAmount());
@@ -140,7 +142,7 @@ class FinanceBudgetServiceTest {
 
         FinanceBudgetInfo current = new FinanceBudgetInfo();
         current.setBelongTo(userId);
-        current.setYearMonth(month);
+        current.setBudgetMonth(month);
         current.setBudgetAmount(new BigDecimal("1000.00"));
         current.setCategoryCodes("餐饮");
         when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
@@ -166,7 +168,7 @@ class FinanceBudgetServiceTest {
 
         FinanceBudgetSaveReq req = FinanceBudgetSaveReq.builder()
                 .belongTo(userId)
-                .yearMonth(month)
+                .budgetMonth(month)
                 .budgetAmount(new BigDecimal("3000.00"))
                 .categoryCodes(Arrays.asList("餐饮", "娱乐", "数码"))
                 .build();
@@ -184,8 +186,80 @@ class FinanceBudgetServiceTest {
 
         // 场景 B: 不存在记录
         when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq("2026-11"))).thenReturn(null);
-        req.setYearMonth("2026-11");
+        req.setBudgetMonth("2026-11");
         budgetService.saveMonthlyBudget(req);
         verify(financeBudgetInfoMapper, times(1)).insert(any(FinanceBudgetInfo.class));
     }
+
+    @Test
+    @DisplayName("容错与纯净过滤：历史脏数据若包含'支出'伪分类，应被智能剔除，不影响实际消费统计")
+    void testSanitizeCategoryCodesWithIncomeExpense() {
+        Long userId = 1001L;
+        String month = "2026-10";
+
+        // 模拟用户历史误配置：分类存入了 "支出"
+        FinanceBudgetInfo current = new FinanceBudgetInfo();
+        current.setId(11L);
+        current.setBelongTo(userId);
+        current.setBudgetMonth(month);
+        current.setBudgetAmount(new BigDecimal("3000.00"));
+        current.setCategoryCodes("支出"); // 误把"支出"存入
+        current.setIncomeAndExpenses("expense");
+        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+
+        FinanceSummaryVo summary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("19.31"))
+                .totalIncome(BigDecimal.ZERO)
+                .totalCount(2L)
+                .build();
+
+        // 验证 queryVo 没有被 typeCodes = ['支出'] 污染，typeCodes 应该为空从而统计全部
+        ArgumentCaptor<FinanceInfoVo> voCaptor = ArgumentCaptor.forClass(FinanceInfoVo.class);
+        when(financeInfoService.getFinanceSummary(voCaptor.capture())).thenReturn(summary);
+
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
+
+        Assertions.assertNotNull(status);
+        Assertions.assertEquals(new BigDecimal("19.31"), status.getActualExpense());
+        Assertions.assertEquals("expense", status.getIncomeAndExpenses());
+        // 伪分类"支出"被剔除，categoryCodes 变为空
+        Assertions.assertTrue(status.getCategoryCodes().isEmpty());
+        // queryVo 的 typeCodes 应该为 null 或空
+        Assertions.assertNull(voCaptor.getValue().getTypeCodes());
+        Assertions.assertEquals("expense", voCaptor.getValue().getIncomeAndExpenses());
+    }
+
+    @Test
+    @DisplayName("收支多选：同时选择支出与收入时合并统计总额")
+    void testMultiDirectionExpenseAndIncome() {
+        Long userId = 1001L;
+        String month = "2026-10";
+
+        FinanceBudgetInfo current = new FinanceBudgetInfo();
+        current.setId(12L);
+        current.setBelongTo(userId);
+        current.setBudgetMonth(month);
+        current.setBudgetAmount(new BigDecimal("5000.00"));
+        current.setCategoryCodes("餐饮,工资");
+        current.setIncomeAndExpenses("expense,income");
+        when(financeBudgetInfoMapper.selectByMonth(eq(userId), eq(month))).thenReturn(current);
+
+        FinanceSummaryVo summary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("1200.00"))
+                .totalIncome(new BigDecimal("3500.00"))
+                .totalCount(10L)
+                .build();
+
+        ArgumentCaptor<FinanceInfoVo> voCaptor = ArgumentCaptor.forClass(FinanceInfoVo.class);
+        when(financeInfoService.getFinanceSummary(voCaptor.capture())).thenReturn(summary);
+
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
+
+        Assertions.assertNotNull(status);
+        // 双选时求和: 1200 + 3500 = 4700.00
+        Assertions.assertEquals(new BigDecimal("4700.00"), status.getActualExpense());
+        Assertions.assertEquals("expense,income", status.getIncomeAndExpenses());
+        Assertions.assertNull(voCaptor.getValue().getIncomeAndExpenses()); // 双选时不限制单个收支方向
+    }
 }
+
