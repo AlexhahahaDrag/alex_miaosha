@@ -2,8 +2,12 @@ server:
   port: 30008
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   application:
     name: alex-finance-${spring.profiles.active}
+
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql驱动包
@@ -12,9 +16,6 @@ spring:
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
 mybatis-plus:
-  # 修复 MyBatis mapper-locations 配置
-  # 原问题：XML 文件在 src/main/java 目录下，但配置只从 classpath 查找，导致找不到 SQL 语句
-  # 解决：配置支持从 classpath 和 java 目录下的编译输出中查找
   mapper-locations:
     - classpath*:com/alex/finance/**/mapper/*Mapper.xml
 
@@ -25,4 +26,8 @@ xxl:
       appName: xxl-finance-prod
       logRetentionDays: 30
       port: 8008
+      logPath: /usr/local/soft/alex_miaosha/xxljob/logs
       accessToken: asdfghjkl
+
+accountNotice:
+  difDay: 3

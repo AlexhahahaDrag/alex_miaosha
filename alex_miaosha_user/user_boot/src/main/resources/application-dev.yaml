@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: alex-user-${spring.profiles.active}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
@@ -20,7 +23,7 @@ logging:
   level:
     com.alex.user.mapper: debug
 
-isRememberMeExpiresSecond: 86400 #记住密码一天
+isRememberMeExpiresSecond: 86400 # 记住密码一天
 
 defaultPassword: 1234@com
 

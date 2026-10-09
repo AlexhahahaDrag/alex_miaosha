@@ -13,10 +13,17 @@ spring:
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
 mybatis-plus:
-  # 修复 MyBatis-Plus 配置格式，使用 mybatis-plus 前缀和数组格式
   mapper-locations:
     - classpath*:com/alex/generator/**/mapper/*Mapper.xml
 
 generator:
   vue: false
   feign: false
+  mobile: false
+  tablePrefix: t_
+  tableSuffix: _t
+  logicDeleteColumnName: is_delete
+  logicDeletePropertyName: isDelete
+  superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  parentPackage: com.alex

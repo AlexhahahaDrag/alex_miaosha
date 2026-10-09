@@ -90,6 +90,6 @@ alex:
     # 是否启用加密
     enabled: true
     # 加密模式：AUTO (默认，按客户端协商) | FORCE_V1 (强制 1.0 AES-CBC) | FORCE_V2 (强制 2.0 AES-GCM)
-    mode: AUTO
+    mode: FORCE_V1
     # 字符编码
     charset: "UTF-8"

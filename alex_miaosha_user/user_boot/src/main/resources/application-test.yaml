@@ -9,11 +9,15 @@ spring:
       matching-strategy: ant_path_matcher
 
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-    driver-class-name: com.mysql.cj.jdbc.Driver                # mysql驱动包
-    url: jdbc:mysql://${info.ip}:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql驱动包
+    url: jdbc:mysql://${info.ip}:3336/alex_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
+
+mybatis-plus:
+  mapper-locations:
+    - classpath*:com/alex/user/**/mapper/*Mapper.xml
 
 logging:
   level:
@@ -24,8 +28,36 @@ management:
     web:
       exposure:
         include: '*'
-    #   在访问/actuator/health时显示完整信息
 
-mybatis-plus:
-  mapper-locations:
-    - classpath*:com/alex/user/**/mapper/*Mapper.xml
+isRememberMeExpiresSecond: 86400 # 记住密码一天
+
+defaultPassword: 1234@com
+
+# 业务专属线程池配置
+thread-pool:
+  # 通用异步任务线程池（登录并行查询、权限构建等核心链路）
+  async-task:
+    core-pool-size: 8
+    max-pool-size: 16
+    queue-capacity: 50
+    keep-alive-seconds: 60
+    thread-name-prefix: "async-task-"
+    await-termination-seconds: 30
+
+  # 在线用户管理线程池（旁路任务：解析 IP 地址并更新在线列表）
+  online-user:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    keep-alive-seconds: 30
+    thread-name-prefix: "online-user-"
+    await-termination-seconds: 10
+
+  # Token 刷新线程池（异步刷新 Redis Token）
+  token-refresh:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+    keep-alive-seconds: 60
+    thread-name-prefix: "token-refresh-"
+    await-termination-seconds: 30

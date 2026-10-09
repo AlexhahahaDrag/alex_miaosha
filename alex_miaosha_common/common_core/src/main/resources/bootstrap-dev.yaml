@@ -36,7 +36,7 @@ spring:
           - data-id: ${nacos.xxl}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
-          - data-id: ${nacos.minio}.${nacos.file-extension}
+          - data-id: ${nacos.oss}.${nacos.file-extension}
             group: ${nacos.group}
             refresh: true
           - data-id: ${nacos.ai-config}.${nacos.file-extension}
@@ -66,5 +66,5 @@ nacos:
   audience: audience
   wechat: wechat
   xxl: xxl
-  minio: minio
+  oss: oss
   ai-config: ai-config

@@ -45,7 +45,6 @@ qodana.yaml
 .vscode/
 .vscode/*
 .idea/
-*.iml
 *.suo
 *.ntvs*
 *.njsproj

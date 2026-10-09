@@ -2,12 +2,15 @@ server:
   port: 30007
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   application:
     name: alex-product-${spring.profiles.active}
 
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-    driver-class-name: com.mysql.cj.jdbc.Driver             # mysql驱动包
+    type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql驱动包
     url: jdbc:mysql://${info.ip}:3336/alex_product?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ENC(wzGvorwuoFra8yDJA66Xfg==)
     password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
@@ -24,6 +27,7 @@ shop:
 
 xxl:
   job:
+    enabled: false
     executor:
       appname: xxl-product-dev
       logretentiondays: 30

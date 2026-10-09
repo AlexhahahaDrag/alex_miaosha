@@ -3,20 +3,31 @@ server:
 
 spring:
   application:
-    name: alex-generator
+    name: alex-generator-${spring.profiles.active}
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource # 当前数据源操作类型
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql驱动包
-    url: jdbc:mysql://localhost:3306/alex_finance
-    username: root
-    password: mysql
+    url: jdbc:mysql://${info.ip}:3336/alex_finance?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ENC(wzGvorwuoFra8yDJA66Xfg==)
+    password: ENC(TQ2oVKN42O4FWPbyKH7mCHBwhNc4xNhLZa2IBDN93TI=)
 
 mybatis-plus:
-  # AI Agent：修复 MyBatis-Plus 配置格式，使用 mybatis-plus 前缀和数组格式
   mapper-locations:
     - classpath*:com/alex/generator/**/mapper/*Mapper.xml
 
 logging:
   level:
-    com.alex.finance.mapper: debug
+    com.alex.generator.mapper: debug
+
+generator:
+  vue: false
+  feign: false
+  mobile: false
+  tablePrefix: t_
+  tableSuffix: _t
+  logicDeleteColumnName: is_delete
+  logicDeletePropertyName: isDelete
+  superEntityColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  addSuperVoColumns: id, creator, createTime, updater, updateTime, deleter, deleteTime, isDelete, operator, operateTime
+  parentPackage: com.alex
