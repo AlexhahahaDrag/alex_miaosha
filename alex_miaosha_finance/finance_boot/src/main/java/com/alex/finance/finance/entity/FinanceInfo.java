@@ -26,10 +26,6 @@ import java.time.LocalDateTime;
 @ApiModel(value = "FinanceInfo 对象", description = "财务信息表")
 public class FinanceInfo extends BaseEntity<FinanceInfo> {
 
-    @ApiModelProperty(value = "家庭组/机构ID")
-    @TableField("org_id")
-    private Long orgId;
-
     @ApiModelProperty(value = "名称")
     @TableField("name")
     private String name;

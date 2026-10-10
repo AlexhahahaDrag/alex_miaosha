@@ -20,18 +20,18 @@ import java.util.List;
  */
 public interface FinanceInfoMapper extends BaseMapper<FinanceInfo> {
 
-    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "", scope = DataPermissionScope.ORG_SHARED)
     Page<FinanceInfoVo> getPage(@Param("page") Page<FinanceInfoVo> page, @Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
-    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "", scope = DataPermissionScope.ORG_SHARED)
     List<FinanceInfoVo> getList(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
-    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "", scope = DataPermissionScope.ORG_SHARED)
     FinanceSummaryVo getFinanceSummary(@Param("financeInfoVo") FinanceInfoVo financeInfoVo);
 
     FinanceInfoVo queryFinanceInfo(@Param("id") String id);
 
-    @DataPermission(table = "finance_info", field = "belong_to", orgField = "org_id", scope = DataPermissionScope.ORG_SHARED)
+    @DataPermission(table = "finance_info", field = "belong_to", orgField = "", scope = DataPermissionScope.ORG_SHARED)
     List<String> selectRecentCategories(@Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate,
                                         @Param("belongTo") Long belongTo);

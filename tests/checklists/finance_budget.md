@@ -34,7 +34,7 @@
 | F9 | `categoryCodes` 脏数据自愈 | 包含 `"支出"`、`"收入"`、`"expense"`、`"income"` | 读写链路自动清洗剥离，避免误匹配类别导致有效消费漏算为 0 |
 | F10 | `orgId` | 家庭组/机构ID边界 | 预算主隔离维度，支持传参注入与从当前登录上下文 `userUtils.getOrgId()` 自动解析（兜底 20L） |
 | F11 | `belongTo` | 预留个人字段 | 可空，当非空时预留为家庭组下特定个人专属子预算，当为空时按家庭组全员流水汇总 |
-| F12 | `finance_info.orgId` & `ORG_SHARED` | 记账与流水查询数据权限 | 物理新增 `org_id` 列，Mapper 升级为 `ORG_SHARED` 作用域，同家庭组全员流水与分类实时共享，跨机构严格物理隔离 |
+| F12 | `finance_info` 免加 `org_id` 共享流水 | 记账与流水查询数据权限 | `finance_info` 免物理新增 `org_id` 列，Mapper 配置 `ORG_SHARED` 且 `orgField = ""`，自动降级为 `t_org_user_info` 机构成员子查询，同家庭组全员流水与分类实时共享，跨机构严格物理隔离 |
 
 ---
 

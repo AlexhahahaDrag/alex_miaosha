@@ -105,10 +105,6 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     public FinanceInfo addFinanceInfo(FinanceInfoVo financeInfoVo) {
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
-        if (financeInfo.getOrgId() == null) {
-            Long userOrgId = userUtils != null ? userUtils.getOrgId() : null;
-            financeInfo.setOrgId(userOrgId != null ? userOrgId : 20L);
-        }
         financeInfoMapper.insert(financeInfo);
         return financeInfo;
     }
@@ -143,19 +139,11 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (excelInfo == null || excelInfo.isEmpty()) {
             return true;
         }
-        Long defaultOrgId = userUtils != null ? userUtils.getOrgId() : null;
-        if (defaultOrgId == null) {
-            defaultOrgId = 20L;
-        }
-        final Long finalOrgId = defaultOrgId;
         //将导入文件转化为bean
         List<FinanceInfo> financeList = excelInfo.parallelStream()
                 .map(item -> {
                     FinanceInfo financeInfo = new FinanceInfo();
                     BeanUtils.copyProperties(item, financeInfo);
-                    if (financeInfo.getOrgId() == null) {
-                        financeInfo.setOrgId(finalOrgId);
-                    }
                     return financeInfo;
                 }).toList();
         this.saveBatch(financeList);

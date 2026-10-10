@@ -130,13 +130,13 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
 
         BigDecimal actualExpense = BigDecimal.ZERO;
         if (directions.contains("expense") && directions.contains("income")) {
-            // 支出与收入均选中: 查询所有符合分类的收支流水并求和
+            // 支出与收入均选中: 计算净支出 (支出 - 收入)
             queryVo.setIncomeAndExpenses(null);
             FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
             if (summary != null) {
                 BigDecimal exp = summary.getTotalExpense() != null ? summary.getTotalExpense() : BigDecimal.ZERO;
                 BigDecimal inc = summary.getTotalIncome() != null ? summary.getTotalIncome() : BigDecimal.ZERO;
-                actualExpense = exp.add(inc);
+                actualExpense = exp.subtract(inc);
             }
         } else if (directions.contains("income")) {
             queryVo.setIncomeAndExpenses("income");
@@ -154,11 +154,13 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
 
         // 5. 计算剩余与百分比
         BigDecimal remainingAmount = budgetAmount.subtract(actualExpense);
-        BigDecimal usagePercent = BigDecimal.ZERO;
+        BigDecimal usagePercent = BigDecimal.ZERO.setScale(1, RoundingMode.HALF_UP);
         if (budgetAmount.compareTo(BigDecimal.ZERO) > 0) {
-            usagePercent = actualExpense.divide(budgetAmount, 4, RoundingMode.HALF_UP)
-                    .multiply(new BigDecimal("100"))
-                    .setScale(1, RoundingMode.HALF_UP);
+            if (actualExpense.compareTo(BigDecimal.ZERO) > 0) {
+                usagePercent = actualExpense.divide(budgetAmount, 4, RoundingMode.HALF_UP)
+                        .multiply(new BigDecimal("100"))
+                        .setScale(1, RoundingMode.HALF_UP);
+            }
         }
         boolean isOverBudget = budgetAmount.compareTo(BigDecimal.ZERO) > 0 && actualExpense.compareTo(budgetAmount) > 0;
 

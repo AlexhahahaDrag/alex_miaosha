@@ -240,7 +240,7 @@ class FinanceBudgetServiceTest {
     }
 
     @Test
-    @DisplayName("收支多选：同时选择支出与收入时合并统计总额")
+    @DisplayName("收支多选：同时选择支出与收入时统计净支出(支出-收入)，收入大于支出时无超支且使用率为0")
     void testMultiDirectionExpenseAndIncome() {
         Long userId = 1001L;
         String month = "2026-10";
@@ -267,10 +267,48 @@ class FinanceBudgetServiceTest {
         FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
 
         Assertions.assertNotNull(status);
-        // 双选时求和: 1200 + 3500 = 4700.00
-        Assertions.assertEquals(new BigDecimal("4700.00"), status.getActualExpense());
+        // 双选时净支出: 1200 - 3500 = -2300.00
+        Assertions.assertEquals(new BigDecimal("-2300.00"), status.getActualExpense());
+        Assertions.assertEquals(new BigDecimal("7300.00"), status.getRemainingAmount());
+        Assertions.assertEquals(new BigDecimal("0.0"), status.getUsagePercent());
+        Assertions.assertFalse(status.getIsOverBudget());
         Assertions.assertEquals("expense,income", status.getIncomeAndExpenses());
         Assertions.assertNull(voCaptor.getValue().getIncomeAndExpenses()); // 双选时不限制单个收支方向
+    }
+
+    @Test
+    @DisplayName("收支多选：支出大于收入时正确计算净支出、剩余与使用率")
+    void testMultiDirectionExpenseExceedsIncome() {
+        Long userId = 1001L;
+        String month = "2026-10";
+
+        FinanceBudgetInfo current = new FinanceBudgetInfo();
+        current.setId(13L);
+        current.setOrgId(20L);
+        current.setBelongTo(userId);
+        current.setBudgetMonth(month);
+        current.setBudgetAmount(new BigDecimal("5000.00"));
+        current.setCategoryCodes("餐饮,工资");
+        current.setIncomeAndExpenses("expense,income");
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
+
+        FinanceSummaryVo summary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("3500.00"))
+                .totalIncome(new BigDecimal("1200.00"))
+                .totalCount(10L)
+                .build();
+
+        ArgumentCaptor<FinanceInfoVo> voCaptor = ArgumentCaptor.forClass(FinanceInfoVo.class);
+        when(financeInfoService.getFinanceSummary(voCaptor.capture())).thenReturn(summary);
+
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
+
+        Assertions.assertNotNull(status);
+        // 双选时净支出: 3500 - 1200 = 2300.00
+        Assertions.assertEquals(new BigDecimal("2300.00"), status.getActualExpense());
+        Assertions.assertEquals(new BigDecimal("2700.00"), status.getRemainingAmount());
+        Assertions.assertEquals(new BigDecimal("46.0"), status.getUsagePercent());
+        Assertions.assertFalse(status.getIsOverBudget());
     }
 
     @Test
@@ -300,8 +338,11 @@ class FinanceBudgetServiceTest {
         FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, null);
 
         Assertions.assertNotNull(status);
-        // 全家庭组总流水：19.31 + 6139.71 = 6159.02
-        Assertions.assertEquals(new BigDecimal("6159.02"), status.getActualExpense());
+        // 全家庭组净支出：19.31 - 6139.71 = -6120.40 (净结余冲抵，不超支)
+        Assertions.assertEquals(new BigDecimal("-6120.40"), status.getActualExpense());
+        Assertions.assertEquals(new BigDecimal("9120.40"), status.getRemainingAmount());
+        Assertions.assertEquals(new BigDecimal("0.0"), status.getUsagePercent());
+        Assertions.assertFalse(status.getIsOverBudget());
         // 关键断言：queryVo 的 belongTo 必须为 null，确保触发底层 @DataPermission 机构过滤
         Assertions.assertNull(voCaptor.getValue().getBelongTo());
     }
