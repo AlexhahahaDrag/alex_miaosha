@@ -53,6 +53,10 @@ import java.util.stream.Collectors;
 public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, GiftPersonInfo>
         implements GiftPersonInfoService {
 
+    private static final String RELATION_STATUS_ACTIVE = "ACTIVE";
+    private static final String RELATION_STATUS_GENERAL = "GENERAL";
+    private static final String RELATION_STATUS_DISTANT = "DISTANT";
+
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonRelationOptionService giftPersonRelationOptionService;
     private final GiftRecordInfoService giftRecordInfoService;
@@ -83,12 +87,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
 
         BigDecimal receiveSum = records.stream()
-                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal giveSum = records.stream()
-                .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
-                        || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_GIVE.equals(r.getDirection())
+                        || GiftRecordConstants.DIRECTION_RETURN.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal netAmount = receiveSum.subtract(giveSum);
@@ -113,12 +117,12 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     .toList();
 
             BigDecimal personReceive = personRecords.stream()
-                    .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
+                    .filter(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()))
                     .map(this::amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal personGive = personRecords.stream()
-                    .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
-                            || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
+                    .filter(r -> GiftRecordConstants.DIRECTION_GIVE.equals(r.getDirection())
+                            || GiftRecordConstants.DIRECTION_RETURN.equals(r.getDirection()))
                     .map(this::amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal personNet = personReceive.subtract(personGive);
@@ -132,31 +136,23 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     .max(java.util.Comparator.comparing(GiftRecordInfoVo::getPayTime,
                             java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder())));
 
-            if (latest.isPresent()) {
-                LocalDateTime payTime = latest.get().getPayTime();
-                if (payTime != null) {
-                    if (payTime.isAfter(ninetyDaysAgo)) {
-                        activeCount++;
-                    } else if (payTime.isBefore(oneEightyDaysAgo)) {
-                        pendingMaintenanceCount++;
-                    }
-                } else {
-                    pendingMaintenanceCount++;
-                }
-            } else {
+            LocalDateTime payTime = latest.map(GiftRecordInfoVo::getPayTime).orElse(null);
+            if (payTime == null || payTime.isBefore(oneEightyDaysAgo)) {
                 pendingMaintenanceCount++;
+            } else if (payTime.isAfter(ninetyDaysAgo)) {
+                activeCount++;
             }
         }
 
         // 年度往来总额：仅统计当前自然年内发生（payTime）的记录，payTime 为空的不计入
         int currentYear = now.getYear();
         BigDecimal yearTotalAmount = records.stream()
-                .filter(record -> record.getPayTime() != null && record.getPayTime().getYear() == currentYear)
+                .filter(r -> r.getPayTime() != null && r.getPayTime().getYear() == currentYear)
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal pendingReturnAmount = records.stream()
-                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
-                .filter(record -> record.getReturnedFlag() == null || record.getReturnedFlag() == 0)
+                .filter(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()))
+                .filter(r -> r.getReturnedFlag() == null || r.getReturnedFlag() == 0)
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -182,17 +178,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
             LocalDateTime ninetyDaysAgo = DateUtils.now().minusDays(90);
             LocalDateTime oneEightyDaysAgo = DateUtils.now().minusDays(180);
             for (GiftPersonBusinessVo vo : page.getRecords()) {
-                if (vo.getLatestRecordTime() != null) {
-                    if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
-                        vo.setRelationStatus("ACTIVE");
-                    } else if (vo.getLatestRecordTime().isBefore(oneEightyDaysAgo)) {
-                        vo.setRelationStatus("DISTANT");
-                    } else {
-                        vo.setRelationStatus("GENERAL");
-                    }
-                } else {
-                    vo.setRelationStatus("DISTANT");
-                }
+                vo.setRelationStatus(resolveRelationStatus(vo.getLatestRecordTime(), ninetyDaysAgo, oneEightyDaysAgo));
             }
         }
         fillAvatarUrls(page.getRecords());
@@ -210,7 +196,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         GiftPersonInfoVo personVo = toVo(person);
         profile.setPerson(toBusinessVo(personVo));
         profile.setRecords(listGiftRecordsForAggregate().stream()
-                .filter(record -> personInRecord(record, id))
+                .filter(r -> personInRecord(r, id))
                 .sorted(Comparator.comparing(GiftRecordInfoVo::getPayTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(10)
                 .toList());
@@ -454,15 +440,15 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         GiftPersonBusinessVo vo = new GiftPersonBusinessVo();
         BeanUtils.copyProperties(person, vo);
         List<GiftRecordInfoVo> personRecords = listGiftRecordsForAggregate().stream()
-                .filter(record -> personInRecord(record, person.getId()))
+                .filter(r -> personInRecord(r, person.getId()))
                 .toList();
         BigDecimal giveAmount = personRecords.stream()
-                .filter(record -> GiftRecordConstants.DIRECTION_GIVE.equals(record.getDirection())
-                        || GiftRecordConstants.DIRECTION_RETURN.equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_GIVE.equals(r.getDirection())
+                        || GiftRecordConstants.DIRECTION_RETURN.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b == null ? BigDecimal.ZERO : b));
         BigDecimal receiveAmount = personRecords.stream()
-                .filter(record -> GiftRecordConstants.DIRECTION_RECEIVE.equals(record.getDirection()))
+                .filter(r -> GiftRecordConstants.DIRECTION_RECEIVE.equals(r.getDirection()))
                 .map(this::amount)
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b == null ? BigDecimal.ZERO : b));
         Optional<GiftRecordInfoVo> latest = personRecords.stream()
@@ -472,36 +458,35 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         vo.setTotalReceiveAmount(receiveAmount);
         vo.setNetAmount(receiveAmount.subtract(giveAmount));
         vo.setPendingReturnAmount(receiveAmount.subtract(giveAmount).max(BigDecimal.ZERO));
-        latest.ifPresent(record -> {
-            vo.setLatestRecordTime(record.getPayTime());
-            vo.setLatestDirection(record.getDirection());
+        latest.ifPresent(r -> {
+            vo.setLatestRecordTime(r.getPayTime());
+            vo.setLatestDirection(r.getDirection());
         });
 
         // Calculate relationStatus
-        if (vo.getLatestRecordTime() != null) {
-            LocalDateTime ninetyDaysAgo = DateUtils.now().minusDays(90);
-            LocalDateTime oneEightyDaysAgo = DateUtils.now().minusDays(180);
-            if (vo.getLatestRecordTime().isAfter(ninetyDaysAgo)) {
-                vo.setRelationStatus("ACTIVE");
-            } else if (vo.getLatestRecordTime().isBefore(oneEightyDaysAgo)) {
-                vo.setRelationStatus("DISTANT");
-            } else {
-                vo.setRelationStatus("GENERAL");
-            }
-        } else {
-            vo.setRelationStatus("DISTANT");
-        }
+        vo.setRelationStatus(resolveRelationStatus(vo.getLatestRecordTime()));
 
         return vo;
     }
 
-    private boolean personInRecord(GiftRecordInfoVo record, Long personId) {
-        return personId != null
-                && (personId.equals(record.getGiverPersonId()) || personId.equals(record.getReceiverPersonId()));
+    private String resolveRelationStatus(LocalDateTime latestRecordTime) {
+        return resolveRelationStatus(latestRecordTime, DateUtils.now().minusDays(90), DateUtils.now().minusDays(180));
     }
 
-    private BigDecimal amount(GiftRecordInfoVo record) {
-        return record.getAmount() == null ? BigDecimal.ZERO : record.getAmount();
+    private String resolveRelationStatus(LocalDateTime latestRecordTime, LocalDateTime ninetyDaysAgo, LocalDateTime oneEightyDaysAgo) {
+        if (latestRecordTime == null || latestRecordTime.isBefore(oneEightyDaysAgo)) {
+            return RELATION_STATUS_DISTANT;
+        }
+        return latestRecordTime.isAfter(ninetyDaysAgo) ? RELATION_STATUS_ACTIVE : RELATION_STATUS_GENERAL;
+    }
+
+    private boolean personInRecord(GiftRecordInfoVo r, Long personId) {
+        return personId != null
+                && (personId.equals(r.getGiverPersonId()) || personId.equals(r.getReceiverPersonId()));
+    }
+
+    private BigDecimal amount(GiftRecordInfoVo r) {
+        return r.getAmount() == null ? BigDecimal.ZERO : r.getAmount();
     }
 
     private GiftPersonInfoVo toVo(GiftPersonInfo entity) {

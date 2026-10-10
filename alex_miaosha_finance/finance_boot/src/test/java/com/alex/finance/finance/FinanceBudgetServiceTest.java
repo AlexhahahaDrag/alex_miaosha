@@ -270,7 +270,7 @@ class FinanceBudgetServiceTest {
         // 双选时净支出: 1200 - 3500 = -2300.00
         Assertions.assertEquals(new BigDecimal("-2300.00"), status.getActualExpense());
         Assertions.assertEquals(new BigDecimal("7300.00"), status.getRemainingAmount());
-        Assertions.assertEquals(new BigDecimal("0.0"), status.getUsagePercent());
+        Assertions.assertEquals(new BigDecimal("-46.0"), status.getUsagePercent());
         Assertions.assertFalse(status.getIsOverBudget());
         Assertions.assertEquals("expense,income", status.getIncomeAndExpenses());
         Assertions.assertNull(voCaptor.getValue().getIncomeAndExpenses()); // 双选时不限制单个收支方向
@@ -341,7 +341,7 @@ class FinanceBudgetServiceTest {
         // 全家庭组净支出：19.31 - 6139.71 = -6120.40 (净结余冲抵，不超支)
         Assertions.assertEquals(new BigDecimal("-6120.40"), status.getActualExpense());
         Assertions.assertEquals(new BigDecimal("9120.40"), status.getRemainingAmount());
-        Assertions.assertEquals(new BigDecimal("0.0"), status.getUsagePercent());
+        Assertions.assertEquals(new BigDecimal("-204.0"), status.getUsagePercent());
         Assertions.assertFalse(status.getIsOverBudget());
         // 关键断言：queryVo 的 belongTo 必须为 null，确保触发底层 @DataPermission 机构过滤
         Assertions.assertNull(voCaptor.getValue().getBelongTo());
@@ -379,6 +379,40 @@ class FinanceBudgetServiceTest {
         Assertions.assertEquals(mockOrgId, status.getOrgId());
         verify(mockUserUtils, times(1)).getOrgId();
         verify(financeBudgetInfoMapper).selectByMonth(eq(mockOrgId), eq(month));
+    }
+
+    @Test
+    @DisplayName("预算使用率：当双向统计导致净支出为负数时，允许返回负百分比")
+    void testNegativeUsagePercentWhenExpenseIsNegative() {
+        Long userId = 1001L;
+        String month = "2026-10";
+
+        FinanceBudgetInfo current = new FinanceBudgetInfo();
+        current.setId(22L);
+        current.setOrgId(20L);
+        current.setBelongTo(userId);
+        current.setBudgetMonth(month);
+        current.setBudgetAmount(new BigDecimal("3200.00"));
+        current.setIncomeAndExpenses("expense,income");
+        current.setCategoryCodes("餐饮,日用");
+        when(financeBudgetInfoMapper.selectByMonth(eq(20L), eq(month))).thenReturn(current);
+
+        // 支出 1000，收入 7120.40 -> 净支出 -6120.40
+        FinanceSummaryVo summary = FinanceSummaryVo.builder()
+                .totalExpense(new BigDecimal("1000.00"))
+                .totalIncome(new BigDecimal("7120.40"))
+                .totalCount(10L)
+                .build();
+        when(financeInfoService.getFinanceSummary(any(FinanceInfoVo.class))).thenReturn(summary);
+
+        FinanceBudgetStatusVo status = budgetService.getMonthlyBudgetStatus(month, userId);
+
+        Assertions.assertNotNull(status);
+        Assertions.assertEquals(new BigDecimal("-6120.40"), status.getActualExpense());
+        Assertions.assertEquals(new BigDecimal("9320.40"), status.getRemainingAmount());
+        // -6120.40 / 3200.00 * 100 = -191.2625 -> -191.3
+        Assertions.assertEquals(new BigDecimal("-191.3"), status.getUsagePercent());
+        Assertions.assertFalse(status.getIsOverBudget());
     }
 }
 

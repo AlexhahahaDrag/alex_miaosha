@@ -9,6 +9,7 @@
 - 前端导入 Pinia 状态或 Vue 组件中的用户、角色、机构相关数据类型时，必须统一参考并在对应页面配置文件夹中导入（例如从 `@/views/user/roleInfo/config`、`@/views/user/menuInfo/config` 等路径导入，避免直接在页面内新增或重复定义类型）。
 - 前端开发中，对于已配置由 `unplugin-auto-import` 和 `unplugin-vue-components` 插件自动导入和注册的常用 API（如 `ref`, `computed`, `watch`） and 常用组件（如 Vant、Ant Design Vue），严禁在文件中手动重复显式 `import`。
 - 移动端开发中，格式化日期/时间推荐优先引入并使用 `@alex_miaosha_mobile/src/utils/dayjs/index.ts` 中封装好的工具函数。
+- 后端开发中，严禁在业务代码中直接调用 `LocalDate.now()` 或 `LocalDateTime.now()`（不带时区），统一优先使用 `common_core` 中的 `com.alex.common.utils.date.DateUtils`（如 `DateUtils.now()`、`DateUtils.getNowTimeStr(...)`）并复用其预编译的静态 Formatter 常量（如 `DateUtils.FORMATTER_YYYY_MM`），以保证时区安全并彻底消除 SonarQube java:S6888 告警。
 - 移动端导航栏配置，建议统一使用 `const info = ref<Pick<NavBarConfig, 'title' | 'rightButton' | 'leftPath'>>(...)` 的响应式配置模式。
 - 修改关键代码后，若涉及业务逻辑、模型字段或契约变更，需同步更新 `F:\workplace\project\myself\my_alex_brain` 知识库对应端文档，且同步更新对应的规范规约文件。
 - 新增功能开发前必须先阅读项目根目录的 `TESTING_STANDARD.md`，按测试金字塔分层落地（后端 单元 70%/集成 25%/AI 5%，PC 端 60/25/15，移动端 55/25/20），并在 `tests/checklists/{feature}.md` 中沿用 `gift.md` 样板补齐字段边界（七点法）、状态机、权限矩阵与"不测理由"。
