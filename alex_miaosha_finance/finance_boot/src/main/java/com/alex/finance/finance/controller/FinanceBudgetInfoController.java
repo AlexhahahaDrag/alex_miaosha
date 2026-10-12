@@ -32,6 +32,7 @@ import java.util.List;
 public class FinanceBudgetInfoController {
 
     private final FinanceBudgetInfoService financeBudgetInfoService;
+    private final com.alex.finance.finance.service.FinanceBudgetAiService financeBudgetAiService;
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取指定月份零花钱预算与消费进度状态", notes = "当月未设置时自动继承最近历史月配置", response = Result.class)
@@ -65,6 +66,22 @@ public class FinanceBudgetInfoController {
             @RequestParam(value = "belongTo", required = false) Long belongTo) {
         String targetMonth = StringUtils.isNotBlank(budgetMonth) ? budgetMonth : yearMonth;
         return Result.success(financeBudgetInfoService.getRecentCategories(targetMonth, belongTo));
+    }
+
+    @ApiOperationSupport(order = 18, author = "alex")
+    @ApiOperation(value = "AI 智能预算测算推荐", notes = "结合近3个月历史开支画像智能推荐3档预算额度与重点品类", response = Result.class)
+    @PostMapping("/ai/recommend")
+    public Result<com.alex.api.finance.vo.finance.FinanceBudgetAiRecommendVo> recommendBudget(
+            @RequestBody com.alex.api.finance.vo.finance.FinanceBudgetAiRecommendReq req) {
+        return Result.success(financeBudgetAiService.recommendBudget(req));
+    }
+
+    @ApiOperationSupport(order = 19, author = "alex")
+    @ApiOperation(value = "AI 自然语言一句话预算指令解析", notes = "解析口语化指令自动提取金额、范围与分类", response = Result.class)
+    @PostMapping("/ai/parse")
+    public Result<com.alex.api.finance.vo.finance.FinanceBudgetAiParseVo> parseBudgetCommand(
+            @Validated @RequestBody com.alex.api.finance.vo.finance.FinanceBudgetAiParseReq req) {
+        return Result.success(financeBudgetAiService.parseBudgetCommand(req));
     }
 
     @AvoidRepeatableCommit

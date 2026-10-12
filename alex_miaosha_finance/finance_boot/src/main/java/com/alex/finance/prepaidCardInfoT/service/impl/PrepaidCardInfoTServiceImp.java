@@ -106,7 +106,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         }
 
         // 本月与上月区间
-        java.time.LocalDate now = java.time.LocalDate.now();
+        java.time.LocalDate now = DateUtils.now().toLocalDate();
         java.time.LocalDate firstDayThisMonth = now.withDayOfMonth(1);
         java.time.LocalDate firstDayNextMonth = firstDayThisMonth.plusMonths(1);
         java.time.LocalDate firstDayLastMonth = firstDayThisMonth.minusMonths(1);

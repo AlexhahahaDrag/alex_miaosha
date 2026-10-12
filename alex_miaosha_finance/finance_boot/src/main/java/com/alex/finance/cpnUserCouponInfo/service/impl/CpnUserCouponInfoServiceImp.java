@@ -129,18 +129,18 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         }
 
         // 3) 写入核销历史记录
-        CpnRedemptionRecordInfo record = new CpnRedemptionRecordInfo();
-        record.setUserCouponId(updateVo.getId());
-        record.setUserId(req.getUserId());
-        record.setOrderId(req.getCouponId());
-        record.setMerchantId(req.getMerchantId());
-        record.setRedemptionValue(req.getRedemptionValue());
-        record.setRedemptionTime(redeemTime);
-        record.setRedemptionQuantity(req.getRedemptionQuantity());
-        record.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "核销");
+        CpnRedemptionRecordInfo cpnRedemptionRecordInfo = new CpnRedemptionRecordInfo();
+        cpnRedemptionRecordInfo.setUserCouponId(updateVo.getId());
+        cpnRedemptionRecordInfo.setUserId(req.getUserId());
+        cpnRedemptionRecordInfo.setOrderId(req.getCouponId());
+        cpnRedemptionRecordInfo.setMerchantId(req.getMerchantId());
+        cpnRedemptionRecordInfo.setRedemptionValue(req.getRedemptionValue());
+        cpnRedemptionRecordInfo.setRedemptionTime(redeemTime);
+        cpnRedemptionRecordInfo.setRedemptionQuantity(req.getRedemptionQuantity());
+        cpnRedemptionRecordInfo.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "核销");
 
         // 同步写入核销历史记录，保证事务原子性
-        cpnRedemptionRecordInfoService.save(record);
+        cpnRedemptionRecordInfoService.save(cpnRedemptionRecordInfo);
         return true;
     }
 
@@ -157,16 +157,16 @@ public class CpnUserCouponInfoServiceImp extends ServiceImpl<CpnUserCouponInfoMa
         // 更新券明细记录
         updateCpnUserCouponInfo(cpnUserCouponInfoVo);
 
-        CpnRedemptionRecordInfo record = new CpnRedemptionRecordInfo();
-        record.setUserCouponId(req.getUserCouponId());
-        record.setUserId(req.getUserId());
-        record.setOrderId(req.getCouponId());
-        record.setRedemptionTime(DateUtils.now());
-        record.setRedemptionQuantity(-req.getRedemptionQuantity());
-        record.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "取消核销");
+        CpnRedemptionRecordInfo cpnRedemptionRecordInfo = new CpnRedemptionRecordInfo();
+        cpnRedemptionRecordInfo.setUserCouponId(req.getUserCouponId());
+        cpnRedemptionRecordInfo.setUserId(req.getUserId());
+        cpnRedemptionRecordInfo.setOrderId(req.getCouponId());
+        cpnRedemptionRecordInfo.setRedemptionTime(DateUtils.now());
+        cpnRedemptionRecordInfo.setRedemptionQuantity(-req.getRedemptionQuantity());
+        cpnRedemptionRecordInfo.setRemarks(StringUtils.isNotEmpty(req.getRemarks()) ? req.getRemarks() : "取消核销");
 
         // 同步写入取消核销历史记录，保证事务原子性
-        cpnRedemptionRecordInfoService.save(record);
+        cpnRedemptionRecordInfoService.save(cpnRedemptionRecordInfo);
         return true;
     }
 }

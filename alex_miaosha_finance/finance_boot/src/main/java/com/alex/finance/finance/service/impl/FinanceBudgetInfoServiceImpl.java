@@ -123,7 +123,10 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         }
         Long targetOrgId = resolveTargetOrgId(req.getOrgId());
 
-        Long belongTo = req.getBelongTo() != null ? req.getBelongTo() : (userUtils != null ? userUtils.getUserId() : null);
+        Long belongTo = req.getBelongTo();
+        if (belongTo == null && userUtils != null) {
+            belongTo = userUtils.getUserId();
+        }
 
         Set<String> directions = parseIncomeAndExpenses(req.getIncomeAndExpenses());
         String incomeAndExpenses = String.join(",", directions);
@@ -185,14 +188,22 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     private BigDecimal calculateActualExpense(FinanceInfoVo queryVo, Set<String> directions) {
         boolean hasExp = directions.contains(SysConf.EXPENSE_STATUS);
         boolean hasInc = directions.contains(SysConf.INCOME_STATUS);
-        queryVo.setIncomeAndExpenses((hasExp && hasInc) ? null : (hasInc ? SysConf.INCOME_STATUS : SysConf.EXPENSE_STATUS));
+        if (hasExp && hasInc) {
+            queryVo.setIncomeAndExpenses(null);
+        } else {
+            queryVo.setIncomeAndExpenses(hasInc ? SysConf.INCOME_STATUS : SysConf.EXPENSE_STATUS);
+        }
+
         FinanceSummaryVo summary = financeInfoService.getFinanceSummary(queryVo);
         if (summary == null) {
             return BigDecimal.ZERO;
         }
         BigDecimal exp = summary.getTotalExpense() != null ? summary.getTotalExpense() : BigDecimal.ZERO;
         BigDecimal inc = summary.getTotalIncome() != null ? summary.getTotalIncome() : BigDecimal.ZERO;
-        return (hasExp && hasInc) ? exp.subtract(inc) : (hasInc ? inc : exp);
+        if (hasExp && hasInc) {
+            return exp.subtract(inc);
+        }
+        return hasInc ? inc : exp;
     }
 
     private BigDecimal calculateUsagePercent(BigDecimal budgetAmount, BigDecimal actualExpense) {

@@ -146,7 +146,6 @@ import { columns, labelMap, labelCol, wrapperCol } from './config';
 <% if(hasDict){ %>
 import { useDictInfo } from '@/composables/useDictInfo';
 <% } %>
-import { usePagination, type PageInfo } from '@/composables/usePagination';
 <% if (hasDict) { %>
 
 <% } %>

@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import com.alex.common.utils.date.DateUtils;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -56,21 +56,9 @@ public class AiAnalyzeServiceImpl implements AiAnalyzeService {
         String cacheKey = CACHE_PREFIX + buildCacheFingerprint(req);
 
         // 1. 尝试从 Redis 语义指纹缓存命中（缓存命中不受限流额度惩罚）
-        if (redisUtils != null) {
-            try {
-                String cachedJson = redisUtils.get(cacheKey);
-                if (StringUtils.isNotBlank(cachedJson)) {
-                    AiAnalyzeResp cached = objectMapper.readValue(cachedJson, AiAnalyzeResp.class);
-                    if (cached != null) {
-                        cached.setRequestId(requestId);
-                        cached.setEngine("redis-cache");
-                        cached.setCostMs(System.currentTimeMillis() - start);
-                        return cached;
-                    }
-                }
-            } catch (Exception ex) {
-                log.warn("Read AI cache failed for key {}: {}", cacheKey, ex.getMessage());
-            }
+        AiAnalyzeResp cached = getFromCache(cacheKey, requestId, start);
+        if (cached != null) {
+            return cached;
         }
 
         // 2. 检查租户/用户级调用配额与分钟限流
@@ -95,16 +83,42 @@ public class AiAnalyzeServiceImpl implements AiAnalyzeService {
         AiAnalyzeResp resp = aiEngineRouter.analyze(req, requestId, start);
 
         // 4. 结果有效时写入缓存
-        if (redisUtils != null && resp != null && StringUtils.isNotBlank(resp.getSummary())) {
-            try {
-                String json = objectMapper.writeValueAsString(resp);
-                redisUtils.setEx(cacheKey, json, CACHE_EXPIRE_SECONDS, TimeUnit.SECONDS);
-            } catch (Exception ex) {
-                log.warn("Write AI cache failed for key {}: {}", cacheKey, ex.getMessage());
-            }
-        }
+        putToCache(cacheKey, resp);
 
         return resp;
+    }
+
+    private AiAnalyzeResp getFromCache(String cacheKey, String requestId, long start) {
+        if (redisUtils == null) {
+            return null;
+        }
+        try {
+            String cachedJson = redisUtils.get(cacheKey);
+            if (StringUtils.isNotBlank(cachedJson)) {
+                AiAnalyzeResp cached = objectMapper.readValue(cachedJson, AiAnalyzeResp.class);
+                if (cached != null) {
+                    cached.setRequestId(requestId);
+                    cached.setEngine("redis-cache");
+                    cached.setCostMs(System.currentTimeMillis() - start);
+                    return cached;
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("Read AI cache failed for key {}: {}", cacheKey, ex.getMessage());
+        }
+        return null;
+    }
+
+    private void putToCache(String cacheKey, AiAnalyzeResp resp) {
+        if (redisUtils == null || resp == null || StringUtils.isBlank(resp.getSummary())) {
+            return;
+        }
+        try {
+            String json = objectMapper.writeValueAsString(resp);
+            redisUtils.setEx(cacheKey, json, CACHE_EXPIRE_SECONDS, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            log.warn("Write AI cache failed for key {}: {}", cacheKey, ex.getMessage());
+        }
     }
 
     @Override
@@ -129,7 +143,7 @@ public class AiAnalyzeServiceImpl implements AiAnalyzeService {
             }
 
             // 单日配额
-            String dayKey = "AiLimitKey:daily:" + userId + ":" + LocalDate.now();
+            String dayKey = "AiLimitKey:daily:" + userId + ":" + DateUtils.now().format(DateUtils.FORMATTER_YYYY_MM_DD);
             Long dayCount = redisUtils.incrementWithExpire(null, dayKey, 86400, TimeUnit.SECONDS);
             if (dayCount != null && dayCount > LIMIT_PER_DAY) {
                 return true;
@@ -155,7 +169,7 @@ public class AiAnalyzeServiceImpl implements AiAnalyzeService {
             return "empty";
         }
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             String bizType = req.getBizType() != null ? req.getBizType() : "default";
             String content = req.getContent() != null ? req.getContent().trim() : "";
             String contextJson = "";

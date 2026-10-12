@@ -476,4 +476,65 @@ WHERE pi.permission_code IN ('user:add', 'user:edit', 'user:delete', 'role:add',
       AND existing.is_delete = 0
   );
 
+-- ----------------------------
+-- 零钱预算管理独立动态路由菜单与细粒度权限 (2026-10-12)
+-- ----------------------------
+INSERT INTO `t_menu_info` VALUES (2026101200000000001, 'financeBudgetManage', '/finance/financeManager/budgetManage', '零花钱预算管理', '/src/views/finance/financeManager/budgetManage/index.vue', NULL, 'budget', '1', 5, NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 15, '1', 'finance:financeManager:budget:view');
+
+INSERT INTO `t_permission_info` (`id`, `permission_code`, `name`, `description`, `status`) VALUES
+(2026101200000000011, 'finance:financeManager:query', '零钱查询', '财务零钱记录查询与列表查看', '1'),
+(2026101200000000012, 'finance:financeManager:add', '零钱新增', '新增收支记录与记账按钮', '1'),
+(2026101200000000013, 'finance:financeManager:edit', '零钱修改', '编辑收支记录（家庭成员仅限个人流水）', '1'),
+(2026101200000000014, 'finance:financeManager:delete', '零钱删除', '删除收支记录（家庭成员仅限个人流水）', '1'),
+(2026101200000000015, 'finance:financeManager:budget:view', '零钱预算查看', '查看零钱预算页面与试算数据', '1'),
+(2026101200000000016, 'finance:financeManager:budget:edit', '零钱预算修改', '保存月度预算金额与纳入分类配置（仅家庭管理员）', '1');
+
+-- (A) 家庭成员、普通用户：授予流水查询、记账新增、个人流水修改删除与预算查看权限
+INSERT INTO `t_role_permission_info` (`id`, `role_id`, `permission_id`, `summary`, `status`, `is_delete`, `create_time`, `operate_time`)
+SELECT
+  (2026101260000000000 + ri.id + pi.id) AS `id`,
+  CAST(ri.id AS CHAR) AS `role_id`,
+  CAST(pi.id AS CHAR) AS `permission_id`,
+  CONCAT('init: grant ', pi.permission_code, ' to ', ri.role_code) AS `summary`,
+  '1' AS `status`,
+  0 AS `is_delete`,
+  NOW(),
+  NOW()
+FROM `t_permission_info` pi
+CROSS JOIN `t_role_info` ri
+WHERE pi.permission_code IN (
+    'finance:financeManager:query',
+    'finance:financeManager:add',
+    'finance:financeManager:edit',
+    'finance:financeManager:delete',
+    'finance:financeManager:budget:view'
+)
+  AND ri.role_code IN ('user', 'family_member')
+  AND pi.is_delete = 0 AND ri.is_delete = 0
+  AND NOT EXISTS (
+    SELECT 1 FROM `t_role_permission_info` ex
+    WHERE ex.role_id = CAST(ri.id AS CHAR) AND ex.permission_id = CAST(pi.id AS CHAR) AND ex.is_delete = 0
+  );
+
+-- (B) 家庭管理员 (family_admin)、机构管理员 (admin)、超级管理员 (super_super)：授予全量权限（含预算编辑）
+INSERT INTO `t_role_permission_info` (`id`, `role_id`, `permission_id`, `summary`, `status`, `is_delete`, `create_time`, `operate_time`)
+SELECT
+  (2026101270000000000 + ri.id + pi.id) AS `id`,
+  CAST(ri.id AS CHAR) AS `role_id`,
+  CAST(pi.id AS CHAR) AS `permission_id`,
+  CONCAT('init: grant ', pi.permission_code, ' to ', ri.role_code) AS `summary`,
+  '1' AS `status`,
+  0 AS `is_delete`,
+  NOW(),
+  NOW()
+FROM `t_permission_info` pi
+CROSS JOIN `t_role_info` ri
+WHERE pi.permission_code LIKE 'finance:financeManager:%'
+  AND ri.role_code IN ('family_admin', 'admin', 'super_super')
+  AND pi.is_delete = 0 AND ri.is_delete = 0
+  AND NOT EXISTS (
+    SELECT 1 FROM `t_role_permission_info` ex
+    WHERE ex.role_id = CAST(ri.id AS CHAR) AND ex.permission_id = CAST(pi.id AS CHAR) AND ex.is_delete = 0
+  );
+
 SET FOREIGN_KEY_CHECKS = 1;

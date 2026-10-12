@@ -55,24 +55,7 @@ public class AiEngineRouter {
         try {
             return desiredEngine.analyze(req, requestId, start);
         } catch (Exception e) {
-            String engineKey = desiredEngine.key() == null ? "" : desiredEngine.key();
-            log.error("AI 引擎调用失败。engine={}, requestId={}, err={}",
-                    engineKey, requestId, e.getMessage(), e);
-            if (!isFallbackEnabled()) {
-                String detail = e.getMessage() == null || e.getMessage().isBlank()
-                        ? ResultEnum.AI_ENGINE_CALL_FAILED.getValue()
-                        : e.getMessage();
-                throw new AiException(ResultEnum.AI_ENGINE_CALL_FAILED.getCode(), detail);
-            }
-            AiAnalyzeResp fallback = ruleBasedAiEngine.analyze(req, requestId, start);
-            fallback.setEngine("rule-based(fallback)");
-            String displayName = AiEngineType.fromKey(engineKey)
-                    .map(AiEngineType::getDisplayName)
-                    .orElse(null);
-            fallback.setSummary(displayName != null
-                    ? displayName + " 调用失败，已回退规则引擎。"
-                    : "AI 引擎调用失败，已回退规则引擎。");
-            return fallback;
+            return handleLlmFailure(req, requestId, start, desiredEngine.key(), e);
         }
     }
 
@@ -145,6 +128,27 @@ public class AiEngineRouter {
                     : e.getMessage();
             handleLlmStreamFailure(req, requestId, start, sink, failedEngineKey, detail);
         }
+    }
+
+    private AiAnalyzeResp handleLlmFailure(AiAnalyzeReq req, String requestId, long start,
+                                           String engineKey, Exception e) {
+        String safeKey = engineKey == null ? "" : engineKey;
+        log.error("AI 引擎调用失败。engine={}, requestId={}, err={}", safeKey, requestId, e.getMessage(), e);
+        if (!isFallbackEnabled()) {
+            String detail = (e.getMessage() != null && !e.getMessage().isBlank())
+                    ? e.getMessage()
+                    : ResultEnum.AI_ENGINE_CALL_FAILED.getValue();
+            throw new AiException(ResultEnum.AI_ENGINE_CALL_FAILED.getCode(), detail);
+        }
+        AiAnalyzeResp fallback = ruleBasedAiEngine.analyze(req, requestId, start);
+        fallback.setEngine("rule-based(fallback)");
+        String displayName = AiEngineType.fromKey(safeKey)
+                .map(AiEngineType::getDisplayName)
+                .orElse(null);
+        fallback.setSummary(displayName != null
+                ? displayName + " 调用失败，已回退规则引擎。"
+                : "AI 引擎调用失败，已回退规则引擎。");
+        return fallback;
     }
 
     private void handleLlmStreamFailure(AiAnalyzeReq req, String requestId, long start,
