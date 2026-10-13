@@ -36,7 +36,6 @@
     }
 %>
 <template>
-	<div>
 		<a-modal
 			:open="props.open"
 			:width="props.modelInfo?.width || '1000px'"
@@ -114,7 +113,6 @@
 <% } %>
       </a-form>
     </a-modal>
-  </div>
 </template>
 <script lang='ts' setup>
 import { message, type FormInstance } from 'ant-design-vue';
