@@ -7,9 +7,11 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.finance.vo.finance.ImportFinanceInfoVo;
+import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.api.user.user.UserUtils;
 import com.alex.finance.finance.entity.FinanceInfo;
@@ -103,6 +105,12 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     @Override
     public FinanceInfo addFinanceInfo(FinanceInfoVo financeInfoVo) {
+        if (financeInfoVo != null && financeInfoVo.getBelongTo() == null && userUtils != null) {
+            TUserVo user = userUtils.getLoginUser();
+            if (user != null) {
+                financeInfoVo.setBelongTo(user.getId());
+            }
+        }
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
         financeInfoMapper.insert(financeInfo);
@@ -111,6 +119,14 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     @Override
     public FinanceInfo updateFinanceInfo(FinanceInfoVo financeInfoVo) {
+        if (financeInfoVo == null || financeInfoVo.getId() == null) {
+            throw FinanceException.param("财务信息ID不能为空");
+        }
+        FinanceInfo existing = getById(financeInfoVo.getId());
+        if (existing == null) {
+            throw FinanceException.param("财务信息不存在");
+        }
+        assertCanModify(existing, "修改");
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
         financeInfoMapper.updateById(financeInfo);
@@ -127,8 +143,49 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                 .filter(s -> !s.isEmpty())
                 .map(Long::valueOf)
                 .toList();
+        for (Long id : idList) {
+            FinanceInfo existing = getById(id);
+            if (existing != null) {
+                assertCanModify(existing, "删除");
+            }
+        }
         financeInfoMapper.deleteByIds(idList);
         return true;
+    }
+
+    private void assertCanModify(FinanceInfo existing, String action) {
+        if (userUtils == null) {
+            return;
+        }
+        TUserVo user = userUtils.getLoginUser();
+        if (user == null) {
+            return;
+        }
+        if (isSuperOrAdmin(user)) {
+            return;
+        }
+        if (existing.getBelongTo() != null && existing.getBelongTo().equals(user.getId())) {
+            return;
+        }
+        throw FinanceException.forbidden("无权" + action + "其他家庭成员的财务流水");
+    }
+
+    private boolean isSuperOrAdmin(TUserVo user) {
+        if (user == null) {
+            return false;
+        }
+        List<RoleInfoVo> roles = user.getRoleInfoVoList();
+        if (roles != null) {
+            for (RoleInfoVo role : roles) {
+                if (role != null && role.getRoleCode() != null) {
+                    String code = role.getRoleCode().toLowerCase();
+                    if (code.contains("super") || code.contains("admin")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 
