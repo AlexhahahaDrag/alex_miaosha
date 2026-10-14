@@ -130,7 +130,7 @@ public class ShopOrderServiceImp extends ServiceImpl<ShopOrderMapper, ShopOrder>
         shopOrderVo.setSaleDate(DateUtils.now());
         ShopOrder shopOrder = new ShopOrder();
         BeanUtils.copyProperties(shopOrderVo, shopOrder);
-        String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        String saleOrderCode = codeUtils.getCode(ShopStockKey.shopStockKey, shopOrderVo.getSaleDate().format(DateUtils.FORMATTER_YYYYMMDD));
         shopOrder.setSaleOrderCode(saleOrderCode);
         shopOrder.setSaleCount(saleCount);
         shopOrder.setSaleOrderName("销售单");

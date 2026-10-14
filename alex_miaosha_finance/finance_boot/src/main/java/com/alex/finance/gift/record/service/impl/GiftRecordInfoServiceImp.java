@@ -242,8 +242,7 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
                 // Date (日期)
                 String dateStr = "";
                 if (vo.getPayTime() != null) {
-                    dateStr = vo.getPayTime()
-                            .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    dateStr = vo.getPayTime().format(DateUtils.FORMATTER_YYYY_MM_DD_HH_MM_SS);
                 }
                 row.createCell(0).setCellValue(dateStr);
 

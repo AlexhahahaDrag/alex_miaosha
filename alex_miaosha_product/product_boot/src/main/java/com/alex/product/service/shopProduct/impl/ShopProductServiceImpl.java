@@ -35,27 +35,22 @@ public class ShopProductServiceImpl implements ShopProductService {
         List<Content> result = Lists.newArrayList();
         SourceType[] sourceTypeArr = SourceType.values();
         for (SourceType sourceType : sourceTypeArr) {
-            switch (sourceType) {
-                case JD:
-                    List<String> jdList = productList.parallelStream()
-                            .filter(item -> SourceType.JD.getCode().equals(item.getSource()))
-                            .map(this::getStr)
-                            .toList();
-                    if (jdList.isEmpty()) {
-                        break;
-                    }
+            if (sourceType == SourceType.JD) {
+                List<String> jdList = productList.parallelStream()
+                        .filter(item -> SourceType.JD.getCode().equals(item.getSource()))
+                        .map(this::getStr)
+                        .toList();
+                if (!jdList.isEmpty()) {
                     result.addAll(jdProductService.parse(jdList, sourceType.getCode()));
-                    break;
-                case TB:
-                    List<String> tbList = productList.parallelStream()
-                            .filter(item -> SourceType.TB.getCode().equals(item.getSource()))
-                            .map(this::getStr)
-                            .toList();
-                    if (tbList.isEmpty()) {
-                        break;
-                    }
+                }
+            } else if (sourceType == SourceType.TB) {
+                List<String> tbList = productList.parallelStream()
+                        .filter(item -> SourceType.TB.getCode().equals(item.getSource()))
+                        .map(this::getStr)
+                        .toList();
+                if (!tbList.isEmpty()) {
                     result.addAll(jdProductService.parse(tbList, sourceType.getCode()));
-                    break;
+                }
             }
         }
         if (!result.isEmpty()) {

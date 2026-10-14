@@ -330,16 +330,15 @@ public class CpnCouponInfoServiceImp extends ServiceImpl<CpnCouponInfoMapper, Cp
         entity.setMinSpend(importVo.getMinSpend());
         
         // 解析日期时间字符串
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         try {
             // AI Agent：有效期开始时间不填写时，默认为当前时间
             if (StringUtils.isNotEmpty(importVo.getStartDate())) {
-                entity.setStartDate(LocalDateTime.parse(importVo.getStartDate(), formatter));
+                entity.setStartDate(LocalDateTime.parse(importVo.getStartDate(), DateUtils.FORMATTER_YYYY_MM_DD_HH_MM_SS));
             } else {
                 entity.setStartDate(DateUtils.now());
             }
             if (StringUtils.isNotEmpty(importVo.getEndDate())) {
-                entity.setEndDate(LocalDateTime.parse(importVo.getEndDate(), formatter));
+                entity.setEndDate(LocalDateTime.parse(importVo.getEndDate(), DateUtils.FORMATTER_YYYY_MM_DD_HH_MM_SS));
             }
         } catch (Exception e) {
             log.warn("日期解析失败: startDate={}, endDate={}, error={}", 

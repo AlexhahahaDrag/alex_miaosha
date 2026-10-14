@@ -32,15 +32,17 @@ public class JdProductServiceImpl implements JdProductService {
         }
         List<Content> res = Lists.newArrayList();
         for (String keyword : keywords) {
-            switch (type) {
-                case "jd":
-                    res.addAll(parseJd(keyword));
-                    break;
-                case "tb":
-                    res.addAll(parseTB(keyword));
-                    break;
+            if ("jd".equalsIgnoreCase(type)) {
+                res.addAll(parseJd(keyword));
+            } else if ("tb".equalsIgnoreCase(type)) {
+                res.addAll(parseTB(keyword));
             }
-            Thread.sleep(2000);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            }
         }
         return res;
     }

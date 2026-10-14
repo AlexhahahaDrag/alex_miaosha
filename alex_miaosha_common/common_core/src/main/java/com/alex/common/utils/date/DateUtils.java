@@ -164,8 +164,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayStartTimeMinusNDay(LocalDateTime startDate, int n) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(startDate.minusDays(n)) + STARTTIME;
+        return FORMATTER_YYYY_MM_DD.format(startDate.minusDays(n)) + STARTTIME;
     }
 
     /**
@@ -174,8 +173,7 @@ public class DateUtils {
      * return:       java.lang.String
      */
     public static String getToDayEndTimeMinusNDay(LocalDateTime endDate, int n) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
-        return dateTimeFormatter.format(endDate.minusDays(n)) + ENDTIME;
+        return FORMATTER_YYYY_MM_DD.format(endDate.minusDays(n)) + ENDTIME;
     }
 
     /**

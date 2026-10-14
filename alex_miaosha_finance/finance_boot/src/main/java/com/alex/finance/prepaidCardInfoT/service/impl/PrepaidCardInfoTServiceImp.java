@@ -208,16 +208,14 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
     public Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo) {
         BigDecimal consumeAmount;
         boolean res;
-        switch (prepaidCardConsumeVo.getType()) {
-            case "consume" -> {
-                consumeAmount = prepaidCardConsumeVo.getConsumeAmount().negate();
-                res = consume(prepaidCardConsumeVo);
-            }
-            case "recharge" -> {
-                consumeAmount = prepaidCardConsumeVo.getConsumeAmount();
-                res = recharge(prepaidCardConsumeVo);
-            }
-            default -> throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "未知操作类型");
+        if ("consume".equals(prepaidCardConsumeVo.getType())) {
+            consumeAmount = prepaidCardConsumeVo.getConsumeAmount().negate();
+            res = consume(prepaidCardConsumeVo);
+        } else if ("recharge".equals(prepaidCardConsumeVo.getType())) {
+            consumeAmount = prepaidCardConsumeVo.getConsumeAmount();
+            res = recharge(prepaidCardConsumeVo);
+        } else {
+            throw new FinanceException(ResultEnum.PARAM_ERROR.getCode(), "未知操作类型");
         }
         if (res) {
             // 添加消费充值记录

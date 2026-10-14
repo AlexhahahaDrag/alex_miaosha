@@ -856,8 +856,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                         throw new UserException(ResultEnum.USER_MOBILE_EXISTS);
                     case "email":
                         throw new UserException(ResultEnum.USER_EMAIL_EXISTS);
+                    default:
+                        throw new UserException(ResultEnum.PARAM_ERROR);
                 }
-                return;
             }
         }
     }

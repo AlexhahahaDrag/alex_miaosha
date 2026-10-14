@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class GiftAiService {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateUtils.FORMATTER_YYYY_MM_DD_HH_MM_SS;
 
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*(?:元|块|RMB|rmb)?");
     private static final Pattern PERSON_GIVE_PATTERN = Pattern.compile("(?:给|随给|包给|随了|送给|随礼给)\\s*([\\u4e00-\\u9fa5a-zA-Z0-9]{2,5}?)(?:给的|送的|随的|包的|的|结婚|大婚|喜宴|满月|生子|乔迁|搬家|做寿|生日|过寿|考上|升学|红包|礼金|\\s|$)");

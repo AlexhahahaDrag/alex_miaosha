@@ -177,7 +177,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         vo.setTotalAmount(giveAmount.add(receiveAmount));
         vo.setParticipantCount((long) participantIds.size());
         vo.setLocationText(StringUtils.hasText(event.getRemark()) ? event.getRemark() : "-");
-        vo.setEventStatus(event.getEventTime() != null && event.getEventTime().isAfter(LocalDateTime.now(ZoneId.systemDefault())) ? "PENDING" : "FINISHED");
+        vo.setEventStatus(event.getEventTime() != null && event.getEventTime().isAfter(DateUtils.now()) ? "PENDING" : "FINISHED");
         return vo;
     }
 
