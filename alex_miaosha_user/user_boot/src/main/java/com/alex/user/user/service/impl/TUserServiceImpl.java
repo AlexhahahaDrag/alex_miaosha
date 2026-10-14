@@ -673,16 +673,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (userVo == null || context == null) {
             return;
         }
-        List<RoleInfoVo> roleList = context.getRoleList();
         userVo.setPermissionContext(context);
-        userVo.setOrgInfoVo(context.getOrgInfo());
-        userVo.setRoleInfoVoList(roleList);
-        OrgInfoVo orgInfo = context.getOrgInfo();
-        userVo.setOrgName(orgInfo == null ? null : orgInfo.getOrgName());
-        userVo.setOrgCode(orgInfo == null ? null : orgInfo.getOrgCode());
-        userVo.setPermissionCodes(context.getPermissionCodes());
-        userVo.setButtonPermissionCodes(context.getButtonPermissionCodes());
-        userVo.setMenuInfoVoList(context.getMenuList());
     }
 
     private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip,

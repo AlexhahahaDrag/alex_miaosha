@@ -17,6 +17,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -106,22 +108,32 @@ public class TUserVo extends BaseVo<TUserVo>{
     @ApiModelProperty(value = "履历")
     private String personResume;
 
-    @ApiModelProperty(value = "机构信息")
+    @ApiModelProperty(value = "机构信息 (已迁移至 permissionContext.orgInfo，不再序列化)")
+    @JsonIgnore
+    @JSONField(serialize = false)
     private OrgInfoVo orgInfoVo;
 
-    @ApiModelProperty(value = "菜单信息")
+    @ApiModelProperty(value = "菜单信息 (已迁移至 permissionContext.menuList，不再序列化)")
+    @JsonIgnore
+    @JSONField(serialize = false)
     private List<MenuInfoVo> menuInfoVoList;
 
     @ApiModelProperty(value = "权限上下文")
     private UserPermissionContextVo permissionContext;
 
-    @ApiModelProperty(value = "角色信息列表")
+    @ApiModelProperty(value = "角色信息列表 (已迁移至 permissionContext.roleList，不再序列化)")
+    @JsonIgnore
+    @JSONField(serialize = false)
     private List<RoleInfoVo> roleInfoVoList;
 
-    @ApiModelProperty(value = "权限编码列表")
+    @ApiModelProperty(value = "权限编码列表 (已迁移至 permissionContext.permissionCodes，不再序列化)")
+    @JsonIgnore
+    @JSONField(serialize = false)
     private List<String> permissionCodes;
 
-    @ApiModelProperty(value = "按钮权限编码列表")
+    @ApiModelProperty(value = "按钮权限编码列表 (已迁移至 permissionContext.buttonPermissionCodes，不再序列化)")
+    @JsonIgnore
+    @JSONField(serialize = false)
     private List<String> buttonPermissionCodes;
 
     @ApiModelProperty(value = "所属机构名称")
@@ -135,4 +147,65 @@ public class TUserVo extends BaseVo<TUserVo>{
 
     @ApiModelProperty(value = "角色编码")
     private String roleCode;
+
+    @JsonIgnore
+    @JSONField(serialize = false)
+    public OrgInfoVo getOrgInfoVo() {
+        if (orgInfoVo != null) {
+            return orgInfoVo;
+        }
+        return permissionContext != null ? permissionContext.getOrgInfo() : null;
+    }
+
+    @JsonIgnore
+    @JSONField(serialize = false)
+    public List<RoleInfoVo> getRoleInfoVoList() {
+        if (roleInfoVoList != null) {
+            return roleInfoVoList;
+        }
+        return permissionContext != null ? permissionContext.getRoleList() : null;
+    }
+
+    @JsonIgnore
+    @JSONField(serialize = false)
+    public List<MenuInfoVo> getMenuInfoVoList() {
+        if (menuInfoVoList != null) {
+            return menuInfoVoList;
+        }
+        return permissionContext != null ? permissionContext.getMenuList() : null;
+    }
+
+    @JsonIgnore
+    @JSONField(serialize = false)
+    public List<String> getPermissionCodes() {
+        if (permissionCodes != null) {
+            return permissionCodes;
+        }
+        return permissionContext != null ? permissionContext.getPermissionCodes() : null;
+    }
+
+    @JsonIgnore
+    @JSONField(serialize = false)
+    public List<String> getButtonPermissionCodes() {
+        if (buttonPermissionCodes != null) {
+            return buttonPermissionCodes;
+        }
+        return permissionContext != null ? permissionContext.getButtonPermissionCodes() : null;
+    }
+
+    public String getOrgName() {
+        if (orgName != null) {
+            return orgName;
+        }
+        return (permissionContext != null && permissionContext.getOrgInfo() != null)
+                ? permissionContext.getOrgInfo().getOrgName() : null;
+    }
+
+    public String getOrgCode() {
+        if (orgCode != null) {
+            return orgCode;
+        }
+        return (permissionContext != null && permissionContext.getOrgInfo() != null)
+                ? permissionContext.getOrgInfo().getOrgCode() : null;
+    }
 }
