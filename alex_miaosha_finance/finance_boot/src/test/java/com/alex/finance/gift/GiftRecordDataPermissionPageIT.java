@@ -53,6 +53,15 @@ class GiftRecordDataPermissionPageIT {
         assertNull(segment);
     }
 
+    @Test
+    void superSuper_should_not_append_data_permission_on_getPage() {
+        when(userUtils.getLoginUser()).thenReturn(userWithRole(com.alex.api.user.rbac.RbacRoleCodes.SUPER));
+
+        Expression segment = handler.getSqlSegment(null, GIFT_RECORD_GET_PAGE_MS);
+
+        assertNull(segment);
+    }
+
     /**
      * 注意：GiftRecordInfoMapper.xml 中 getPage/getList 的 FROM 子句使用表别名 r，
      * 注解 alias="r" 时 handler 必须用别名限定列（r.org_id），否则运行时 SQL 非法。

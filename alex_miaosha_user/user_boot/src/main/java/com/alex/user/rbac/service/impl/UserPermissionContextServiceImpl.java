@@ -180,7 +180,7 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
 
     private boolean hasSuperAdminRole(List<RoleInfoVo> roleList) {
         for (RoleInfoVo roleInfoVo : roleList) {
-            if (RbacRoleCodes.SUPER.equals(roleInfoVo.getRoleCode())) {
+            if (roleInfoVo != null && RbacRoleCodes.isSuperRole(roleInfoVo.getRoleCode())) {
                 return true;
             }
         }
