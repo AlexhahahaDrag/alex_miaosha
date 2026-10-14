@@ -96,4 +96,38 @@ class FinanceBudgetAiServiceTest {
         Assertions.assertEquals("expense", vo.getIncomeAndExpenses());
         Assertions.assertTrue(vo.getParseSummary().contains("不设上限"));
     }
+
+    @Test
+    @DisplayName("AI预算测算与指令解析：前端旧命名兼容性测试")
+    void testFrontendCompatibility() {
+        // 测试推荐返回 VO 兼容字段
+        FinanceBudgetAiRecommendVo recommendVo = FinanceBudgetAiRecommendVo.builder()
+                .budgetMonth("2026-10")
+                .recommendedAmount(new BigDecimal("3000.00"))
+                .moderateAmount(new BigDecimal("3000.00"))
+                .conservativeAmount(new BigDecimal("2000.00"))
+                .flexibleAmount(new BigDecimal("5000.00"))
+                .historyMonthlyAverage(new BigDecimal("3200.00"))
+                .recommendedCategoryCodes(Arrays.asList("餐饮美食", "交通出行"))
+                .dailyLimitSuggest(new BigDecimal("100.0"))
+                .build();
+
+        Assertions.assertEquals(new BigDecimal("2000.00"), recommendVo.getSavingAmount());
+        Assertions.assertEquals(new BigDecimal("5000.00"), recommendVo.getRelaxedAmount());
+        Assertions.assertEquals(new BigDecimal("3000.00"), recommendVo.getRecommendAmount());
+        Assertions.assertEquals(new BigDecimal("3200.00"), recommendVo.getAvgMonthlyExpense());
+        Assertions.assertEquals(Arrays.asList("餐饮美食", "交通出行"), recommendVo.getRecommendedCategories());
+        Assertions.assertEquals(new BigDecimal("100.0"), recommendVo.getDailyLimitSuggest());
+
+        // 测试前端传入 command 字段自动映射至 text
+        FinanceBudgetAiParseReq parseReq = new FinanceBudgetAiParseReq();
+        parseReq.setCommand("每月2000零花钱，全部分类");
+        Assertions.assertEquals("每月2000零花钱，全部分类", parseReq.getText());
+
+        FinanceBudgetAiParseVo parseVo = financeBudgetAiService.parseBudgetCommand(parseReq);
+        Assertions.assertNotNull(parseVo);
+        Assertions.assertTrue(parseVo.getHasBudget());
+        Assertions.assertEquals(new BigDecimal("2000"), parseVo.getAmount());
+        Assertions.assertNotNull(parseVo.getReasoning());
+    }
 }

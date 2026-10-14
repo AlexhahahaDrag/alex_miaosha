@@ -170,6 +170,8 @@ public class FinanceBudgetAiService {
                         aiVo.setHealthAdvice(fallbackVo.getHealthAdvice());
                     }
 
+                    aiVo.setDailyLimitSuggest(fallbackVo.getDailyLimitSuggest());
+
                     return aiVo;
                 }
             }
@@ -342,6 +344,7 @@ public class FinanceBudgetAiService {
                 .reasoning(reasoning)
                 .healthAdvice(healthAdvice)
                 .historyMonthlyAverage(base)
+                .dailyLimitSuggest(daily)
                 .isFallback(true)
                 .build();
     }

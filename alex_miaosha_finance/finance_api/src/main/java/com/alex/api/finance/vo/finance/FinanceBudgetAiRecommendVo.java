@@ -56,6 +56,41 @@ public class FinanceBudgetAiRecommendVo implements Serializable {
     @ApiModelProperty(value = "近3个月历史月均总支出(参考基准)")
     private BigDecimal historyMonthlyAverage;
 
+    @ApiModelProperty(value = "每日均摊建议额度")
+    private BigDecimal dailyLimitSuggest;
+
     @ApiModelProperty(value = "是否由兜底规则引擎生成(true:规则降级, false:大模型生成)")
     private Boolean isFallback;
+
+    // --- 前端旧命名兼容层 ---
+    public BigDecimal getSavingAmount() {
+        return conservativeAmount;
+    }
+
+    public BigDecimal getRelaxedAmount() {
+        return flexibleAmount;
+    }
+
+    public BigDecimal getRecommendAmount() {
+        return recommendedAmount;
+    }
+
+    public BigDecimal getAvgMonthlyExpense() {
+        return historyMonthlyAverage;
+    }
+
+    public List<String> getRecommendedCategories() {
+        return recommendedCategoryCodes;
+    }
+
+    public BigDecimal getDailyLimitSuggest() {
+        if (dailyLimitSuggest != null) {
+            return dailyLimitSuggest;
+        }
+        BigDecimal base = recommendedAmount != null ? recommendedAmount : moderateAmount;
+        if (base != null && base.compareTo(BigDecimal.ZERO) > 0) {
+            return base.divide(BigDecimal.valueOf(30), 1, java.math.RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
 }

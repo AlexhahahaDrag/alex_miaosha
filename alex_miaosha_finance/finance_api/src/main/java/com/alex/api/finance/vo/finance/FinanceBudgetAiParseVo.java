@@ -43,4 +43,25 @@ public class FinanceBudgetAiParseVo implements Serializable {
 
     @ApiModelProperty(value = "是否由兜底规则引擎生成")
     private Boolean isFallback;
+
+    // --- 前端旧命名兼容层 ---
+    public Boolean getHasBudget() {
+        return budgetAmount != null;
+    }
+
+    public BigDecimal getAmount() {
+        return budgetAmount;
+    }
+
+    public Boolean getHasCategories() {
+        return categoryCodes != null && !categoryCodes.isEmpty();
+    }
+
+    public List<String> getCategories() {
+        return categoryCodes;
+    }
+
+    public String getReasoning() {
+        return parseSummary;
+    }
 }
