@@ -60,16 +60,9 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
         }
 
         String cacheKey = PERMISSION_CONTEXT_CACHE_KEY + ":" + userId;
-        if (redisUtils != null) {
-            try {
-                UserPermissionContextVo cachedContext = redisUtils.get(LoginKey.loginKey, cacheKey, UserPermissionContextVo.class);
-                if (cachedContext != null) {
-                    log.info("从 Redis 缓存中获取用户 {} 的权限上下文成功", userId);
-                    return includeMenus ? cachedContext : copyWithoutMenus(cachedContext);
-                }
-            } catch (Exception e) {
-                log.error("读取用户权限上下文缓存异常，userId: {}", userId, e);
-            }
+        UserPermissionContextVo cached = getCachedContext(cacheKey, userId, includeMenus);
+        if (cached != null) {
+            return cached;
         }
 
         CompletableFuture<List<OrgInfoVo>> orgListFuture = CompletableFuture.supplyAsync(
@@ -96,9 +89,7 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
 
             List<String> permissionCodes = collectPermissionCodes(roleList);
             boolean superAdmin = hasSuperAdminRole(roleList);
-            List<MenuInfoVo> visibleMenus = includeMenus
-                    ? (superAdmin ? menuList : filterMenusByPermissionCodes(menuList, permissionCodes))
-                    : Collections.emptyList();
+            List<MenuInfoVo> visibleMenus = resolveVisibleMenus(includeMenus, superAdmin, menuList, permissionCodes);
 
             UserPermissionContextVo context = new UserPermissionContextVo();
             context.setOrgInfo(orgList.isEmpty() ? null : orgList.get(0));
@@ -108,20 +99,50 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
             context.setMenuList(visibleMenus);
             context.setSuperAdmin(superAdmin);
 
-            // Only cache full context (with menus) to avoid poisoning later menu consumers
-            if (includeMenus && redisUtils != null) {
-                try {
-                    redisUtils.setEx(LoginKey.loginKey, cacheKey, JSONObject.toJSONString(context), 1, TimeUnit.HOURS);
-                    log.info("用户 {} 的权限上下文成功写入 Redis 缓存", userId);
-                } catch (Exception e) {
-                    log.error("写入用户权限上下文缓存异常，userId: {}", userId, e);
-                }
+            if (includeMenus) {
+                cacheContext(cacheKey, userId, context);
             }
 
             return context;
         } catch (Exception e) {
             throw new RuntimeException("并行构建权限上下文发生错误", e);
         }
+    }
+
+    private UserPermissionContextVo getCachedContext(String cacheKey, Long userId, boolean includeMenus) {
+        if (redisUtils == null) {
+            return null;
+        }
+        try {
+            UserPermissionContextVo cachedContext = redisUtils.get(LoginKey.loginKey, cacheKey, UserPermissionContextVo.class);
+            if (cachedContext != null) {
+                log.info("从 Redis 缓存中获取用户 {} 的权限上下文成功", userId);
+                return includeMenus ? cachedContext : copyWithoutMenus(cachedContext);
+            }
+        } catch (Exception e) {
+            log.error("读取用户权限上下文缓存异常，userId: {}", userId, e);
+        }
+        return null;
+    }
+
+    private void cacheContext(String cacheKey, Long userId, UserPermissionContextVo context) {
+        if (redisUtils == null) {
+            return;
+        }
+        try {
+            redisUtils.setEx(LoginKey.loginKey, cacheKey, JSONObject.toJSONString(context), 1, TimeUnit.HOURS);
+            log.info("用户 {} 的权限上下文成功写入 Redis 缓存", userId);
+        } catch (Exception e) {
+            log.error("写入用户权限上下文缓存异常，userId: {}", userId, e);
+        }
+    }
+
+    private static List<MenuInfoVo> resolveVisibleMenus(boolean includeMenus, boolean superAdmin,
+                                                         List<MenuInfoVo> menuList, List<String> permissionCodes) {
+        if (!includeMenus) {
+            return Collections.emptyList();
+        }
+        return superAdmin ? menuList : filterMenusByPermissionCodes(menuList, permissionCodes);
     }
 
     @Override

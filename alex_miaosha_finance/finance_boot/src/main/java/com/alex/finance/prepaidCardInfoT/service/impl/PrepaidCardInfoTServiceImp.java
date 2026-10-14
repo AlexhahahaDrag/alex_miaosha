@@ -41,6 +41,11 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
 
     private static final Logger log = LoggerFactory.getLogger(PrepaidCardInfoTServiceImp.class);
 
+    private static final String TYPE_CONSUME = "consume";
+    private static final String TYPE_RECHARGE = "recharge";
+    private static final String DESC_CONSUME = "消费";
+    private static final String DESC_RECHARGE = "充值";
+
     private final PrepaidCardInfoTMapper prepaidCardInfoTMapper;
 
     private final PrepaidConsumeRecordTService prepaidConsumeRecordTService;
@@ -96,91 +101,106 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
         int totalCards = cards == null ? 0 : cards.size();
 
         // 总余额
-        java.math.BigDecimal totalBalance = java.math.BigDecimal.ZERO;
-        if (cards != null && !cards.isEmpty()) {
-            for (PrepaidCardInfoTVo c : cards) {
-                if (c != null && c.getCurrentBalance() != null) {
-                    totalBalance = totalBalance.add(c.getCurrentBalance());
-                }
-            }
-        }
+        BigDecimal totalBalance = calculateTotalBalance(cards);
 
         // 本月与上月区间
         java.time.LocalDate now = DateUtils.now().toLocalDate();
         java.time.LocalDate firstDayThisMonth = now.withDayOfMonth(1);
-        java.time.LocalDate firstDayNextMonth = firstDayThisMonth.plusMonths(1);
-        java.time.LocalDate firstDayLastMonth = firstDayThisMonth.minusMonths(1);
-
-        java.time.LocalDateTime startThisMonth = firstDayThisMonth.atStartOfDay();
-        java.time.LocalDateTime endThisMonth = firstDayNextMonth.atStartOfDay();
-        java.time.LocalDateTime startLastMonth = firstDayLastMonth.atStartOfDay();
-        java.time.LocalDateTime endLastMonth = firstDayThisMonth.atStartOfDay();
+        LocalDateTime startThisMonth = firstDayThisMonth.atStartOfDay();
+        LocalDateTime endThisMonth = firstDayThisMonth.plusMonths(1).atStartOfDay();
+        LocalDateTime startLastMonth = firstDayThisMonth.minusMonths(1).atStartOfDay();
+        LocalDateTime endLastMonth = startThisMonth;
 
         // 汇总（所有卡）
-        java.math.BigDecimal monthExpense = java.math.BigDecimal.ZERO;
-        java.math.BigDecimal monthRecharge = java.math.BigDecimal.ZERO;
-        java.math.BigDecimal lastMonthExpense = java.math.BigDecimal.ZERO;
-        java.math.BigDecimal lastMonthRecharge = java.math.BigDecimal.ZERO;
+        BigDecimal[] monthlyAmounts = calculateMonthlyAmounts(cards, startThisMonth, endThisMonth, startLastMonth, endLastMonth);
+        BigDecimal monthExpense = monthlyAmounts[0];
+        BigDecimal monthRecharge = monthlyAmounts[1];
+        BigDecimal lastMonthExpense = monthlyAmounts[2];
+        BigDecimal lastMonthRecharge = monthlyAmounts[3];
 
-        if (cards != null && !cards.isEmpty()) {
-            for (PrepaidCardInfoTVo c : cards) {
-                if (c != null && c.getId() != null) {
-                    Long cardDbId = c.getId();
-                    try {
-                        Map<String, Object> thisMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startThisMonth, endThisMonth);
-                        Map<String, Object> lastMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startLastMonth, endLastMonth);
-                        
-                        // 安全处理Map结果
-                        if (thisMonth != null) {
-                            monthExpense = monthExpense.add(toBigDecimal(thisMonth.get("expenseAmount")));
-                            monthRecharge = monthRecharge.add(toBigDecimal(thisMonth.get("rechargeAmount")));
-                        }
-                        
-                        if (lastMonth != null) {
-                            lastMonthExpense = lastMonthExpense.add(toBigDecimal(lastMonth.get("expenseAmount")));
-                            lastMonthRecharge = lastMonthRecharge.add(toBigDecimal(lastMonth.get("rechargeAmount")));
-                        }
-                    } catch (Exception e) {
-                        // 记录日志但不影响整体计算
-                        log.warn("计算卡ID {} 的消费记录时发生异常: {}", cardDbId, e.getMessage());
-                    }
-                }
-            }
-        }
-
-        java.math.BigDecimal monthExpenseMoM = monthExpense.subtract(lastMonthExpense);
-        java.math.BigDecimal monthRechargeMoM = monthRecharge.subtract(lastMonthRecharge);
+        BigDecimal monthExpenseMoM = monthExpense.subtract(lastMonthExpense);
+        BigDecimal monthRechargeMoM = monthRecharge.subtract(lastMonthRecharge);
 
         // 卡数环比：本月新增卡 vs 上月新增卡
-        int thisMonthNewCards = 0;
-        int lastMonthNewCards = 0;
-        if (cards != null && !cards.isEmpty()) {
-            for (PrepaidCardInfoTVo c : cards) {
-                if (c != null && c.getCreateTime() != null) {
-                    try {
-                        if (!c.getCreateTime().isBefore(startThisMonth) && c.getCreateTime().isBefore(endThisMonth)) {
-                            thisMonthNewCards++;
-                        } else if (!c.getCreateTime().isBefore(startLastMonth) && c.getCreateTime().isBefore(endLastMonth)) {
-                            lastMonthNewCards++;
-                        }
-                    } catch (Exception e) {
-                        // 记录日志但不影响整体计算
-                        log.warn("计算卡创建时间时发生异常: {}", e.getMessage());
-                    }
-                }
-            }
-        }
+        int thisMonthNewCards = countNewCards(cards, startThisMonth, endThisMonth);
+        int lastMonthNewCards = countNewCards(cards, startLastMonth, endLastMonth);
         int totalCardsMoM = thisMonthNewCards - lastMonthNewCards;
 
         return new PrepaidDashboardOverviewVo()
                 .setTotalCards(totalCards)
                 .setTotalCardsMoM(totalCardsMoM)
                 .setTotalBalance(totalBalance)
-                .setTotalBalanceMoM(java.math.BigDecimal.ZERO) // 如需余额环比，可按期初期末余额计算
+                .setTotalBalanceMoM(BigDecimal.ZERO) // 如需余额环比，可按期初期末余额计算
                 .setMonthExpense(monthExpense)
                 .setMonthExpenseMoM(monthExpenseMoM)
                 .setMonthRecharge(monthRecharge)
                 .setMonthRechargeMoM(monthRechargeMoM);
+    }
+
+    private BigDecimal calculateTotalBalance(List<PrepaidCardInfoTVo> cards) {
+        if (cards == null || cards.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal total = BigDecimal.ZERO;
+        for (PrepaidCardInfoTVo c : cards) {
+            if (c != null && c.getCurrentBalance() != null) {
+                total = total.add(c.getCurrentBalance());
+            }
+        }
+        return total;
+    }
+
+    private BigDecimal[] calculateMonthlyAmounts(List<PrepaidCardInfoTVo> cards,
+                                                  LocalDateTime startThisMonth, LocalDateTime endThisMonth,
+                                                  LocalDateTime startLastMonth, LocalDateTime endLastMonth) {
+        BigDecimal monthExpense = BigDecimal.ZERO;
+        BigDecimal monthRecharge = BigDecimal.ZERO;
+        BigDecimal lastMonthExpense = BigDecimal.ZERO;
+        BigDecimal lastMonthRecharge = BigDecimal.ZERO;
+
+        if (cards != null && !cards.isEmpty()) {
+            for (PrepaidCardInfoTVo c : cards) {
+                if (c == null || c.getId() == null) {
+                    continue;
+                }
+                Long cardDbId = c.getId();
+                try {
+                    Map<String, Object> thisMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startThisMonth, endThisMonth);
+                    if (thisMonth != null) {
+                        monthExpense = monthExpense.add(toBigDecimal(thisMonth.get("expenseAmount")));
+                        monthRecharge = monthRecharge.add(toBigDecimal(thisMonth.get("rechargeAmount")));
+                    }
+                    Map<String, Object> lastMonth = prepaidConsumeRecordTService.sumExpenseAndRecharge(cardDbId, startLastMonth, endLastMonth);
+                    if (lastMonth != null) {
+                        lastMonthExpense = lastMonthExpense.add(toBigDecimal(lastMonth.get("expenseAmount")));
+                        lastMonthRecharge = lastMonthRecharge.add(toBigDecimal(lastMonth.get("rechargeAmount")));
+                    }
+                } catch (Exception e) {
+                    log.warn("计算卡ID {} 的消费记录时发生异常: {}", cardDbId, e.getMessage());
+                }
+            }
+        }
+        return new BigDecimal[]{monthExpense, monthRecharge, lastMonthExpense, lastMonthRecharge};
+    }
+
+    private int countNewCards(List<PrepaidCardInfoTVo> cards, LocalDateTime start, LocalDateTime end) {
+        if (cards == null || cards.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (PrepaidCardInfoTVo c : cards) {
+            if (c != null && c.getCreateTime() != null) {
+                try {
+                    LocalDateTime created = c.getCreateTime();
+                    if (!created.isBefore(start) && created.isBefore(end)) {
+                        count++;
+                    }
+                } catch (Exception e) {
+                    log.warn("计算卡创建时间时发生异常: {}", e.getMessage());
+                }
+            }
+        }
+        return count;
     }
 
     private java.math.BigDecimal toBigDecimal(Object value) {
@@ -193,6 +213,7 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
             return java.math.BigDecimal.ZERO;
         }
     }
+
     @Override
     public Boolean deletePrepaidCardInfoT(String ids) {
         if (StringUtils.isEmpty(ids)) {
@@ -208,10 +229,11 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
     public Boolean consumeAndRecharge(PrepaidCardConsumeVo prepaidCardConsumeVo) {
         BigDecimal consumeAmount;
         boolean res;
-        if ("consume".equals(prepaidCardConsumeVo.getType())) {
+        String type = prepaidCardConsumeVo.getType();
+        if (TYPE_CONSUME.equals(type)) {
             consumeAmount = prepaidCardConsumeVo.getConsumeAmount().negate();
             res = consume(prepaidCardConsumeVo);
-        } else if ("recharge".equals(prepaidCardConsumeVo.getType())) {
+        } else if (TYPE_RECHARGE.equals(type)) {
             consumeAmount = prepaidCardConsumeVo.getConsumeAmount();
             res = recharge(prepaidCardConsumeVo);
         } else {
@@ -223,12 +245,17 @@ public class PrepaidCardInfoTServiceImp extends ServiceImpl<PrepaidCardInfoTMapp
             prepaidConsumeRecordTVo.setConsumeTime(prepaidCardConsumeVo.getConsumeTime() == null ? DateUtils.now() : prepaidCardConsumeVo.getConsumeTime());
             prepaidConsumeRecordTVo.setCardId(prepaidCardConsumeVo.getId());
             prepaidConsumeRecordTVo.setAmount(consumeAmount);
-            prepaidConsumeRecordTVo.setDescription(prepaidCardConsumeVo.getDescription() == null ?
-                    "recharge".equals(prepaidCardConsumeVo.getType()) ? "充值" : "消费" :
-                    prepaidCardConsumeVo.getDescription());
+            prepaidConsumeRecordTVo.setDescription(resolveRecordDescription(prepaidCardConsumeVo.getDescription(), type));
             prepaidConsumeRecordTService.addPrepaidConsumeRecordT(prepaidConsumeRecordTVo);
         }
         return true;
+    }
+
+    private String resolveRecordDescription(String description, String type) {
+        if (description != null) {
+            return description;
+        }
+        return TYPE_RECHARGE.equals(type) ? DESC_RECHARGE : DESC_CONSUME;
     }
 
     // 消费
