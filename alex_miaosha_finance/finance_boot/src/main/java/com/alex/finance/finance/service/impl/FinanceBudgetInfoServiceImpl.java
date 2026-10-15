@@ -5,8 +5,10 @@ import com.alex.api.finance.vo.finance.FinanceBudgetSaveReq;
 import com.alex.api.finance.vo.finance.FinanceBudgetStatusVo;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.FinanceSummaryVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.base.constants.SysConf;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.finance.dict.service.DictInfoService;
 import com.alex.finance.finance.entity.FinanceBudgetInfo;
@@ -121,6 +123,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         if (req == null || StringUtils.isBlank(budgetMonth)) {
             throw new IllegalArgumentException("预算月份不能为空！");
         }
+        assertCanEditBudget();
         Long targetOrgId = resolveTargetOrgId(req.getOrgId());
 
         Long belongTo = req.getBelongTo();
@@ -158,11 +161,62 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     }
 
     private Long resolveTargetOrgId(Long orgId) {
+        Long userOrgId = userUtils != null ? userUtils.getOrgId() : null;
+        if (userUtils != null) {
+            TUserVo user = userUtils.getLoginUser();
+            if (user != null && !isSuper(user)) {
+                if (orgId != null && userOrgId != null && !userOrgId.equals(orgId)) {
+                    throw FinanceException.forbidden("无权访问其他机构数据");
+                }
+            }
+        }
         if (orgId != null) {
             return orgId;
         }
-        Long userOrgId = userUtils != null ? userUtils.getOrgId() : null;
         return userOrgId != null ? userOrgId : 20L;
+    }
+
+    private void assertCanEditBudget() {
+        if (userUtils == null) {
+            return;
+        }
+        TUserVo user = userUtils.getLoginUser();
+        if (user == null) {
+            return;
+        }
+        if (isSuper(user) || isFamilyAdmin(user) || hasBudgetEditPermission(user)) {
+            return;
+        }
+        throw FinanceException.forbidden("无权保存预算设定，仅家庭管理员可操作");
+    }
+
+    private boolean isSuper(TUserVo user) {
+        return hasRoleContaining(user, "super");
+    }
+
+    private boolean isFamilyAdmin(TUserVo user) {
+        return hasRoleContaining(user, "admin");
+    }
+
+    private boolean hasRoleContaining(TUserVo user, String keyword) {
+        if (user == null || user.getRoleInfoVoList() == null) {
+            return false;
+        }
+        return user.getRoleInfoVoList().stream()
+                .filter(r -> r != null && r.getRoleCode() != null)
+                .anyMatch(r -> r.getRoleCode().toLowerCase().contains(keyword));
+    }
+
+    private boolean hasBudgetEditPermission(TUserVo user) {
+        if (user == null) {
+            return false;
+        }
+        List<String> codes = user.getPermissionCodes();
+        if (codes != null && codes.contains("finance:financeManager:budget:edit")) {
+            return true;
+        }
+        List<String> btnCodes = user.getButtonPermissionCodes();
+        return btnCodes != null && btnCodes.contains("finance:financeManager:budget:edit");
     }
 
     private List<String> parseCategoryCodes(String categoryCodesStr) {

@@ -55,12 +55,14 @@
 
     <select id="getPage" resultType="com.alex.api.user.userInfo.vo.TUserVo">
         select <include refid="Base_Column_List"/>,
-               max(oi.org_name)  as orgName,
-               max(oi.org_code)  as orgCode,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oi.org_name end) as orgName,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oi.org_code end) as orgCode,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oui.org_id end) as orgId,
+               group_concat(distinct case when oui.summary = 'AUXILIARY' then oi.org_name end order by oi.org_name separator ', ') as auxiliaryOrgNames,
                group_concat(distinct ri.role_name order by ri.role_name separator ',') as roleName,
                group_concat(distinct ri.role_code order by ri.role_code separator ',') as roleCode
         from t_user
-        left join t_org_user_info oui on oui.user_id = t_user.id and oui.is_delete = 0
+        left join t_org_user_info oui on oui.user_id = t_user.id and oui.is_delete = 0 and oui.status = 1
         left join t_org_info oi on oi.id = oui.org_id and oi.is_delete = 0
         left join t_role_user_info rui on rui.user_id = t_user.id and rui.is_delete = 0
         left join t_role_info ri on ri.id = rui.role_id and ri.is_delete = 0
@@ -99,10 +101,49 @@
     </select>
 
     <select id="queryTUser" resultType="com.alex.api.user.userInfo.vo.TUserVo">
-        select <include refid="Base_Column_List"/> from t_user
+        select <include refid="Base_Column_List"/>,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oi.org_name end) as orgName,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oi.org_code end) as orgCode,
+               max(case when oui.summary = 'MAIN' or oui.summary is null then oui.org_id end) as orgId,
+               group_concat(distinct case when oui.summary = 'AUXILIARY' then oi.org_name end order by oi.org_name separator ', ') as auxiliaryOrgNames,
+               group_concat(distinct ri.role_name order by ri.role_name separator ',') as roleName,
+               group_concat(distinct ri.role_code order by ri.role_code separator ',') as roleCode
+        from t_user
+        left join t_org_user_info oui on oui.user_id = t_user.id and oui.is_delete = 0 and oui.status = 1
+        left join t_org_info oi on oi.id = oui.org_id and oi.is_delete = 0
+        left join t_role_user_info rui on rui.user_id = t_user.id and rui.is_delete = 0
+        left join t_role_info ri on ri.id = rui.role_id and ri.is_delete = 0
         <where>
-            t_user.is_delete = 0 and id = #{id}
+            t_user.is_delete = 0 and t_user.id = #{id}
         </where>
+        group by
+            t_user.id,
+            t_user.creator,
+            t_user.create_time,
+            t_user.updater,
+            t_user.update_time,
+            t_user.deleter,
+            t_user.delete_time,
+            t_user.is_delete,
+            t_user.operator,
+            t_user.operate_time,
+            t_user.username,
+            t_user.gender,
+            t_user.avatar,
+            t_user.email,
+            t_user.birthday,
+            t_user.mobile,
+            t_user.valid_code,
+            t_user.summary,
+            t_user.`status`,
+            t_user.nick_name,
+            t_user.qq_number,
+            t_user.we_chat,
+            t_user.occupation,
+            t_user.github,
+            t_user.gitee,
+            t_user.role_id,
+            t_user.person_resume
     </select>
 
     <select id="getList" resultType="com.alex.api.user.userInfo.vo.TUserVo">
@@ -201,6 +242,7 @@
                     select 1 from t_org_user_info org_filter
                     where org_filter.user_id = t_user.id
                       and org_filter.is_delete = 0
+                      and org_filter.status = 1
                       and org_filter.org_id = #{tUserVo.orgId}
                 )
             </if>
@@ -211,6 +253,7 @@
                     inner join t_org_info org_info_filter on org_info_filter.id = org_filter.org_id and org_info_filter.is_delete = 0
                     where org_filter.user_id = t_user.id
                       and org_filter.is_delete = 0
+                      and org_filter.status = 1
                       and org_info_filter.org_code like concat('%', #{tUserVo.orgCode}, '%')
                 )
             </if>

@@ -64,13 +64,47 @@ public class OrgOwnershipGuardTest {
     @Test
     void updateOrgInfo_allowed_whenScopedQueryReturnsOrg() {
         when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
-        OrgInfoVo visible = targetOrg(200L);
+        OrgInfoVo visible = targetOrg(200L, 100L);
+        OrgInfoVo parentVisible = targetOrg(100L, 0L);
+        OrgInfo parentEntity = new OrgInfo();
+        parentEntity.setId(100L);
+        parentEntity.setParentId(0L);
+
         when(orgInfoMapper.queryOrgInfo("200")).thenReturn(visible);
+        when(orgInfoMapper.queryOrgInfo("100")).thenReturn(parentVisible);
+        when(orgInfoMapper.selectById(100L)).thenReturn(parentEntity);
         when(orgInfoMapper.selectCount(any())).thenReturn(0L);
         when(orgInfoMapper.updateById(any(OrgInfo.class))).thenReturn(1);
 
-        assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L)));
+        assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L, 100L)));
         verify(orgInfoMapper).updateById(any(OrgInfo.class));
+    }
+
+    @Test
+    void updateOrgInfo_denied_whenNonSuperAdminSetsRootParent() {
+        when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
+        OrgInfoVo visible = targetOrg(200L, 0L);
+        when(orgInfoMapper.queryOrgInfo("200")).thenReturn(visible);
+
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateOrgInfo(targetOrg(200L, 0L)),
+                "Non-super admin cannot create/set root org");
+        assertTrue(ex.getMsg() != null && ex.getMsg().contains("非超级管理员不能创建或修改为顶级机构"),
+                "exception message must contain non-super error, actual=" + ex.getMsg());
+        verify(orgInfoMapper, never()).updateById(any(OrgInfo.class));
+    }
+
+    @Test
+    void updateOrgInfo_denied_whenParentOutOfScope() {
+        when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.ADMIN));
+        OrgInfoVo visible = targetOrg(200L, 999L);
+        when(orgInfoMapper.queryOrgInfo("200")).thenReturn(visible);
+        when(orgInfoMapper.queryOrgInfo("999")).thenReturn(null);
+
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateOrgInfo(targetOrg(200L, 999L)),
+                "Cannot bind org to an out-of-scope parent");
+        assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
+                "exception message must contain 无权, actual=" + ex.getMsg());
+        verify(orgInfoMapper, never()).updateById(any(OrgInfo.class));
     }
 
     @Test
@@ -90,7 +124,7 @@ public class OrgOwnershipGuardTest {
         // I1: 登录上下文不可用时必须 fail-closed，不能默认放行
         when(userUtils.getLoginUser()).thenReturn(null);
 
-        SystemException ex = assertThrows(SystemException.class, () -> service.updateOrgInfo(targetOrg(200L)),
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateOrgInfo(targetOrg(200L, 100L)),
                 "I1: null login context must fail-closed");
         assertTrue(ex.getMsg() != null && ex.getMsg().contains("无权"),
                 "exception message must contain 无权, actual=" + ex.getMsg());
@@ -103,7 +137,7 @@ public class OrgOwnershipGuardTest {
         when(orgInfoMapper.selectCount(any())).thenReturn(0L);
         when(orgInfoMapper.updateById(any(OrgInfo.class))).thenReturn(1);
 
-        assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L)));
+        assertDoesNotThrow(() -> service.updateOrgInfo(targetOrg(200L, 0L)));
         verify(orgInfoMapper, never()).queryOrgInfo(any());
         verify(orgInfoMapper).updateById(any(OrgInfo.class));
     }
@@ -118,11 +152,15 @@ public class OrgOwnershipGuardTest {
     }
 
     private static OrgInfoVo targetOrg(Long id) {
+        return targetOrg(id, 0L);
+    }
+
+    private static OrgInfoVo targetOrg(Long id, Long parentId) {
         OrgInfoVo vo = new OrgInfoVo();
         vo.setId(id);
         // ORG-002 requires non-empty orgCode on write paths that reach persistence.
         vo.setOrgCode("ORG-" + id);
-        vo.setParentId(0L);
+        vo.setParentId(parentId);
         return vo;
     }
 }

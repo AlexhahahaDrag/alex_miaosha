@@ -29,5 +29,9 @@ public interface OrgUserInfoService extends IService<OrgUserInfo> {
 
     Boolean assignSingleOrg(Long userId, Long orgId);
 
+    Boolean syncUserOrgs(Long userId, Long mainOrgId, List<Long> auxiliaryOrgIds);
+
+    Boolean unassignUser(Long userId, Long orgId);
+
     List<OrgInfoVo> getOrgInfoList(Long userId);
 }

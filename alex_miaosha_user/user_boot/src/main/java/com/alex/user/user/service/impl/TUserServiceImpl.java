@@ -183,9 +183,31 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         setAvatarUrls(user);
         if (user != null && user.getId() != null) {
             applyPermissionContext(user, userPermissionContextService.buildContext(user.getId()));
-            user.setOrgId(user.getOrgInfoVo() == null ? null : user.getOrgInfoVo().getId());
-            user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList()
-                    : user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
+            if (user.getOrgId() == null && user.getOrgInfoVo() != null) {
+                user.setOrgId(user.getOrgInfoVo().getId());
+                user.setOrgName(user.getOrgInfoVo().getOrgName());
+            }
+            if (user.getRoleIds() == null || user.getRoleIds().isEmpty()) {
+                user.setRoleIds(user.getRoleInfoVoList() == null ? Collections.emptyList()
+                        : user.getRoleInfoVoList().stream().map(RoleInfoVo::getId).toList());
+            }
+            if (StringUtils.isEmpty(user.getRoleName()) && user.getRoleInfoVoList() != null && !user.getRoleInfoVoList().isEmpty()) {
+                user.setRoleName(user.getRoleInfoVoList().stream()
+                        .map(RoleInfoVo::getRoleName)
+                        .filter(StringUtils::isNotEmpty)
+                        .collect(Collectors.joining(",")));
+            }
+            List<com.alex.user.orgUserInfo.entity.OrgUserInfo> activeOrgRows = orgUserInfoService.list(
+                    com.baomidou.mybatisplus.core.toolkit.Wrappers.<com.alex.user.orgUserInfo.entity.OrgUserInfo>lambdaQuery()
+                            .eq(com.alex.user.orgUserInfo.entity.OrgUserInfo::getUserId, String.valueOf(user.getId()))
+                            .eq(com.alex.user.orgUserInfo.entity.OrgUserInfo::getStatus, SysConf.VALID_STATUS));
+            if (activeOrgRows != null) {
+                List<Long> auxOrgIds = activeOrgRows.stream()
+                        .filter(row -> "AUXILIARY".equalsIgnoreCase(row.getSummary()) && row.getOrgId() != null)
+                        .map(row -> Long.valueOf(row.getOrgId()))
+                        .toList();
+                user.setAuxiliaryOrgIds(auxOrgIds);
+            }
         }
         return user;
     }
@@ -276,8 +298,8 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (userId == null || tUserVo == null) {
             return;
         }
-        if (tUserVo.getOrgId() != null) {
-            orgUserInfoService.assignSingleOrg(userId, tUserVo.getOrgId());
+        if (tUserVo.getOrgId() != null || tUserVo.getAuxiliaryOrgIds() != null) {
+            orgUserInfoService.syncUserOrgs(userId, tUserVo.getOrgId(), tUserVo.getAuxiliaryOrgIds());
         }
         if (tUserVo.getRoleIds() != null) {
             // C2 修复：请求体里的 roleIds 此前完全不校验归属，机构管理员可在编辑用户时

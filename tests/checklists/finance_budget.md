@@ -124,3 +124,18 @@
   - [x] 类别列使用确定性哈希配色胶囊展示（`category-pill`），并支持点击类别胶囊快捷过滤；
   - [x] 金额列与收支类型保持清晰语义对比。
 
+---
+
+## 9. 移动端 E2E 自动化烟测与质量闭环 (Mobile E2E Smoke Matrix)
+
+- **执行驱动脚本**：`alex_miaosha_mobile/scripts/playwright/run-mobile-ai-smoke.mjs`
+- **用例注册表**：`alex_miaosha_mobile/tests/midscene/gift/cases/mobile-ai-smoke.json`
+- **覆盖用例明细**：
+  - [x] `FINANCE-E2E-MOBILE-POCKET-BUDGET`：零花钱卡片展开、跳转预算设置、动态分类触控 Chip 选择、收支多选、保存预算（断言 POST `/finance-budget/save` 与路由回退，Mock 零脏数据残留）。
+  - [x] `FINANCE-E2E-MOBILE-KEYPAD-RECORD`：九宫格分类点选（触觉探针 `navigator.vibrate` 捕获断言）、定制数字键盘连续输入（`88.5`）、表单提交与保存返回列表（断言 POST `/finance-info`）。
+- **质量验收现状**：
+  - [x] 移动端端到端烟测：6/6 全部 PASS；
+  - [x] 移动端单元测试：66/66 全部 PASS；
+  - [x] 移动端生产打包：`npm run build` 0 error / 0 warning。
+
+

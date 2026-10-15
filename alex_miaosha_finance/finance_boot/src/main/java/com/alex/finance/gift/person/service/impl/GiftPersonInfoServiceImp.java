@@ -215,6 +215,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public GiftPersonInfoVo addGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         fillOwner(giftPersonInfoVo);
+        validateForSave(giftPersonInfoVo);
         applyRelationOption(giftPersonInfoVo);
         GiftPersonInfo entity = new GiftPersonInfo();
         BeanUtils.copyProperties(giftPersonInfoVo, entity);
@@ -234,6 +235,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
         giftDataScopeSupport.assertPersonAccessible(existing);
         giftPersonInfoVo.setUserId(existing.getUserId());
         giftPersonInfoVo.setOrgId(existing.getOrgId());
+        validateForSave(giftPersonInfoVo);
         applyRelationOption(giftPersonInfoVo);
         GiftPersonInfo entity = new GiftPersonInfo();
         BeanUtils.copyProperties(giftPersonInfoVo, entity);
@@ -242,6 +244,24 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
             rememberRelationOption(entity);
         }
         return updated;
+    }
+
+    private void validateForSave(GiftPersonInfoVo vo) {
+        if (vo == null) {
+            throw FinanceException.param("亲友信息不能为空");
+        }
+        if (!StringUtils.hasText(vo.getPersonName())) {
+            throw FinanceException.param("亲友姓名不能为空");
+        }
+        if (vo.getPersonName().trim().length() > 50) {
+            throw FinanceException.param("亲友姓名最多50个字符");
+        }
+        if (StringUtils.hasText(vo.getPhone()) && vo.getPhone().trim().length() > 20) {
+            throw FinanceException.param("电话号码长度不能超过20位");
+        }
+        if (StringUtils.hasText(vo.getRelationType()) && vo.getRelationType().trim().length() > 32) {
+            throw FinanceException.param("关系类型长度不能超过32位");
+        }
     }
 
     @Override

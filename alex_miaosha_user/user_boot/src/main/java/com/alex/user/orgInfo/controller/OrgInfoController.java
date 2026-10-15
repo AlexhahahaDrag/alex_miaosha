@@ -50,18 +50,6 @@ public class OrgInfoController {
         return Result.success(orgInfoService.getPage(pageNum, pageSize, orgInfoVo));
     }
 
-    @LogRestRequest(apiName = "获取机构树")
-    @ApiOperationSupport(order = 15, author = "alex")
-    @ApiOperation(value = "获取机构树", notes = "按 parentId 组装 children，复用数据权限过滤；可选 status", response = Result.class)
-    @GetMapping(value = "/tree")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "状态过滤(可选)", name = "status", dataTypeClass = String.class)
-    })
-    public Result<List<OrgInfoVo>> getTree(@RequestParam(value = "status", required = false) String status) {
-        OrgInfoVo filter = new OrgInfoVo();
-        filter.setStatus(status);
-        return Result.success(orgInfoService.getTree(filter));
-    }
 
     @LogRestRequest(apiName = "获取机构树(POST)")
     @ApiOperationSupport(order = 16, author = "alex")

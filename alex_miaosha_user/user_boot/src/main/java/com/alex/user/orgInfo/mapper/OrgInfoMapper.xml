@@ -37,23 +37,25 @@
         t_org_info.org_code, t_org_info.org_name, t_org_info.org_short_name, t_org_info.parent_id, t_org_info.summary, t_org_info.`status`
     </sql>
 
-    <select id="getPage" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
+    <sql id="selectVo">
         select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
-            from t_org_info
-            left join t_org_info par_info
-            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        from t_org_info
+        left join t_org_info par_info
+        on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+    </sql>
+
+    <select id="getPage" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
+        <include refid="selectVo"/>
         <where>
             t_org_info.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_org_info.id asc
     </select>
 
     <!-- RBAC-BE-ORG-003: same projection as getPage; used by getTree with @DataPermission -->
     <select id="getList" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
-        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
-            from t_org_info
-            left join t_org_info par_info
-            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        <include refid="selectVo"/>
         <where>
             t_org_info.is_delete = 0
             <include refid="queryInfo"/>
@@ -61,10 +63,7 @@
     </select>
 
     <select id="queryOrgInfo" resultType="com.alex.api.user.orgInfo.vo.OrgInfoVo">
-        select <include refid="Base_Column_List"/>, par_info.org_name as parent_org_name
-            from t_org_info
-            left join t_org_info par_info
-            on par_info.id = t_org_info.parent_id and par_info.is_delete = 0
+        <include refid="selectVo"/>
         <where>
             t_org_info.id = #{id}
             and t_org_info.is_delete = 0
@@ -89,8 +88,8 @@
           <if test = "orgInfoVo.summary != null">
             and t_org_info.summary like concat('%', #{orgInfoVo.summary}, '%')
           </if>
-          <if test = "orgInfoVo.status != null">
-            and t_org_info.`status` like concat('%', #{orgInfoVo.status}, '%')
+          <if test = "orgInfoVo.status != null and orgInfoVo.status != ''">
+            and t_org_info.`status` = #{orgInfoVo.status}
           </if>
         </if>
      </sql>

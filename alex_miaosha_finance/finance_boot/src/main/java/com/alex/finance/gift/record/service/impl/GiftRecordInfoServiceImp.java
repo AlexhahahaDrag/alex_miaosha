@@ -343,9 +343,17 @@ public class GiftRecordInfoServiceImp extends ServiceImpl<GiftRecordInfoMapper, 
         }
     }
 
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("9999999999.99");
+
     private void validateAmount(GiftRecordInfoVo vo) {
         if (vo == null || vo.getAmount() == null || vo.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw FinanceException.param("礼金金额必须大于0");
+        }
+        if (vo.getAmount().compareTo(MAX_AMOUNT) > 0) {
+            throw FinanceException.param("礼金金额超出系统上限");
+        }
+        if (vo.getAmount().scale() > 2) {
+            vo.setAmount(vo.getAmount().setScale(2, java.math.RoundingMode.HALF_UP));
         }
     }
 

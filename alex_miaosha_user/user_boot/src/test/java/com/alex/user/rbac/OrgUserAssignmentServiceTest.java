@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -54,6 +55,34 @@ public class OrgUserAssignmentServiceTest {
                 "assignSingleOrg should fail when invalidating old assignment fails");
         assertEquals(1, service.updatedAssignments.size(), "old active assignment should be updated once");
         assertNull(service.savedAssignment, "new assignment should not be saved after update failure");
+    }
+
+    @Test
+    public void testUnassignUserInvalidatesActiveAssignment() {
+        OrgUserInfo activeAssignment = assignment(1L, "100", "10", "1");
+        TestableOrgUserInfoService service = new TestableOrgUserInfoService(activeAssignment);
+
+        Boolean result = service.unassignUser(100L, 10L);
+
+        assertTrue(Boolean.TRUE.equals(result), "unassignUser should return true");
+        assertEquals("0", activeAssignment.getStatus(), "active assignment should be invalidated to 0");
+        assertEquals(1, service.updatedAssignments.size(), "active assignment should be updated");
+    }
+
+    @Test
+    public void testSyncUserOrgsCreatesMainAndAuxiliaryAssignments() {
+        OrgUserInfo oldMain = assignment(1L, "100", "10", "1");
+        oldMain.setSummary("MAIN");
+        TestableOrgUserInfoService service = new TestableOrgUserInfoService(oldMain);
+
+        Boolean result = service.syncUserOrgs(100L, 20L, Arrays.asList(30L, 40L));
+
+        assertTrue(Boolean.TRUE.equals(result), "syncUserOrgs should return true");
+        assertEquals("0", oldMain.getStatus(), "old main assignment should be invalidated");
+        assertEquals(3, service.savedAssignments.size(), "1 new main + 2 auxiliary should be saved");
+        assertTrue(service.savedAssignments.stream().anyMatch(a -> "20".equals(a.getOrgId()) && "MAIN".equals(a.getSummary())));
+        assertTrue(service.savedAssignments.stream().anyMatch(a -> "30".equals(a.getOrgId()) && "AUXILIARY".equals(a.getSummary())));
+        assertTrue(service.savedAssignments.stream().anyMatch(a -> "40".equals(a.getOrgId()) && "AUXILIARY".equals(a.getSummary())));
     }
 
     @Test
@@ -110,6 +139,7 @@ public class OrgUserAssignmentServiceTest {
 
         private final List<OrgUserInfo> activeAssignments = new ArrayList<>();
         private final List<OrgUserInfo> updatedAssignments = new ArrayList<>();
+        private final List<OrgUserInfo> savedAssignments = new ArrayList<>();
         private boolean updateResult = true;
         private OrgUserInfo savedAssignment;
 
@@ -132,6 +162,7 @@ public class OrgUserAssignmentServiceTest {
         @Override
         public boolean save(OrgUserInfo entity) {
             savedAssignment = entity;
+            savedAssignments.add(entity);
             return true;
         }
     }

@@ -59,7 +59,10 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
     public List<GiftRankingItemVo> eventRanking() {
         GiftEventSummaryVo summary = giftEventInfoService.getSummary();
         Page<GiftEventBusinessVo> page = giftEventInfoService.getBusinessPage(1L, 10L, null);
-        List<GiftRankingItemVo> rows = page.getRecords().stream()
+        List<GiftEventBusinessVo> records = (page != null && page.getRecords() != null)
+                ? page.getRecords()
+                : java.util.Collections.emptyList();
+        List<GiftRankingItemVo> rows = records.stream()
                 .map(event -> new GiftRankingItemVo()
                         .setName(event.getEventName())
                         .setAmount(defaultAmount(event.getTotalAmount()))
@@ -69,8 +72,8 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
         if (rows.isEmpty()) {
             rows = List.of(new GiftRankingItemVo()
                     .setName("全部事由")
-                    .setAmount(defaultAmount(summary.getTotalAmount()))
-                    .setCount(defaultLong(summary.getMonthPendingCount())));
+                    .setAmount(defaultAmount(summary != null ? summary.getTotalAmount() : null))
+                    .setCount(defaultLong(summary != null ? summary.getMonthPendingCount() : null)));
         }
         return rows;
     }
@@ -78,7 +81,10 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
     @Override
     public List<GiftRankingItemVo> personRanking() {
         Page<GiftPersonBusinessVo> page = giftPersonInfoService.getBusinessPage(1L, 10L, null);
-        return page.getRecords().stream()
+        List<GiftPersonBusinessVo> records = (page != null && page.getRecords() != null)
+                ? page.getRecords()
+                : java.util.Collections.emptyList();
+        return records.stream()
                 .map(person -> new GiftRankingItemVo()
                         .setName(person.getPersonName())
                         .setAmount(defaultAmount(person.getTotalGiveAmount())

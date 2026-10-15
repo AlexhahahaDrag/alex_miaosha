@@ -83,4 +83,12 @@ public class OrgUserInfoController {
     public Result<Boolean> delete(@RequestParam("ids") String ids) {
         return Result.success(orgUserInfoService.deleteOrgUserInfo(ids));
     }
+
+    @LogRestRequest(apiName = "移除用户机构归属")
+    @ApiOperationSupport(order = 60, author = "majf")
+    @ApiOperation(value = "移除用户机构归属", notes = "将用户从指定机构移除（失效并清理权限缓存）", response = Result.class)
+    @DeleteMapping("/unassign")
+    public Result<Boolean> unassign(@RequestParam("userId") Long userId, @RequestParam("orgId") Long orgId) {
+        return Result.success(orgUserInfoService.unassignUser(userId, orgId));
+    }
 }

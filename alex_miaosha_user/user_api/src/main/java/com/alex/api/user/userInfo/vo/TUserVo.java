@@ -100,9 +100,21 @@ public class TUserVo extends BaseVo<TUserVo>{
     private String roleId;
 
     @ApiModelProperty(value = "所属机构id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long orgId;
 
+    @ApiModelProperty(value = "兼职/附属机构id列表")
+    @JsonSerialize(contentUsing = Long2StringSerializer.class)
+    private List<Long> auxiliaryOrgIds;
+
+    @ApiModelProperty(value = "兼职/附属机构列表明细")
+    private List<OrgInfoVo> auxiliaryOrgList;
+
+    @ApiModelProperty(value = "兼职/附属机构名称拼接")
+    private String auxiliaryOrgNames;
+
     @ApiModelProperty(value = "角色id列表")
+    @JsonSerialize(contentUsing = Long2StringSerializer.class)
     private List<Long> roleIds;
 
     @ApiModelProperty(value = "履历")

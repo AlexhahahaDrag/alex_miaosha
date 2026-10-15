@@ -55,7 +55,10 @@ class GiftOwnershipTest {
         UserUtils userUtils = loginUser(11L, 21L);
 
         TestEventService eventService = new TestEventService(userUtils);
-        GiftEventInfoVo event = eventService.addGiftEventInfo(new GiftEventInfoVo().setOrgId(1L).setUserId(2L));
+        GiftEventInfoVo event = eventService.addGiftEventInfo(new GiftEventInfoVo()
+                .setEventName("wedding")
+                .setOrgId(1L)
+                .setUserId(2L));
         assertEquals(21L, eventService.saved.getOrgId());
         assertEquals(11L, eventService.saved.getUserId());
         assertEquals(21L, event.getOrgId());

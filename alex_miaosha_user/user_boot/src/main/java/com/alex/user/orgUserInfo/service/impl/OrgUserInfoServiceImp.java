@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -176,9 +178,7 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
         orgUserInfo.setUserId(String.valueOf(userId));
         orgUserInfo.setOrgId(String.valueOf(orgId));
         orgUserInfo.setStatus(SysConf.VALID_STATUS);
-        if (summary != null) {
-            orgUserInfo.setSummary(summary);
-        }
+        orgUserInfo.setSummary(summary != null ? summary : "MAIN");
         if (!save(orgUserInfo)) {
             throw new SystemException(ResultEnum.SYSTEM_ERROR, "用户机构新关系保存失败:");
         }
@@ -187,6 +187,111 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
         // RBAC-BE-RELATION-004: assign 成功后清理该用户堆积的失效历史行，只保留最近 N 条
         pruneInactiveHistory(userId);
         return true;
+    }
+
+    @Override
+    public Boolean syncUserOrgs(Long userId, Long mainOrgId, List<Long> auxiliaryOrgIds) {
+        if (userId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户ID不能为空");
+        }
+        synchronized (assignSingleOrgLock(userId)) {
+            return transactionTemplate.execute(status -> doSyncUserOrgs(userId, mainOrgId, auxiliaryOrgIds));
+        }
+    }
+
+    private Boolean doSyncUserOrgs(Long userId, Long mainOrgId, List<Long> auxiliaryOrgIds) {
+        List<OrgUserInfo> activeAssignments = listActiveAssignments(userId);
+
+        // 1. 处理主机构 (MAIN)
+        OrgUserInfo currentMain = activeAssignments.stream()
+                .filter(row -> row.getSummary() == null || "MAIN".equalsIgnoreCase(row.getSummary()))
+                .findFirst()
+                .orElse(null);
+
+        if (mainOrgId != null) {
+            String targetMainOrgIdStr = String.valueOf(mainOrgId);
+            if (currentMain == null || !targetMainOrgIdStr.equals(currentMain.getOrgId())) {
+                if (currentMain != null) {
+                    currentMain.setStatus(SysConf.INVALID_STATUS);
+                    updateById(currentMain);
+                }
+                OrgUserInfo newMain = new OrgUserInfo();
+                newMain.setUserId(String.valueOf(userId));
+                newMain.setOrgId(targetMainOrgIdStr);
+                newMain.setStatus(SysConf.VALID_STATUS);
+                newMain.setSummary("MAIN");
+                save(newMain);
+            }
+        } else if (currentMain != null) {
+            currentMain.setStatus(SysConf.INVALID_STATUS);
+            updateById(currentMain);
+        }
+
+        // 2. 处理兼职/附属机构 (AUXILIARY)
+        Set<String> targetAuxOrgIdSet = new HashSet<>();
+        if (auxiliaryOrgIds != null) {
+            for (Long auxId : auxiliaryOrgIds) {
+                if (auxId != null && !Objects.equals(auxId, mainOrgId)) {
+                    targetAuxOrgIdSet.add(String.valueOf(auxId));
+                }
+            }
+        }
+
+        List<OrgUserInfo> currentAuxRows = activeAssignments.stream()
+                .filter(row -> "AUXILIARY".equalsIgnoreCase(row.getSummary()))
+                .collect(Collectors.toList());
+
+        for (OrgUserInfo auxRow : currentAuxRows) {
+            if (!targetAuxOrgIdSet.contains(auxRow.getOrgId())) {
+                auxRow.setStatus(SysConf.INVALID_STATUS);
+                updateById(auxRow);
+            }
+        }
+
+        Set<String> existingAuxOrgIdSet = currentAuxRows.stream()
+                .filter(row -> SysConf.VALID_STATUS.equals(row.getStatus()))
+                .map(OrgUserInfo::getOrgId)
+                .collect(Collectors.toSet());
+
+        for (String targetAuxId : targetAuxOrgIdSet) {
+            if (!existingAuxOrgIdSet.contains(targetAuxId)) {
+                OrgUserInfo newAux = new OrgUserInfo();
+                newAux.setUserId(String.valueOf(userId));
+                newAux.setOrgId(targetAuxId);
+                newAux.setStatus(SysConf.VALID_STATUS);
+                newAux.setSummary("AUXILIARY");
+                save(newAux);
+            }
+        }
+
+        // 3. 刷新权限缓存与修剪失效历史
+        permissionContextCacheService.invalidate(userId);
+        pruneInactiveHistory(userId);
+        return true;
+    }
+
+    @Override
+    public Boolean unassignUser(Long userId, Long orgId) {
+        if (userId == null || orgId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户机构移除参数错误");
+        }
+        synchronized (assignSingleOrgLock(userId)) {
+            return transactionTemplate.execute(status -> {
+                List<OrgUserInfo> activeAssignments = list(Wrappers.<OrgUserInfo>lambdaQuery()
+                        .eq(OrgUserInfo::getUserId, String.valueOf(userId))
+                        .eq(OrgUserInfo::getOrgId, String.valueOf(orgId))
+                        .eq(OrgUserInfo::getStatus, SysConf.VALID_STATUS));
+                for (OrgUserInfo orgUserInfo : activeAssignments) {
+                    orgUserInfo.setStatus(SysConf.INVALID_STATUS);
+                    if (!updateById(orgUserInfo)) {
+                        throw new SystemException(ResultEnum.SYSTEM_ERROR, "用户机构关系失效失败");
+                    }
+                }
+                permissionContextCacheService.invalidate(userId);
+                pruneInactiveHistory(userId);
+                return true;
+            });
+        }
     }
 
     protected List<OrgUserInfo> listActiveAssignments(Long userId) {

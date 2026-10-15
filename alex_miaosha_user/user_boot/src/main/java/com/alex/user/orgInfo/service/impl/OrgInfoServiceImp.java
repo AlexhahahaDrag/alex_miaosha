@@ -1,11 +1,8 @@
 package com.alex.user.orgInfo.service.impl;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
-import com.alex.api.user.rbac.RbacRoleCodes;
-import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
@@ -15,6 +12,7 @@ import com.alex.user.orgInfo.mapper.OrgInfoMapper;
 import com.alex.user.orgInfo.service.OrgInfoService;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.OrgScopeIdsResolver;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -171,6 +169,7 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
             throw new SystemException(ResultEnum.PARAM_ERROR, "机构编码不能为空");
         }
         Long selfId = orgInfoVo.getId();
+        // ponytail: app-level count check has race condition under concurrent inserts; acceptable without DB unique index
         long duplicateCount = orgInfoMapper.selectCount(Wrappers.<OrgInfo>lambdaQuery()
                 .eq(OrgInfo::getOrgCode, orgCode)
                 .ne(selfId != null, OrgInfo::getId, selfId));
@@ -180,11 +179,20 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
 
         Long parentId = orgInfoVo.getParentId();
         if (isRootParent(parentId)) {
+            TUserVo loginUser = userUtils.getLoginUser();
+            if (loginUser == null) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+            }
+            if (!OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "非超级管理员不能创建或修改为顶级机构");
+            }
             return;
         }
         if (selfId != null && selfId.equals(parentId)) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不能为自身");
         }
+        // Verify parent accessibility under current data permission scope
+        assertOrgAccessible(parentId);
         OrgInfo parent = orgInfoMapper.selectById(parentId);
         if (parent == null || isDeleted(parent)) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "父级机构不存在");
@@ -234,33 +242,13 @@ public class OrgInfoServiceImp extends ServiceImpl<OrgInfoMapper, OrgInfo> imple
             // I1 修复：登录上下文不可用时必须 fail-closed，不能默认放行。
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
         }
-        if (isSuperAdminLogin(loginUser)) {
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
             return;
         }
         OrgInfoVo visible = orgInfoMapper.queryOrgInfo(String.valueOf(id));
         if (visible == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构");
         }
-    }
-
-    private static boolean isSuperAdminLogin(TUserVo loginUser) {
-        if (loginUser == null) {
-            return false;
-        }
-        UserPermissionContextVo context = loginUser.getPermissionContext();
-        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
-            return true;
-        }
-        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
-        if (roles == null || roles.isEmpty()) {
-            return false;
-        }
-        for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private List<Long> parseIds(String ids) {

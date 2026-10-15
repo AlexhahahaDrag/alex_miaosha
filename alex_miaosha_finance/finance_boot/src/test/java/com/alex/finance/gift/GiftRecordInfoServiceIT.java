@@ -81,6 +81,20 @@ class GiftRecordInfoServiceIT {
     }
 
     @Test
+    void addRecord_should_reject_when_amount_exceeds_max() {
+        FinanceException ex = assertThrows(FinanceException.class, () ->
+                service.addGiftRecordInfo(receiveVo(new BigDecimal("10000000000.00"))));
+        assertEquals("礼金金额超出系统上限", ex.getMsg());
+    }
+
+    @Test
+    void addRecord_should_round_amount_scale_to_two() {
+        GiftRecordInfoVo vo = receiveVo(new BigDecimal("100.886"));
+        GiftRecordInfoVo saved = service.addGiftRecordInfo(vo);
+        assertEquals(new BigDecimal("100.89"), saved.getAmount());
+    }
+
+    @Test
     void addRecord_RETURN_should_reject_when_related_not_RECEIVE() {
         GiftRecordInfo giveRecord = receiveRecord(1L, OTHER_USER_ID, LOGIN_ORG_ID);
         giveRecord.setDirection("GIVE");

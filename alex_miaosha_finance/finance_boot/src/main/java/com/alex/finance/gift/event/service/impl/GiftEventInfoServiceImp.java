@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -93,8 +94,10 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GiftEventInfoVo addGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
         fillOwner(giftEventInfoVo);
+        validateForSave(giftEventInfoVo);
         applyEventTypeOption(giftEventInfoVo);
         GiftEventInfo entity = new GiftEventInfo();
         BeanUtils.copyProperties(giftEventInfoVo, entity);
@@ -105,6 +108,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
         if (giftEventInfoVo == null || giftEventInfoVo.getId() == null) {
             throw FinanceException.param("事由ID不能为空");
@@ -113,6 +117,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         giftDataScopeSupport.assertEventAccessible(existing);
         giftEventInfoVo.setUserId(existing.getUserId());
         giftEventInfoVo.setOrgId(existing.getOrgId());
+        validateForSave(giftEventInfoVo);
         applyEventTypeOption(giftEventInfoVo);
         GiftEventInfo entity = new GiftEventInfo();
         BeanUtils.copyProperties(giftEventInfoVo, entity);
@@ -121,6 +126,22 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
             rememberEventTypeOption(entity);
         }
         return updated;
+    }
+
+    private void validateForSave(GiftEventInfoVo vo) {
+        if (vo == null) {
+            throw FinanceException.param("事由信息不能为空");
+        }
+        if (!StringUtils.hasText(vo.getEventName())) {
+            throw FinanceException.param("事由名称不能为空");
+        }
+        if (vo.getEventName().trim().length() > 100) {
+            throw FinanceException.param("事由名称最多100个字符");
+        }
+        if (vo.getHostPersonId() != null && giftPersonInfoMapper != null) {
+            GiftPersonInfo hostPerson = giftPersonInfoMapper.selectById(vo.getHostPersonId());
+            giftDataScopeSupport.assertPersonAccessible(hostPerson);
+        }
     }
 
     @Override
