@@ -58,7 +58,7 @@ SET `parent_id` = @self_finance_parent_id,
     `path` = '/selfFinance/accountRecordInfo',
     `component` = '/src/views/selfFinance/accountRecordInfo/index.vue',
     `permission_code` = 'selfFinance:accountRecordInfo',
-    `sort` = 30
+    `order_by` = 80
 WHERE `name` = 'accountRecordInfo';
 
 -- (5) 消费卡信息 (储值卡总览与开卡)
