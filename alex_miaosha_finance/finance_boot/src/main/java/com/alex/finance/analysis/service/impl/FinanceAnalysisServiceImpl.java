@@ -30,8 +30,13 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
 
     private final FinanceAnalysisMapper financeAnalysisMapper;
 
+    private Long normalizeBelongTo(Long belongTo) {
+        return (belongTo != null && belongTo <= 0L) ? null : belongTo;
+    }
+
     @Override
     public BalanceVo getBalance(Long belongTo, String searchDate) {
+        belongTo = normalizeBelongTo(belongTo);
         List<AnalysisVo> currentList = financeAnalysisMapper.getBalance(belongTo, searchDate);
         if (searchDate == null || currentList == null || currentList.isEmpty()) {
             return new BalanceVo().setList(currentList);
@@ -128,17 +133,17 @@ public class FinanceAnalysisServiceImpl implements FinanceAnalysisService {
 
     @Override
     public List<AnalysisVo> getIncomeAndExpense(Long belongTo, String searchDate, String type) {
-        return financeAnalysisMapper.getIncomeAndExpense(belongTo, searchDate, type);
+        return financeAnalysisMapper.getIncomeAndExpense(normalizeBelongTo(belongTo), searchDate, type);
     }
 
     @Override
     public List<AnalysisVo> getDayExpense(Long belongTo, String searchDate) {
-        return financeAnalysisMapper.getDayExpense(belongTo, searchDate);
+        return financeAnalysisMapper.getDayExpense(normalizeBelongTo(belongTo), searchDate);
     }
 
     @Override
     public List<AnalysisVo> getMonthExpense(Long belongTo, String searchDate) {
-        return financeAnalysisMapper.getMonthExpense(belongTo, searchDate);
+        return financeAnalysisMapper.getMonthExpense(normalizeBelongTo(belongTo), searchDate);
     }
 }
 

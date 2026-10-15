@@ -19,7 +19,7 @@
         LEFT JOIN finance_base_info ON finance_base_info.from_source = dict_info.type_code
         AND finance_base_info.is_valid = '1'
         AND finance_base_info.is_delete = '0'
-        <if test="belongTo != null">
+        <if test="belongTo != null and belongTo != 0">
             AND finance_base_info.belong_to = #{belongTo}
         </if>
         LEFT JOIN (
@@ -35,7 +35,7 @@
         <if test="searchDate != null">
             AND finance_info.info_date &lt; DATE_ADD( cast( CONCAT( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
         </if>
-        <if test="belongTo != null">
+        <if test="belongTo != null and belongTo != 0">
             AND finance_info.belong_to = #{belongTo}
         </if>
         GROUP BY
@@ -69,7 +69,7 @@
         is_valid = '1'
         AND is_delete = 0
         AND type_code != '转账'
-        <if test="belongTo != null">
+        <if test="belongTo != null and belongTo != 0">
             and belong_to = #{belongTo}
         </if>
         AND NAME != '白条收入'
@@ -131,7 +131,7 @@
         AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
         AND is_valid = '1'
         AND is_delete = '0'
-        <if test="belongTo != null">
+        <if test="belongTo != null and belongTo != 0">
             and belong_to = #{belongTo}
         </if>
         GROUP BY
@@ -168,7 +168,7 @@
         AND info_date &lt; DATE_ADD( cast( concat( #{searchDate}, '-01' ) AS datetime ), INTERVAL 1 MONTH )
         AND is_valid = '1'
         AND is_delete = '0'
-        <if test="belongTo != null">
+        <if test="belongTo != null and belongTo != 0">
             and belong_to = #{belongTo}
         </if>
         GROUP BY
