@@ -323,7 +323,11 @@
 ### 5.4 PC 前端 E2E（Playwright + Midscene）
 
 - [x] 已有：`GIFT-PC-PERSON-CRUD-001`、`GIFT-PC-EVENT-CRUD-001`、`GIFT-PC-RECORD-CRUD-001`、`GIFT-PC-EXPORT-001`、`GIFT-BUTTON-*` 系列
-- [ ] **`GIFT-FLOW-RETURN-001`**：完整回礼链路
+- [x] **`AI-GIFT-PC-001`**：PC 端礼金看板与主列表页面基础烟测（加载/汇总统计/Tab切换）
+- [x] **`GIFT-E2E-PC-DASHBOARD`**：解耦看板三大卡片渲染（净额、收送比、待办回礼）与穿透到主列表联动校验
+- [x] **`GIFT-E2E-PC-FLOW-RETURN`**：完整收礼标记已回礼链路，断言 PUT `/mark-returned` 请求触发与抽屉生命周期保护
+- [x] **`GIFT-E2E-PC-FORM-LINKAGE`**：解耦抽屉表单快捷事由/金额 Tag 联动，`999999999.99` 极限数值精度无损录入
+- [ ] **`GIFT-FLOW-RETURN-001`**：完整回礼链路（多端数据同步）
   - 创建 RECEIVE record（amount=500）
   - 调用 `PUT /mark-returned`，验证 `returnedFlag=1`
   - 创建 RETURN record，`relatedRecordId` 指向上一条
@@ -337,6 +341,10 @@
 ### 5.5 移动端 E2E（Midscene）
 
 - [x] 已有：`GIFT-MOBILE-001/002/003`（页面加载、快速记礼+Haptic、列表刷新）
+- [x] **`GIFT-AI-MOBILE-001`**：移动端礼尚往来记账卡片列表渲染与底部导航穿透
+- [x] **`GIFT-AI-MOBILE-002`**：移动端快速记礼抽屉唤起、字段选择与触觉反馈（Haptic）断言
+- [x] **`GIFT-E2E-MOBILE-QUICK-RECORD`**：移动端快速记礼浮动弹窗全流程（预设金额 Chip 切换、方向切换、保存与 API 请求断言）
+- [x] **`GIFT-E2E-MOBILE-PERSON-PROFILE`**：移动端亲友画像详情页（概览统计卡、收送净额、操作按钮权限守卫与契约校验）
 - [ ] `GIFT-MOBILE-RECORD-CRUD-001`
 - [ ] `GIFT-MOBILE-GESTURE-PULL-REFRESH-001`（下拉刷新七点法）
 - [ ] `GIFT-MOBILE-GESTURE-INFINITE-SCROLL-001`（上拉加载边界）
