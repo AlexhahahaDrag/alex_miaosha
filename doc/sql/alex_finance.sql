@@ -257,4 +257,204 @@ CREATE TABLE `finance_budget_info`  (
   INDEX `finance_budget_belong_month_IDX`(`belong_to` ASC, `budget_month` ASC, `is_delete` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '财务月度零花钱与分类预算表' ROW_FORMAT = DYNAMIC;
 
+-- =============================================================================
+-- 礼尚往来管理模块 (Gift) 领域模型与数据字典 (2026-09-28)
+-- =============================================================================
+
+-- ----------------------------
+-- Table structure for gift_person_info_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_person_info_t`;
+CREATE TABLE `gift_person_info_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID',
+  `user_id` bigint NOT NULL COMMENT '归属用户ID',
+  `bind_user_id` bigint NULL DEFAULT NULL COMMENT '绑定系统用户ID',
+  `person_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '人员姓名',
+  `phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '手机号',
+  `avatar` bigint NULL DEFAULT NULL COMMENT '头像 OSS 文件ID',
+  `relation_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '关系类型',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '备注',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_gift_person_org_user_name`(`org_id` ASC, `user_id` ASC, `person_name` ASC) USING BTREE,
+  INDEX `idx_gift_person_org_phone`(`org_id` ASC, `phone` ASC) USING BTREE,
+  INDEX `idx_gift_person_bind_user`(`org_id` ASC, `bind_user_id` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来人员表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for gift_event_info_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_event_info_t`;
+CREATE TABLE `gift_event_info_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID',
+  `user_id` bigint NOT NULL COMMENT '归属用户ID',
+  `event_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '事件名称',
+  `event_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '事件类型',
+  `event_time` datetime NULL DEFAULT NULL COMMENT '事件时间',
+  `host_person_id` bigint NULL DEFAULT NULL COMMENT '主办人员ID',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '备注',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_gift_event_org_user_time`(`org_id` ASC, `user_id` ASC, `event_time` ASC) USING BTREE,
+  INDEX `idx_gift_event_org_type_time`(`org_id` ASC, `event_type` ASC, `event_time` ASC) USING BTREE,
+  INDEX `idx_gift_event_host_person`(`org_id` ASC, `host_person_id` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来事件表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for gift_record_info_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_record_info_t`;
+CREATE TABLE `gift_record_info_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID',
+  `user_id` bigint NOT NULL COMMENT '归属用户ID',
+  `event_id` bigint NULL DEFAULT NULL COMMENT '事件ID',
+  `giver_person_id` bigint NOT NULL COMMENT '送礼人员ID',
+  `receiver_person_id` bigint NOT NULL COMMENT '收礼人员ID',
+  `related_record_id` bigint NULL DEFAULT NULL COMMENT '关联原始收礼记录ID',
+  `direction` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '礼金方向：GIVE/RECEIVE/RETURN',
+  `amount` decimal(12, 2) NOT NULL COMMENT '金额',
+  `pay_time` datetime NOT NULL COMMENT '礼金时间',
+  `returned_flag` tinyint NULL DEFAULT 0 COMMENT '是否已回礼',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '备注',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_gift_record_org_pay_time`(`org_id` ASC, `pay_time` ASC, `id` ASC) USING BTREE,
+  INDEX `idx_gift_record_org_user_pay_time`(`org_id` ASC, `user_id` ASC, `pay_time` ASC, `id` ASC) USING BTREE,
+  INDEX `idx_gift_record_event_direction_time`(`org_id` ASC, `event_id` ASC, `direction` ASC, `pay_time` ASC) USING BTREE,
+  INDEX `idx_gift_record_giver_time`(`org_id` ASC, `giver_person_id` ASC, `pay_time` ASC) USING BTREE,
+  INDEX `idx_gift_record_receiver_time`(`org_id` ASC, `receiver_person_id` ASC, `pay_time` ASC) USING BTREE,
+  INDEX `idx_gift_record_related`(`org_id` ASC, `related_record_id` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来礼金记录表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for gift_person_relation_option_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_person_relation_option_t`;
+CREATE TABLE `gift_person_relation_option_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID',
+  `user_id` bigint NOT NULL COMMENT '归属用户ID，系统预设为0',
+  `option_type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'CUSTOM' COMMENT 'SYSTEM|CUSTOM',
+  `relation_code` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '预设code',
+  `relation_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '关系展示文案',
+  `sort_order` int NOT NULL DEFAULT 0 COMMENT '排序',
+  `last_used_time` datetime NULL DEFAULT NULL COMMENT '最近使用时间',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_gift_person_relation_option_user_label`(`user_id` ASC, `relation_label` ASC) USING BTREE,
+  UNIQUE INDEX `uk_gift_person_relation_option_system_code`(`user_id` ASC, `relation_code` ASC) USING BTREE,
+  INDEX `idx_gift_person_relation_option_user_time`(`user_id` ASC, `last_used_time` DESC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来联系人关系词典' ROW_FORMAT = DYNAMIC;
+
+INSERT INTO `gift_person_relation_option_t` (
+  `id`, `org_id`, `user_id`, `option_type`, `relation_code`, `relation_label`, `sort_order`, `last_used_time`, `is_delete`, `create_time`
+) VALUES
+(9000000000000000001, 0, 0, 'SYSTEM', 'RELATIVE', '亲属', 1, NOW(), 0, NOW()),
+(9000000000000000002, 0, 0, 'SYSTEM', 'FRIEND', '朋友', 2, NOW(), 0, NOW()),
+(9000000000000000003, 0, 0, 'SYSTEM', 'COLLEAGUE', '同事', 3, NOW(), 0, NOW()),
+(9000000000000000004, 0, 0, 'SYSTEM', 'NEIGHBOR', '邻里', 4, NOW(), 0, NOW()),
+(9000000000000000005, 0, 0, 'SYSTEM', 'OTHER', '其他', 5, NOW(), 0, NOW());
+
+-- ----------------------------
+-- Table structure for gift_event_type_option_t
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_event_type_option_t`;
+CREATE TABLE `gift_event_type_option_t` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `org_id` bigint NOT NULL COMMENT '组织ID，系统预设为0',
+  `user_id` bigint NOT NULL COMMENT '创建用户ID，系统预设为0',
+  `option_type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'CUSTOM' COMMENT 'SYSTEM|CUSTOM',
+  `event_code` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '预设code',
+  `event_label` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '类型展示文案',
+  `sort_order` int NOT NULL DEFAULT 0 COMMENT '排序',
+  `last_used_time` datetime NULL DEFAULT NULL COMMENT '最近使用时间',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_gift_event_type_option_org_label`(`org_id` ASC, `event_label` ASC) USING BTREE,
+  UNIQUE INDEX `uk_gift_event_type_option_system_code`(`user_id` ASC, `event_code` ASC) USING BTREE,
+  INDEX `idx_gift_event_type_option_org_time`(`org_id` ASC, `last_used_time` DESC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '礼尚往来事由类型词典' ROW_FORMAT = DYNAMIC;
+
+INSERT INTO `gift_event_type_option_t` (
+  `id`, `org_id`, `user_id`, `option_type`, `event_code`, `event_label`, `sort_order`, `last_used_time`, `is_delete`, `create_time`
+) VALUES
+(9100000000000000001, 0, 0, 'SYSTEM', 'WEDDING', '婚礼', 1, NOW(), 0, NOW()),
+(9100000000000000002, 0, 0, 'SYSTEM', 'BIRTH', '满月', 2, NOW(), 0, NOW()),
+(9100000000000000003, 0, 0, 'SYSTEM', 'HOUSEWARMING', '乔迁', 3, NOW(), 0, NOW()),
+(9100000000000000004, 0, 0, 'SYSTEM', 'EDUCATION', '升学', 4, NOW(), 0, NOW()),
+(9100000000000000005, 0, 0, 'SYSTEM', 'BIRTHDAY', '寿宴', 5, NOW(), 0, NOW()),
+(9100000000000000006, 0, 0, 'SYSTEM', 'OTHER', '其他', 6, NOW(), 0, NOW());
+
+-- ----------------------------
+-- 下线关系表 gift_relation_info_t (关系语义由 gift_person_info_t.relation_type + gift_person_relation_option_t 承载)
+-- ----------------------------
+DROP TABLE IF EXISTS `gift_relation_info_t`;
+
+-- ----------------------------
+-- Table structure for gift_event_type_user_config_t
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `gift_event_type_user_config_t` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `option_id` bigint NOT NULL COMMENT '关联的事由分类选项ID',
+  `org_id` bigint DEFAULT NULL COMMENT '机构/家庭组ID',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '启用状态(1:启用, 0:停用)',
+  `custom_amount` decimal(10,2) DEFAULT NULL COMMENT '个性化推荐金额',
+  `creator` bigint DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updater` bigint DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `operator` bigint DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '操作时间',
+  `deleter` bigint DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除标识',
+  PRIMARY KEY (`id`),
+  KEY `idx_org_option` (`org_id`, `option_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='事由分类个性化配置表';
+
 SET FOREIGN_KEY_CHECKS = 1;

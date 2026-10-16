@@ -27,14 +27,14 @@ class FinanceBudgetServiceTest {
 
     private FinanceBudgetInfoMapper financeBudgetInfoMapper;
     private FinanceInfoService financeInfoService;
-    private com.alex.api.user.user.UserUtils userUtils;
+    private com.alex.api.user.userInfo.UserUtils userUtils;
     private FinanceBudgetInfoServiceImpl budgetService;
 
     @BeforeEach
     void setUp() {
         financeBudgetInfoMapper = mock(FinanceBudgetInfoMapper.class);
         financeInfoService = mock(FinanceInfoService.class);
-        userUtils = mock(com.alex.api.user.user.UserUtils.class);
+        userUtils = mock(com.alex.api.user.userInfo.UserUtils.class);
         when(userUtils.getOrgId()).thenReturn(20L);
         when(userUtils.getUserId()).thenReturn(1001L);
         budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService);
@@ -353,7 +353,7 @@ class FinanceBudgetServiceTest {
         String month = "2026-10";
         Long mockOrgId = 99L;
 
-        com.alex.api.user.user.UserUtils mockUserUtils = mock(com.alex.api.user.user.UserUtils.class);
+        com.alex.api.user.userInfo.UserUtils mockUserUtils = mock(com.alex.api.user.userInfo.UserUtils.class);
         when(mockUserUtils.getOrgId()).thenReturn(mockOrgId);
         org.springframework.test.util.ReflectionTestUtils.setField(budgetService, "userUtils", mockUserUtils);
 

@@ -1,4 +1,4 @@
-package com.alex.api.user.user;
+package com.alex.api.user.userInfo;
 
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.enums.ResultEnum;
@@ -72,7 +72,7 @@ public class UserUtils {
     /**
      * description: 获取当前登录人信息
      * author: alex
-     * return: com.alex.api.user.user.vo.TUserVo
+     * return: com.alex.api.user.userInfo.vo.TUserVo
      */
     public TUserVo getLoginUser() {
         if (RequestContextHolder.getRequestAttributes() == null) {

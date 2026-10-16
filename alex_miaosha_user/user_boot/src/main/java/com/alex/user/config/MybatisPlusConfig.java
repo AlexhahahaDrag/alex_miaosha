@@ -2,7 +2,7 @@ package com.alex.user.config;
 
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
 import com.alex.api.user.handler.OrgSubtreeLookup;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;

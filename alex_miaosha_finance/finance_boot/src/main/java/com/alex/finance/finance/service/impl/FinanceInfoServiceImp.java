@@ -13,7 +13,7 @@ import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.string.StringUtils;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.FinanceInfoService;

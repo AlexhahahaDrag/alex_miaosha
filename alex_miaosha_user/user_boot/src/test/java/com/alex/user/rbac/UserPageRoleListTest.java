@@ -2,7 +2,7 @@ package com.alex.user.rbac;
 
 import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.user.online.service.OnlineUserService;

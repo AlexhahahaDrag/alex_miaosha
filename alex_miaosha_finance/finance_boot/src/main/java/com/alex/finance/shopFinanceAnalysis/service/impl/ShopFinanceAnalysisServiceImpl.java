@@ -3,7 +3,7 @@ package com.alex.finance.shopFinanceAnalysis.service.impl;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceAnalysisVo;
 import com.alex.api.finance.vo.shopFinanceAnalysis.ShopFinanceChainYearVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.shopFinance.mapper.ShopFinanceMapper;
 import com.alex.finance.shopFinanceAnalysis.service.ShopFinanceAnalysisService;

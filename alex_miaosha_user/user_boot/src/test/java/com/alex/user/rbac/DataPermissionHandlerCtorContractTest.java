@@ -2,7 +2,7 @@ package com.alex.user.rbac;
 
 import com.alex.api.user.handler.DataPermissionHandlerImpl;
 import com.alex.api.user.handler.OrgSubtreeLookup;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;

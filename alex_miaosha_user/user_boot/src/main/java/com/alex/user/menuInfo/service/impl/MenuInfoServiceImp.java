@@ -1,7 +1,7 @@
 package com.alex.user.menuInfo.service.impl;
 
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;

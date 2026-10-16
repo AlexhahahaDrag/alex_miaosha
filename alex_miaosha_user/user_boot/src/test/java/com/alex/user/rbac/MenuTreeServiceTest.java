@@ -1,7 +1,7 @@
 package com.alex.user.rbac;
 
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.user.menuInfo.mapper.MenuInfoMapper;
 import com.alex.user.menuInfo.service.impl.MenuInfoServiceImp;

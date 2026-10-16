@@ -5,7 +5,7 @@ import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import com.alex.api.finance.vo.dict.DictInfoVo;
 import com.alex.api.finance.vo.finance.*;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;

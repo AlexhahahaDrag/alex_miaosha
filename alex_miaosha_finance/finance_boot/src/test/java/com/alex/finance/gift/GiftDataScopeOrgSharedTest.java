@@ -2,7 +2,7 @@ package com.alex.finance.gift;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.support.GiftDataScopeSupport;

@@ -4,7 +4,7 @@ import com.alex.api.user.handler.OrgSubtreeLookup;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.rbac.RbacRoleCodes;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.common.exception.SystemException;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;

@@ -6,7 +6,7 @@ import com.alex.api.finance.vo.finance.FinanceBudgetStatusVo;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.base.constants.SysConf;
 import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.date.DateUtils;

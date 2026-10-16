@@ -1,7 +1,7 @@
 package com.alex.user.rbac;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
-import com.alex.api.user.user.UserUtils;
+import com.alex.api.user.userInfo.UserUtils;
 import com.alex.user.orgInfo.mapper.OrgInfoMapper;
 import com.alex.user.orgInfo.service.impl.OrgInfoServiceImp;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
