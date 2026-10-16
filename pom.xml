@@ -16,7 +16,6 @@
         <module>alex_miaosha_finance</module>
         <!-- AI Agent：统一 AI 能力服务（其它模块通过 ai_api/Feign 调用） -->
         <module>alex_miaosha_ai</module>
-        <module>alex_generator</module>
         <module>alex_miaosha_oss</module>
         <module>alex_miaosha_product</module>
     </modules>

@@ -1,6 +1,8 @@
 package com.alex.api.user.menuInfo.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -43,7 +45,8 @@ public class MenuInfoVo extends BaseVo<MenuInfoVo>{
     @ApiModelProperty(value = "是否在home中展示,字典(true_or_false) 1：展示,0:不展示)")
     private String showInHome;
 
-    @ApiModelProperty(value = "父级机构id")
+    @ApiModelProperty(value = "父级菜单id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long parentId;
 
     @ApiModelProperty(value = "备注")

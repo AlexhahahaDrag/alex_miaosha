@@ -51,12 +51,21 @@
                 where role_permission.role_id = t_role_info.id
                   and role_permission.is_delete = 0
                   and role_permission.status = '1'
-            ) as permissionCount
+            ) as permissionCount,
+            (
+                select GROUP_CONCAT(DISTINCT oi.org_name SEPARATOR ',')
+                from t_role_org_info roi
+                inner join t_org_info oi on oi.id = roi.org_id and oi.is_delete = 0
+                where roi.role_id = t_role_info.id
+                  and roi.is_delete = 0
+                  and roi.status = '1'
+            ) as orgNames
         from t_role_info
         <where>
             t_role_info.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_role_info.id asc
     </select>
 
     <select id="queryRoleInfo" resultType="com.alex.api.user.roleInfo.vo.RoleInfoVo">
@@ -69,17 +78,17 @@
 
      <sql id="queryInfo">
         <if test = "roleInfoVo != null">
-          <if test = "roleInfoVo.roleCode != null">
+          <if test = "roleInfoVo.roleCode != null and roleInfoVo.roleCode != ''">
             and t_role_info.role_code like concat('%', #{roleInfoVo.roleCode}, '%')
           </if>
-          <if test = "roleInfoVo.roleName != null">
+          <if test = "roleInfoVo.roleName != null and roleInfoVo.roleName != ''">
             and t_role_info.role_name like concat('%', #{roleInfoVo.roleName}, '%')
           </if>
-          <if test = "roleInfoVo.summary != null">
+          <if test = "roleInfoVo.summary != null and roleInfoVo.summary != ''">
             and t_role_info.summary like concat('%', #{roleInfoVo.summary}, '%')
           </if>
-          <if test = "roleInfoVo.status != null">
-            and t_role_info.status like concat('%', #{roleInfoVo.status}, '%')
+          <if test = "roleInfoVo.status != null and roleInfoVo.status != ''">
+            and t_role_info.status = #{roleInfoVo.status}
           </if>
         </if>
      </sql>

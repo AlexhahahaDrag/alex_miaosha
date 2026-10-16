@@ -69,6 +69,39 @@ public class MenuOwnershipGuardTest {
         assertNull(result, "out-of-scope menu query must return null, not throw");
     }
 
+    @Test
+    void updateMenuInfo_denied_whenParentIdEqualsSelf() {
+        when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
+
+        MenuInfoVo vo = targetMenu(200L);
+        vo.setParentId(200L);
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateMenuInfo(vo),
+                "updateMenuInfo must reject self-parent cycle");
+        assertTrue(ex.getMsg() != null && ex.getMsg().contains("自身"),
+                "exception message must mention 自身, actual=" + ex.getMsg());
+        verify(menuInfoMapper, never()).updateById(any(MenuInfo.class));
+    }
+
+    @Test
+    void updateMenuInfo_denied_whenParentIdIsDescendant() {
+        when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
+        // 200 -> 201 -> 202; try setting 200's parentId to 202
+        MenuInfoVo child201 = targetMenu(201L);
+        child201.setParentId(200L);
+        MenuInfoVo grandChild202 = targetMenu(202L);
+        grandChild202.setParentId(201L);
+        when(menuInfoMapper.queryMenuInfo("202")).thenReturn(grandChild202);
+        when(menuInfoMapper.queryMenuInfo("201")).thenReturn(child201);
+
+        MenuInfoVo vo = targetMenu(200L);
+        vo.setParentId(202L);
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateMenuInfo(vo),
+                "updateMenuInfo must reject descendant-parent cycle");
+        assertTrue(ex.getMsg() != null && ex.getMsg().contains("下级"),
+                "exception message must mention 下级, actual=" + ex.getMsg());
+        verify(menuInfoMapper, never()).updateById(any(MenuInfo.class));
+    }
+
     private static TUserVo loginUser(String roleCode) {
         TUserVo user = new TUserVo();
         user.setId(1L);

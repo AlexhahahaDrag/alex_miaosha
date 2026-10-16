@@ -51,4 +51,7 @@ public class RoleInfoVo extends BaseVo<RoleInfoVo> {
 
     @ApiModelProperty(value = "绑定机构id列表（创建时可选；缺省则绑定登录用户有效机构）")
     private List<String> orgIds;
+
+    @ApiModelProperty(value = "绑定机构名称列表（逗号分隔）")
+    private String orgNames;
 }

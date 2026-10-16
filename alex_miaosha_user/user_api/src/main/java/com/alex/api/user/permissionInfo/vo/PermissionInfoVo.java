@@ -1,6 +1,8 @@
 package com.alex.api.user.permissionInfo.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -35,6 +37,7 @@ public class PermissionInfoVo extends BaseVo<PermissionInfoVo>{
     private String options;
 
     @ApiModelProperty(value = "parent_id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long parentId;
 
     @ApiModelProperty(value = "子权限")

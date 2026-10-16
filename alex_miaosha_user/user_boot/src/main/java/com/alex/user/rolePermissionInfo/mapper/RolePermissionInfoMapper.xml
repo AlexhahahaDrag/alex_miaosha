@@ -61,17 +61,17 @@
 
      <sql id="queryInfo">
         <if test = "rolePermissionInfoVo != null">
-          <if test = "rolePermissionInfoVo.roleId != null">
-            and t_role_permission_info.role_id like concat('%', #{rolePermissionInfoVo.roleId}, '%')
+          <if test = "rolePermissionInfoVo.roleId != null and rolePermissionInfoVo.roleId != ''">
+            and t_role_permission_info.role_id = #{rolePermissionInfoVo.roleId}
           </if>
-          <if test = "rolePermissionInfoVo.permissionId != null">
-            and t_role_permission_info.permission_id like concat('%', #{rolePermissionInfoVo.permissionId}, '%')
+          <if test = "rolePermissionInfoVo.permissionId != null and rolePermissionInfoVo.permissionId != ''">
+            and t_role_permission_info.permission_id = #{rolePermissionInfoVo.permissionId}
           </if>
-          <if test = "rolePermissionInfoVo.summary != null">
+          <if test = "rolePermissionInfoVo.summary != null and rolePermissionInfoVo.summary != ''">
             and t_role_permission_info.summary like concat('%', #{rolePermissionInfoVo.summary}, '%')
           </if>
-          <if test = "rolePermissionInfoVo.status != null">
-            and t_role_permission_info.status like concat('%', #{rolePermissionInfoVo.status}, '%')
+          <if test = "rolePermissionInfoVo.status != null and rolePermissionInfoVo.status != ''">
+            and t_role_permission_info.status = #{rolePermissionInfoVo.status}
           </if>
         </if>
      </sql>

@@ -34,7 +34,6 @@
 
 ## 🧩 Module Breakdown
 
-- **`alex_generator`**: Code generator for automated scaffolding of frontend and backend CRUD code.
 - **`alex_miaosha_common`**: Shared core foundation with two tiers: `common_api` (lightweight contracts) and `common_core` (runtime components).
 - **`alex_miaosha_finance`**: Finance management module handling gift record tracking, coupon operations, and ledger reconciliation.
 - **`alex_miaosha_gateway`**: Unified microservice API Gateway for traffic routing, security checks, and token dyeing.

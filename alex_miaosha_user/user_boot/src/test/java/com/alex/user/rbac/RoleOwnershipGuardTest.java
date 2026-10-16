@@ -193,6 +193,24 @@ public class RoleOwnershipGuardTest {
                 verify(roleInfoMapper, never()).updateById(any(RoleInfo.class));
         }
 
+        @Test
+        void queryRoleInfo_queriesOnlyValidRolePermissions() {
+                RoleInfoVo visible = targetRole(200L);
+                when(roleInfoMapper.queryRoleInfo("200")).thenReturn(visible);
+                when(permissionInfoService.getList(null)).thenReturn(Collections.emptyList());
+                when(rolePermissionInfoService.getList(any())).thenReturn(Collections.emptyList());
+                when(roleUserInfoService.list(any(Wrapper.class))).thenReturn(Collections.emptyList());
+                when(roleOrgInfoService.listValidByRoleId(200L)).thenReturn(Collections.emptyList());
+
+                service.queryRoleInfo("200");
+
+                org.mockito.ArgumentCaptor<com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo> captor =
+                                org.mockito.ArgumentCaptor.forClass(com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo.class);
+                verify(rolePermissionInfoService).getList(captor.capture());
+                org.junit.jupiter.api.Assertions.assertEquals("200", captor.getValue().getRoleId());
+                org.junit.jupiter.api.Assertions.assertEquals("1", captor.getValue().getStatus());
+        }
+
         private static TUserVo loginUser(String roleCode) {
                 TUserVo user = new TUserVo();
                 user.setId(1L);

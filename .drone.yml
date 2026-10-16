@@ -13,21 +13,18 @@ steps: # 定义流水线执行步骤，这些步骤将顺序执行
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/user
-      - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss
       - mkdir -p /usr/local/soft/alex_miaosha/drone/alex_miaosha/product
       # 将打包后的jar包，拷贝到挂载目录
       - cp /drone/src/alex_miaosha_finance/finance_boot/target/finance_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance/
       - cp /drone/src/alex_miaosha_gateway/target/alex_miaosha_gateway-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
       - cp /drone/src/alex_miaosha_user/user_boot/target/user_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
-      - cp /drone/src/alex_generator/target/alex_generator-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/target/oss_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
       - cp /drone/src/alex_miaosha_product/product_boot/target/product_boot-1.0-SNAPSHOT.jar  /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
       # 将Dockerfile拷贝到挂载目录
       - cp /drone/src/alex_miaosha_finance/finance_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/finance/
       - cp /drone/src/alex_miaosha_gateway/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/gateway/
       - cp /drone/src/alex_miaosha_user/user_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/user/
-      - cp /drone/src/alex_generator/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/generator/
       - cp /drone/src/alex_miaosha_oss/oss_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/oss/
       - cp /drone/src/alex_miaosha_product/product_boot/Dockerfile /usr/local/soft/alex_miaosha/drone/alex_miaosha/product/
 

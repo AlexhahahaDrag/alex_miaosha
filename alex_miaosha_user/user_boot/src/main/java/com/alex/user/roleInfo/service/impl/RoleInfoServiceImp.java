@@ -8,7 +8,6 @@ import com.alex.api.user.rolePermissionInfo.vo.RolePermissionInfoVo;
 import com.alex.api.user.roleUserInfo.vo.RoleUserInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
@@ -99,9 +98,10 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
         // 权限列表
         List<PermissionInfoVo> list = permissionInfoService.getList(null);
         roleInfoVo.setPermissionList(list);
-        // 角色权限列表
+        // 角色权限列表（仅返回有效态 status = '1'）
         RolePermissionInfoVo rolePermissionInfoVo = new RolePermissionInfoVo();
         rolePermissionInfoVo.setRoleId(id);
+        rolePermissionInfoVo.setStatus(SysConf.VALID_STATUS);
         List<RolePermissionInfoVo> rolePermissionInfoVoList = rolePermissionInfoService.getList(rolePermissionInfoVo);
         roleInfoVo.setRolePermissionInfoVoList(rolePermissionInfoVoList);
         List<RoleUserInfoVo> roleUserInfoVoList = roleUserInfoService.list(Wrappers.<RoleUserInfo>lambdaQuery()
@@ -271,7 +271,7 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
             // 不能因为拿不到 loginUser 就当作"非超管走 query"最终又意外放行。
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
         }
-        if (isSuperAdminLogin(loginUser)) {
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
             return;
         }
         // Fail-closed via scoped queryRoleInfo (ROLE_ORG_BOUND): null = outside
@@ -291,33 +291,13 @@ public class RoleInfoServiceImp extends ServiceImpl<RoleInfoMapper, RoleInfo> im
     private void assertRoleGrantable(Long roleId) {
         assertRoleAccessible(roleId);
         TUserVo loginUser = userUtils.getLoginUser();
-        if (isSuperAdminLogin(loginUser)) {
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
             return;
         }
         RoleInfo roleInfo = roleInfoMapper.selectById(roleId);
         if (roleInfo != null && RbacRoleCodes.SUPER.equals(roleInfo.getRoleCode())) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权授予超级管理员角色");
         }
-    }
-
-    private static boolean isSuperAdminLogin(TUserVo loginUser) {
-        if (loginUser == null) {
-            return false;
-        }
-        UserPermissionContextVo context = loginUser.getPermissionContext();
-        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
-            return true;
-        }
-        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
-        if (roles == null || roles.isEmpty()) {
-            return false;
-        }
-        for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

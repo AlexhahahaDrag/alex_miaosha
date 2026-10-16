@@ -1,11 +1,8 @@
 package com.alex.user.permissionInfo.service.impl;
 
 import com.alex.api.user.permissionInfo.vo.PermissionInfoVo;
-import com.alex.api.user.rbac.RbacRoleCodes;
-import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
@@ -13,6 +10,7 @@ import com.alex.common.utils.string.StringUtils;
 import com.alex.user.permissionInfo.entity.PermissionInfo;
 import com.alex.user.permissionInfo.mapper.PermissionInfoMapper;
 import com.alex.user.permissionInfo.service.PermissionInfoService;
+import com.alex.user.rbac.OrgScopeIdsResolver;
 import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.rolePermissionInfo.entity.RolePermissionInfo;
 import com.alex.user.rolePermissionInfo.service.RolePermissionInfoService;
@@ -87,15 +85,43 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
 
     @Override
     public PermissionInfoVo updatePermissionInfo(PermissionInfoVo permissionInfoVo) {
-        // Ownership first, then uniqueness (mirrors RoleInfoServiceImp).
-        assertPermissionAccessible(permissionInfoVo == null ? null : permissionInfoVo.getId());
-        assertPermissionCodeUnique(permissionInfoVo == null ? null : permissionInfoVo.getPermissionCode(),
-                permissionInfoVo == null ? null : permissionInfoVo.getId());
+        // Ownership first, then cycle guard, then uniqueness (mirrors RoleInfoServiceImp).
+        Long id = permissionInfoVo == null ? null : permissionInfoVo.getId();
+        assertPermissionAccessible(id);
+        assertNoParentCycle(id, permissionInfoVo.getParentId());
+        assertPermissionCodeUnique(permissionInfoVo.getPermissionCode(), id);
         PermissionInfo permissionInfo = new PermissionInfo();
         BeanUtils.copyProperties(permissionInfoVo, permissionInfo);
         permissionInfoMapper.updateById(permissionInfo);
         permissionInfoVo.setId(permissionInfo.getId());
         return permissionInfoVo;
+    }
+
+    private void assertNoParentCycle(Long id, Long parentId) {
+        if (id == null || isRootParent(parentId)) {
+            return;
+        }
+        if (id.equals(parentId)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "上级权限不能选择自身");
+        }
+        Set<Long> visited = new HashSet<>();
+        visited.add(id);
+        Long cursor = parentId;
+        int depth = 0;
+        while (!isRootParent(cursor) && depth++ < 32) {
+            if (!visited.add(cursor)) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "上级权限不能选择自身或自身下级权限");
+            }
+            PermissionInfoVo parent = permissionInfoMapper.queryPermissionInfo(cursor);
+            if (parent == null) {
+                break;
+            }
+            cursor = parent.getParentId();
+        }
+    }
+
+    private static boolean isRootParent(Long parentId) {
+        return parentId == null || parentId == 0L;
     }
 
     @Override
@@ -176,9 +202,10 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
             return Collections.emptyList();
         }
         Map<Long, List<PermissionInfoVo>> menuMap = list.stream()
-                .filter(item -> item.getParentId() != null)
+                .filter(item -> !isRootParent(item.getParentId()))
                 .collect(Collectors.groupingBy(PermissionInfoVo::getParentId));
-        return list.stream().filter(item -> item.getParentId() == null)
+        return list.stream()
+                .filter(item -> isRootParent(item.getParentId()))
                 .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
                 .toList();
     }
@@ -213,33 +240,13 @@ public class PermissionInfoServiceImp extends ServiceImpl<PermissionInfoMapper, 
             // 登录上下文不可用时必须 fail-closed，不能默认放行。
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
         }
-        if (isSuperAdminLogin(loginUser)) {
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
             return;
         }
         PermissionInfoVo visible = permissionInfoMapper.queryPermissionInfo(id);
         if (visible == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构的权限");
         }
-    }
-
-    private static boolean isSuperAdminLogin(TUserVo loginUser) {
-        if (loginUser == null) {
-            return false;
-        }
-        UserPermissionContextVo context = loginUser.getPermissionContext();
-        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
-            return true;
-        }
-        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
-        if (roles == null || roles.isEmpty()) {
-            return false;
-        }
-        for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public List<PermissionInfoVo> getChildren(Long pId, Map<Long, List<PermissionInfoVo>> menuMap) {

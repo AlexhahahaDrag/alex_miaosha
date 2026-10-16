@@ -127,6 +127,22 @@ public class PermissionInfoServiceRegressionTest {
                 verify(permissionInfoMapper).deleteByIds(anyList());
         }
 
+        @Test
+        void regression_updatePermissionInfo_deniedWhenParentCycle() {
+                when(userUtils.getLoginUser()).thenReturn(loginUser(RbacRoleCodes.SUPER));
+
+                PermissionInfoVo vo = new PermissionInfoVo();
+                vo.setId(200L);
+                vo.setParentId(200L);
+                vo.setPermissionCode("perm-200");
+
+                SystemException ex = assertThrows(SystemException.class, () -> service.updatePermissionInfo(vo),
+                                "updatePermissionInfo must reject self-parent cycle");
+                assertTrue(ex.getMsg() != null && ex.getMsg().contains("自身"),
+                                "exception message must mention 自身, actual=" + ex.getMsg());
+                verify(permissionInfoMapper, never()).updateById(any(PermissionInfo.class));
+        }
+
         private static TUserVo loginUser(String roleCode) {
                 TUserVo user = new TUserVo();
                 user.setId(1L);

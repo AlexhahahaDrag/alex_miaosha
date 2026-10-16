@@ -1,11 +1,8 @@
 package com.alex.user.menuInfo.service.impl;
 
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
-import com.alex.api.user.rbac.RbacRoleCodes;
-import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.user.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.utils.string.StringUtils;
@@ -13,6 +10,7 @@ import com.alex.common.exception.SystemException;
 import com.alex.user.menuInfo.mapper.MenuInfoMapper;
 import com.alex.user.menuInfo.entity.MenuInfo;
 import com.alex.user.menuInfo.service.MenuInfoService;
+import com.alex.user.rbac.OrgScopeIdsResolver;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.redis.key.LoginKey;
 import com.alibaba.fastjson.JSONObject;
@@ -97,12 +95,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         if (list == null || list.isEmpty()) {
             return null;
         }
-        Map<Long, List<MenuInfoVo>> menuMap = list.stream()
-                .filter(item -> item.getParentId() != null)
-                .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
-        List<MenuInfoVo> result = list.stream().filter(item -> item.getParentId() == null)
-                .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
-                .toList();
+        List<MenuInfoVo> result = assembleMenuTreeWithNullLeaf(list);
 
         if (isFullQuery && !result.isEmpty()) {
             writeMenuAllTreeCache(result);
@@ -119,15 +112,20 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
             log.warn("warmMenuAllTree: DB returned empty menu list");
             return;
         }
-        Map<Long, List<MenuInfoVo>> menuMap = list.stream()
-                .filter(item -> item.getParentId() != null)
-                .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
-        List<MenuInfoVo> result = list.stream().filter(item -> item.getParentId() == null)
-                .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
-                .toList();
+        List<MenuInfoVo> result = assembleMenuTreeWithNullLeaf(list);
         if (!result.isEmpty()) {
             writeMenuAllTreeCache(result);
         }
+    }
+
+    private List<MenuInfoVo> assembleMenuTreeWithNullLeaf(List<MenuInfoVo> list) {
+        Map<Long, List<MenuInfoVo>> menuMap = list.stream()
+                .filter(item -> !isRootParent(item.getParentId()))
+                .collect(Collectors.groupingBy(MenuInfoVo::getParentId));
+        return list.stream()
+                .filter(item -> isRootParent(item.getParentId()))
+                .peek(item -> item.setChildren(getChildren(item.getId(), menuMap)))
+                .toList();
     }
 
     private void writeMenuAllTreeCache(List<MenuInfoVo> result) {
@@ -247,12 +245,37 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
 
     @Override
     public MenuInfoVo updateMenuInfo(MenuInfoVo menuInfoVo) {
-        assertMenuAccessible(menuInfoVo == null ? null : menuInfoVo.getId());
+        Long id = menuInfoVo == null ? null : menuInfoVo.getId();
+        assertMenuAccessible(id);
+        assertNoParentCycle(id, menuInfoVo.getParentId());
         MenuInfo menuInfo = new MenuInfo();
         BeanUtils.copyProperties(menuInfoVo, menuInfo);
         menuInfoMapper.updateById(menuInfo);
         clearMenuCache();
         return menuInfoVo;
+    }
+
+    private void assertNoParentCycle(Long id, Long parentId) {
+        if (id == null || isRootParent(parentId)) {
+            return;
+        }
+        if (id.equals(parentId)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "上级菜单不能选择自身");
+        }
+        Set<Long> visited = new HashSet<>();
+        visited.add(id);
+        Long cursor = parentId;
+        int depth = 0;
+        while (!isRootParent(cursor) && depth++ < 32) {
+            if (!visited.add(cursor)) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "上级菜单不能选择自身或自身下级菜单");
+            }
+            MenuInfoVo parent = menuInfoMapper.queryMenuInfo(String.valueOf(cursor));
+            if (parent == null) {
+                break;
+            }
+            cursor = parent.getParentId();
+        }
     }
 
     @Override
@@ -296,32 +319,12 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
             // 登录上下文不可用时必须 fail-closed，不能默认放行。
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
         }
-        if (isSuperAdminLogin(loginUser)) {
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
             return;
         }
         MenuInfoVo visible = menuInfoMapper.queryMenuInfo(String.valueOf(id));
         if (visible == null) {
             throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构的菜单");
         }
-    }
-
-    private static boolean isSuperAdminLogin(TUserVo loginUser) {
-        if (loginUser == null) {
-            return false;
-        }
-        UserPermissionContextVo context = loginUser.getPermissionContext();
-        if (context != null && Boolean.TRUE.equals(context.getSuperAdmin())) {
-            return true;
-        }
-        List<RoleInfoVo> roles = loginUser.getRoleInfoVoList();
-        if (roles == null || roles.isEmpty()) {
-            return false;
-        }
-        for (RoleInfoVo role : roles) {
-            if (role != null && RbacRoleCodes.SUPER.equals(role.getRoleCode())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

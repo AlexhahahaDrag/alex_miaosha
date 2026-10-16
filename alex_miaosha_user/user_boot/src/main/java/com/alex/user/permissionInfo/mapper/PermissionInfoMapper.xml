@@ -39,11 +39,12 @@
     </sql>
 
     <select id="getPage" resultType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
-        select <include refid="Base_Column_List"/>from t_permission_info
+        select <include refid="Base_Column_List"/> from t_permission_info
         <where>
             t_permission_info.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_permission_info.id asc
     </select>
 
     <select id="queryPermissionInfo" resultType="com.alex.api.user.permissionInfo.vo.PermissionInfoVo">
@@ -66,7 +67,7 @@
             and t_permission_info.summary like concat('%', #{permissionInfoVo.summary}, '%')
           </if>
           <if test = "permissionInfoVo.status != null">
-            and t_permission_info.status like concat('%', #{permissionInfoVo.status}, '%')
+            and t_permission_info.status = #{permissionInfoVo.status}
           </if>
           <if test = "permissionInfoVo.options != null">
             and t_permission_info.options like concat('%', #{permissionInfoVo.options}, '%')
@@ -80,5 +81,6 @@
             t_permission_info.is_delete = 0
             <include refid="queryInfo"/>
         </where>
+        order by t_permission_info.id asc
     </select>
 </mapper>
