@@ -457,4 +457,38 @@ CREATE TABLE IF NOT EXISTS `gift_event_type_user_config_t` (
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='事由分类个性化配置表';
 
+-- ----------------------------
+-- Table structure for sys_message_info_t
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `sys_message_info_t` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `org_id` bigint NULL DEFAULT NULL COMMENT '所属机构ID',
+  `user_id` bigint NULL DEFAULT NULL COMMENT '接收用户ID',
+  `msg_type` varchar(32) NOT NULL COMMENT '消息大类：SYSTEM / GIFT_EVENT / COUPON_EXPIRE / CARD_EXPIRE',
+  `sub_type` varchar(32) NULL DEFAULT NULL COMMENT '子类型：WELCOME / ANNOUNCE / D_DAY / D_MINUS_1 / D_MINUS_3',
+  `priority` varchar(16) NOT NULL DEFAULT 'NORMAL' COMMENT '优先级：HIGH / MEDIUM / NORMAL',
+  `title` varchar(200) NOT NULL COMMENT '消息标题',
+  `content` varchar(1000) NOT NULL COMMENT '消息正文',
+  `biz_id` varchar(64) NULL DEFAULT NULL COMMENT '关联业务主键ID',
+  `biz_type` varchar(32) NULL DEFAULT NULL COMMENT '关联业务类型：GIFT_EVENT / COUPON / ACCOUNT_RECORD / PREPAID_CARD / SYSTEM',
+  `jump_url` varchar(255) NULL DEFAULT NULL COMMENT '跳转路由路径',
+  `read_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '阅读状态：0-未读，1-已读',
+  `read_time` datetime NULL DEFAULT NULL COMMENT '阅读时间',
+  `dedup_key` varchar(128) NULL DEFAULT NULL COMMENT '幂等防重键',
+  `remind_date` date NULL DEFAULT NULL COMMENT '提醒日期',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updater` bigint NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `operator` bigint NULL DEFAULT NULL COMMENT '操作人',
+  `operate_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `deleter` bigint NULL DEFAULT NULL COMMENT '删除人',
+  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删，1-已删',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_sys_message_dedup` (`dedup_key`),
+  KEY `idx_sys_message_user_read` (`user_id`, `read_status`, `is_delete`, `create_time`),
+  KEY `idx_sys_message_org_type` (`org_id`, `msg_type`, `is_delete`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统消息与业务到期提醒表';
+
 SET FOREIGN_KEY_CHECKS = 1;

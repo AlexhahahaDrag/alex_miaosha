@@ -157,4 +157,33 @@ CREATE TABLE `xxl_job_user`  (
   UNIQUE INDEX `i_username`(`username` ASC) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Records of xxl_job_group (财务微服务执行器组)
+-- ----------------------------
+INSERT INTO `xxl_job_group` (`id`, `app_name`, `title`, `address_type`, `address_list`, `update_time`) VALUES
+(1, 'xxl-finance-dev', '财务执行器-开发', 0, NULL, NOW()),
+(2, 'xxl-finance-prod', '财务执行器-生产', 0, NULL, NOW());
+
+-- ----------------------------
+-- Records of xxl_job_info (系统消息与到期提醒 & 财务通知定时任务)
+-- ----------------------------
+INSERT INTO `xxl_job_info` (
+  `id`, `job_group`, `job_desc`, `add_time`, `update_time`, `author`, `alarm_email`,
+  `schedule_type`, `schedule_conf`, `misfire_strategy`, `executor_route_strategy`,
+  `executor_handler`, `executor_param`, `executor_block_strategy`,
+  `executor_timeout`, `executor_fail_retry_count`, `glue_type`, `glue_source`,
+  `glue_remark`, `glue_updatetime`, `child_jobid`, `trigger_status`, `trigger_last_time`, `trigger_next_time`
+) VALUES
+(1, 1, '系统消息与多业务到期提醒每日巡检(礼金事件/消费券/猫超卡/预付卡)', NOW(), NOW(), 'alex', '', 'CRON', '0 30 8 * * ?', 'DO_NOTHING', 'FIRST', 'sysMessageRemindHandler', '', 'SERIAL_EXECUTION', 60, 1, 'BEAN', '', 'GLUE代码初始化', NOW(), '', 1, 0, 0),
+(2, 2, '系统消息与多业务到期提醒每日巡检(礼金事件/消费券/猫超卡/预付卡)', NOW(), NOW(), 'alex', '', 'CRON', '0 30 8 * * ?', 'DO_NOTHING', 'FIRST', 'sysMessageRemindHandler', '', 'SERIAL_EXECUTION', 60, 1, 'BEAN', '', 'GLUE代码初始化', NOW(), '', 1, 0, 0),
+(3, 2, '快过期账号查询与到期站内信巡检', NOW(), NOW(), 'alex', '', 'CRON', '0 0 9 * * ?', 'DO_NOTHING', 'FIRST', 'accountRecordNoticeHandler', '', 'SERIAL_EXECUTION', 60, 1, 'BEAN', '', 'GLUE代码初始化', NOW(), '', 1, 0, 0),
+(4, 2, '店铺财务当日统计信息查询', NOW(), NOW(), 'alex', '', 'CRON', '0 0 22 * * ?', 'DO_NOTHING', 'FIRST', 'dayShopFinanceNoticeHandler', '', 'SERIAL_EXECUTION', 60, 1, 'BEAN', '', 'GLUE代码初始化', NOW(), '', 0, 0, 0),
+(5, 2, '店铺财务当月统计信息查询', NOW(), NOW(), 'alex', '', 'CRON', '0 10 9 1 * ?', 'DO_NOTHING', 'FIRST', 'monthShopFinanceNoticeHandler', '', 'SERIAL_EXECUTION', 60, 1, 'BEAN', '', 'GLUE代码初始化', NOW(), '', 0, 0, 0);
+
+-- ----------------------------
+-- Records of xxl_job_lock & xxl_job_user
+-- ----------------------------
+INSERT INTO `xxl_job_lock` (`lock_name`) VALUES ('schedule_lock');
+INSERT INTO `xxl_job_user` (`id`, `username`, `password`, `role`, `permission`) VALUES (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 1, NULL);
+
 SET FOREIGN_KEY_CHECKS = 1;
