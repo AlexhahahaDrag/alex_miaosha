@@ -106,3 +106,20 @@
 2. **纯静态展示性文案**：如表格列头纯展示文字、无业务逻辑的静态副标题；
 3. **Vite 原生 HMR 与模块热重载引擎**：构建工具自带标准机制，无需项目端重复验证；
 4. **原生 CSS 响应式媒体查询像素表现**：样式计算由浏览器渲染引擎实现，重点通过 L3 视口烟测覆盖，不编写脆弱的 CSS 单元断言。
+
+---
+
+## 6. L3 端到端 AI 自动化烟测 (Midscene / Playwright) 覆盖情况
+
+> 运行命令：`npm run test:ai:smoke`（执行脚本：`scripts/playwright/run-domain-ai-smoke.mjs`）  
+> 测试用例集：`tests/midscene/rbac/cases/domain-ai-smoke.json`（**16/16 100% 全部通过**）
+
+| 用例 ID | 场景标题 | 验证要点与断言目标 | 执行结果 |
+| :--- | :--- | :--- | :---: |
+| **`PRODUCT-E2E-PC-DRAWER`** | 商品中心价格监测抽屉读写分离与走势图渲染 | 点击 `[data-testid="btn-view-product"]` 唤起 680px `BaseRbacDrawer`，断言 `product-hero-card` 档案、`product-price-kpi-grid` 4 宫格价格指标卡与价格走势图正常渲染 | ✅ **PASS** |
+| **`COUPON-E2E-PC-REDEEM`** | 消费券核销抽屉联动与动态余量计算 | 点击 `[data-testid="btn-redeem-coupon"]` 唤起 480px 核销抽屉，点击 `btn-redeem-plus` 步进器，断言 `coupon-redeem-linked-remain` 余量动态扣减计算 | ✅ **PASS** |
+| **`SHOP-ERP-E2E-PC-FINANCE-DETAIL`** | 店铺财务凭证抽屉与支付方式防死锁断言 | 点击 `btn-view-shop-finance` 断言 `shop-finance-voucher` 只读电子凭证卡渲染，点击 `btn-edit-shop-finance` 校验 `payWay` 独立于 `isValid` 零死锁 | ✅ **PASS** |
+| **`SHOP-ERP-E2E-PC-ANALYSIS`** | 店铺经营大盘 4 宫格 KPI 卡片与图表网格渲染 | 访问 `#/finance/shopFinanceAnalysis`，断言 `shop-analysis-kpi-grid` 4 宫格指标（营收/销量/爆款/渠道）与 `shop-analysis-charts-grid` 2×2 图表正常挂载 | ✅ **PASS** |
+| **`AI-PRODUCT-001`** | 商品秒杀营销文案 AI 生成与一键应用 | 唤起 `ProductAiCopyModal`，输入商品名触发 AI 生成，断言 3 条爆款核心卖点与折扣文案成功回填并应用 | ✅ **PASS** |
+| **`AI-COUPON-001`** | 优惠券新增弹窗 AI 营销策划与自动回填 | 唤起新增消费券，点击 `btn-generate-ai-plan`，断言 `ai-plan-result` 策略考量与 8 折优惠方案渲染 | ✅ **PASS** |
+
