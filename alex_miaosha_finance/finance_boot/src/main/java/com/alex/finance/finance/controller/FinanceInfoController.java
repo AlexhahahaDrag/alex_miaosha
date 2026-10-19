@@ -36,6 +36,15 @@ import java.util.List;
 public class FinanceInfoController {
 
     private final FinanceInfoService financeInfoService;
+    private final com.alex.finance.finance.service.UniversalFinanceAiService universalFinanceAiService;
+
+    @ApiOperationSupport(order = 8, author = "alex")
+    @ApiOperation(value = "AI 智能记账文本多场景解析", notes = "支持自然语言日常收支、购物小票明细及预付卡储值扣款流水自动抽取", response = Result.class)
+    @PostMapping(value = "/ai-parse")
+    public Result<com.alex.api.finance.vo.finance.UniversalFinanceAiParseVo> aiParse(
+            @Validated @RequestBody com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq req) {
+        return Result.success(universalFinanceAiService.parseLedger(req));
+    }
 
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取财务信息表分页", notes = "获取财务信息表分页", response = Result.class)
