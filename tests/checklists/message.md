@@ -99,8 +99,9 @@
 
 | 测试层级 | 占比目标 | 覆盖内容 | 执行命令 |
 | :--- | :--- | :--- | :--- |
-| **后端单元测试** | 70% | `SysMessageInfoServiceTest`：四大消息源 XXL-Job 巡检规则、七点法天数边界、`dedup_key` 幂等、微信模板推送联动与异常隔离、已读/全部已读、越权拦截 | `mvn test -pl alex_miaosha_finance/finance_boot -am -Dtest=SysMessageInfoServiceTest` |
+| **后端单元测试** | 60% | `SysMessageInfoServiceTest`：四大消息源 XXL-Job 巡检规则、七点法天数边界、`dedup_key` 幂等、微信模板推送联动与异常隔离、已读/全部已读、越权拦截 | `mvn test -pl alex_miaosha_finance/finance_boot -am -Dtest=SysMessageInfoServiceTest` |
 | **前端单元测试 (PC & Mobile)** | 25% | `normalizeMessageIds` 大数精度保护、分类徽章样式映射、双端 `jumpUrl` 路由解析 | `pnpm test:unit` |
+| **AI / E2E 自动化冒烟** | 10% | • PC：`MESSAGE-PC-SMOKE-001` (铃铛/抽屉/Tab)、`MESSAGE-PC-SMOKE-002` (新增弹窗表单)<br/>• Mobile：`MESSAGE-MOBILE-SMOKE-001` (TabBar/卡片)、`MESSAGE-MOBILE-SMOKE-002` (胶囊/仅未读/列表) | • PC: `node scripts/midscene/run-smoke.mjs`<br/>• Mobile: `node scripts/midscene/run-gift-smoke.mjs` |
 | **构建与静态门禁** | 5% | TypeScript 编译检查、ESLint 零错误、Vite 生产打包 | `pnpm lint && pnpm build` |
 
 ### 明确不测项及理由（Out of Scope）
