@@ -20,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 import java.util.List;
 
 /**
@@ -44,6 +46,14 @@ public class FinanceInfoController {
     public Result<com.alex.api.finance.vo.finance.UniversalFinanceAiParseVo> aiParse(
             @Validated @RequestBody com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq req) {
         return Result.success(universalFinanceAiService.parseLedger(req));
+    }
+
+    @ApiOperationSupport(order = 9, author = "alex")
+    @ApiOperation(value = "AI 智能记账流式解析 (SSE 多阶段推送)", notes = "通过 SSE 分阶段推送分析进度：场景识别 -> 金额提取 -> 明细拆解 -> 资产实体匹配 -> 完成", produces = "text/event-stream")
+    @PostMapping(value = "/ai-parse-stream", produces = "text/event-stream")
+    public SseEmitter aiParseStream(
+            @Validated @RequestBody com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq req) {
+        return universalFinanceAiService.parseLedgerStream(req);
     }
 
     @ApiOperationSupport(order = 10, author = "alex")

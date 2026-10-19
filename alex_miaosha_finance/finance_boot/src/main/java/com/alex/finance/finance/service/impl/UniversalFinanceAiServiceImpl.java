@@ -5,6 +5,7 @@ import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq;
 import com.alex.api.finance.vo.finance.UniversalFinanceAiParseVo;
+import com.alex.api.finance.vo.finance.UniversalFinanceAiStageVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
@@ -20,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,6 +103,135 @@ public class UniversalFinanceAiServiceImpl implements UniversalFinanceAiService 
         }
 
         return vo;
+    }
+
+    @Override
+    public SseEmitter parseLedgerStream(UniversalFinanceAiParseReq req) {
+        SseEmitter emitter = new SseEmitter(60_000L);
+
+        // 主线程提前获取用户信息上下文以防异步子线程 ThreadLocal 丢失
+        Long belongTo = req != null ? req.getBelongTo() : null;
+        String belongToName = null;
+        if (belongTo == null && userUtils != null) {
+            try {
+                TUserVo loginUser = userUtils.getLoginUser();
+                if (loginUser != null) {
+                    belongTo = loginUser.getId();
+                    belongToName = StringUtils.isNotBlank(loginUser.getNickName()) ? loginUser.getNickName() : loginUser.getUsername();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        final Long finalBelongTo = belongTo;
+        final String finalBelongToName = belongToName;
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                if (req == null || StringUtils.isBlank(req.getText())) {
+                    UniversalFinanceAiParseVo defaultVo = buildDefaultVo(req);
+                    if (finalBelongTo != null) {
+                        defaultVo.setBelongTo(finalBelongTo);
+                        defaultVo.setBelongToName(finalBelongToName);
+                    }
+                    sendStage(emitter, "COMPLETE", 100, "输入为空，已赋予默认初始化结构", defaultVo);
+                    emitter.complete();
+                    return;
+                }
+
+                String rawText = req.getText().trim();
+                String requestedScene = StringUtils.isNotBlank(req.getScene()) ? req.getScene().trim().toUpperCase() : "AUTO_DETECT";
+
+                // 阶段 1: 场景判别
+                sendStage(emitter, "SCENE_ANALYSIS", 15, "正在分析记账场景与语境特征...", null);
+
+                UniversalFinanceAiParseVo vo = new UniversalFinanceAiParseVo();
+                boolean aiParsed = false;
+
+                // 阶段 2: 提取金额与收支
+                sendStage(emitter, "EXTRACTING_AMOUNT", 40, "正在提取收支金额与关键语义要素...", null);
+
+                if (aiAnalyzeApi != null) {
+                    try {
+                        aiParsed = extractWithAi(rawText, requestedScene, vo);
+                    } catch (Exception e) {
+                        log.warn("UniversalFinanceAiService Stream AI parse failed, fallback to rule engine: {}", e.getMessage());
+                    }
+                }
+
+                if (!aiParsed || vo.getAmount() == null) {
+                    extractWithLocalRules(rawText, requestedScene, vo);
+                }
+
+                // 阶段 3: 条目明细与分类拆解
+                sendStage(emitter, "STRUCTURING_ITEMS", 70, "正在解析条目明细与消费类别...", vo);
+
+                // 阶段 4: 支付账户与实体匹配
+                sendStage(emitter, "MATCHING_ENTITIES", 90, "正在匹配支付账户与归属人...", vo);
+                if (finalBelongTo != null) {
+                    vo.setBelongTo(finalBelongTo);
+                    vo.setBelongToName(finalBelongToName);
+                } else {
+                    fillBelongToAndUser(req, vo);
+                }
+                matchPrepaidCardIfApplicable(rawText, vo);
+
+                // 默认时间与兜底
+                if (StringUtils.isBlank(vo.getInfoDate())) {
+                    vo.setInfoDate(DateUtils.now().format(DATE_TIME_FORMATTER));
+                }
+                if (StringUtils.isBlank(vo.getIncomeAndExpenses())) {
+                    vo.setIncomeAndExpenses("expense");
+                }
+                if (StringUtils.isBlank(vo.getTargetScene())) {
+                    vo.setTargetScene("DAILY_EXPENSE");
+                }
+
+                // 阶段 5: 完成并推送最终结构
+                sendStage(emitter, "COMPLETE", 100, "智能记账解析完成", vo);
+                try {
+                    emitter.send(SseEmitter.event().name("complete").data(
+                            UniversalFinanceAiStageVo.builder()
+                                    .stage("COMPLETE")
+                                    .progress(100)
+                                    .message("智能记账解析完成")
+                                    .partialData(vo)
+                                    .build()
+                    ));
+                } catch (Exception ignored) {
+                }
+                emitter.complete();
+            } catch (Exception e) {
+                log.error("UniversalFinanceAiService parseLedgerStream error", e);
+                try {
+                    UniversalFinanceAiParseVo fallbackVo = buildDefaultVo(req);
+                    if (finalBelongTo != null) {
+                        fallbackVo.setBelongTo(finalBelongTo);
+                        fallbackVo.setBelongToName(finalBelongToName);
+                    }
+                    sendStage(emitter, "COMPLETE", 100, "解析已降级为本地规则完成", fallbackVo);
+                    emitter.complete();
+                } catch (Exception ex) {
+                    emitter.completeWithError(ex);
+                }
+            }
+        });
+
+        return emitter;
+    }
+
+    private void sendStage(SseEmitter emitter, String stage, int progress, String message, UniversalFinanceAiParseVo partialData) {
+        try {
+            UniversalFinanceAiStageVo stageVo = UniversalFinanceAiStageVo.builder()
+                    .stage(stage)
+                    .progress(progress)
+                    .message(message)
+                    .partialData(partialData)
+                    .build();
+            emitter.send(SseEmitter.event().name("stage").data(stageVo));
+        } catch (Exception e) {
+            log.warn("Send SSE stage event failed: {}", e.getMessage());
+        }
     }
 
     /**

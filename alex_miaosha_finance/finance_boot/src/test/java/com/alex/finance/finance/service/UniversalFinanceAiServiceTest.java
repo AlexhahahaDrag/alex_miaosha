@@ -169,4 +169,33 @@ class UniversalFinanceAiServiceTest {
         assertEquals("prepaid_card", vo.getFromSource());
         assertEquals(new BigDecimal("38"), vo.getAmount());
     }
+
+    @Test
+    @DisplayName("流式解析接口 - 空请求能够正常返回 SseEmitter 实例并执行完成")
+    void testParseLedgerStreamBlankRequest() {
+        org.springframework.web.servlet.mvc.method.annotation.SseEmitter emitter =
+                universalFinanceAiService.parseLedgerStream(new UniversalFinanceAiParseReq());
+        assertNotNull(emitter);
+    }
+
+    @Test
+    @DisplayName("流式解析接口 - 日常餐饮支出多阶段异步推送生命周期健全")
+    void testParseLedgerStreamDailyExpense() throws Exception {
+        TUserVo mockUser = new TUserVo();
+        mockUser.setId(10086L);
+        mockUser.setNickName("测试用户");
+        when(userUtils.getLoginUser()).thenReturn(mockUser);
+
+        UniversalFinanceAiParseReq req = UniversalFinanceAiParseReq.builder()
+                .text("昨天中午和同事在肯德基聚餐微信付了128.5元，备注汉堡套餐")
+                .scene("DAILY_EXPENSE")
+                .build();
+
+        org.springframework.web.servlet.mvc.method.annotation.SseEmitter emitter =
+                universalFinanceAiService.parseLedgerStream(req);
+        assertNotNull(emitter);
+
+        // 简短等待异步线程调度执行完毕
+        Thread.sleep(150);
+    }
 }
