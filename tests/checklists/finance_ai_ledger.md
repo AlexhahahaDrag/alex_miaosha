@@ -25,3 +25,27 @@
   - 首页搜索栏右侧新增「AI记账」快捷胶囊按钮（`data-testid="mobile-btn-index-ai-ledger"`）；
   - 记账详情页顶部收支切换栏右侧常驻「AI 识别记账」胶囊（`data-testid="mobile-btn-open-ai-sheet"`）；
   - ActionSheet 动作面板支持快捷示例填入，解析后一键填入金额、分类、收支模式与时间。
+
+## 4. L3 Midscene E2E 自动化冒烟套件
+| 用例编号 | 运行端 | Persona | 覆盖流程与断言要素 | 脚本执行入口 |
+| :--- | :--- | :--- | :--- | :--- |
+| **AI-FINANCE-PC-LEDGER-001** | PC 端 | `super_super` | 日常记账主页 -> 弹窗唤起 -> 自然语言识别 -> 卡片渲染 -> 一键带入明细抽屉回填断言 | `scripts/midscene/run-smoke.mjs` |
+| **AI-FINANCE-PC-RECEIPT-002** | PC 端 | `super_super` | 购物小票文本输入 -> 结构化拆解 -> `.receipt-items-table` 表格条目断言 -> 金额核对 | `scripts/midscene/run-smoke.mjs` |
+| **FINANCE-AI-MOBILE-LEDGER-001** | 移动端 | `gift_admin` | 记账录入页 -> 顶部胶囊唤起 ActionSheet -> 示例填入解析 -> 一键应用 -> `hero-amount-val` 看板联动 | `scripts/midscene/run-gift-smoke.mjs` |
+| **FINANCE-AI-MOBILE-RECEIPT-002** | 移动端 | `gift_admin` | ActionSheet 切换小票模式 -> 文本解析 -> `.receipt-items-list` 单品列表渲染与数量断言 | `scripts/midscene/run-gift-smoke.mjs` |
+
+## 5. 状态机与容灾降级断言
+```mermaid
+stateDiagram-v2
+    [*] --> Idle: 打开记账弹窗/抽屉
+    Idle --> Parsing: 点击开始智能解析 (loading=true)
+    Parsing --> ParsedSuccess: DeepSeek AI 响应 (parseEngine='AI_DEEPSEEK')
+    Parsing --> FallbackSuccess: AI超时/限流 -> 本地正则引擎 (parseEngine='RULE_LOCAL')
+    ParsedSuccess --> Applied: 点击一键填入
+    FallbackSuccess --> Applied: 点击一键填入
+    Applied --> FormReady: 表单字段就绪 (可二次编辑并保存)
+    FormReady --> [*]
+```
+- **不测理由/免测说明**：
+  - 不做纯外部网络大模型不可抗力延迟的绝对耗时断言，测试脚本以通用异步响应 `waitForResponse` 拦截 `/finance-manager-info/ai/parse` 为准，双路由兜底保证无论 AI 是否可用，均能稳定返回 200 与结构化数据。
+
