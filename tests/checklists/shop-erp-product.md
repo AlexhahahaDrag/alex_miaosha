@@ -141,5 +141,20 @@
 | **`PrepaidCardBusinessRuleIT`** | 预付卡充值消费规则与雪花 ID 序列化 | 7 | 验证充值增加余额、消费扣减余额、**余额不足透支前置阻断拦截**（杜绝负余额穿透）、非正向交易金额拦截；**反射契约锁**验证 `PrepaidCardInfoTVo`、`PrepaidConsumeRecordTVo` 的 Long 类型 ID 标注 `@JsonSerialize(using = Long2StringSerializer.class)` | ✅ **PASS** |
 | **`FinanceManagerOwnershipIT`** | 个人财务流水行级所有权越权防御 | 6 | 验证普通用户试图修改/删除他人财务流水强制阻断抛出 `403 Forbidden`、属主本人更新删除放行、超管全局管理放行、新增流水自动注入当前登录属主；**反射契约锁**验证 `FinanceInfoVo` 的 `id`、`belongTo`、`shopOrderId` 序列化配置 | ✅ **PASS** |
 
+---
+
+## 8. 跨微服务 Feign 调用与 AI 营销智能分析双路由高可用集成测试 (IT) 覆盖情况
+
+> 执行命令：`mvn test -pl alex_miaosha_product/product_boot,alex_miaosha_finance/finance_boot -am "-Dtest=ProductAiServiceDualRoutingIT,CouponAiServiceDualRoutingIT,AiAnalyzeFallbackFactoryIT" -DfailIfNoTests=false`  
+> 运行环境：JDK 17 + Maven Reactor  
+> 执行结果：**12/12 项用例 100% 全部通过 (Total=12, Passed=12, Failed=0, Errors=0)**
+
+| 套件文件 | 覆盖领域 | 用例数 | 关键断言与防御目标 | 执行结果 |
+| :--- | :--- | :---: | :--- | :---: |
+| **`ProductAiServiceDualRoutingIT`**<br>`product_boot` | 商品秒杀营销文案生成双路由 | 5 | 验证 AI 主路由下标准 Markdown 代码块剥离与卖点数组映射；验证 Feign 熔断/超时（`SystemException`）下自动降级至确定性规则引擎（0 崩溃、0 抛错）；验证畸变破损 JSON 容错及 null 参数七点法边界防御 | ✅ **PASS** |
+| **`CouponAiServiceDualRoutingIT`**<br>`finance_boot` | 消费券智能营销策划双路由 | 4 | 验证 AI 主路由下立减券、门槛金额、发行张数与 ROI 策划解析；验证 Feign 超时离线时降级为本地规则引擎（拉新获客/促活留存双策略）；验证 0 预算/负预算边界健壮性 | ✅ **PASS** |
+| **`AiAnalyzeFallbackFactoryIT`**<br>`finance_boot` | OpenFeign 降级工厂标准化 | 3 | 验证 `AiAnalyzeFallbackFactory` 实例化非空客户端，断言调用降级客户端安全抛出携带错误码与模块标识的 `SystemException(SYSTEM_NO_AVAILABLE, "ai")`，校验 Feign 实体读写契约 | ✅ **PASS** |
+
+
 
 
