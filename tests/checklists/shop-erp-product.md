@@ -123,3 +123,23 @@
 | **`AI-PRODUCT-001`** | 商品秒杀营销文案 AI 生成与一键应用 | 唤起 `ProductAiCopyModal`，输入商品名触发 AI 生成，断言 3 条爆款核心卖点与折扣文案成功回填并应用 | ✅ **PASS** |
 | **`AI-COUPON-001`** | 优惠券新增弹窗 AI 营销策划与自动回填 | 唤起新增消费券，点击 `btn-generate-ai-plan`，断言 `ai-plan-result` 策略考量与 8 折优惠方案渲染 | ✅ **PASS** |
 
+---
+
+## 7. 后端微服务数据权限与业务集成测试 (IT) 覆盖情况
+
+> 执行命令：`mvn test -pl alex_miaosha_finance/finance_boot -am "-Dtest=ShopErpDataPermissionIT,CpnCouponDataPermissionIT,ShopErpBusinessRuleIT,CpnCouponBusinessRuleIT,PrepaidCardDataPermissionIT,PrepaidCardBusinessRuleIT,FinanceManagerOwnershipIT" -DfailIfNoTests=false`  
+> 运行环境：JDK 17 + Maven Reactor  
+> 执行结果：**57/57 项用例 100% 全部通过 (Total=57, Passed=57, Failed=0, Errors=0)**
+
+| 套件文件 | 覆盖领域 | 用例数 | 关键断言与防御目标 | 执行结果 |
+| :--- | :--- | :---: | :--- | :---: |
+| **`ShopErpDataPermissionIT`** | 店铺进销存多租户隔离 | 11 | 验证超管绕过、机构管理员（`org_admin`）在 `t_shop_finance`、`t_shop_stock`、`t_shop_stock_batch`、`t_shop_order`、`t_shop_cart` 的 `t_org_user_info` 子查询拼装，普通用户属主限制，未配置注解方法不污染，未登录安全兜底 | ✅ **PASS** |
+| **`CpnCouponDataPermissionIT`** | 消费券多租户隔离 | 7 | 验证超管绕过、机构管理员在 `cpn_coupon_info_t`、`cpn_user_coupon_info_t`、`cpn_redemption_record_info_t` 的机构子查询隔离，普通用户属主限制，无登录安全兜底 | ✅ **PASS** |
+| **`ShopErpBusinessRuleIT`** | 进销存核心业务与雪花 ID 序列化 | 12 | 验证批次综合总成本（`productCost + travelExpense` 七点法边界防 null）、库存单件预计毛利与防除零毛利率核算；**反射契约锁**验证 `ShopFinanceVo`、`ShopStockVo`、`ShopStockBatchVo`、`ShopOrderVo`、`ShopCartVo` 的 Long 类型 ID 均标注 `@JsonSerialize(using = Long2StringSerializer.class)` | ✅ **PASS** |
+| **`CpnCouponBusinessRuleIT`** | 消费券余量流转与雪花 ID 序列化 | 7 | 验证消费券核销余量计算（`totalQuantity - consumedQuantity`）、超额核销前置拦截校验、售罄状态机自动流转；**反射契约锁**验证 `CpnCouponInfoVo`、`CpnUserCouponInfoVo`、`CpnRedemptionRecordInfoVo` 的 Long 类型 ID 均标注 `@JsonSerialize(using = Long2StringSerializer.class)` | ✅ **PASS** |
+| **`PrepaidCardDataPermissionIT`** | 预付卡与消费流水多租户隔离 | 7 | 验证超管直通绕过、机构管理员在 `prepaid_card_info_t` 与 `prepaid_consume_record_t` 的机构子查询过滤，普通用户操作人限制，未登录安全兜底 | ✅ **PASS** |
+| **`PrepaidCardBusinessRuleIT`** | 预付卡充值消费规则与雪花 ID 序列化 | 7 | 验证充值增加余额、消费扣减余额、**余额不足透支前置阻断拦截**（杜绝负余额穿透）、非正向交易金额拦截；**反射契约锁**验证 `PrepaidCardInfoTVo`、`PrepaidConsumeRecordTVo` 的 Long 类型 ID 标注 `@JsonSerialize(using = Long2StringSerializer.class)` | ✅ **PASS** |
+| **`FinanceManagerOwnershipIT`** | 个人财务流水行级所有权越权防御 | 6 | 验证普通用户试图修改/删除他人财务流水强制阻断抛出 `403 Forbidden`、属主本人更新删除放行、超管全局管理放行、新增流水自动注入当前登录属主；**反射契约锁**验证 `FinanceInfoVo` 的 `id`、`belongTo`、`shopOrderId` 序列化配置 | ✅ **PASS** |
+
+
+

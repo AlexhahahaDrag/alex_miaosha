@@ -33,6 +33,7 @@ public class PrepaidCardInfoTVo extends BaseVo<PrepaidCardInfoTVo>{
     @ApiModelProperty(value = "卡名称")
     private String cardName;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty(value = "持卡人ID")
     private Long userId;
 
