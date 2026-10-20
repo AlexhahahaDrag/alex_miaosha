@@ -14,15 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
-public class SystemException extends RuntimeException{
+public class SystemException extends RuntimeException {
 
     private String code;
 
     private String msg;
 
     public SystemException(ResultEnum resultEnum, String system) {
-        this.code = resultEnum.getCode();
-        this.msg = system + resultEnum.getValue();
-        log.error("编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
+        super(system + (resultEnum != null ? resultEnum.getValue() : ""));
+        this.code = resultEnum != null ? resultEnum.getCode() : null;
+        this.msg = system + (resultEnum != null ? resultEnum.getValue() : "");
+        log.error("编码：{}，信息：{}", resultEnum != null ? resultEnum.getCode() : null, resultEnum != null ? resultEnum.getValue() : null);
     }
 }

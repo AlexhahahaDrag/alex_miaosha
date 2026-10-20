@@ -78,13 +78,8 @@
             <artifactId>annotations</artifactId>
             <scope>provided</scope>
         </dependency>
-        
-        <dependency>
-          <groupId>me.zhyd.oauth</groupId>
-          <artifactId>JustAuth</artifactId>
-          <version>1.16.5</version>
-        </dependency>
 
+        <!--caffeine-->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
@@ -99,6 +94,12 @@
         <dependency>
             <groupId>com.alex</groupId>
             <artifactId>ai_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+            <version>1.16.5</version>
         </dependency>
     </dependencies>
 
@@ -129,7 +130,18 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
-          </plugin>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>

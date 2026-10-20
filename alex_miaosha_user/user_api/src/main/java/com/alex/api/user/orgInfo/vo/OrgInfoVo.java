@@ -1,6 +1,8 @@
 package com.alex.api.user.orgInfo.vo;
 
 import com.alex.common.common.BaseVo;
+import com.alex.common.config.Long2StringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -29,6 +31,7 @@ public class OrgInfoVo extends BaseVo<OrgInfoVo>{
     private String orgShortName;
 
     @ApiModelProperty(value = "父级机构id")
+    @JsonSerialize(using = Long2StringSerializer.class)
     private Long parentId;
 
     @ApiModelProperty(value = "简介最多150字")
