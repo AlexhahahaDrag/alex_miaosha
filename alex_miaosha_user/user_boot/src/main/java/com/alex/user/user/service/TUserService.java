@@ -37,6 +37,12 @@ public interface TUserService extends IService<TUser> {
      */
     Boolean updateUserStatus(Long id, String status);
 
+    /**
+     * RBAC-BE-USER-004: 安全重置/修改用户密码。
+     * 强校验权限（assertUserAccessible）、防空/防短弱密（至少6位）、统一使用加盐散列并失效权限上下文。
+     */
+    Boolean resetUserPassword(Long id, String newPassword);
+
     Boolean deleteTUser(String ids);
 
     Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;

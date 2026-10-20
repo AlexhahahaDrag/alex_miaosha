@@ -55,6 +55,11 @@ public class TokenRefreshService {
 
             // 当存活时间小于刷新阈值时，生成新token
             if (survivalSecond < audience.getRefreshSecond()) {
+                Boolean locked = redisUtils.setIfAbsent(LoginKey.loginRefreshLock, uuidToken, "1", 15, TimeUnit.SECONDS);
+                if (Boolean.FALSE.equals(locked)) {
+                    log.debug("Token刷新任务已存在或在防并发窗口内，跳过重复刷新，uuidToken: {}", uuidToken);
+                    return;
+                }
                 refreshTokenInternal(token, base64Secret, uuidToken, barToken);
             } else {
                 log.debug("Token无需刷新，剩余时间充足");

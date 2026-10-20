@@ -114,6 +114,35 @@ public class TUserController {
         return Result.success(tUserService.updateUserStatus(userId, resolvedStatus));
     }
 
+    /**
+     * RBAC-BE-USER-004: 用户重置密码专用接口。
+     * 支持 query 或 body 传入 id/newPassword；仅更新密码，不改其它字段。
+     */
+    @LogRestRequest(apiName = "重置用户密码")
+    @ApiOperationSupport(order = 46, author = "alex")
+    @ApiOperation(value = "重置用户密码", notes = "管理员重置用户密码（至少6位）", response = Result.class)
+    @PutMapping("/password/reset")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "用户ID", name = "id", dataTypeClass = String.class),
+            @ApiImplicitParam(value = "新密码", name = "newPassword", dataTypeClass = String.class)
+    })
+    public Result<Boolean> resetPassword(@RequestParam(value = "id", required = false) String id,
+                                         @RequestParam(value = "newPassword", required = false) String newPassword,
+                                         @RequestBody(required = false) TUserVo body) {
+        String resolvedId = id;
+        String resolvedPassword = newPassword;
+        if (body != null) {
+            if ((resolvedId == null || resolvedId.isEmpty()) && body.getId() != null) {
+                resolvedId = String.valueOf(body.getId());
+            }
+            if ((resolvedPassword == null || resolvedPassword.isEmpty()) && body.getPassword() != null) {
+                resolvedPassword = body.getPassword();
+            }
+        }
+        Long userId = resolvedId == null || resolvedId.isEmpty() ? null : Long.valueOf(resolvedId);
+        return Result.success(tUserService.resetUserPassword(userId, resolvedPassword));
+    }
+
     @LogRestRequest(apiName = "刪除管理员表")
     @ApiOperationSupport(order = 50, author = "alex")
     @ApiOperation(value = "刪除管理员表", notes = "刪除管理员表", response = Result.class)

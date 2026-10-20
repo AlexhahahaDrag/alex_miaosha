@@ -219,7 +219,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 校验username,mobile,email
         judgeField(map, null);
         TUser tUser = new TUser();
-        BeanUtils.copyProperties(tUserVo, tUser);
+        BeanUtils.copyProperties(tUserVo, tUser, "password");
         String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
         tUser.setPassword(BCRYPT_ENCODER.encode(password + tUserVo.getUsername()));
         tUserMapper.insert(tUser);
@@ -265,7 +265,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 校验username,mobile,email
         judgeField(map, tUserVo.getId());
         TUser tUser = new TUser();
-        BeanUtils.copyProperties(tUserVo, tUser);
+        BeanUtils.copyProperties(tUserVo, tUser, "password");
         tUserMapper.updateById(tUser);
         syncUserRbacAssignments(tUser.getId(), tUserVo);
         return tUser;
@@ -289,6 +289,33 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (rows > 0) {
             permissionContextCacheService.invalidate(id);
             log.info("用户 {} 状态更新为 {}，已失效 permission_context", id, status);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
+     * RBAC-BE-USER-004: 安全重置/修改用户密码。
+     * 强校验权限（assertUserAccessible）、防空/防短弱密（至少6位）、统一使用加盐散列并失效权限上下文。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean resetUserPassword(Long id, String newPassword) {
+        assertUserAccessible(id);
+        if (StringUtils.isBlank(newPassword) || newPassword.trim().length() < 6) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "密码不能为空且长度不能少于6位");
+        }
+        TUser target = tUserMapper.selectById(id);
+        if (target == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "目标用户不存在");
+        }
+        String encoded = BCRYPT_ENCODER.encode(newPassword.trim() + target.getUsername());
+        UpdateWrapper<TUser> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", id).set("password", encoded);
+        int rows = tUserMapper.update(null, wrapper);
+        if (rows > 0) {
+            permissionContextCacheService.invalidate(id);
+            log.info("用户 {} 密码重置成功，已失效 permission_context", id);
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -811,7 +838,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             String barToken = redisUtils.get(LoginKey.loginUuid, uuidToken);
             redisUtils.delete(LoginKey.loginUuid, uuidToken);
             // 移除Redis 中的用户
-            redisUtils.delete(LoginKey.loginToken, barToken);
+            if (StringUtils.isNotEmpty(barToken)) {
+                redisUtils.delete(LoginKey.loginToken, barToken);
+            }
+            redisUtils.delete(LoginKey.loginOnlineUser, uuidToken);
             SecurityContextHolder.clearContext();
             return Result.success();
         }
