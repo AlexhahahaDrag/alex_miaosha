@@ -16,6 +16,7 @@
 | 4 | 超支状态机准确计算 | `FinanceBudgetLifecycleAndBoundaryIT#testOverBudgetStatusCalculation` | 实际消费 1500 > 预算 1000 时，`isOverBudget = true`，剩余额为 `-500.00`，使用率 `150.0%` | ✅ PASS |
 | 5 | 历史月预算回溯继承 | `FinanceBudgetLifecycleAndBoundaryIT#testInheritedBudgetFromHistoryMonth` | 当月未配置时自动向上回溯最近历史月份，`isInherited = true`，继承预算额与分类字典 | ✅ PASS |
 | 6 | 脏数据分类清洗自愈 | `FinanceBudgetLifecycleAndBoundaryIT#testCategoryCodesCleaningOnSave` | 保存时自动剥离"支出"、"收入"等关键字并去除重复与空格，存储规范格式 `餐饮,交通,娱乐` | ✅ PASS |
+| 7 | 月度预算超支站内信巡检 | `SysMessageInfoServiceTest#testCollectBudgetOverReminder` | 当月实际支出超预算时，XXL-Job 巡检精准生成 `BUDGET_OVER` 强提醒，按月幂等去重 | ✅ PASS |
 
 ---
 
