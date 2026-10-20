@@ -101,7 +101,7 @@
 
 | 测试层级 | 占比目标 | 覆盖内容 | 执行命令 |
 | :--- | :--- | :--- | :--- |
-| **后端单元测试** | 60% | `SysMessageInfoServiceTest`：四大消息源 XXL-Job 巡检规则、七点法天数边界、`dedup_key` 幂等、微信模板推送联动与异常隔离、已读/全部已读、越权拦截 | `mvn test -pl alex_miaosha_finance/finance_boot -am -Dtest=SysMessageInfoServiceTest` |
+| **后端单元与集成测试 (L1/L2)** | 60% | • `SysMessageInfoServiceTest`：四大消息源 XXL-Job 巡检规则、七点法天数边界、`dedup_key` 幂等、微信模板推送联动与异常隔离、已读/全部已读、越权拦截<br/>• `SysMessageLifecycleAndDedupIT`：全生命周期状态机、定时任务全量扫描入库、二次执行 0 新增幂等阻断、已删记录防复活、微信推送网络超时降级<br/>• `SysMessageDataScopeAndSecurityIT`：数据权限隔离、跨用户/跨机构已读拦截 (403)、`deleteMessages` 非数字参数防呆抛友好异常杜绝 500、跨用户批量删除防御、普通用户发布伪造全局广播/他人属主重置拦截、标题与正文字符边界 (200/1000)<br/>• `SysMessageSummaryAndVoContractIT`：未读汇总统计口径校正（`GIFT_RETURN` 独立统计不混入系统消息）、`markAllRead` 分类已读透传、`SysMessageInfoVo` 继承链所有 `Long` 字段 `@JsonSerialize(using = Long2StringSerializer.class)` 反射契约锁、19 位雪花 ID 字符串保真 | `mvn test -pl alex_miaosha_finance/finance_boot -am -Dtest="SysMessage*"` |
 | **前端单元测试 (PC & Mobile)** | 25% | `normalizeMessageIds` 大数精度保护、分类徽章样式映射、双端 `jumpUrl` 路由解析 | `pnpm test:unit` |
 | **AI / E2E 自动化冒烟** | 10% | • PC：`MESSAGE-PC-SMOKE-001` (铃铛/抽屉/Tab)、`MESSAGE-PC-SMOKE-002` (新增弹窗表单)<br/>• Mobile：`MESSAGE-MOBILE-SMOKE-001` (TabBar/卡片)、`MESSAGE-MOBILE-SMOKE-002` (胶囊/仅未读/列表) | • PC: `node scripts/midscene/run-smoke.mjs`<br/>• Mobile: `node scripts/midscene/run-gift-smoke.mjs` |
 | **构建与静态门禁** | 5% | TypeScript 编译检查、ESLint 零错误、Vite 生产打包 | `pnpm lint && pnpm build` |
@@ -109,3 +109,4 @@
 ### 明确不测项及理由（Out of Scope）
 1. **微信公网服务器真实 HTTP 通信 (`WxMpService.getTemplateMsgService().sendTemplateMsg`)**：依赖外部微信公网 AccessToken 与 OpenID 配额，单测通过 Mock `WeChatService` 验证触发次数、入参组装与异常隔离逻辑，不向腾讯公网发包。
 2. **MyBatis-Plus 框架内置 `BaseMapper.insert` SQL 语法**：由框架自身保证，单测聚焦业务规则与 Mapper 接口交互契约。
+3. **秒杀模块排除**：按照用户明确指令，严格排除秒杀模块。

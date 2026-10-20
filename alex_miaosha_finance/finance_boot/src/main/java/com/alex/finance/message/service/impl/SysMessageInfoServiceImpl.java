@@ -762,6 +762,7 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
         List<SysMessageInfoVo> unreadList = baseMapper.selectUnreadList(userId, orgId);
         long systemUnread = 0L;
         long giftEventUnread = 0L;
+        long giftReturnUnread = 0L;
         long couponExpireUnread = 0L;
         long cardExpireUnread = 0L;
 
@@ -772,6 +773,8 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
                 }
                 if (MSG_TYPE_GIFT_EVENT.equals(item.getMsgType())) {
                     giftEventUnread++;
+                } else if (MSG_TYPE_GIFT_RETURN.equals(item.getMsgType())) {
+                    giftReturnUnread++;
                 } else if (MSG_TYPE_COUPON_EXPIRE.equals(item.getMsgType())) {
                     couponExpireUnread++;
                 } else if (MSG_TYPE_CARD_EXPIRE.equals(item.getMsgType())) {
@@ -782,11 +785,12 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
             }
         }
 
-        long total = systemUnread + giftEventUnread + couponExpireUnread + cardExpireUnread;
+        long total = systemUnread + giftEventUnread + giftReturnUnread + couponExpireUnread + cardExpireUnread;
         return new SysMessageSummaryVo()
                 .setUnreadTotal(total)
                 .setSystemUnread(systemUnread)
                 .setGiftEventUnread(giftEventUnread)
+                .setGiftReturnUnread(giftReturnUnread)
                 .setCouponExpireUnread(couponExpireUnread)
                 .setCardExpireUnread(cardExpireUnread);
     }
@@ -846,8 +850,17 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
         }
 
         TUserVo user = scopeSupport.requireLoginUser();
-        Long targetUserId = vo.getUserId() != null ? vo.getUserId() : user.getId();
-        Long targetOrgId = vo.getOrgId() != null ? vo.getOrgId() : scopeSupport.loginOrgId(user);
+        boolean isSuper = scopeSupport.isSuper(user);
+        Long targetUserId;
+        Long targetOrgId;
+        if (isSuper) {
+            targetUserId = vo.getUserId() != null ? vo.getUserId() : user.getId();
+            targetOrgId = vo.getOrgId() != null ? vo.getOrgId() : scopeSupport.loginOrgId(user);
+        } else {
+            // 普通用户发布仅允许绑定自身与当前所属机构，严禁伪造他人身份或全局广播 (orgId=0, userId=0)
+            targetUserId = user.getId();
+            targetOrgId = scopeSupport.loginOrgId(user);
+        }
         String msgType = StringUtils.isNotEmpty(vo.getMsgType()) ? vo.getMsgType() : MSG_TYPE_SYSTEM;
         String subType = StringUtils.isNotEmpty(vo.getSubType()) ? vo.getSubType() : SUB_TYPE_ANNOUNCE;
         String priority = StringUtils.isNotEmpty(vo.getPriority()) ? vo.getPriority() : PRIORITY_NORMAL;
@@ -876,16 +889,24 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMessages(String ids) {
         ensureTableInitialized();
-        if (StringUtils.isEmpty(ids)) {
+        if (StringUtils.isBlank(ids)) {
             throw FinanceException.param("删除的消息ID不能为空");
         }
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim)
-                .filter(StringUtils::isNotEmpty)
-                .map(Long::valueOf)
-                .collect(Collectors.toList());
+        String[] tokens = ids.split(",", -1);
+        List<Long> idList = new ArrayList<>();
+        for (String token : tokens) {
+            String trimmed = token.trim();
+            if (trimmed.isEmpty()) {
+                throw FinanceException.param("删除消息ID格式不正确");
+            }
+            try {
+                idList.add(Long.valueOf(trimmed));
+            } catch (NumberFormatException e) {
+                throw FinanceException.param("删除消息ID格式不正确");
+            }
+        }
         if (idList.isEmpty()) {
-            return true;
+            throw FinanceException.param("删除的消息ID不能为空");
         }
         List<Long> deletableIds = new ArrayList<>(idList.size());
         for (Long id : idList) {
