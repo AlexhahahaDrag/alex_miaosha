@@ -117,6 +117,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         if (file == null) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
+        validateSingleFileExtension(file);
         try {
             FileInfoVo uploadFile = uploadFile(type, file, isThumbnail, isNormal);
             FileInfo fileInfo = new FileInfo();
@@ -175,12 +176,19 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         }
     }
 
-    private void validateSingleFileExtension(MultipartFile file) throws FileException {
+    void validateSingleFileExtension(MultipartFile file) throws FileException {
         if (file == null || file.isEmpty()) {
             throw new FileException(ResultEnum.IMAGE_NO_FOUNT);
         }
         String originalFilename = file.getOriginalFilename();
-        String suffix = StringUtils.isBlank(originalFilename) || !originalFilename.contains(".")
+        if (StringUtils.isBlank(originalFilename)) {
+            throw new FileException(ResultEnum.PARAM_ERROR, "文件名不能为空");
+        }
+        if (originalFilename.contains("\0")) {
+            log.warn("检测到含有空字节 \0 的恶意文件名注入：fileName={}", originalFilename);
+            throw new FileException(ResultEnum.PARAM_ERROR, "文件名包含非法截断字符");
+        }
+        String suffix = !originalFilename.contains(".")
                 ? ""
                 : originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
         if (!ALLOWED_EXTENSIONS.contains(suffix)) {
@@ -265,6 +273,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
         }
         FileInfoVo uploadFile = null;
         if (file != null) {
+            validateSingleFileExtension(file);
             try {
                 uploadFile = uploadFile(type, file, isThumbnail, isNormal);
                 BeanUtils.copyProperties(uploadFile, fileInfo, "id");

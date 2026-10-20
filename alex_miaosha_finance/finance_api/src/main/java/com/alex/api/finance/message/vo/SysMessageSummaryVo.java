@@ -26,6 +26,9 @@ public class SysMessageSummaryVo {
     @ApiModelProperty(value = "礼尚往来事件提醒未读数")
     private Long giftEventUnread = 0L;
 
+    @ApiModelProperty(value = "人情回礼备忘未读数")
+    private Long giftReturnUnread = 0L;
+
     @ApiModelProperty(value = "消费券到期提醒未读数")
     private Long couponExpireUnread = 0L;
 

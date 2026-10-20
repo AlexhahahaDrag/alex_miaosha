@@ -71,10 +71,14 @@ public abstract class AbstractS3FileService implements FileStorageService {
         fileVo.setBucketName(bucketName);
         fileVo.setFileSystem(getFileSystemCode());
 
+        String safeType = sanitizeType(type);
+        String safeBaseName = sanitizeBaseFileName(fileName);
+        String safeSuffix = StringUtils.isBlank(suffixStr) ? "" : suffixStr.replace("\0", "").replaceAll("[^a-zA-Z0-9_-]", "").trim();
+
         // 名称为 / 分隔的时候，会在 S3 存储中创建虚拟目录去存储文件
-        String filename = type + S3_PATH_DELIMITER + DateUtils.getNowTimeStr(YYYYMMDD) + S3_PATH_DELIMITER +
-                (StringUtils.isBlank(fileName) ? "" : fileName.substring(0, fileName.lastIndexOf('.'))) +
-                SysConf.UNDERLINE + DateUtils.getNowTimeLong() + SysConf.POINT + suffixStr;
+        String filename = safeType + S3_PATH_DELIMITER + DateUtils.getNowTimeStr(YYYYMMDD) + S3_PATH_DELIMITER +
+                safeBaseName + SysConf.UNDERLINE + DateUtils.getNowTimeLong() +
+                (StringUtils.isBlank(safeSuffix) ? "" : SysConf.POINT + safeSuffix);
 
         try {
             if (Boolean.TRUE.equals(isThumbnail)) {
@@ -196,4 +200,38 @@ public abstract class AbstractS3FileService implements FileStorageService {
         }
         return S3_BUCKET_NAME_PATTERN.matcher(bucketName).matches();
     }
+    /**
+     * 清洗业务类型 type（防止目录穿越与注入）
+     */
+    public static String sanitizeType(String type) {
+        if (StringUtils.isBlank(type)) {
+            return "common";
+        }
+        String clean = type.replace("\\", "/");
+        if (clean.contains("/")) {
+            clean = clean.substring(clean.lastIndexOf('/') + 1);
+        }
+        clean = clean.replace("..", "").replaceAll("[^a-zA-Z0-9_-]", "").trim();
+        return StringUtils.isBlank(clean) ? "common" : clean;
+    }
+
+    /**
+     * 清洗文件名（剥离目录前缀与穿越符号，只提取纯净文件名）
+     */
+    public static String sanitizeBaseFileName(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return "file";
+        }
+        String clean = fileName.replace("\0", "").replace("\\", "/");
+        if (clean.contains("/")) {
+            clean = clean.substring(clean.lastIndexOf('/') + 1);
+        }
+        clean = clean.replace("..", "");
+        if (clean.contains(".")) {
+            clean = clean.substring(0, clean.lastIndexOf('.'));
+        }
+        clean = clean.replaceAll("[\\r\\n\\t]", "").trim();
+        return StringUtils.isBlank(clean) ? "file" : clean;
+    }
+
 }
