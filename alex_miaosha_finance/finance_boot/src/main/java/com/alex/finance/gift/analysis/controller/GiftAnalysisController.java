@@ -2,8 +2,11 @@ package com.alex.finance.gift.analysis.controller;
 
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
+import com.alex.api.finance.gift.summary.vo.GiftPersonBalanceVo;
 import com.alex.api.finance.gift.summary.vo.GiftRankingItemVo;
 import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
+import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationReq;
+import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationVo;
 import com.alex.base.common.Result;
 import com.alex.finance.gift.analysis.service.GiftAnalysisService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -12,6 +15,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,5 +68,22 @@ public class GiftAnalysisController {
     @GetMapping(value = "/person-ranking")
     public Result<List<GiftRankingItemVo>> personRanking() {
         return Result.success(giftAnalysisService.personRanking());
+    }
+
+    @ApiOperationSupport(order = 60, author = "alex")
+    @ApiOperation(value = "亲友互赠收支平衡矩阵", response = Result.class)
+    @GetMapping(value = "/balance-matrix")
+    public Result<List<GiftPersonBalanceVo>> balanceMatrix(
+            @RequestParam(value = "relationType", required = false) String relationType,
+            @RequestParam(value = "searchKey", required = false) String searchKey) {
+        return Result.success(giftAnalysisService.balanceMatrix(relationType, searchKey));
+    }
+
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "AI 智能回礼档位测算推荐", response = Result.class)
+    @PostMapping(value = "/ai/recommend-return-gift")
+    public Result<GiftReturnRecommendationVo> recommendReturnGift(
+            @RequestBody GiftReturnRecommendationReq req) {
+        return Result.success(giftAnalysisService.recommendReturnGift(req));
     }
 }

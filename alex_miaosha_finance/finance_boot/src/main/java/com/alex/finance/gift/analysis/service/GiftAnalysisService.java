@@ -2,8 +2,11 @@ package com.alex.finance.gift.analysis.service;
 
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
+import com.alex.api.finance.gift.summary.vo.GiftPersonBalanceVo;
 import com.alex.api.finance.gift.summary.vo.GiftRankingItemVo;
 import com.alex.api.finance.gift.summary.vo.GiftRelationDistributionVo;
+import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationReq;
+import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationVo;
 
 import java.util.List;
 
@@ -29,4 +32,21 @@ public interface GiftAnalysisService {
     List<GiftRankingItemVo> eventRanking();
 
     List<GiftRankingItemVo> personRanking();
+
+    /**
+     * 亲友互赠收支平衡矩阵。
+     *
+     * @param relationType 可选关系类型过滤
+     * @param searchKey    可选搜索关键字（亲友姓名）
+     * @return 亲友互赠平衡矩阵列表
+     */
+    List<GiftPersonBalanceVo> balanceMatrix(String relationType, String searchKey);
+
+    /**
+     * AI 智能回礼档位测算与推荐。
+     *
+     * @param req 回礼测算请求
+     * @return 推荐回礼档位与贺词
+     */
+    GiftReturnRecommendationVo recommendReturnGift(GiftReturnRecommendationReq req);
 }

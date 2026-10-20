@@ -106,18 +106,43 @@ public abstract class AbstractOpenAiCompatibleAiEngine implements AiEngine {
             return resp;
         }
 
+        String cleaned = stripMarkdownFences(llmContent);
         try {
-            AiStructuredResult structured = objectMapper.readValue(llmContent, AiStructuredResult.class);
+            AiStructuredResult structured = objectMapper.readValue(cleaned, AiStructuredResult.class);
             resp.setSummary(structured.getSummary() == null ? "" : structured.getSummary());
             resp.setKeyPoints(structured.getKeyPoints() == null ? List.of() : structured.getKeyPoints());
         } catch (Exception e) {
             log.warn("LLM JSON parse failed, engine={}, err={}", engine, e.toString());
-            resp.setSummary(llmContent.trim());
+            resp.setSummary(cleaned != null && !cleaned.isEmpty() ? cleaned : llmContent.trim());
             resp.setKeyPoints(List.of());
         }
 
         resp.setCostMs(System.currentTimeMillis() - start);
         return resp;
+    }
+
+    /**
+     * 自适应剥离大模型回复中外层的 Markdown 代码块围栏（如 ```json ... ```），
+     * 确保 Jackson 能稳定提取结构化 JSON 对象。
+     */
+    public static String stripMarkdownFences(String content) {
+        if (content == null) {
+            return null;
+        }
+        String trimmed = content.trim();
+        if (trimmed.startsWith("```")) {
+            int firstNewline = trimmed.indexOf('\n');
+            if (firstNewline != -1) {
+                trimmed = trimmed.substring(firstNewline + 1);
+            } else {
+                trimmed = trimmed.substring(3);
+            }
+            int lastFence = trimmed.lastIndexOf("```");
+            if (lastFence != -1) {
+                trimmed = trimmed.substring(0, lastFence);
+            }
+        }
+        return trimmed.trim();
     }
 
     private static String pickFirstNotBlank(String a, String b) {
