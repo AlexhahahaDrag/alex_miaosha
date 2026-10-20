@@ -86,4 +86,17 @@ public class GiftAnalysisController {
             @RequestBody GiftReturnRecommendationReq req) {
         return Result.success(giftAnalysisService.recommendReturnGift(req));
     }
+
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "导出亲友互赠收支平衡矩阵", response = void.class)
+    @PostMapping(value = "/export-matrix")
+    public void exportMatrix(
+            @RequestParam(value = "relationType", required = false) String relationType,
+            @RequestParam(value = "searchKey", required = false) String searchKey,
+            javax.servlet.http.HttpServletResponse response) {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=gift_balance_matrix.xlsx");
+        giftAnalysisService.exportBalanceMatrix(relationType, searchKey, response);
+    }
 }
+

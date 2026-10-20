@@ -1,5 +1,6 @@
 package com.alex.gateway.config;
 
+import com.alex.gateway.utils.EncryptionUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -8,10 +9,10 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 /**
- * description:
- * author:       majf
+ * description: 网关全局 CORS 跨域配置
+ * author:       majf, alex
  * createDate:   2022/10/8 17:05
- * version:      1.0.0
+ * version:      2.0.0
  */
 @Configuration
 public class GlobalCorsConfig {
@@ -31,6 +32,10 @@ public class GlobalCorsConfig {
         corsConfiguration.setMaxAge(18000L);
         //配置前端js允许访问的自定义响应头，不能用*
         corsConfiguration.addExposedHeader(HttpHeaders.ACCEPT);
+        corsConfiguration.addExposedHeader(EncryptionUtils.HEADER_CRYPTO_VERSION);
+        corsConfiguration.addExposedHeader(HttpHeaders.CONTENT_DISPOSITION);
+        corsConfiguration.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        corsConfiguration.addExposedHeader("token");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsWebFilter(source);

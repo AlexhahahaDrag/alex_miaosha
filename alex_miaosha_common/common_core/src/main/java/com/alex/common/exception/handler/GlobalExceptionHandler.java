@@ -134,6 +134,14 @@ public class GlobalExceptionHandler {
         return Result.error(e.getCode(), e.getMsg());
     }
 
+    @ExceptionHandler(SystemException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<String> handle(SystemException e) {
+        log.error("系统业务异常:{},{}", e.getCode(), e.getMsg());
+        String code = e.getCode() != null ? e.getCode() : "500";
+        return Result.error(code, e.getMsg());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(Exception ex) {

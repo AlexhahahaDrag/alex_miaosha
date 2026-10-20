@@ -18,6 +18,8 @@ public class Long2StringSerializer extends JsonSerializer<Long> {
     public void serialize(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         if (value != null) {
             jsonGenerator.writeString(value.toString());
+        } else {
+            jsonGenerator.writeNull();
         }
     }
 }

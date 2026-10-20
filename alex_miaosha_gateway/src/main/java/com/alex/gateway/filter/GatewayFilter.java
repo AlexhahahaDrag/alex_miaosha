@@ -2,6 +2,7 @@ package com.alex.gateway.filter;
 
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.base.common.Result;
+import com.alex.common.utils.string.StringUtils;
 import com.alex.gateway.config.GatewayAudience;
 import com.alex.gateway.utils.AutowiredBean;
 import com.alex.gateway.utils.EncryptionUtils;
@@ -36,17 +37,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
- * description: 过滤器打印请求地址
- *
- * @SneakyThrows 它是lombok包下的注解 并且继承了Throwable
- *               <p>
- *               作用 是为了用try{}catch{}捕捉异常
- *               添加之后会在 代码编译时 自动捕获异常
- *               author: majf
- *               createDate: 2022/7/29 14:57
- *               version: 1.0.0
+ * description: 网关核心安全与加密过滤器
+ * author: majf, alex
+ * createDate: 2022/7/29 14:57
+ * version: 2.0.0
  */
 @Component
 @Slf4j
@@ -119,11 +117,18 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         }
         log.info("当前请求地址：{}", path);
         ServerHttpRequest request = exchange.getRequest();
-        // 得到请求头信息authorization 信息
+        // 得到请求头信息 authorization 信息
         String token = Optional.of(request)
                 .map(HttpMessage::getHeaders)
                 .map(header -> header.getFirst(audience.getTokenHeader()))
                 .orElse(null);
+
+        // 空 Token 快速短路防御，杜绝无效远程 RPC 调用与连接资源浪费
+        if (StringUtils.isBlank(token)) {
+            log.warn("请求路径 {} 缺失或携带空白 Token，直接拦截", path);
+            return out(exchange);
+        }
+
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         UserApi userApi = AutowiredBean.getBean(UserApi.class);
         CompletableFuture<Result<Boolean>> completableFuture = CompletableFuture.supplyAsync(() -> {
@@ -132,20 +137,25 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             return userApi.authToken(token);
         }).exceptionally(e -> {
             log.info("认证失败：{}", e.getMessage());
-            e.getStackTrace();
             return Result.error("403", "认证失败");
         });
-        // AI Agent：移除不必要的 Optional，直接处理 CompletableFuture 结果，使用 orElse 提供默认值避免空指针
+
         Boolean result;
         try {
-            result = Optional.ofNullable(completableFuture.get().getData()).orElse(false);
+            // 增加 3 秒超时熔断保护，防止下游微服务延迟堆积导致网关 worker 耗尽
+            Result<Boolean> authResult = completableFuture.get(3, TimeUnit.SECONDS);
+            result = authResult != null && Boolean.TRUE.equals(authResult.getData());
+        } catch (TimeoutException e) {
+            log.warn("获取认证结果超时（>3s），快速降级拦截: path={}", path);
+            completableFuture.cancel(true);
+            result = false;
         } catch (InterruptedException e) {
             log.error("获取认证结果被中断", e);
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            result = false;
         } catch (ExecutionException e) {
-            log.error("获取认证结果失败", e);
-            throw new RuntimeException(e);
+            log.error("获取认证结果失败: {}", e.getMessage());
+            result = false;
         }
         return Boolean.TRUE.equals(result) ? secretOut(exchange, chain) : out(exchange);
     }

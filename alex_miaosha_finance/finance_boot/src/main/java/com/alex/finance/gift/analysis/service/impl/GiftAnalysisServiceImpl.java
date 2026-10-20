@@ -15,6 +15,7 @@ import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationReq;
 import com.alex.api.finance.gift.summary.vo.GiftReturnRecommendationVo;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.gift.analysis.service.GiftAnalysisService;
@@ -24,15 +25,33 @@ import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GiftAnalysisServiceImpl implements GiftAnalysisService {
@@ -336,4 +355,197 @@ public class GiftAnalysisServiceImpl implements GiftAnalysisService {
     private Long defaultLong(Long value) {
         return value == null ? 0L : value;
     }
+
+    @Override
+    public void exportBalanceMatrix(String relationType, String searchKey, HttpServletResponse response) {
+        List<GiftPersonBalanceVo> matrixList = balanceMatrix(relationType, searchKey);
+        GiftRecordSummaryVo summary = overview(null);
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // 样式与字体
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setColor(IndexedColors.WHITE.getIndex());
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setBorder(headerStyle);
+
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setAlignment(HorizontalAlignment.LEFT);
+            textStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setBorder(textStyle);
+
+            CellStyle centerStyle = workbook.createCellStyle();
+            centerStyle.setAlignment(HorizontalAlignment.CENTER);
+            centerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setBorder(centerStyle);
+
+            CellStyle moneyStyle = workbook.createCellStyle();
+            moneyStyle.setDataFormat(workbook.createDataFormat().getFormat("¥#,##0.00"));
+            moneyStyle.setAlignment(HorizontalAlignment.RIGHT);
+            moneyStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setBorder(moneyStyle);
+
+            CellStyle alertStyle = workbook.createCellStyle();
+            Font alertFont = workbook.createFont();
+            alertFont.setColor(IndexedColors.RED.getIndex());
+            alertStyle.setFont(alertFont);
+            alertStyle.setAlignment(HorizontalAlignment.LEFT);
+            alertStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setBorder(alertStyle);
+
+            // ================= Sheet 1: 亲友互赠平衡矩阵 =================
+            Sheet matrixSheet = workbook.createSheet("亲友互赠平衡矩阵");
+            Row mHeaderRow = matrixSheet.createRow(0);
+            mHeaderRow.setHeightInPoints(24);
+            String[] mHeaders = { "亲友姓名", "关系圈层", "累计收TA礼金", "累计随TA礼金", "人情净差额", "平衡状态", "往来笔数", "最近往来时间", "健康度预警" };
+            for (int i = 0; i < mHeaders.length; i++) {
+                Cell cell = mHeaderRow.createCell(i);
+                cell.setCellValue(mHeaders[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int mRowIdx = 1;
+            for (GiftPersonBalanceVo item : matrixList) {
+                Row row = matrixSheet.createRow(mRowIdx++);
+                row.setHeightInPoints(20);
+
+                // 0: 亲友姓名
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getPersonName() != null ? item.getPersonName() : "-");
+                c0.setCellStyle(textStyle);
+
+                // 1: 关系圈层
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getRelationTypeName() != null ? item.getRelationTypeName() : (item.getRelationType() != null ? item.getRelationType() : "未分类"));
+                c1.setCellStyle(centerStyle);
+
+                // 2: 累计收礼金额
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getTotalReceiveAmount() != null ? item.getTotalReceiveAmount().doubleValue() : 0.0);
+                c2.setCellStyle(moneyStyle);
+
+                // 3: 累计随礼金额
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getTotalGiveAmount() != null ? item.getTotalGiveAmount().doubleValue() : 0.0);
+                c3.setCellStyle(moneyStyle);
+
+                // 4: 净差额
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getNetBalance() != null ? item.getNetBalance().doubleValue() : 0.0);
+                c4.setCellStyle(moneyStyle);
+
+                // 5: 平衡状态
+                Cell c5 = row.createCell(5);
+                String stText = switch (item.getBalanceStatus() != null ? item.getBalanceStatus() : "") {
+                    case "SURPLUS" -> "礼金盈余(待回)";
+                    case "DEFICIT" -> "礼金借出(待收)";
+                    case "BALANCED" -> "基本持平";
+                    default -> "-";
+                };
+                c5.setCellValue(stText);
+                c5.setCellStyle(centerStyle);
+
+                // 6: 往来笔数
+                Cell c6 = row.createCell(6);
+                c6.setCellValue(item.getRecordCount() != null ? item.getRecordCount() : 0);
+                c6.setCellStyle(centerStyle);
+
+                // 7: 最近往来时间
+                Cell c7 = row.createCell(7);
+                String timeStr = item.getLatestRecordTime() != null ? item.getLatestRecordTime().format(DateUtils.FORMATTER_YYYY_MM_DD_HH_MM_SS) : "-";
+                c7.setCellValue(timeStr);
+                c7.setCellStyle(centerStyle);
+
+                // 8: 健康度预警
+                Cell c8 = row.createCell(8);
+                if (Boolean.TRUE.equals(item.getIsImbalancedAlert())) {
+                    c8.setCellValue("⚠️ " + (item.getAlertReason() != null ? item.getAlertReason() : "大额未回礼失衡预警"));
+                    c8.setCellStyle(alertStyle);
+                } else {
+                    c8.setCellValue("正常");
+                    c8.setCellStyle(centerStyle);
+                }
+            }
+
+            for (int i = 0; i < mHeaders.length; i++) {
+                matrixSheet.setColumnWidth(i, 20 * 256);
+            }
+
+            // ================= Sheet 2: 人情收支汇总总览 =================
+            Sheet summarySheet = workbook.createSheet("人情收支汇总总览");
+            Row sHeaderRow = summarySheet.createRow(0);
+            sHeaderRow.setHeightInPoints(24);
+            String[] sHeaders = { "统计维度", "数值 / 金额", "备注口径" };
+            for (int i = 0; i < sHeaders.length; i++) {
+                Cell cell = sHeaderRow.createCell(i);
+                cell.setCellValue(sHeaders[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int sRowIdx = 1;
+            Object[][] summaryRows = new Object[][] {
+                    { "收礼总额", summary.getReceiveAmount() != null ? summary.getReceiveAmount().doubleValue() : 0.0, "收到的所有礼金总额" },
+                    { "收礼总笔数", summary.getReceiveCount() != null ? summary.getReceiveCount() : 0, "收礼人情记录总数" },
+                    { "随礼总额", summary.getGiveAmount() != null ? summary.getGiveAmount().doubleValue() : 0.0, "随礼支出总额" },
+                    { "随礼总笔数", summary.getGiveCount() != null ? summary.getGiveCount() : 0, "随礼记录总数" },
+                    { "回礼支出总额", summary.getReturnAmount() != null ? summary.getReturnAmount().doubleValue() : 0.0, "主动还礼/回礼支出总额" },
+                    { "回礼总笔数", summary.getReturnCount() != null ? summary.getReturnCount() : 0, "还礼记录总数" },
+                    { "全盘人情净值", summary.getNetAmount() != null ? summary.getNetAmount().doubleValue() : 0.0, "收礼 - (随礼 + 回礼)" }
+            };
+
+            for (Object[] rData : summaryRows) {
+                Row row = summarySheet.createRow(sRowIdx++);
+                row.setHeightInPoints(20);
+
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(String.valueOf(rData[0]));
+                c0.setCellStyle(textStyle);
+
+                Cell c1 = row.createCell(1);
+                if (rData[1] instanceof Double dVal) {
+                    c1.setCellValue(dVal);
+                    c1.setCellStyle(moneyStyle);
+                } else if (rData[1] instanceof Number nVal) {
+                    c1.setCellValue(nVal.doubleValue());
+                    c1.setCellStyle(centerStyle);
+                } else {
+                    c1.setCellValue(String.valueOf(rData[1]));
+                    c1.setCellStyle(centerStyle);
+                }
+
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(String.valueOf(rData[2]));
+                c2.setCellStyle(textStyle);
+            }
+
+            summarySheet.setColumnWidth(0, 22 * 256);
+            summarySheet.setColumnWidth(1, 20 * 256);
+            summarySheet.setColumnWidth(2, 35 * 256);
+
+            // 写出响应
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            String fileName = "人情往来互赠平衡对账单_" + System.currentTimeMillis() + ".xlsx";
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+            response.setHeader("Content-Disposition", "attachment; filename=" + encodedFileName + "; filename*=UTF-8''" + encodedFileName);
+
+            workbook.write(response.getOutputStream());
+            response.getOutputStream().flush();
+        } catch (IOException e) {
+            log.error("导出亲友互赠平衡矩阵失败: {}", e.getMessage(), e);
+            throw new FinanceException("500", "导出平衡矩阵失败: " + e.getMessage());
+        }
+    }
+
+    private void setBorder(CellStyle style) {
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+    }
 }
+

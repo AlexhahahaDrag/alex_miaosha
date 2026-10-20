@@ -49,4 +49,14 @@ public interface GiftAnalysisService {
      * @return 推荐回礼档位与贺词
      */
     GiftReturnRecommendationVo recommendReturnGift(GiftReturnRecommendationReq req);
+
+    /**
+     * 导出亲友互赠收支平衡矩阵与汇总 Excel 报表。
+     *
+     * @param relationType 可选关系圈层过滤
+     * @param searchKey    可选搜索关键字（亲友姓名）
+     * @param response     HTTP 响应
+     */
+    void exportBalanceMatrix(String relationType, String searchKey, javax.servlet.http.HttpServletResponse response);
 }
+

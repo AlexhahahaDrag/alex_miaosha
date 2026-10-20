@@ -28,6 +28,8 @@
 | **GIFT-AN-04** | AI 回礼吉利档位推荐 | 回礼算法基于对方历史最高礼金、事件类型（结婚/满月/乔迁/寿宴等）与亲疏关系，按民间吉利数字向上取整推荐 3 个档位。 | `test_smart_return_gift_recommendation_tiers` | 输出递增的 3 档金额：`minDecentAmount <= recommendedAmount <= generousAmount`，且均为吉利数字（如 500, 600, 800, 888, 1000 等）。 |
 | **GIFT-AN-05** | 大数雪花 ID 序列化 | `personId` 等 Long 主键必须通过 `@JsonSerialize(using = Long2StringSerializer.class)` 序列化为字符串。 | `test_person_balance_vo_id_serialization` | 前端拿到字符串类型 ID，杜绝 JS 64 位大数低位截断。 |
 | **GIFT-AN-06** | 空数据与零互动防御 | 当亲友暂无往来记录或系统初次初始化时，矩阵返回空安全列表，金额默认兜底 `0.00`。 | `test_balance_matrix_empty_fallback_safety` | 不发生 NPE 崩溃，返回规范的空列表与零默认值。 |
+| **GIFT-AN-07** | 互赠平衡矩阵 Excel 导出 | POI 流式生成双工作表（亲友互赠平衡矩阵 + 人情收支汇总），设置正确 Content-Disposition。 | `test_export_balance_matrix_excel_structure` | 正确生成 .xlsx 二进制流，包含正确列头、格式化金额与失衡告警文案。 |
+
 
 ---
 
