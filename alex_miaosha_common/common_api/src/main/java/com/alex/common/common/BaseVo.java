@@ -42,6 +42,7 @@ public class BaseVo<T> implements Serializable {
     @ApiModelProperty("操作时间")
     private LocalDateTime operateTime;
 
+    @JsonSerialize(using = Long2StringSerializer.class)
     @ApiModelProperty("删除人")
     private Long deleter;
 

@@ -24,14 +24,28 @@ class GatewaySsePathMatcherTest {
     }
 
     @Test
+    void matches_financeAiParseStream() {
+        assertTrue(matcher.matches("/am-finance/api/v1/finance-info/ai-parse-stream"));
+        assertTrue(matcher.matches("/api/v1/finance-info/ai-parse-stream"));
+    }
+
+    @Test
+    void matches_genericStreamPath() {
+        assertTrue(matcher.matches("/am-ai/api/v1/ai/analyze/stream"));
+        assertTrue(matcher.matches("/api/v1/ai/stream"));
+    }
+
+    @Test
     void rejects_batchChat() {
         assertFalse(matcher.matches("/api/v1/ai/chat"));
         assertFalse(matcher.matches("/api/v1/ai/chat/"));
     }
 
     @Test
-    void rejects_legacyAnalyzeStream() {
-        assertFalse(matcher.matches("/api/v1/ai/analyze/stream"));
+    void rejects_ordinaryRestPath() {
+        assertFalse(matcher.matches("/api/v1/user/info"));
+        assertFalse(matcher.matches("/am-user/api/v1/user/login"));
+        assertFalse(matcher.matches("/api/v1/finance-info/page"));
     }
 
     @Test

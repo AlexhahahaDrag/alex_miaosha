@@ -11,7 +11,9 @@ import java.util.Set;
 public final class GatewaySsePathMatcher {
 
     public static final Set<String> DEFAULT_SSE_STREAM_PATHS = Set.of(
-            "/**/ai/chat/stream"
+            "/**/ai/chat/stream",
+            "/**/*-stream",
+            "/**/stream"
     );
 
     private final AntPathMatcher antPathMatcher;
