@@ -19,7 +19,7 @@ import java.util.List;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "userApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/user", fallback = UserFallbackFactory.class, configuration = FeignConfig.class)
+@FeignClient(contextId = "userApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/user", fallbackFactory = UserFallbackFactory.class, configuration = FeignConfig.class)
 public interface UserApi {
 
     @PostMapping(value = "list")

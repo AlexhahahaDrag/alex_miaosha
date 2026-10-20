@@ -26,4 +26,11 @@ public class SystemException extends RuntimeException {
         this.msg = system + (resultEnum != null ? resultEnum.getValue() : "");
         log.error("编码：{}，信息：{}", resultEnum != null ? resultEnum.getCode() : null, resultEnum != null ? resultEnum.getValue() : null);
     }
+
+    public SystemException(String code, String msg) {
+        super(msg);
+        this.code = code;
+        this.msg = msg;
+        log.error("编码：{}，信息：{}", code, msg);
+    }
 }

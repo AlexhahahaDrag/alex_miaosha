@@ -16,11 +16,21 @@ public class Result<T> {
 
     private String message;
 
+    /**
+     * 全局微服务链路追踪凭据 (TraceId)
+     */
+    private String traceId;
+
     private static final String SUCCESS = ResultEnum.SUCCESS.getCode();
 
     private T data;
 
     private Result() {
+    }
+
+    public Result<T> traceId(String traceId) {
+        this.traceId = traceId;
+        return this;
     }
 
     public static<T> Result<T> success() {

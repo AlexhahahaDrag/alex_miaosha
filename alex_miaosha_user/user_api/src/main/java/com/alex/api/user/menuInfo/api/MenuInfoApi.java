@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "menuInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/menu-info", configuration = FeignConfig.class, fallback = MenuInfoFallbackFactory.class)
+@FeignClient(contextId = "menuInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/menu-info", configuration = FeignConfig.class, fallbackFactory = MenuInfoFallbackFactory.class)
 public interface MenuInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")

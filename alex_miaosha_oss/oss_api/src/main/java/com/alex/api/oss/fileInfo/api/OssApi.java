@@ -26,7 +26,7 @@ import java.util.List;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "ossApi", name = "alex-oss-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/file-info", fallback = OssFallbackFactory.class, configuration = FeignConfig.class)
+@FeignClient(contextId = "ossApi", name = "alex-oss-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/file-info", fallbackFactory = OssFallbackFactory.class, configuration = FeignConfig.class)
 public interface OssApi {
 
     @ApiOperationSupport(order = 10, author = "alex")

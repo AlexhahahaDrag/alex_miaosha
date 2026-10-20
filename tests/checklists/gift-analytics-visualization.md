@@ -29,6 +29,8 @@
 | **GIFT-VIS-05** | 移动端圈层胶囊过滤 | 矩阵卡片上方滑动胶囊栏（全部/亲属/同事/好友/同学），点击调用 `triggerHaptic('selection')` 并过滤列表。 | `test_mobile_circle_capsule_filtering` | 圈层与关键词双重过滤交集准确，触觉振动探针触发 10ms。 |
 | **GIFT-VIS-06** | 雪花 ID 精度安全护城河 | 所有抽屉下钻、参数传递及矩阵渲染，亲友 ID、事件 ID 必须纯 `string` 传输。 | `test_person_id_string_contract` | 绝不出现 number 转换与高位 00 截断。 |
 | **GIFT-VIS-07** | 图表生命周期与内存防护 | 离开路由或组件销毁时，移除 `window.resize` 监听并调用 `chartInstance.dispose()`。 | PC/移动端生命周期销毁测试 | 杜绝 SPA 页面跳转导致的内存泄漏与 DOM 孤儿节点。 |
+| **GIFT-VIS-08** | 年度人情日历热力图 | 全年 365 天网格按天呈现随礼/收礼密度，深浅渐变色阶映射金额，点击方块可联动查看当日收支。 | `GiftCalendarHeatmap` 单元断言 | 完整映射全年日期，吉日散点分布计算准确，支持按年份切换。 |
+| **GIFT-VIS-09** | 亲友社交圈层力导向图谱 | 以本人为核心节点辐射 5 大圈层 Hub 与各亲友节点，节点大小映射礼金总额，连线粗细映射往来权重。 | `GiftRelationshipGraph` 单元断言 | 准确构建力导向网络，节点半径受 `[18, 40]` 范围约束，失衡亲友高亮红色虚线边框，点击亲友唤起明细抽屉。 |
 
 ---
 

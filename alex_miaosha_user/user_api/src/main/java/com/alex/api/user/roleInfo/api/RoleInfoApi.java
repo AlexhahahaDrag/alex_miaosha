@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "roleInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/role-info", configuration = FeignConfig.class, fallback = RoleInfoFallbackFactory.class)
+@FeignClient(contextId = "roleInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/role-info", configuration = FeignConfig.class, fallbackFactory = RoleInfoFallbackFactory.class)
 public interface RoleInfoApi {
 
     @ApiOperationSupport(order = 10, author = "majf")

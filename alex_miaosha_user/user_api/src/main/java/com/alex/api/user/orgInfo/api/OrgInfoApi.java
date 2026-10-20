@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "orgInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/org-info", configuration = FeignConfig.class, fallback = OrgInfoFallbackFactory.class)
+@FeignClient(contextId = "orgInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/org-info", configuration = FeignConfig.class, fallbackFactory = OrgInfoFallbackFactory.class)
 public interface OrgInfoApi {
 
     @ApiOperationSupport(order = 10, author = "alex")

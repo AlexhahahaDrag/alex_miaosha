@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * version:      1.0.0
  */
 @Component
-@FeignClient(contextId = "permissionInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/permission-info", configuration = FeignConfig.class, fallback = PermissionInfoFallbackFactory.class)
+@FeignClient(contextId = "permissionInfoApi", name = "alex-user-${spring.profiles.active:dev}", path = "${api.version:/api/v1}/permission-info", configuration = FeignConfig.class, fallbackFactory = PermissionInfoFallbackFactory.class)
 public interface PermissionInfoApi {
 
     @ApiOperationSupport(order = 10, author = "majf")
