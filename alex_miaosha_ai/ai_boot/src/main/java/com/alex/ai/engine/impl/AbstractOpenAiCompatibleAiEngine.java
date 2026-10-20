@@ -78,6 +78,9 @@ public abstract class AbstractOpenAiCompatibleAiEngine implements AiEngine {
                     engineType().getDisplayName(),
                     readTimeoutMs,
                     delta -> {
+                        if (sink.isCancelled()) {
+                            throw new IllegalStateException("Client cancelled stream");
+                        }
                         accumulated.append(delta);
                         sink.delta(delta);
                     },

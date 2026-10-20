@@ -32,20 +32,22 @@ public final class AiPromptBuilder {
         String bizType = req == null ? null : req.getBizType();
         Integer depth = req == null ? null : req.getDepth();
         Map<String, Object> context = req == null ? null : req.getContext();
+        Map<String, Object> prunedContext = AiContextPruner.pruneContext(context, objectMapper);
         String content = req == null ? null : req.getContent();
+        String sanitizedContent = AiPromptSanitizer.sanitizeContent(content);
 
         StringBuilder sb = new StringBuilder();
         sb.append("bizType=").append(bizType == null ? "default" : bizType).append("\n");
         sb.append("depth=").append(depth == null ? 1 : depth).append("\n");
-        if (context != null && !context.isEmpty() && objectMapper != null) {
+        if (prunedContext != null && !prunedContext.isEmpty() && objectMapper != null) {
             try {
-                String contextJson = objectMapper.writeValueAsString(context);
+                String contextJson = objectMapper.writeValueAsString(prunedContext);
                 sb.append("context=").append(contextJson).append("\n");
             } catch (Exception e) {
                 log.warn("OpenAI context 序列化失败，将忽略 context。");
             }
         }
-        sb.append("content=").append(content == null ? "" : content);
+        sb.append("content=").append(sanitizedContent);
         return sb.toString();
     }
 }

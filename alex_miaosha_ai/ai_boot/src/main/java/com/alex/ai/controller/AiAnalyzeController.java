@@ -3,14 +3,15 @@ package com.alex.ai.controller;
 import com.alex.ai.config.AiProperties;
 import com.alex.ai.service.AiAnalyzeService;
 import com.alex.ai.stream.AiSseEventWriter;
+import com.alex.ai.stream.AiStreamBackpressureManager;
 import com.alex.api.ai.vo.AiAnalyzeReq;
 import com.alex.api.ai.vo.AiAnalyzeResp;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.LogRestRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * AI Agent：
@@ -26,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
  */
 @Api(value = "AI 对话相关接口", tags = {"AI 对话相关接口"})
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("${api.version:/api/v1}/ai")
 @Slf4j
 public class AiAnalyzeController {
@@ -35,6 +36,15 @@ public class AiAnalyzeController {
 
     private final AiAnalyzeService aiAnalyzeService;
     private final AiProperties aiProperties;
+    private final AiStreamBackpressureManager backpressureManager;
+
+    public AiAnalyzeController(AiAnalyzeService aiAnalyzeService,
+                               AiProperties aiProperties,
+                               @Autowired(required = false) AiStreamBackpressureManager backpressureManager) {
+        this.aiAnalyzeService = aiAnalyzeService;
+        this.aiProperties = aiProperties;
+        this.backpressureManager = backpressureManager != null ? backpressureManager : new AiStreamBackpressureManager();
+    }
 
     @LogRestRequest(apiName = "AI 对话")
     @ApiOperation(
@@ -56,13 +66,40 @@ public class AiAnalyzeController {
         SseEmitter emitter = new SseEmitter(timeout);
         AiSseEventWriter writer = new AiSseEventWriter(emitter);
 
+        String userId = resolveUserId(req);
+
+        // 1. 背压控制：检查用户并发活跃流连接
+        if (!backpressureManager.tryAcquire(userId)) {
+            writer.error("429001", "当前已有正在进行的 AI 对话流，请等待完成或稍后再试");
+            return emitter;
+        }
+
+        AtomicBoolean permitReleased = new AtomicBoolean(false);
+        Runnable releasePermit = () -> {
+            if (permitReleased.compareAndSet(false, true)) {
+                backpressureManager.release(userId);
+            }
+        };
+
+        // 2. 超时与取消感知联动
         emitter.onTimeout(() -> {
-            log.warn("AI chat stream timed out after {} ms", timeout);
+            log.warn("AI chat stream timed out after {} ms, userId={}", timeout, userId);
+            writer.markCancelled();
+            releasePermit.run();
             writer.completeWithErrorQuietly(new IllegalStateException("SSE timeout"));
         });
-        emitter.onError(ex -> log.warn("AI chat stream connection error: {}",
-                ex == null ? "" : ex.getMessage()));
+        emitter.onError(ex -> {
+            log.warn("AI chat stream connection error, userId={}: {}", userId,
+                    ex == null ? "" : ex.getMessage());
+            writer.markCancelled();
+            releasePermit.run();
+        });
+        emitter.onCompletion(() -> {
+            writer.markCancelled();
+            releasePermit.run();
+        });
 
+        // 3. 异步流式调度
         CompletableFuture.runAsync(() -> {
             try {
                 aiAnalyzeService.analyzeStream(req, writer);
@@ -73,10 +110,22 @@ public class AiAnalyzeController {
                 } catch (Exception sendEx) {
                     writer.completeWithErrorQuietly(e);
                 }
+            } finally {
+                releasePermit.run();
             }
         });
 
         return emitter;
+    }
+
+    private String resolveUserId(AiAnalyzeReq req) {
+        if (req != null && req.getContext() != null) {
+            Object uid = req.getContext().get("userId");
+            if (uid != null && !String.valueOf(uid).isBlank()) {
+                return String.valueOf(uid);
+            }
+        }
+        return "default-user";
     }
 
     private long resolveStreamTimeoutMs() {

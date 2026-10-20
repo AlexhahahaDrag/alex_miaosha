@@ -18,6 +18,17 @@ public class AiSseEventWriter implements AiStreamSink {
 
     private final SseEmitter emitter;
     private final AtomicBoolean completed = new AtomicBoolean(false);
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled.get() || completed.get();
+    }
+
+    @Override
+    public void markCancelled() {
+        cancelled.set(true);
+    }
 
     public AiSseEventWriter(SseEmitter emitter) {
         this.emitter = emitter;

@@ -112,6 +112,16 @@ public class AiEngineRouter {
             public void error(String code, String message) {
                 engineError.compareAndSet(null, message == null ? "" : message);
             }
+
+            @Override
+            public boolean isCancelled() {
+                return sink.isCancelled();
+            }
+
+            @Override
+            public void markCancelled() {
+                sink.markCancelled();
+            }
         };
 
         try {
