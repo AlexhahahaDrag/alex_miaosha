@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -57,6 +58,7 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public static final String MSG_TYPE_COUPON_EXPIRE = "COUPON_EXPIRE";
     public static final String MSG_TYPE_CARD_EXPIRE = "CARD_EXPIRE";
     public static final String MSG_TYPE_GIFT_RETURN = "GIFT_RETURN";
+    public static final String MSG_TYPE_BUDGET = "BUDGET";
 
     public static final String SUB_TYPE_WELCOME = "WELCOME";
     public static final String SUB_TYPE_ANNOUNCE = "ANNOUNCE";
@@ -65,6 +67,8 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public static final String SUB_TYPE_D_MINUS_3 = "D_MINUS_3";
     public static final String SUB_TYPE_IMBALANCE = "IMBALANCE";
     public static final String SUB_TYPE_EVENT_RETURN = "EVENT_RETURN";
+    public static final String SUB_TYPE_BUDGET_OVER = "BUDGET_OVER";
+    public static final String SUB_TYPE_BUDGET_WARN = "BUDGET_WARN";
 
     public static final String PRIORITY_HIGH = "HIGH";
     public static final String PRIORITY_MEDIUM = "MEDIUM";
@@ -76,12 +80,14 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public static final String BIZ_TYPE_ACCOUNT_RECORD = "ACCOUNT_RECORD";
     public static final String BIZ_TYPE_PREPAID_CARD = "PREPAID_CARD";
     public static final String BIZ_TYPE_GIFT_RETURN = "GIFT_RETURN";
+    public static final String BIZ_TYPE_BUDGET = "BUDGET";
 
     public static final String JUMP_GIFT_EVENT = "/finance/gift/event";
     public static final String JUMP_COUPON = "/cpn-coupon/cpn-coupon-info";
     public static final String JUMP_ACCOUNT_RECORD = "/finance/accountRecordInfo";
     public static final String JUMP_PREPAID_CARD = "/selfFinance/prepaidCardInfoT";
     public static final String JUMP_GIFT_ANALYSIS = "/finance/gift/analysis";
+    public static final String JUMP_BUDGET_MANAGE = "/finance/financeManager";
 
     private final GiftDataScopeSupport scopeSupport;
     private final GiftEventInfoMapper giftEventInfoMapper;
@@ -90,6 +96,8 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     private final PrepaidCardInfoTMapper prepaidCardInfoTMapper;
     private final com.alex.finance.gift.record.mapper.GiftRecordInfoMapper giftRecordInfoMapper;
     private final com.alex.finance.gift.person.mapper.GiftPersonInfoMapper giftPersonInfoMapper;
+    private final com.alex.finance.finance.mapper.FinanceBudgetInfoMapper financeBudgetInfoMapper;
+    private final com.alex.finance.finance.mapper.FinanceInfoMapper financeInfoMapper;
     private final WeChatService weChatService;
 
     private final AtomicBoolean tableChecked = new AtomicBoolean(false);
@@ -129,6 +137,9 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
 
         // 4. 扫描礼尚往来失衡与回礼备忘提醒（净盈余 >= 800且超180天无互动，按月幂等提醒）
         collectGiftReturnRemindersForJob(today, candidateMap);
+
+        // 5. 扫描零花钱预算月度超支与预警（按月幂等提醒）
+        collectBudgetRemindersForJob(today, candidateMap);
 
         return persistCandidates(candidateMap);
     }
@@ -566,6 +577,154 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
             }
         } catch (Exception e) {
             log.warn("巡检礼尚往来失衡回礼备忘异常: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 巡检月度零花钱预算超支与预警：
+     * 针对当月已设定预算且实际开销超出（或临近超支）的家庭/个人，按月生成预算管控站内信提醒
+     */
+    private void collectBudgetRemindersForJob(LocalDate today, Map<String, SysMessageInfo> candidateMap) {
+        try {
+            if (financeBudgetInfoMapper == null || financeInfoMapper == null) {
+                return;
+            }
+            String currentMonth = DateUtils.FORMATTER_YYYY_MM.format(today);
+            LocalDate monthStart = today.withDayOfMonth(1);
+            LocalDate monthEnd = today.withDayOfMonth(today.lengthOfMonth());
+
+            List<com.alex.finance.finance.entity.FinanceBudgetInfo> budgetList = financeBudgetInfoMapper.selectList(null);
+            if (budgetList == null || budgetList.isEmpty()) {
+                return;
+            }
+
+            // 按 orgId 过滤或聚合当月生效的预算配置（匹配当月配置或历史继承配置）
+            Map<Long, com.alex.finance.finance.entity.FinanceBudgetInfo> orgBudgetMap = new LinkedHashMap<>();
+            for (com.alex.finance.finance.entity.FinanceBudgetInfo b : budgetList) {
+                if (b == null || b.getOrgId() == null || b.getBudgetAmount() == null || b.getBudgetAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                    continue;
+                }
+                Long orgId = b.getOrgId();
+                if (currentMonth.equals(b.getBudgetMonth())) {
+                    // 当月精确配置优先
+                    orgBudgetMap.put(orgId, b);
+                } else if (!orgBudgetMap.containsKey(orgId) && (b.getBudgetMonth() == null || b.getBudgetMonth().compareTo(currentMonth) < 0)) {
+                    // 历史继承配置兜底
+                    orgBudgetMap.put(orgId, b);
+                }
+            }
+
+            // 统计当月各机构/用户的实际支出流水
+            List<com.alex.finance.finance.entity.FinanceInfo> financeList = financeInfoMapper.selectList(null);
+            if (financeList == null) {
+                financeList = Collections.emptyList();
+            }
+
+            for (Map.Entry<Long, com.alex.finance.finance.entity.FinanceBudgetInfo> entry : orgBudgetMap.entrySet()) {
+                Long orgId = entry.getKey();
+                com.alex.finance.finance.entity.FinanceBudgetInfo budget = entry.getValue();
+                BigDecimal budgetAmount = budget.getBudgetAmount();
+
+                Set<String> categoryFilter = null;
+                if (StringUtils.isNotEmpty(budget.getCategoryCodes())) {
+                    categoryFilter = Arrays.stream(budget.getCategoryCodes().split(","))
+                            .map(String::trim)
+                            .filter(StringUtils::isNotEmpty)
+                            .collect(Collectors.toSet());
+                }
+
+                // 计算当月在此预算配置下的实际支出总额
+                BigDecimal actualExpense = BigDecimal.ZERO;
+                Long representativeUserId = budget.getBelongTo() != null ? budget.getBelongTo() : budget.getCreator();
+
+                for (com.alex.finance.finance.entity.FinanceInfo f : financeList) {
+                    if (f == null || f.getAmount() == null || !"1".equals(f.getIsValid())) {
+                        continue;
+                    }
+                    if (f.getInfoDate() == null) {
+                        continue;
+                    }
+                    LocalDate fDate = f.getInfoDate().toLocalDate();
+                    if (fDate.isBefore(monthStart) || fDate.isAfter(monthEnd)) {
+                        continue;
+                    }
+                    if (!"expense".equalsIgnoreCase(f.getIncomeAndExpenses())) {
+                        continue;
+                    }
+                    // 用户/归属人过滤：优先按 belongTo 匹配
+                    if (budget.getBelongTo() != null && f.getBelongTo() != null && !budget.getBelongTo().equals(f.getBelongTo())) {
+                        continue;
+                    }
+                    // 类别过滤（若配置了限定类别）
+                    if (categoryFilter != null && !categoryFilter.isEmpty()) {
+                        if (f.getTypeCode() == null || !categoryFilter.contains(f.getTypeCode())) {
+                            continue;
+                        }
+                    }
+                    actualExpense = actualExpense.add(f.getAmount());
+                    if (representativeUserId == null && f.getBelongTo() != null) {
+                        representativeUserId = f.getBelongTo();
+                    }
+                }
+
+                if (representativeUserId == null) {
+                    representativeUserId = 0L;
+                }
+
+                boolean isOver = actualExpense.compareTo(budgetAmount) > 0;
+                BigDecimal usagePercent = budgetAmount.compareTo(BigDecimal.ZERO) > 0
+                        ? actualExpense.multiply(new BigDecimal("100")).divide(budgetAmount, 1, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO;
+
+                boolean isWarn = !isOver && usagePercent.compareTo(new BigDecimal("80")) >= 0;
+
+                if (!isOver && !isWarn) {
+                    continue;
+                }
+
+                String subType = isOver ? SUB_TYPE_BUDGET_OVER : SUB_TYPE_BUDGET_WARN;
+                String priority = isOver ? PRIORITY_HIGH : PRIORITY_MEDIUM;
+                String dedupKey = String.format("%s:%d:%d:%s:%s", BIZ_TYPE_BUDGET, orgId, representativeUserId, subType, currentMonth);
+
+                String title;
+                String content;
+                if (isOver) {
+                    BigDecimal overAmount = actualExpense.subtract(budgetAmount);
+                    title = String.format("【预算超支提醒】%s月零花钱已超支 ¥%s", currentMonth, overAmount.stripTrailingZeros().toPlainString());
+                    content = String.format("您设定的%s月预算为 ¥%s，当前已支出 ¥%s，超出 ¥%s（使用率 %s%%）。建议合理控制消费节奏或进行预算调整。",
+                            currentMonth, budgetAmount.stripTrailingZeros().toPlainString(),
+                            actualExpense.stripTrailingZeros().toPlainString(),
+                            overAmount.stripTrailingZeros().toPlainString(),
+                            usagePercent.stripTrailingZeros().toPlainString());
+                } else {
+                    BigDecimal remain = budgetAmount.subtract(actualExpense);
+                    title = String.format("【预算预警提示】%s月零花钱已使用 %s%%", currentMonth, usagePercent.stripTrailingZeros().toPlainString());
+                    content = String.format("您设定的%s月预算为 ¥%s，当前已支出 ¥%s，仅剩 ¥%s（使用率 %s%%）。请注意理性消费，避免月末超支。",
+                            currentMonth, budgetAmount.stripTrailingZeros().toPlainString(),
+                            actualExpense.stripTrailingZeros().toPlainString(),
+                            remain.stripTrailingZeros().toPlainString(),
+                            usagePercent.stripTrailingZeros().toPlainString());
+                }
+
+                SysMessageInfo msg = new SysMessageInfo()
+                        .setUserId(representativeUserId)
+                        .setOrgId(orgId)
+                        .setMsgType(MSG_TYPE_BUDGET)
+                        .setSubType(subType)
+                        .setPriority(priority)
+                        .setTitle(title)
+                        .setContent(content)
+                        .setBizId(String.valueOf(budget.getId()))
+                        .setBizType(BIZ_TYPE_BUDGET)
+                        .setJumpUrl(JUMP_BUDGET_MANAGE)
+                        .setReadStatus(0)
+                        .setRemindDate(today)
+                        .setDedupKey(dedupKey);
+
+                candidateMap.put(dedupKey, msg);
+            }
+        } catch (Exception e) {
+            log.warn("巡检零花钱预算超支与预警异常: {}", e.getMessage());
         }
     }
 

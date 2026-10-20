@@ -54,6 +54,8 @@ class SysMessageInfoServiceTest {
     private PrepaidCardInfoTMapper prepaidCardInfoTMapper;
     private com.alex.finance.gift.record.mapper.GiftRecordInfoMapper giftRecordInfoMapper;
     private com.alex.finance.gift.person.mapper.GiftPersonInfoMapper giftPersonInfoMapper;
+    private com.alex.finance.finance.mapper.FinanceBudgetInfoMapper financeBudgetInfoMapper;
+    private com.alex.finance.finance.mapper.FinanceInfoMapper financeInfoMapper;
     private WeChatService weChatService;
     private SysMessageInfoServiceImpl service;
 
@@ -69,6 +71,8 @@ class SysMessageInfoServiceTest {
         prepaidCardInfoTMapper = mock(PrepaidCardInfoTMapper.class);
         giftRecordInfoMapper = mock(com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.class);
         giftPersonInfoMapper = mock(com.alex.finance.gift.person.mapper.GiftPersonInfoMapper.class);
+        financeBudgetInfoMapper = mock(com.alex.finance.finance.mapper.FinanceBudgetInfoMapper.class);
+        financeInfoMapper = mock(com.alex.finance.finance.mapper.FinanceInfoMapper.class);
         weChatService = mock(WeChatService.class);
 
         service = new SysMessageInfoServiceImpl(
@@ -79,6 +83,8 @@ class SysMessageInfoServiceTest {
                 prepaidCardInfoTMapper,
                 giftRecordInfoMapper,
                 giftPersonInfoMapper,
+                financeBudgetInfoMapper,
+                financeInfoMapper,
                 weChatService
         );
         ReflectionTestUtils.setField(service, "baseMapper", sysMessageInfoMapper);
@@ -219,16 +225,14 @@ class SysMessageInfoServiceTest {
 
         GiftEventInfo todayEvent = new GiftEventInfo()
                 .setUserId(1001L)
-                .setOrgId(2001L)
-                .setEventName("张三婚礼")
+                                .setEventName("张三婚礼")
                 .setEventType("婚礼")
                 .setEventTime(now);
         todayEvent.setId(501L);
 
         GiftEventInfo twoDaysLaterEvent = new GiftEventInfo()
                 .setUserId(1001L)
-                .setOrgId(2001L)
-                .setEventName("王五满月")
+                                .setEventName("王五满月")
                 .setEventTime(now.plusDays(2));
         twoDaysLaterEvent.setId(503L);
 
@@ -308,8 +312,7 @@ class SysMessageInfoServiceTest {
         LocalDateTime now = DateUtils.now();
         GiftEventInfo todayEvent = new GiftEventInfo()
                 .setUserId(1001L)
-                .setOrgId(2001L)
-                .setEventName("张三婚礼")
+                                .setEventName("张三婚礼")
                 .setEventTime(now);
         todayEvent.setId(501L);
 
@@ -359,8 +362,7 @@ class SysMessageInfoServiceTest {
     void testMarkReadForbiddenForOtherUser() {
         SysMessageInfo otherMsg = new SysMessageInfo()
                 .setUserId(9999L)
-                .setOrgId(2001L)
-                .setReadStatus(0);
+                                .setReadStatus(0);
         otherMsg.setId(9001L);
 
         when(sysMessageInfoMapper.selectById(9001L)).thenReturn(otherMsg);
@@ -393,16 +395,14 @@ class SysMessageInfoServiceTest {
         // 模拟亲友与往来流水
         com.alex.finance.gift.record.entity.GiftRecordInfo r1 = new com.alex.finance.gift.record.entity.GiftRecordInfo()
                 .setUserId(1001L)
-                .setOrgId(2001L)
-                .setGiverPersonId(888L)
+                                .setGiverPersonId(888L)
                 .setDirection("RECEIVE")
                 .setAmount(new BigDecimal("2000.00"))
                 .setPayTime(DateUtils.now().minusDays(200));
 
         com.alex.finance.gift.record.entity.GiftRecordInfo r2 = new com.alex.finance.gift.record.entity.GiftRecordInfo()
                 .setUserId(1001L)
-                .setOrgId(2001L)
-                .setReceiverPersonId(888L)
+                                .setReceiverPersonId(888L)
                 .setDirection("GIVE")
                 .setAmount(new BigDecimal("500.00"))
                 .setPayTime(DateUtils.now().minusDays(190));
@@ -429,5 +429,55 @@ class SysMessageInfoServiceTest {
         Assertions.assertTrue(inserted.getTitle().contains("二舅"));
         Assertions.assertTrue(inserted.getContent().contains("1500"));
         Assertions.assertEquals("/finance/gift/analysis", inserted.getJumpUrl());
+    }
+
+    @Test
+    @DisplayName("executeRemindJob：零花钱预算月度超支应准确生成 BUDGET_OVER 强提醒站内信")
+    void testCollectBudgetOverReminder() {
+        String currentMonth = DateUtils.FORMATTER_YYYY_MM.format(DateUtils.now());
+
+        com.alex.finance.finance.entity.FinanceBudgetInfo budget = new com.alex.finance.finance.entity.FinanceBudgetInfo()
+                .setOrgId(2001L)
+                .setBelongTo(1001L)
+                .setBudgetMonth(currentMonth)
+                .setBudgetAmount(new BigDecimal("1000.00"))
+                .setCategoryCodes("c1,c2");
+        budget.setId(9901L);
+
+        when(financeBudgetInfoMapper.selectList(null)).thenReturn(Collections.singletonList(budget));
+
+        com.alex.finance.finance.entity.FinanceInfo expense1 = new com.alex.finance.finance.entity.FinanceInfo()
+                .setBelongTo(1001L)
+                .setTypeCode("c1")
+                .setIncomeAndExpenses("expense")
+                .setAmount(new BigDecimal("800.00"))
+                .setInfoDate(DateUtils.now())
+                .setIsValid("1");
+
+        com.alex.finance.finance.entity.FinanceInfo expense2 = new com.alex.finance.finance.entity.FinanceInfo()
+                .setBelongTo(1001L)
+                .setTypeCode("c2")
+                .setIncomeAndExpenses("expense")
+                .setAmount(new BigDecimal("500.00"))
+                .setInfoDate(DateUtils.now())
+                .setIsValid("1");
+
+        when(financeInfoMapper.selectList(null)).thenReturn(Arrays.asList(expense1, expense2));
+        when(sysMessageInfoMapper.selectExistingDedupKeys(anyCollection())).thenReturn(Collections.emptyList());
+
+        int count = service.executeRemindJob();
+        Assertions.assertTrue(count >= 1);
+
+        ArgumentCaptor<SysMessageInfo> captor = ArgumentCaptor.forClass(SysMessageInfo.class);
+        verify(sysMessageInfoMapper, times(1)).insert(captor.capture());
+
+        SysMessageInfo inserted = captor.getValue();
+        Assertions.assertEquals("BUDGET", inserted.getMsgType());
+        Assertions.assertEquals("BUDGET_OVER", inserted.getSubType());
+        Assertions.assertEquals("HIGH", inserted.getPriority());
+        Assertions.assertEquals("9901", inserted.getBizId());
+        Assertions.assertTrue(inserted.getTitle().contains("预算超支提醒"));
+        Assertions.assertTrue(inserted.getContent().contains("300")); // 超出 300
+        Assertions.assertEquals("/finance/financeManager", inserted.getJumpUrl());
     }
 }
