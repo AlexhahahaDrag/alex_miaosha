@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
  * description: 月度零花钱预算服务实现
  * author: alex
  * createDate: 2026-10-08
- * version: 1.0.0
+ * version: 2.0.0
  */
 @Slf4j
 @Service
@@ -56,15 +55,25 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     @Autowired(required = false)
     private UserUtils userUtils;
 
+    private YearMonth validateAndParseBudgetMonth(String budgetMonth) {
+        if (StringUtils.isBlank(budgetMonth)) {
+            return YearMonth.from(DateUtils.now());
+        }
+        try {
+            return YearMonth.parse(budgetMonth.trim());
+        } catch (Exception e) {
+            throw FinanceException.param("预算月份格式不正确，标准格式为 YYYY-MM（如 2026-10）");
+        }
+    }
+
     @Override
     public FinanceBudgetStatusVo getMonthlyBudgetStatus(String budgetMonth, Long orgId, Long belongTo) {
-        if (StringUtils.isBlank(budgetMonth)) {
-            budgetMonth = DateUtils.now().format(DateUtils.FORMATTER_YYYY_MM);
-        }
+        YearMonth ym = validateAndParseBudgetMonth(budgetMonth);
+        String targetBudgetMonth = ym.toString();
         Long targetOrgId = resolveTargetOrgId(orgId);
 
-        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(targetOrgId, budgetMonth);
-        FinanceBudgetInfo history = (current == null) ? financeBudgetInfoMapper.selectLatestBefore(targetOrgId, budgetMonth) : null;
+        FinanceBudgetInfo current = financeBudgetInfoMapper.selectByMonth(targetOrgId, targetBudgetMonth);
+        FinanceBudgetInfo history = (current == null) ? financeBudgetInfoMapper.selectLatestBefore(targetOrgId, targetBudgetMonth) : null;
         boolean isInherited = (history != null);
         FinanceBudgetInfo budget = (current != null) ? current : history;
 
@@ -84,7 +93,6 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         List<String> categoryCodes = parseCategoryCodes(categoryCodesStr);
         Set<String> directions = parseIncomeAndExpenses(incomeAndExpenses);
 
-        YearMonth ym = YearMonth.parse(budgetMonth);
         FinanceInfoVo queryVo = new FinanceInfoVo();
         queryVo.setBelongTo(belongTo);
         queryVo.setInfoDateStart(ym.atDay(1));
@@ -103,7 +111,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
                 .id(recordId)
                 .orgId(targetOrgId)
                 .belongTo(belongTo)
-                .budgetMonth(budgetMonth)
+                .budgetMonth(targetBudgetMonth)
                 .incomeAndExpenses(String.join(",", directions))
                 .budgetAmount(budgetAmount)
                 .categoryCodes(categoryCodes)
@@ -121,8 +129,15 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     public Boolean saveMonthlyBudget(FinanceBudgetSaveReq req) {
         String budgetMonth = req != null ? req.getBudgetMonth() : null;
         if (req == null || StringUtils.isBlank(budgetMonth)) {
-            throw new IllegalArgumentException("预算月份不能为空！");
+            throw FinanceException.param("预算月份不能为空！");
         }
+        YearMonth ym = validateAndParseBudgetMonth(budgetMonth);
+        String targetBudgetMonth = ym.toString();
+
+        if (req.getBudgetAmount() != null && req.getBudgetAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw FinanceException.param("预算金额不能为负数！");
+        }
+
         assertCanEditBudget();
         Long targetOrgId = resolveTargetOrgId(req.getOrgId());
 
@@ -137,7 +152,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         List<String> cleanCodes = cleanCategoryCodes(req.getCategoryCodes());
         String categoryCodesStr = cleanCodes.isEmpty() ? null : String.join(",", cleanCodes);
 
-        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(targetOrgId, budgetMonth);
+        FinanceBudgetInfo exist = financeBudgetInfoMapper.selectByMonth(targetOrgId, targetBudgetMonth);
         if (exist != null) {
             exist.setOrgId(targetOrgId);
             exist.setBelongTo(belongTo);
@@ -150,7 +165,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             FinanceBudgetInfo newBudget = new FinanceBudgetInfo();
             newBudget.setOrgId(targetOrgId);
             newBudget.setBelongTo(belongTo);
-            newBudget.setBudgetMonth(budgetMonth);
+            newBudget.setBudgetMonth(targetBudgetMonth);
             newBudget.setIncomeAndExpenses(incomeAndExpenses);
             newBudget.setBudgetAmount(req.getBudgetAmount());
             newBudget.setCategoryCodes(categoryCodesStr);
@@ -312,18 +327,10 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
 
     @Override
     public List<String> getRecentCategories(String budgetMonth, Long belongTo) {
-        if (StringUtils.isBlank(budgetMonth)) {
-            budgetMonth = DateUtils.now().format(DateUtils.FORMATTER_YYYY_MM);
-        }
-        try {
-            YearMonth ym = YearMonth.parse(budgetMonth);
-            LocalDate startDate = ym.minusMonths(1).atDay(1);
-            LocalDate endDate = ym.atEndOfMonth();
-            List<String> list = financeInfoMapper.selectRecentCategories(startDate, endDate, belongTo);
-            return list != null ? list : Collections.emptyList();
-        } catch (Exception e) {
-            log.error("获取近两月记账分类异常: {}", e.getMessage(), e);
-            return Collections.emptyList();
-        }
+        YearMonth ym = validateAndParseBudgetMonth(budgetMonth);
+        LocalDate startDate = ym.minusMonths(1).atDay(1);
+        LocalDate endDate = ym.atEndOfMonth();
+        List<String> list = financeInfoMapper.selectRecentCategories(startDate, endDate, belongTo);
+        return list != null ? list : Collections.emptyList();
     }
 }

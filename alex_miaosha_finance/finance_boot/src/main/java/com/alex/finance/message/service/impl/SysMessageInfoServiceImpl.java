@@ -56,12 +56,15 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public static final String MSG_TYPE_GIFT_EVENT = "GIFT_EVENT";
     public static final String MSG_TYPE_COUPON_EXPIRE = "COUPON_EXPIRE";
     public static final String MSG_TYPE_CARD_EXPIRE = "CARD_EXPIRE";
+    public static final String MSG_TYPE_GIFT_RETURN = "GIFT_RETURN";
 
     public static final String SUB_TYPE_WELCOME = "WELCOME";
     public static final String SUB_TYPE_ANNOUNCE = "ANNOUNCE";
     public static final String SUB_TYPE_D_DAY = "D_DAY";
     public static final String SUB_TYPE_D_MINUS_1 = "D_MINUS_1";
     public static final String SUB_TYPE_D_MINUS_3 = "D_MINUS_3";
+    public static final String SUB_TYPE_IMBALANCE = "IMBALANCE";
+    public static final String SUB_TYPE_EVENT_RETURN = "EVENT_RETURN";
 
     public static final String PRIORITY_HIGH = "HIGH";
     public static final String PRIORITY_MEDIUM = "MEDIUM";
@@ -72,17 +75,21 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public static final String BIZ_TYPE_COUPON = "COUPON";
     public static final String BIZ_TYPE_ACCOUNT_RECORD = "ACCOUNT_RECORD";
     public static final String BIZ_TYPE_PREPAID_CARD = "PREPAID_CARD";
+    public static final String BIZ_TYPE_GIFT_RETURN = "GIFT_RETURN";
 
     public static final String JUMP_GIFT_EVENT = "/finance/gift/event";
     public static final String JUMP_COUPON = "/cpn-coupon/cpn-coupon-info";
     public static final String JUMP_ACCOUNT_RECORD = "/finance/accountRecordInfo";
     public static final String JUMP_PREPAID_CARD = "/selfFinance/prepaidCardInfoT";
+    public static final String JUMP_GIFT_ANALYSIS = "/finance/gift/analysis";
 
     private final GiftDataScopeSupport scopeSupport;
     private final GiftEventInfoMapper giftEventInfoMapper;
     private final CpnCouponInfoMapper cpnCouponInfoMapper;
     private final AccountRecordInfoMapper accountRecordInfoMapper;
     private final PrepaidCardInfoTMapper prepaidCardInfoTMapper;
+    private final com.alex.finance.gift.record.mapper.GiftRecordInfoMapper giftRecordInfoMapper;
+    private final com.alex.finance.gift.person.mapper.GiftPersonInfoMapper giftPersonInfoMapper;
     private final WeChatService weChatService;
 
     private final AtomicBoolean tableChecked = new AtomicBoolean(false);
@@ -119,6 +126,9 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
         // 3. 扫描猫超卡（账户记录）与预付卡到期提醒（剩余 0~3 天且余额 > 0）
         collectAccountRecordExpireReminders(today, candidateMap);
         collectPrepaidCardExpireReminders(today, candidateMap);
+
+        // 4. 扫描礼尚往来失衡与回礼备忘提醒（净盈余 >= 800且超180天无互动，按月幂等提醒）
+        collectGiftReturnRemindersForJob(today, candidateMap);
 
         return persistCandidates(candidateMap);
     }
@@ -158,6 +168,8 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
         String remindType;
         if (BIZ_TYPE_GIFT_EVENT.equals(entity.getBizType())) {
             remindType = "礼尚往来事件";
+        } else if (BIZ_TYPE_GIFT_RETURN.equals(entity.getBizType())) {
+            remindType = "人情回礼备忘";
         } else if (BIZ_TYPE_COUPON.equals(entity.getBizType())) {
             remindType = "消费券到期";
         } else if (BIZ_TYPE_PREPAID_CARD.equals(entity.getBizType())) {
@@ -167,7 +179,9 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
         }
 
         String stageText;
-        if (SUB_TYPE_D_DAY.equals(entity.getSubType())) {
+        if (BIZ_TYPE_GIFT_RETURN.equals(entity.getBizType())) {
+            stageText = "礼金盈余待回";
+        } else if (SUB_TYPE_D_DAY.equals(entity.getSubType())) {
             stageText = BIZ_TYPE_GIFT_EVENT.equals(entity.getBizType()) ? "今日举行" : "今日到期";
         } else if (SUB_TYPE_D_MINUS_1.equals(entity.getSubType())) {
             stageText = BIZ_TYPE_GIFT_EVENT.equals(entity.getBizType()) ? "明日举行" : "明日到期(剩1天)";
@@ -463,6 +477,111 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
             return PRIORITY_MEDIUM;
         }
         return PRIORITY_NORMAL;
+    }
+
+    /**
+     * 巡检礼尚往来失衡与回礼备忘：
+     * 针对净盈余 netBalance >= 800 且最近互动超 180 天的亲友，按月生成回礼备忘提醒；
+     * 同一月份同一亲友仅提醒一次，避免频繁打扰用户。
+     */
+    private void collectGiftReturnRemindersForJob(LocalDate today, Map<String, SysMessageInfo> candidateMap) {
+        try {
+            if (giftRecordInfoMapper == null || giftPersonInfoMapper == null) {
+                return;
+            }
+            List<com.alex.finance.gift.record.entity.GiftRecordInfo> records = giftRecordInfoMapper.selectList(null);
+            if (records == null || records.isEmpty()) {
+                return;
+            }
+
+            // 按 (userId, personId) 分组统计收礼、随礼与最新往来时间
+            Map<String, UserPersonGiftAgg> aggMap = new LinkedHashMap<>();
+            for (com.alex.finance.gift.record.entity.GiftRecordInfo r : records) {
+                if (r == null || r.getUserId() == null || r.getAmount() == null) {
+                    continue;
+                }
+                Long personId = "RECEIVE".equals(r.getDirection()) ? r.getGiverPersonId() : r.getReceiverPersonId();
+                if (personId == null) {
+                    continue;
+                }
+                String key = r.getUserId() + "_" + personId;
+                UserPersonGiftAgg agg = aggMap.computeIfAbsent(key, k -> new UserPersonGiftAgg(r.getUserId(), r.getOrgId(), personId));
+                if ("RECEIVE".equals(r.getDirection())) {
+                    agg.totalReceive = agg.totalReceive.add(r.getAmount());
+                } else if ("GIVE".equals(r.getDirection()) || "RETURN".equals(r.getDirection())) {
+                    agg.totalGive = agg.totalGive.add(r.getAmount());
+                }
+                if (r.getPayTime() != null) {
+                    if (agg.latestPayTime == null || r.getPayTime().isAfter(agg.latestPayTime)) {
+                        agg.latestPayTime = r.getPayTime();
+                    }
+                }
+            }
+
+            String currentMonth = DateUtils.FORMATTER_YYYY_MM.format(today);
+
+            for (UserPersonGiftAgg agg : aggMap.values()) {
+                BigDecimal net = agg.totalReceive.subtract(agg.totalGive);
+                // 净盈余 >= 800
+                if (net.compareTo(new BigDecimal("800")) < 0) {
+                    continue;
+                }
+                // 超 180 天无后续往来互动
+                if (agg.latestPayTime == null) {
+                    continue;
+                }
+                long daysSince = ChronoUnit.DAYS.between(agg.latestPayTime.toLocalDate(), today);
+                if (daysSince <= 180L) {
+                    continue;
+                }
+
+                // 查询亲友姓名与关系
+                com.alex.finance.gift.person.entity.GiftPersonInfo person = giftPersonInfoMapper.selectById(agg.personId);
+                String personName = (person != null && StringUtils.isNotEmpty(person.getPersonName())) ? person.getPersonName() : "亲友";
+                String relation = (person != null && StringUtils.isNotEmpty(person.getRelationType())) ? person.getRelationType() : "人情往来";
+
+                String title = String.format("【人情回礼备忘】%s 礼金盈余待回礼提醒", personName);
+                String content = String.format("您与 %s（%s）累计礼金盈余 ¥%s，且已超 180 天无后续往来互动。建议在适逢节庆或重要节点时适度体面回礼，维系亲友深厚情谊。",
+                        personName, relation, net.toPlainString());
+
+                // 按月防重: GIFT_RETURN:{userId}:{personId}:IMBALANCE:{currentMonth}
+                String dedupKey = String.format("%s:%d:%s:%s", BIZ_TYPE_GIFT_RETURN, agg.personId, SUB_TYPE_IMBALANCE, currentMonth);
+
+                SysMessageInfo msg = new SysMessageInfo()
+                        .setUserId(agg.userId)
+                        .setOrgId(agg.orgId)
+                        .setMsgType(MSG_TYPE_GIFT_RETURN)
+                        .setSubType(SUB_TYPE_IMBALANCE)
+                        .setPriority(PRIORITY_MEDIUM)
+                        .setTitle(title)
+                        .setContent(content)
+                        .setBizId(String.valueOf(agg.personId))
+                        .setBizType(BIZ_TYPE_GIFT_RETURN)
+                        .setJumpUrl(JUMP_GIFT_ANALYSIS)
+                        .setReadStatus(0)
+                        .setRemindDate(today)
+                        .setDedupKey(dedupKey);
+
+                candidateMap.put(dedupKey, msg);
+            }
+        } catch (Exception e) {
+            log.warn("巡检礼尚往来失衡回礼备忘异常: {}", e.getMessage());
+        }
+    }
+
+    private static class UserPersonGiftAgg {
+        final Long userId;
+        final Long orgId;
+        final Long personId;
+        BigDecimal totalReceive = BigDecimal.ZERO;
+        BigDecimal totalGive = BigDecimal.ZERO;
+        LocalDateTime latestPayTime;
+
+        UserPersonGiftAgg(Long userId, Long orgId, Long personId) {
+            this.userId = userId;
+            this.orgId = orgId;
+            this.personId = personId;
+        }
     }
 
     private String buildDedupKey(String bizType, String bizId, String subType, LocalDate remindDate, Long userId) {

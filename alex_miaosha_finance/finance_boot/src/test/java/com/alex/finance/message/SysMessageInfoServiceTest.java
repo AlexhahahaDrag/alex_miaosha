@@ -52,6 +52,8 @@ class SysMessageInfoServiceTest {
     private CpnCouponInfoMapper cpnCouponInfoMapper;
     private AccountRecordInfoMapper accountRecordInfoMapper;
     private PrepaidCardInfoTMapper prepaidCardInfoTMapper;
+    private com.alex.finance.gift.record.mapper.GiftRecordInfoMapper giftRecordInfoMapper;
+    private com.alex.finance.gift.person.mapper.GiftPersonInfoMapper giftPersonInfoMapper;
     private WeChatService weChatService;
     private SysMessageInfoServiceImpl service;
 
@@ -65,6 +67,8 @@ class SysMessageInfoServiceTest {
         cpnCouponInfoMapper = mock(CpnCouponInfoMapper.class);
         accountRecordInfoMapper = mock(AccountRecordInfoMapper.class);
         prepaidCardInfoTMapper = mock(PrepaidCardInfoTMapper.class);
+        giftRecordInfoMapper = mock(com.alex.finance.gift.record.mapper.GiftRecordInfoMapper.class);
+        giftPersonInfoMapper = mock(com.alex.finance.gift.person.mapper.GiftPersonInfoMapper.class);
         weChatService = mock(WeChatService.class);
 
         service = new SysMessageInfoServiceImpl(
@@ -73,6 +77,8 @@ class SysMessageInfoServiceTest {
                 cpnCouponInfoMapper,
                 accountRecordInfoMapper,
                 prepaidCardInfoTMapper,
+                giftRecordInfoMapper,
+                giftPersonInfoMapper,
                 weChatService
         );
         ReflectionTestUtils.setField(service, "baseMapper", sysMessageInfoMapper);
@@ -379,5 +385,49 @@ class SysMessageInfoServiceTest {
         Assertions.assertEquals("HIGH", saved.getPriority());
         Assertions.assertEquals(0, saved.getReadStatus());
         verify(sysMessageInfoMapper, times(1)).insert(any(SysMessageInfo.class));
+    }
+
+    @Test
+    @DisplayName("executeRemindJob：大额礼金盈余且超180天无互动应生成回礼备忘提醒")
+    void testCollectGiftReturnImbalanceReminder() {
+        // 模拟亲友与往来流水
+        com.alex.finance.gift.record.entity.GiftRecordInfo r1 = new com.alex.finance.gift.record.entity.GiftRecordInfo()
+                .setUserId(1001L)
+                .setOrgId(2001L)
+                .setGiverPersonId(888L)
+                .setDirection("RECEIVE")
+                .setAmount(new BigDecimal("2000.00"))
+                .setPayTime(DateUtils.now().minusDays(200));
+
+        com.alex.finance.gift.record.entity.GiftRecordInfo r2 = new com.alex.finance.gift.record.entity.GiftRecordInfo()
+                .setUserId(1001L)
+                .setOrgId(2001L)
+                .setReceiverPersonId(888L)
+                .setDirection("GIVE")
+                .setAmount(new BigDecimal("500.00"))
+                .setPayTime(DateUtils.now().minusDays(190));
+
+        when(giftRecordInfoMapper.selectList(null)).thenReturn(Arrays.asList(r1, r2));
+
+        com.alex.finance.gift.person.entity.GiftPersonInfo person = new com.alex.finance.gift.person.entity.GiftPersonInfo()
+                .setPersonName("二舅")
+                .setRelationType("亲戚");
+        when(giftPersonInfoMapper.selectById(888L)).thenReturn(person);
+
+        when(sysMessageInfoMapper.selectExistingDedupKeys(anyCollection())).thenReturn(Collections.emptyList());
+
+        int count = service.executeRemindJob();
+        Assertions.assertTrue(count >= 1);
+
+        ArgumentCaptor<SysMessageInfo> captor = ArgumentCaptor.forClass(SysMessageInfo.class);
+        verify(sysMessageInfoMapper, times(1)).insert(captor.capture());
+
+        SysMessageInfo inserted = captor.getValue();
+        Assertions.assertEquals("GIFT_RETURN", inserted.getMsgType());
+        Assertions.assertEquals("IMBALANCE", inserted.getSubType());
+        Assertions.assertEquals("888", inserted.getBizId());
+        Assertions.assertTrue(inserted.getTitle().contains("二舅"));
+        Assertions.assertTrue(inserted.getContent().contains("1500"));
+        Assertions.assertEquals("/finance/gift/analysis", inserted.getJumpUrl());
     }
 }

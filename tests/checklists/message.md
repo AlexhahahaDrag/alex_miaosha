@@ -36,6 +36,8 @@
 | M6 | 归属与越权防护 | 用户 A 不能标记已读或删除用户 B 的私有消息 | `markRead_or_delete_should_reject_when_message_belongs_to_other_user` | 抛出无权操作异常 |
 | M7 | ID 精度安全契约 | 后端 `id / orgId / userId` 序列化为 String，前端 `normalizeMessageIds` 将所有 `*Id` 递归转 String | `normalizeMessageIds_should_convert_all_id_fields_to_string` | 大数雪花 ID 精度零丢失 |
 | M8 | 微信模板消息联动与降级 | XXL-Job 巡检新插入提醒时自动触发 `WeChatService.sendRemindTemplateMessage`；微信异常不回滚站内信入库 | `testWeChatFailureDoesNotRollbackMessageInsert` | 站内信入库成功且捕获微信异常不抛出 |
+| M9 | 人情往来失衡与回礼备忘提醒 | 针对净盈余 `netBalance >= 800` 且超 180 天未互动亲友，按月幂等生成 `GIFT_RETURN` 备忘消息 | `test_generate_gift_return_imbalance_reminder_and_dedup` | 生成标题为回礼备忘、链接跳转平衡矩阵的消息，同月内不重复打扰 |
+
 
 ---
 
