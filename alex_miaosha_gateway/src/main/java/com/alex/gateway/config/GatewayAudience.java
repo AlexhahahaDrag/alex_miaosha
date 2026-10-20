@@ -22,4 +22,14 @@ public class GatewayAudience {
     private List<String> whiteList;
 
     private List<String> docWhiteList;
+
+    /**
+     * IP 黑名单列表（支持单 IP 如 192.168.1.50 或前缀如 10.0.0.*）
+     */
+    private List<String> ipBlackList;
+
+    /**
+     * 灰度标记请求头（默认 X-Gray-Tag）
+     */
+    private String grayHeaderName = "X-Gray-Tag";
 }
