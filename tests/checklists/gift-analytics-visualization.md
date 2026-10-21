@@ -61,3 +61,15 @@
 1. **ECharts 底层 WebGL / Canvas 像素级逐帧渲染**：不纳入自动化断言范围，由 ECharts 6 官方内核保障，上层仅断言配置项（Options）与数据驱动映射。
 2. **移动端真机物理马达振动波形**：依赖特定硬件驱动，自动化中通过 Mock `navigator.vibrate` 断言振动时长（如 10ms、30ms）与微交互参数。
 3. **商户进销存与秒杀商品中心**：属于隔离业务线，本功能不涉及、严禁触碰，不纳入本模块测试矩阵。
+
+---
+
+## 5. AI / E2E 自动化验收测试矩阵（Playwright + Midscene）
+
+| 用例 ID | 终端 | 场景描述 | 核心断言内容 | 验收状态 |
+| :--- | :--- | :--- | :--- | :--- |
+| **GIFT-E2E-PC-BALANCE-MATRIX** | PC 端 | 亲友互赠平衡矩阵渲染、AI测算回礼与对账单导出闭环 | 1. `[data-testid="gift-balance-matrix-section"]` 渲染<br>2. 王五失衡预警徽标与 AI 测算 1600 元平衡档<br>3. 一键复制贺词与 Excel 导出请求发出 | ✅ PASS |
+| **GIFT-E2E-PC-VISUAL-PERSPECTIVES** | PC 端 | 礼尚往来大盘多视角切换（热力图/人脉力导向图）与穿透明细抽屉断言 | 1. `[data-testid="analysis-perspective-nav"]` 视角切换<br>2. `[data-testid="gift-calendar-heatmap"]` 365天热力图挂载<br>3. `[data-testid="gift-relationship-graph"]` 亲友人脉图谱挂载<br>4. `[data-testid="drawer-gift-person-detail"]` 穿透明细抽屉与 AI 测算按钮 | ✅ PASS |
+| **GIFT-E2E-MOBILE-BALANCE-HAPTIC** | 移动端 | 人情平衡矩阵卡片、AI回礼速算浮层与触觉振动闭环 | 1. `[data-testid="gift-balance-matrix-section"]` 卡片展示<br>2. 李四失衡预警徽标与 AI 测算 1600 元平衡档<br>3. 复制贺词触发 `window.__giftVibrateCount` 探针微振动 | ✅ PASS |
+| **GIFT-E2E-MOBILE-GRAPH-HAPTIC** | 移动端 | 走势/人脉星阵切换与触觉微振动探针断言 | 1. `[data-testid="gift-mobile-trend-card"]` 与走势图挂载<br>2. 点击 `[data-testid="mobile-trend-tab-toggle"]` 切换人脉星阵<br>3. `installHapticProbe` 探针断言物理微振动递增<br>4. `[data-testid="gift-mobile-graph-chart"]` 星阵图谱挂载与平滑切回 | ✅ PASS |
+
