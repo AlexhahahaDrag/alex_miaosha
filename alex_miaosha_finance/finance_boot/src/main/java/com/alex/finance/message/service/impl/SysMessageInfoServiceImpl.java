@@ -100,6 +100,9 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     private final com.alex.finance.finance.mapper.FinanceInfoMapper financeInfoMapper;
     private final WeChatService weChatService;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.alex.finance.message.service.UserNoticeConfigService userNoticeConfigService;
+
     private final AtomicBoolean tableChecked = new AtomicBoolean(false);
 
     private void ensureTableInitialized() {
@@ -157,6 +160,14 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
 
         int inserted = 0;
         for (SysMessageInfo entity : toInsert) {
+            if (entity == null) {
+                continue;
+            }
+            if (userNoticeConfigService != null && !userNoticeConfigService.isInternalEnabled(entity.getUserId(), entity.getBizType())) {
+                log.debug("用户 [{}] 关闭了 [{}] 站内信接收，跳过入库", entity.getUserId(), entity.getBizType());
+                notifyWeChatSafely(entity);
+                continue;
+            }
             try {
                 baseMapper.insert(entity);
                 inserted++;
@@ -170,6 +181,10 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
 
     private void notifyWeChatSafely(SysMessageInfo entity) {
         if (weChatService == null || entity == null || MSG_TYPE_SYSTEM.equals(entity.getMsgType())) {
+            return;
+        }
+        if (userNoticeConfigService != null && !userNoticeConfigService.isWechatEnabled(entity.getUserId(), entity.getBizType())) {
+            log.debug("用户 [{}] 关闭了 [{}] 微信通知，跳过微信模板消息推送", entity.getUserId(), entity.getBizType());
             return;
         }
         // 猫超卡在 AccountRecordNoticeJob 中已有汇总微信提醒，此处聚焦礼尚往来事件、消费券到期与预付卡到期
