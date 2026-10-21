@@ -1,6 +1,7 @@
 package com.alex.finance.gift.personoption.service.impl;
 
 import com.alex.base.constants.SysConf;
+import com.alex.common.cache.multilevel.MultiLevelCacheService;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationItemVo;
 import com.alex.api.finance.gift.person.vo.GiftPersonRelationOptionRowVo;
@@ -38,6 +39,7 @@ public class GiftPersonRelationOptionServiceImp
     private final GiftDataScopeSupport giftDataScopeSupport;
     private final GiftPersonInfoMapper giftPersonInfoMapper;
     private final GiftRelationPresetSupport giftRelationPresetSupport;
+    private final MultiLevelCacheService multiLevelCacheService;
 
     @Override
     public GiftPersonRelationOptionsVo listRelationOptions(Long personId) {
@@ -46,6 +48,13 @@ public class GiftPersonRelationOptionServiceImp
         Long orgId = giftDataScopeSupport.loginOrgId(loginUser);
         Long ownerUserId = personId != null ? resolveOwnerUserId(personId) : loginUser.getId();
 
+        String cacheKey = "gift:relation:options:" + ownerUserId + ":" + (orgId == null ? "0" : orgId) + ":" + isSuper;
+        if (multiLevelCacheService != null) {
+            return multiLevelCacheService.get(cacheKey, GiftPersonRelationOptionsVo.class, () -> {
+                backfillFromPersonHistory(ownerUserId, orgId, isSuper);
+                return toRelationOptionsVo(getBaseMapper().listRelationOptionRows(ownerUserId, orgId, isSuper));
+            }, 1800);
+        }
         backfillFromPersonHistory(ownerUserId, orgId, isSuper);
         return toRelationOptionsVo(getBaseMapper().listRelationOptionRows(ownerUserId, orgId, isSuper));
     }
@@ -171,6 +180,7 @@ public class GiftPersonRelationOptionServiceImp
         if (existing != null) {
             existing.setLastUsedTime(now);
             updateById(existing);
+            evictOptionCache(userId, orgId);
             return;
         }
         GiftPersonRelationOption option = new GiftPersonRelationOption();
@@ -181,6 +191,7 @@ public class GiftPersonRelationOptionServiceImp
         option.setSortOrder(0);
         option.setLastUsedTime(now);
         save(option);
+        evictOptionCache(userId, orgId);
     }
 
     private void upsertLabelIfAbsent(Long userId, Long orgId, String label) {
@@ -195,6 +206,15 @@ public class GiftPersonRelationOptionServiceImp
         option.setSortOrder(0);
         option.setLastUsedTime(DateUtils.now());
         save(option);
+        evictOptionCache(userId, orgId);
+    }
+
+    private void evictOptionCache(Long userId, Long orgId) {
+        if (multiLevelCacheService != null && userId != null) {
+            String orgStr = orgId == null ? "0" : String.valueOf(orgId);
+            multiLevelCacheService.evict("gift:relation:options:" + userId + ":" + orgStr + ":false");
+            multiLevelCacheService.evict("gift:relation:options:" + userId + ":" + orgStr + ":true");
+        }
     }
 
     private GiftPersonRelationOption findActiveCustomOption(Long userId, String label) {

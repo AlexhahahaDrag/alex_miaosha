@@ -6,7 +6,9 @@ import com.alex.common.utils.trace.TraceIdContext;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,6 +49,18 @@ public class GlobalExceptionHandler {
     public Result<Object> handle(CustomizeException exception) {
         log.error("自定义异常:{}", exception.getMsg(), exception);
         return attachTraceId(Result.error(exception.getCode(), exception.getMsg()));
+    }
+
+    /**
+     * 接口防刷与分布式限流拦截：返回 HTTP 429 Too Many Requests，并设置 Retry-After 响应头
+     */
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<Result<String>> handle(RateLimitException ex) {
+        log.warn("接口触发限流拦截: code={}, msg={}, retryAfter={}s", ex.getCode(), ex.getMessage(), ex.getRetryAfterSeconds());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfterSeconds()));
+        Result<String> result = attachTraceId(Result.error(ex.getCode(), ex.getMessage()));
+        return ResponseEntity.status(429).headers(headers).body(result);
     }
 
     @ExceptionHandler(RegisterException.class)

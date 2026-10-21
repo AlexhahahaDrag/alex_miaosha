@@ -1,43 +1,17 @@
 package com.alex.finance.config;
 
-import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
-import lombok.RequiredArgsConstructor;
+import com.alex.common.config.job.XxlJobAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * XXL-JOB 执行器配置。
- * <p>仅 {@code prod} 环境加载；并要求 {@code xxl.job.enabled=true}。
- * <p>说明：Nacos 共享配置 {@code xxl.yaml} 优先级高于本地 application-*.yaml，
- * 仅靠本地 {@code enabled=false} 会被远程配置覆盖，因此叠加 {@link Profile} 做环境硬门禁。
+ * 财务微服务 XXL-JOB 执行器配置。
+ * <p>已平滑迁移并接入 {@code common_core} 通用任务调度底座 {@link XxlJobAutoConfiguration}，
+ * 自动获得内网非回环 IP 智能探测、MDC 链路染色切面、分片辅助工具与统一告警通知机制。
  */
-@Component
+@Configuration
 @Slf4j
-@RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "xxl.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Import(XxlJobAutoConfiguration.class)
 public class XxlJobConfig {
-
-    private final XxlProperties xxlProperties;
-
-    @Value("${xxl.job.admin.addresses}")
-    private String adminAddresses;
-
-    @Bean(initMethod = "start", destroyMethod = "destroy")
-    @ConditionalOnProperty(prefix = "xxl.job", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public XxlJobSpringExecutor xxlJobExecutor() {
-        log.info(">>>>>>>>>>> xxl-job config init. (profile=prod, enabled=true)");
-        XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
-        xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
-        xxlJobSpringExecutor.setAppname(xxlProperties.getAppName());
-        xxlJobSpringExecutor.setIp(xxlProperties.getIp());
-        xxlJobSpringExecutor.setPort(xxlProperties.getPort());
-        xxlJobSpringExecutor.setAccessToken(xxlProperties.getAccessToken());
-        xxlJobSpringExecutor.setLogPath(xxlProperties.getLogPath());
-        xxlJobSpringExecutor.setLogRetentionDays(xxlProperties.getLogRetentionDays());
-        return xxlJobSpringExecutor;
-    }
 }

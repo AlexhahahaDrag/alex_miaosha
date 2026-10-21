@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.alex.common.cache.multilevel.MultiLevelCacheService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +43,6 @@ import java.util.stream.Collectors;
  * version: 1.0.0
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> implements MenuInfoService {
 
@@ -52,6 +53,20 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     private final RedisUtils redisUtils;
 
     private final UserUtils userUtils;
+
+    private final MultiLevelCacheService multiLevelCacheService;
+
+    public MenuInfoServiceImp(MenuInfoMapper menuInfoMapper, RedisUtils redisUtils, UserUtils userUtils,
+                              @Autowired(required = false) MultiLevelCacheService multiLevelCacheService) {
+        this.menuInfoMapper = menuInfoMapper;
+        this.redisUtils = redisUtils;
+        this.userUtils = userUtils;
+        this.multiLevelCacheService = multiLevelCacheService;
+    }
+
+    public MenuInfoServiceImp(MenuInfoMapper menuInfoMapper, RedisUtils redisUtils, UserUtils userUtils) {
+        this(menuInfoMapper, redisUtils, userUtils, null);
+    }
 
     @Override
     public Page<MenuInfoVo> getPage(Long pageNum, Long pageSize, MenuInfoVo menuInfoVo) {
@@ -74,14 +89,27 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
 
         String cacheRealKey = LoginKey.loginKey.getPrefix() + ":" + MENU_CACHE_KEY;
         if (isFullQuery) {
-            try {
-                List<MenuInfoVo> cachedList = redisUtils.getList(cacheRealKey, MenuInfoVo.class);
-                if (cachedList != null && !cachedList.isEmpty()) {
-                    log.info("从 Redis 缓存中获取完整菜单树成功");
-                    return cachedList;
+            if (multiLevelCacheService != null) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    List<MenuInfoVo> cached = multiLevelCacheService.get(cacheRealKey, (Class<List<MenuInfoVo>>) (Class<?>) List.class);
+                    if (cached != null && !cached.isEmpty()) {
+                        log.info("从多级缓存 (L1/L2) 中获取完整菜单树成功");
+                        return cached;
+                    }
+                } catch (Exception e) {
+                    log.error("获取多级菜单缓存异常：{}", e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("获取菜单缓存异常：{}", e.getMessage());
+            } else {
+                try {
+                    List<MenuInfoVo> cachedList = redisUtils.getList(cacheRealKey, MenuInfoVo.class);
+                    if (cachedList != null && !cachedList.isEmpty()) {
+                        log.info("从 Redis 缓存中获取完整菜单树成功");
+                        return cachedList;
+                    }
+                } catch (Exception e) {
+                    log.error("获取菜单缓存异常：{}", e.getMessage());
+                }
             }
         }
 
@@ -131,8 +159,13 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     private void writeMenuAllTreeCache(List<MenuInfoVo> result) {
         try {
             String cacheRealKey = LoginKey.loginKey.getPrefix() + ":" + MENU_CACHE_KEY;
-            redisUtils.setEx(cacheRealKey, JSONObject.toJSONString(result), 1, TimeUnit.HOURS);
-            log.info("完整菜单树成功写入 Redis 缓存");
+            if (multiLevelCacheService != null) {
+                multiLevelCacheService.put(cacheRealKey, result, 3600);
+                log.info("完整菜单树成功写入多级缓存 (L1/L2)");
+            } else {
+                redisUtils.setEx(cacheRealKey, JSONObject.toJSONString(result), 1, TimeUnit.HOURS);
+                log.info("完整菜单树成功写入 Redis 缓存");
+            }
         } catch (Exception e) {
             log.error("写入菜单缓存异常：{}", e.getMessage());
         }
@@ -220,6 +253,9 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
     private void clearMenuCache() {
         try {
             String cacheRealKey = LoginKey.loginKey.getPrefix() + ":" + MENU_CACHE_KEY;
+            if (multiLevelCacheService != null) {
+                multiLevelCacheService.evict(cacheRealKey);
+            }
             redisUtils.delete(LoginKey.loginKey, MENU_CACHE_KEY);
             log.info("清理菜单缓存成功：{}", cacheRealKey);
         } catch (Exception e) {
