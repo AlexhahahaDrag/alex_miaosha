@@ -11,6 +11,7 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
+import com.alex.common.cache.multilevel.MultiLevelCacheService;
 import com.alex.common.exception.FinanceException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.api.user.userInfo.UserUtils;
@@ -21,6 +22,7 @@ import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,10 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     @Autowired(required = false)
     private UserUtils userUtils;
 
+    @Setter
+    @Autowired(required = false)
+    private MultiLevelCacheService multiLevelCacheService;
+
     @Override
     public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {
         Page<FinanceInfoVo> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
@@ -78,6 +84,14 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     @Override
     public FinanceSummaryVo getFinanceSummary(FinanceInfoVo financeInfoVo) {
+        if (multiLevelCacheService != null) {
+            String cacheKey = buildSummaryCacheKey(financeInfoVo);
+            return multiLevelCacheService.get(cacheKey, FinanceSummaryVo.class, () -> doCalculateFinanceSummary(financeInfoVo), 1800);
+        }
+        return doCalculateFinanceSummary(financeInfoVo);
+    }
+
+    private FinanceSummaryVo doCalculateFinanceSummary(FinanceInfoVo financeInfoVo) {
         FinanceSummaryVo summary = financeInfoMapper.getFinanceSummary(financeInfoVo);
         if (summary == null) {
             return FinanceSummaryVo.builder()
@@ -98,6 +112,39 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         return summary;
     }
 
+    private String buildSummaryCacheKey(FinanceInfoVo vo) {
+        Long currentUserId = null;
+        Long currentOrgId = null;
+        if (userUtils != null) {
+            TUserVo user = userUtils.getLoginUser();
+            if (user != null) {
+                currentUserId = user.getId();
+                currentOrgId = user.getOrgId();
+            }
+        }
+        Long belongTo = (vo != null && vo.getBelongTo() != null) ? vo.getBelongTo() : (currentUserId != null ? currentUserId : 0L);
+        Long orgId = (vo != null && vo.getOrgId() != null) ? vo.getOrgId() : (currentOrgId != null ? currentOrgId : 0L);
+        String start = (vo != null && vo.getInfoDateStart() != null) ? vo.getInfoDateStart().toString() : "all";
+        String end = (vo != null && vo.getInfoDateEnd() != null) ? vo.getInfoDateEnd().toString() : "all";
+        String typeCode = (vo != null && StringUtils.isNotEmpty(vo.getTypeCode())) ? vo.getTypeCode() : "all";
+        String typeCodes = (vo != null && vo.getTypeCodes() != null && !vo.getTypeCodes().isEmpty()) 
+                ? String.join(",", vo.getTypeCodes()) : "all";
+        String name = (vo != null && StringUtils.isNotEmpty(vo.getName())) ? vo.getName() : "all";
+        return String.format("finance:summary:%d:%d:%s:%s:%s:%s:%s", belongTo, orgId, start, end, typeCode, typeCodes, name);
+    }
+
+    private void evictSummaryCache(Long belongTo, Long orgId) {
+        if (multiLevelCacheService != null) {
+            if (belongTo != null) {
+                multiLevelCacheService.evictPattern("finance:summary:" + belongTo + ":*");
+            }
+            if (orgId != null) {
+                multiLevelCacheService.evictPattern("finance:summary:*:" + orgId + ":*");
+            }
+            multiLevelCacheService.evictPattern("finance:summary:0:0:*");
+        }
+    }
+
     @Override
     public FinanceInfoVo queryFinanceInfo(String id) {
         return financeInfoMapper.queryFinanceInfo(id);
@@ -114,6 +161,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
         financeInfoMapper.insert(financeInfo);
+        evictSummaryCache(financeInfo.getBelongTo(), null);
         return financeInfo;
     }
 
@@ -130,6 +178,10 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         FinanceInfo financeInfo = new FinanceInfo();
         BeanUtil.copyProperties(financeInfoVo, financeInfo);
         financeInfoMapper.updateById(financeInfo);
+        evictSummaryCache(existing.getBelongTo(), null);
+        if (financeInfo.getBelongTo() != null && !financeInfo.getBelongTo().equals(existing.getBelongTo())) {
+            evictSummaryCache(financeInfo.getBelongTo(), null);
+        }
         return financeInfo;
     }
 
@@ -147,6 +199,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
             FinanceInfo existing = getById(id);
             if (existing != null) {
                 assertCanModify(existing, "删除");
+                evictSummaryCache(existing.getBelongTo(), null);
             }
         }
         financeInfoMapper.deleteByIds(idList);
@@ -188,7 +241,6 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         return false;
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean importFinance(MultipartFile file) throws Exception {
@@ -204,6 +256,11 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
                     return financeInfo;
                 }).toList();
         this.saveBatch(financeList);
+        for (FinanceInfo info : financeList) {
+            if (info != null) {
+                evictSummaryCache(info.getBelongTo(), null);
+            }
+        }
         return true;
     }
 
@@ -237,4 +294,3 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         return StringUtils.isNotEmpty(user.getNickName()) ? user.getNickName() : user.getUsername();
     }
 }
-

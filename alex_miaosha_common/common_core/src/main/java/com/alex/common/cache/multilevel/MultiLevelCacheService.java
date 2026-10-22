@@ -236,6 +236,34 @@ public class MultiLevelCacheService {
     }
 
     /**
+     * 按前缀批量失效双层缓存
+     *
+     * @param patternKey 前缀匹配键，例如 "finance:summary:100:*"
+     */
+    public void evictPattern(String patternKey) {
+        if (patternKey == null || patternKey.trim().isEmpty()) {
+            return;
+        }
+        String prefix = patternKey.endsWith("*") ? patternKey.substring(0, patternKey.length() - 1) : patternKey;
+        try {
+            l1Cache.asMap().keySet().removeIf(k -> k != null && k.startsWith(prefix));
+        } catch (Exception e) {
+            log.warn("失效 L1 Caffeine keys 失败: prefix={}, err={}", prefix, e.getMessage());
+        }
+
+        if (stringRedisTemplate != null) {
+            try {
+                java.util.Set<String> keys = stringRedisTemplate.keys(patternKey);
+                if (keys != null && !keys.isEmpty()) {
+                    stringRedisTemplate.delete(keys);
+                }
+            } catch (Exception e) {
+                log.warn("按前缀删除 L2 Redis keys 失败: pattern={}, err={}", patternKey, e.getMessage());
+            }
+        }
+    }
+
+    /**
      * 清空本地 L1 缓存（如接收到广播失效消息时）
      */
     public void clearLocal() {
