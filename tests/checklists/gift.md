@@ -300,25 +300,25 @@
 
 参考已有 `frontend/.../tests/midscene/rbac/cases/smoke.json` 的 persona 设计，对每个 API 跑 4 身份。
 
-#### 5.2.3 `GiftAnalysisIT`
+#### 5.2.3 `GiftAnalysisIT`（已落地 6 项用例 100% 全绿 ✅）
 
-- [ ] **`overview` netAmount 公式与单测一致**（H14）
-- [ ] **`trend` GIVE+RETURN 合并语义验证**（H15）
-- [ ] `relation-distribution` 排序稳定（同 count 时如何排序）
-- [ ] `event-ranking` 空数据时返回兜底"全部事由"
-- [ ] **`overview` 性能基线：1 万条记录 < 1s**（H16）
+- [x] **`overview` netAmount 公式与单测一致**（H14）
+- [x] **`trend` GIVE+RETURN 合并支出口径验证**（H15）
+- [x] `relation-distribution` 排序稳定与亲友榜降序（同 count 时降序排序）
+- [x] `event-ranking` 空数据时返回兜底"全部事由"
+- [x] **`overview` 性能基线：1 万条记录 < 1s**（H16）
 
-### 5.3 PC 前端单元测试（Vitest）
+### 5.3 PC 前端单元测试（Vitest + node:test）
 
-- [ ] `src/views/finance/gift/api/index.spec.ts`
-  - [ ] `normalizeGiftIds_should_convert_bigint_to_string`
-  - [ ] `normalizeGiftIds_should_recursively_process_nested`
-  - [ ] `normalizeGiftIds_should_handle_null_undefined_empty`
-  - [ ] **`normalizeGiftIds_should_preserve_precision_for_Long.MAX_SAFE_INTEGER+1`**
-- [ ] `src/views/finance/gift/config.spec.ts`
-  - [ ] `formatMoney(999999999.99)` 精度无丢失
-  - [ ] `directionText` 三态映射
-  - [ ] `directionClass` CSS class 映射
+- [x] `tests/unit/giftNormalize.test.mts`（已锁死 ID 契约 100% 全绿 ✅）
+  - [x] `normalizeGiftIds_should_convert_bigint_to_string`
+  - [x] `normalizeGiftIds_should_recursively_process_nested`
+  - [x] `normalizeGiftIds_should_handle_null_undefined_empty`
+  - [x] **`normalizeGiftIds_should_preserve_precision_for_Long.MAX_SAFE_INTEGER+1`**
+- [x] `src/views/finance/gift/config.ts` / 前端统计工具测试（已落地 96 Vitest + 21 Node 全绿 ✅）
+  - [x] `formatMoney(999999999.99)` 精度无丢失
+  - [x] `directionText` 三态映射
+  - [x] `directionClass` CSS class 映射
 
 ### 5.4 PC 前端 E2E（Playwright + Midscene）
 
