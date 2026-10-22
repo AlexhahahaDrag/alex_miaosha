@@ -27,6 +27,7 @@
 | **TRACE-03** | 缺省场景自动生成闭环 | 请求未携带 TraceId 时，Filter 自动生成 32 位无短横线 Hex TraceId 并回写。 | `TraceIdPropagationAndContextTest#testFilterWithoutIncomingTraceId` | 自动生成合法 32 位 Hex 字符串，请求链条具备完整追踪凭据。 |
 | **TRACE-04** | 异常响应体 TraceId 回显 | 业务抛出异常经 `GlobalExceptionHandler` 捕获时，返回的 `Result` 对象必须携带当前 `traceId`。 | `TraceIdPropagationAndContextTest#testGlobalExceptionHandlerAttachesTraceId` | `Result.getTraceId()` 准确还原当前活跃 TraceId，便于前端与客户端直接呈现给用户。 |
 | **TRACE-05** | Feign 跨微服务 RPC 穿透 | 微服务间发起 Feign 调用时，`FeignConfig` 自动提取当前 Web 上下文或 MDC 的 TraceId 复制到模板中。 | `FeignTraceIdAndHeaderPropagationIT` | 下游请求头包含 `X-Trace-Id`、`Authorization`、`X-Gray-Tag` 等核心标签。 |
+| **TRACE-06** | 异步线程池与 CompletableFuture 链路穿透 | 异步执行时通过 `MdcTaskDecorator` 透传父线程 TraceId 与 MDC 上下文，子线程任务执行完成后彻底清空，防止工作线程复用污染。 | `AsyncMdcTracePropagationIT` | 子线程正确获得父线程 TraceId 与 MDC 诊断数据，高并发无串线，工作线程复用无任何脏数据残留。 |
 
 ---
 

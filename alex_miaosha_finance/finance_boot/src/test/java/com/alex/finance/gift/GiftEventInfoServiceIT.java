@@ -14,6 +14,8 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -173,6 +175,91 @@ class GiftEventInfoServiceIT {
     void deleteEvent_should_reject_invalid_id_format() {
         FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftEventInfo("1,abc,3"));
         assertEquals("事由ID格式不合法", ex.getMsg());
+    }
+
+    @Test
+    @DisplayName("H17: monthPendingCount_should_respect_user_timezone - 当月待办事件时区安全统计与聚合")
+    void monthPendingCount_should_respect_user_timezone() {
+        LocalDateTime now = com.alex.common.utils.date.DateUtils.now();
+        GiftEventInfo currentMonthEvent = event(10L, LOGIN_USER_ID, LOGIN_ORG_ID).setEventTime(now);
+        GiftEventInfo lastMonthEvent = event(11L, LOGIN_USER_ID, LOGIN_ORG_ID).setEventTime(now.minusMonths(1));
+        GiftEventInfo nextMonthEvent = event(12L, LOGIN_USER_ID, LOGIN_ORG_ID).setEventTime(now.plusMonths(1));
+        GiftEventInfo nullTimeEvent = event(13L, LOGIN_USER_ID, LOGIN_ORG_ID).setEventTime(null);
+
+        when(giftEventInfoMapper.listEntities(null)).thenReturn(
+                java.util.List.of(currentMonthEvent, lastMonthEvent, nextMonthEvent, nullTimeEvent));
+
+        com.alex.api.finance.gift.record.vo.GiftRecordInfoVo r1 = new com.alex.api.finance.gift.record.vo.GiftRecordInfoVo();
+        r1.setAmount(new java.math.BigDecimal("200.00"));
+        r1.setGiverPersonId(101L);
+        r1.setReceiverPersonId(102L);
+
+        com.alex.api.finance.gift.record.vo.GiftRecordInfoVo r2 = new com.alex.api.finance.gift.record.vo.GiftRecordInfoVo();
+        r2.setAmount(new java.math.BigDecimal("300.50"));
+        r2.setGiverPersonId(101L); // duplicate giver
+        r2.setReceiverPersonId(null);
+
+        when(giftRecordInfoService.getList(any())).thenReturn(java.util.List.of(r1, r2));
+
+        com.alex.api.finance.gift.event.vo.GiftEventSummaryVo summary = service.getSummary();
+        assertEquals(1L, summary.getMonthPendingCount(), "仅统计当月待办事由");
+        assertEquals(new java.math.BigDecimal("500.50"), summary.getTotalAmount(), "礼金金额求和准确");
+        assertEquals(2L, summary.getActivePersonCount(), "活跃亲友去重统计为2 (101L, 102L)");
+    }
+
+    @Test
+    @DisplayName("summary_should_handle_empty_events_and_records - 空事件与空记录安全兜底")
+    void summary_should_handle_empty_events_and_records() {
+        when(giftEventInfoMapper.listEntities(null)).thenReturn(java.util.List.of());
+        when(giftRecordInfoService.getList(any())).thenReturn(java.util.List.of());
+
+        com.alex.api.finance.gift.event.vo.GiftEventSummaryVo summary = service.getSummary();
+        assertEquals(0L, summary.getMonthPendingCount());
+        assertEquals(java.math.BigDecimal.ZERO, summary.getTotalAmount());
+        assertEquals(0L, summary.getActivePersonCount());
+    }
+
+    @Test
+    @DisplayName("getBusinessPage_pagination_boundaries - 分页参数默认值与越界回退")
+    void getBusinessPage_pagination_boundaries() {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.alex.api.finance.gift.event.vo.GiftEventBusinessVo> pageResult =
+                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, 10, 0);
+        when(giftEventInfoMapper.getBusinessPage(any(), any())).thenReturn(pageResult);
+
+        // pageNum=null, pageSize=null 自动降级为 1 与 10
+        service.getBusinessPage(null, null, new com.alex.api.finance.gift.event.query.GiftEventQuery());
+        org.mockito.ArgumentCaptor<com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.alex.api.finance.gift.event.vo.GiftEventBusinessVo>> captor =
+                org.mockito.ArgumentCaptor.forClass(com.baomidou.mybatisplus.extension.plugins.pagination.Page.class);
+        verify(giftEventInfoMapper).getBusinessPage(captor.capture(), any());
+        assertEquals(1L, captor.getValue().getCurrent());
+        assertEquals(10L, captor.getValue().getSize());
+    }
+
+    @Test
+    @DisplayName("updateEvent_should_reject_invalid_name - 更新事由名称空与超长拦截")
+    void updateEvent_should_reject_invalid_name() {
+        GiftEventInfo existing = event(5L, LOGIN_USER_ID, LOGIN_ORG_ID);
+        when(giftEventInfoMapper.selectById(5L)).thenReturn(existing);
+
+        GiftEventInfoVo emptyVo = new GiftEventInfoVo().setEventName("");
+        emptyVo.setId(5L);
+        FinanceException ex1 = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(emptyVo));
+        assertEquals("事由名称不能为空", ex1.getMsg());
+
+        GiftEventInfoVo tooLongVo = new GiftEventInfoVo().setEventName("L".repeat(101));
+        tooLongVo.setId(5L);
+        FinanceException ex2 = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(tooLongVo));
+        assertEquals("事由名称最多100个字符", ex2.getMsg());
+    }
+
+    @Test
+    @DisplayName("deleteEvent_should_skip_when_ids_empty - 删除空ids静默跳过")
+    void deleteEvent_should_skip_when_ids_empty() {
+        Boolean res1 = service.deleteGiftEventInfo(null);
+        assertTrue(res1);
+
+        Boolean res2 = service.deleteGiftEventInfo("   ");
+        assertTrue(res2);
     }
 
     private GiftEventInfo event(Long id, Long userId, Long orgId) {

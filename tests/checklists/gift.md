@@ -276,27 +276,27 @@
 - [x] **`getProfile_should_only_aggregate_owner_records`**（H5）
 - [x] `getBusinessPage_pagination_correctness`（边界：pageNum=0/负/超总页数）
 
-#### 5.1.3 `GiftEventInfoTServiceImpTest`
+#### 5.1.3 `GiftEventInfoTServiceImpTest` / `GiftEventInfoServiceIT`（已落地 15 项用例全绿）
 
-- [ ] 同上 CRUD + ownership
-- [ ] **`monthPendingCount_should_respect_user_timezone`**（H17）
+- [x] 同上 CRUD + ownership
+- [x] **`monthPendingCount_should_respect_user_timezone`**（H17）
 
 #### 5.1.4 `GiftRelationInfoTServiceImpTest` — 不再适用（relation 子域已移除）
 
 ### 5.2 后端集成测试（@SpringBootTest + MockMvc + Testcontainers）
 
-#### 5.2.1 `GiftRecordControllerIT`
+#### 5.2.1 `GiftRecordControllerIT`（已落地 12 项用例全绿）
 
-- [ ] **`POST /gift-record-info-t/page` should_filter_by_org_for_admin`**（驱动修复 H1）
-- [ ] **`POST /gift-record-info-t/page` should_filter_by_user_for_normal`**（H1）
-- [ ] **`GET /gift-record-info-t` cross_user should_403`**
-- [ ] **`PUT /gift-record-info-t` cross_user should_403`**（H3）
-- [ ] **`DELETE /gift-record-info-t?ids=` cross_user should_403`**（H4）
-- [ ] **`PUT /mark-returned?receiveRecordId=` cross_user should_403`**（H2）
+- [x] **`POST /gift-record-info-t/page` should_filter_by_org_for_admin`**（驱动修复 H1）
+- [x] **`POST /gift-record-info-t/page` should_filter_by_user_for_normal`**（H1）
+- [x] **`GET /gift-record-info-t` cross_user should_403`**
+- [x] **`PUT /gift-record-info-t` cross_user should_403`**（H3）
+- [x] **`DELETE /gift-record-info-t?ids=` cross_user should_403`**（H4）
+- [x] **`PUT /mark-returned?receiveRecordId=` cross_user should_403`**（H2）
 - [ ] `POST /gift-record-info-t` 同时由两请求标记同一 RECEIVE（并发，验证幂等）
 - [ ] `POST /gift-record-info-t` `@AvoidRepeatableCommit` 注解生效（连续两次相同请求被去重）
 
-#### 5.2.2 `GiftPermissionIT`（权限矩阵，4 身份 × 5 操作 = 20 case）
+#### 5.2.2 `GiftPermissionIT`（权限矩阵，4 身份 × 5 操作 = 20 case，已落地 20 项用例 100% 全绿 ✅）
 
 参考已有 `frontend/.../tests/midscene/rbac/cases/smoke.json` 的 persona 设计，对每个 API 跑 4 身份。
 
