@@ -1,5 +1,7 @@
 package com.alex.finance.cpnCouponInfo.controller;
 
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.api.finance.cpnCouponInfo.vo.CpnCouponInfoVo;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -163,6 +165,7 @@ public class CpnCouponInfoController {
     @LogRestRequest(apiName = "优惠券AI智能策划")
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "优惠券AI智能策划", notes = "根据预算与营销目标AI生成优惠券策略方案", response = Result.class)
+    @RateLimiter(limitType = LimitType.USER, count = 5, time = 60, message = "消费券AI策划生成过于频繁，请稍后再试")
     @PostMapping(value = "/ai-plan")
     public Result<com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanVo> aiPlan(@RequestBody com.alex.api.finance.cpnCouponInfo.vo.CpnCouponAiPlanReq req) {
         return Result.success(cpnCouponInfoService.generateAiPlan(req));

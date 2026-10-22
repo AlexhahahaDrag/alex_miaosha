@@ -5,6 +5,8 @@ import com.alex.api.user.menuInfo.vo.MenuInfoVo;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.common.annotations.user.AccessLimit;
 import com.alex.common.validator.group.Insert;
 import com.alex.common.validator.group.Update;
@@ -153,6 +155,7 @@ public class TUserController {
 
     @LogRestRequest(apiName = "用户登录")
     @ApiOperationSupport(order = 60, author = "alex")
+    @RateLimiter(limitType = LimitType.IP, count = 5, time = 60, message = "登录过于频繁，请稍后再试")
     @AccessLimit()
     @PostMapping("/login")
     @ApiOperation(value = "登录")

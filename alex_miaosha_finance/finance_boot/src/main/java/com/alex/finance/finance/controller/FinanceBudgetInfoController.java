@@ -1,5 +1,7 @@
 package com.alex.finance.finance.controller;
 
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.api.finance.vo.finance.FinanceBudgetSaveReq;
 import com.alex.api.finance.vo.finance.FinanceBudgetStatusVo;
 import com.alex.base.common.Result;
@@ -70,6 +72,7 @@ public class FinanceBudgetInfoController {
 
     @ApiOperationSupport(order = 18, author = "alex")
     @ApiOperation(value = "AI 智能预算测算推荐", notes = "结合近3个月历史开支画像智能推荐3档预算额度与重点品类", response = Result.class)
+    @RateLimiter(limitType = LimitType.USER, count = 5, time = 60, message = "AI预算推荐调用过于频繁，请稍后再试")
     @PostMapping("/ai/recommend")
     public Result<com.alex.api.finance.vo.finance.FinanceBudgetAiRecommendVo> recommendBudget(
             @RequestBody com.alex.api.finance.vo.finance.FinanceBudgetAiRecommendReq req) {
@@ -78,6 +81,7 @@ public class FinanceBudgetInfoController {
 
     @ApiOperationSupport(order = 19, author = "alex")
     @ApiOperation(value = "AI 自然语言一句话预算指令解析", notes = "解析口语化指令自动提取金额、范围与分类", response = Result.class)
+    @RateLimiter(limitType = LimitType.USER, count = 10, time = 60, message = "AI预算指令解析过于频繁，请稍后再试")
     @PostMapping("/ai/parse")
     public Result<com.alex.api.finance.vo.finance.FinanceBudgetAiParseVo> parseBudgetCommand(
             @Validated @RequestBody com.alex.api.finance.vo.finance.FinanceBudgetAiParseReq req) {

@@ -1,5 +1,7 @@
 package com.alex.finance.finance.controller;
 
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.base.common.Result;
@@ -42,6 +44,7 @@ public class FinanceInfoController {
 
     @ApiOperationSupport(order = 8, author = "alex")
     @ApiOperation(value = "AI 智能记账文本多场景解析", notes = "支持自然语言日常收支、购物小票明细及预付卡储值扣款流水自动抽取", response = Result.class)
+    @RateLimiter(limitType = LimitType.USER, count = 10, time = 60, message = "AI记账文本解析过于频繁，请稍后再试")
     @PostMapping(value = "/ai-parse")
     public Result<com.alex.api.finance.vo.finance.UniversalFinanceAiParseVo> aiParse(
             @Validated @RequestBody com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq req) {
@@ -50,6 +53,7 @@ public class FinanceInfoController {
 
     @ApiOperationSupport(order = 9, author = "alex")
     @ApiOperation(value = "AI 智能记账流式解析 (SSE 多阶段推送)", notes = "通过 SSE 分阶段推送分析进度：场景识别 -> 金额提取 -> 明细拆解 -> 资产实体匹配 -> 完成", produces = "text/event-stream")
+    @RateLimiter(limitType = LimitType.USER, count = 6, time = 60, message = "AI流式记账请求过于频繁，请稍后再试")
     @PostMapping(value = "/ai-parse-stream", produces = "text/event-stream")
     public SseEmitter aiParseStream(
             @Validated @RequestBody com.alex.api.finance.vo.finance.UniversalFinanceAiParseReq req) {

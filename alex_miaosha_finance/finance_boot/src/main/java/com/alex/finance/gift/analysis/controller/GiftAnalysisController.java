@@ -1,5 +1,7 @@
 package com.alex.finance.gift.analysis.controller;
 
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.api.finance.gift.record.vo.GiftRecordSummaryVo;
 import com.alex.api.finance.gift.summary.vo.GiftAmountTrendVo;
 import com.alex.api.finance.gift.summary.vo.GiftPersonBalanceVo;
@@ -89,6 +91,7 @@ public class GiftAnalysisController {
 
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "导出亲友互赠收支平衡矩阵", response = void.class)
+    @RateLimiter(limitType = LimitType.USER, count = 3, time = 60, message = "礼金平衡矩阵导出过于频繁，请稍后再试")
     @PostMapping(value = "/export-matrix")
     public void exportMatrix(
             @RequestParam(value = "relationType", required = false) String relationType,

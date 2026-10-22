@@ -225,56 +225,56 @@
 
 ### 5.1 后端单元测试（JUnit5 + Mockito，60+ case）
 
-#### 5.1.1 `GiftRecordInfoTServiceImpTest`（核心）
+#### 5.1.1 `GiftRecordInfoTServiceImpTest` / `GiftRecordBusinessRuleTest`（核心，已落地 31 项单元测试全绿）
 
-- [ ] `addGiftRecordInfoT`
-  - [ ] L1 `should_create_GIVE_when_valid`
-  - [ ] L2 `should_default_returnedFlag_to_0_when_RECEIVE`
-  - [ ] L3 `should_create_RETURN_when_relatedRecordId_exists`
-  - [ ] I1 `should_throw_when_direction_is_null`
-  - [ ] I2 `should_throw_when_direction_is_lowercase`（边界）
-  - [ ] I3 `should_throw_when_RETURN_relatedRecordId_is_null`
-  - [ ] **I4** `should_throw_when_RETURN_relatedRecordId_is_self`（覆盖 H7）
-  - [ ] **I5** `should_throw_when_RETURN_relatedRecordId_not_exists`（H7）
-  - [ ] **I6** `should_throw_when_RETURN_relatedRecordId_belongs_to_other_user`（H7）
-  - [ ] **I6b** `should_throw_when_RETURN_relatedRecordId_direction_is_not_RECEIVE`（H7）
-  - [ ] **I7a** `should_throw_when_amount_is_negative`（H8）
-  - [ ] **I7b** `should_throw_when_amount_is_zero`（H8）
-  - [ ] **I7c** `should_truncate_when_amount_precision_overflow`（七点法）
-  - [ ] **H11** `should_throw_when_userUtils_returns_null_user`
-- [ ] `markReturned`
-  - [ ] **I8** `should_throw_when_id_is_null`（已有 ✅）
-  - [ ] **I9** `should_throw_when_record_not_exists`（H2）
-  - [ ] **I10** `should_throw_when_record_direction_is_not_RECEIVE`（H2）
-  - [ ] **I11** `should_throw_when_record_belongs_to_other_user`（H2）
-  - [ ] **I12** `should_be_idempotent_when_already_returned`（H10）
-- [ ] `updateGiftRecordInfoT`
-  - [ ] `should_throw_when_record_belongs_to_other_user`（H3）
-  - [ ] `should_keep_orgId_userId_immutable`（防越权篡改 owner）
-- [ ] `deleteGiftRecordInfoT`
-  - [ ] `should_throw_when_record_belongs_to_other_user`（H4）
-  - [ ] `should_skip_silently_when_ids_empty`（已有 ✅）
-  - [ ] **`should_throw_business_error_when_id_not_parsable`**（H12 "1,abc,3"）
-  - [ ] `should_delete_all_when_ids_are_valid_csv`
-- [ ] `calculatePendingReturnAmount`
-  - [ ] `should_throw_when_id_is_null`（已有 ✅）
-  - [ ] `should_throw_when_record_not_exists`（已有 ✅）
-  - [ ] `should_throw_when_direction_is_not_RECEIVE`（已有 ✅）
-  - [ ] `should_return_full_amount_when_no_return_records`
-  - [ ] `should_return_remaining_when_partial_returned`
-  - [ ] `should_return_zero_when_over_returned`（已有 ✅）
-  - [ ] `should_handle_null_amount_in_records`
-- [ ] `getSummary`
-  - [ ] `should_calculate_netAmount_correctly`（公式 H14）
-  - [ ] `should_handle_empty_records`
-  - [ ] `should_handle_null_amount_records`
+- [x] `addGiftRecordInfoT`
+  - [x] L1 `should_create_GIVE_when_valid`
+  - [x] L2 `should_default_returnedFlag_to_0_when_RECEIVE`
+  - [x] L3 `should_create_RETURN_when_relatedRecordId_exists`
+  - [x] I1 `should_throw_when_direction_is_null`
+  - [x] I2 `should_throw_when_direction_is_lowercase`（边界）
+  - [x] I3 `should_throw_when_RETURN_relatedRecordId_is_null`
+  - [x] **I4** `should_throw_when_RETURN_relatedRecordId_is_self`（覆盖 H7）
+  - [x] **I5** `should_throw_when_RETURN_relatedRecordId_not_exists`（H7）
+  - [x] **I6** `should_throw_when_RETURN_relatedRecordId_belongs_to_other_user`（H7）
+  - [x] **I6b** `should_throw_when_RETURN_relatedRecordId_direction_is_not_RECEIVE`（H7）
+  - [x] **I7a** `should_throw_when_amount_is_negative`（H8）
+  - [x] **I7b** `should_throw_when_amount_is_zero`（H8）
+  - [x] **I7c** `should_truncate_when_amount_precision_overflow`（七点法）
+  - [x] **H11** `should_throw_when_userUtils_returns_null_user`
+- [x] `markReturned`
+  - [x] **I8** `should_throw_when_id_is_null`（已有 ✅）
+  - [x] **I9** `should_throw_when_record_not_exists`（H2）
+  - [x] **I10** `should_throw_when_record_direction_is_not_RECEIVE`（H2）
+  - [x] **I11** `should_throw_when_record_belongs_to_other_user`（H2）
+  - [x] **I12** `should_be_idempotent_when_already_returned`（H10）
+- [x] `updateGiftRecordInfoT`
+  - [x] `should_throw_when_record_belongs_to_other_user`（H3）
+  - [x] `should_keep_orgId_userId_immutable`（防越权篡改 owner）
+- [x] `deleteGiftRecordInfoT`
+  - [x] `should_throw_when_record_belongs_to_other_user`（H4）
+  - [x] `should_skip_silently_when_ids_empty`（已有 ✅）
+  - [x] **`should_throw_business_error_when_id_not_parsable`**（H12 "1,abc,3"）
+  - [x] `should_delete_all_when_ids_are_valid_csv`
+- [x] `calculatePendingReturnAmount`
+  - [x] `should_throw_when_id_is_null`（已有 ✅）
+  - [x] `should_throw_when_record_not_exists`（已有 ✅）
+  - [x] `should_throw_when_direction_is_not_RECEIVE`（已有 ✅）
+  - [x] `should_return_full_amount_when_no_return_records`
+  - [x] `should_return_remaining_when_partial_returned`
+  - [x] `should_return_zero_when_over_returned`（已有 ✅）
+  - [x] `should_handle_null_amount_in_records`
+- [x] `getSummary`
+  - [x] `should_calculate_netAmount_correctly`（公式 H14）
+  - [x] `should_handle_empty_records`
+  - [x] `should_handle_null_amount_records`
 
-#### 5.1.2 `GiftPersonInfoTServiceImpTest`
+#### 5.1.2 `GiftPersonInfoTServiceImpTest` / `GiftPersonInfoServiceIT`（已落地 11 项用例全绿）
 
-- [ ] CRUD 七点法 + ownership 校验（同 record）
-- [ ] **`getProfile_should_reject_cross_user`**（H5）
-- [ ] **`getProfile_should_only_aggregate_owner_records`**（H5）
-- [ ] `getBusinessPage_pagination_correctness`（边界：pageNum=0/负/超总页数）
+- [x] CRUD 七点法 + ownership 校验（同 record）
+- [x] **`getProfile_should_reject_cross_user`**（H5）
+- [x] **`getProfile_should_only_aggregate_owner_records`**（H5）
+- [x] `getBusinessPage_pagination_correctness`（边界：pageNum=0/负/超总页数）
 
 #### 5.1.3 `GiftEventInfoTServiceImpTest`
 

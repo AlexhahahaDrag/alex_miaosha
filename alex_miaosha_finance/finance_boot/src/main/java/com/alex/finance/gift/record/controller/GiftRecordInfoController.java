@@ -1,5 +1,7 @@
 package com.alex.finance.gift.record.controller;
 
+import com.alex.common.annotations.rate.LimitType;
+import com.alex.common.annotations.rate.RateLimiter;
 import com.alex.api.finance.gift.record.query.GiftRecordQuery;
 import com.alex.api.finance.gift.record.query.GiftRecordAiParseReq;
 import com.alex.api.finance.gift.record.vo.GiftRecordAiParseVo;
@@ -114,6 +116,7 @@ public class GiftRecordInfoController {
 
     @ApiOperationSupport(order = 80, author = "alex")
     @ApiOperation(value = "导出礼金记录", response = void.class)
+    @RateLimiter(limitType = LimitType.USER, count = 3, time = 60, message = "礼尚往来流水导出过于频繁，请稍后再试")
     @PostMapping(value = "/export")
     public void export(@RequestBody(required = false) GiftRecordQuery query,
             javax.servlet.http.HttpServletResponse response) {
