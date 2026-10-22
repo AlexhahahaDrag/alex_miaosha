@@ -30,4 +30,6 @@
 
 ## 三、 测试覆盖率与金字塔分层总结
 - **Level 2 专项集成测试**：3 大套件（`UserNoticeDefaultPolicyIT`, `UserNoticePersonalizedOverrideIT`, `UserNoticeGlobalOverrideSecurityIT`）共 9 项用例 **100% 绿色通过**；
-- **前端静态类型与语法校验**：`alex_miaosha_front` 执行 `vue-tsc --noEmit` 0 error，全量通过。
+- **PC 端静态类型与语法校验**：`alex_miaosha_front` 执行 `vue-tsc --noEmit` 0 error，全量通过；
+- **移动端单元测试**：`alex_miaosha_mobile` 执行 `npm run test:unit`（Vitest），25 个测试套件共 149 项测试 **100% 绿色通过**（涵盖 `NOTICE_BIZ_META_MAP` 8大项、`isSubNoticeVetoed` 全局一票否决三态判定、雪花 ID BigInt/String 精度防丢失）；
+- **移动端生产打包构建**：`npm run build`（Vite + Less + Vant 4 生产压缩打包）**100% 成功（0 errors）**。
