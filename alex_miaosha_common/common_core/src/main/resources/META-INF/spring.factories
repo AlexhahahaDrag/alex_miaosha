@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.alex.common.config.job.XxlJobAutoConfiguration,\
-  com.alex.common.cache.MultiLevelCacheAutoConfiguration,\
+  com.alex.common.cache.multilevel.MultiLevelCacheAutoConfiguration,\
   com.alex.common.config.druid.DruidAutoConfiguration,\
   com.alex.common.ratelimit.RateLimiterAutoConfiguration

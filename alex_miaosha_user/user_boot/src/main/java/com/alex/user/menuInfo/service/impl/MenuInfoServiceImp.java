@@ -56,6 +56,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
 
     private final MultiLevelCacheService multiLevelCacheService;
 
+    @Autowired
     public MenuInfoServiceImp(MenuInfoMapper menuInfoMapper, RedisUtils redisUtils, UserUtils userUtils,
                               @Autowired(required = false) MultiLevelCacheService multiLevelCacheService) {
         this.menuInfoMapper = menuInfoMapper;
