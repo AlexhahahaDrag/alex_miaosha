@@ -1,7 +1,7 @@
-# Checklist: Role-Aware Dashboard & Multi-Role Portal Hardening (第三十五阶段)
+# Checklist: Role-Aware Dashboard & Multi-Role Portal Hardening (第四十阶段：全栈真数据大盘与微服务探针)
 
-**Module:** `alex_miaosha_front` & `alex_miaosha_mobile` & `alex_miaosha_finance`  
-**Date:** 2026-10-20  
+**Module:** `alex_miaosha_front` & `alex_miaosha_mobile` & `alex_miaosha_user` & `alex_miaosha_finance`  
+**Date:** 2026-10-23  
 **Standard:** `TESTING_STANDARD.md` (Level 1 Unit & Level 2 Component Contract Tests)
 
 ---
@@ -40,7 +40,19 @@
 
 ---
 
-## 4. 不测理由与排除清单（Out of Scope）
+## 4. 全栈真数据聚合大盘与微服务集群在线探针矩阵 (新增)
+
+| # | 测试项 | 覆盖端 / 文件 | 验证断言 | 状态 |
+|---|---|---|---|:---:|
+| 14 | 超管大盘非授权越权隔离防护 | 后端: `DashboardServiceTest.java` | 非超管用户请求 `GET /api/v1/dashboard/super/overview` 抛出 `SystemException(UNAUTHORIZED, 403)`，彻底杜绝数据越权 | ✅ PASS |
+| 15 | 超管全景 KPI 与 7 天动态日期态势 | 后端: `DashboardServiceTest.java`<br/>PC: `dashboardRealData.test.ts` | 聚合全网真实用户数、有效机构数、交易总额；动态生成包含 7 天 `MM-dd` 刻度的 QPS 与单量数据 | ✅ PASS |
+| 16 | 机构管理员在册成员与组织概览 | 后端: `DashboardServiceTest.java`<br/>PC: `dashboardRealData.test.ts`<br/>Mobile: `mobileDashboardAggregate.test.ts` | 根据上下文精准查询管辖机构在册成员数，`orgId` 严格序列化为 `string`，杜绝前端精度截断 | ✅ PASS |
+| 17 | 6 大核心微服务集群健康探测 | 后端: `DashboardServiceTest.java`<br/>PC: `dashboardRealData.test.ts`<br/>Mobile: `mobileDashboardAggregate.test.ts` | 真实 Socket 探测 30001 (Gateway)、30006 (User)、30007 (Product)、30008 (Finance)、30009 (OSS)、30010 (AI) 在线状态与毫秒级时延 | ✅ PASS |
+| 18 | 系统安全与审计核心动态时间线 | 后端: `DashboardServiceTest.java`<br/>PC: `dashboardRealData.test.ts` | 真实聚合包含风控限流、机构隔离、财务核算与 XXL-Job 定时巡检动态事件流 | ✅ PASS |
+
+---
+
+## 5. 不测理由与排除清单（Out of Scope）
 
 1. **真实物理高并发 ECharts 渲染性能压测**：单元测试聚焦于图表数据绑定、空状态兜底与生命周期销毁，GPU 硬件加速与压测由生产端到端负责；
 2. **移动端物理硬件马达震动力度感知**：单测通过 Mock `navigator.vibrate` 断言振动时长与模式参数，不依赖实体手机电磁线圈；
