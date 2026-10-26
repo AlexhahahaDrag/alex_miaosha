@@ -46,6 +46,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.alex.user.config.properties.OAuthProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.collect.Lists;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +138,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private final PermissionContextCacheService permissionContextCacheService;
 
     private final ObjectProvider<ObjectMapper> objectMapper;
+
+    @Autowired(required = false)
+    private OAuthProperties oauthProperties = new OAuthProperties();
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
@@ -1032,17 +1037,19 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         return true;
     }
 
+    @Override
     public AuthRequest getAuthRequest(String appName) {
+        OAuthProperties props = this.oauthProperties != null ? this.oauthProperties : new OAuthProperties();
         return switch (appName) {
             case "wechat_mp" -> new AuthWeChatMpRequest(AuthConfig.builder()
-                    .clientId("wxec93a0ddb72c8cff")
-                    .clientSecret("1240434ae0be6dc4b0ba979d7c1f9b7a")
-                    .redirectUri("https://mjzp.xyz/login")
+                    .clientId(props.getWechat().getClientId())
+                    .clientSecret(props.getWechat().getClientSecret())
+                    .redirectUri(props.getWechat().getRedirectUri())
                     .build());
             case "baidu" -> new AuthBaiduRequest(AuthConfig.builder()
-                    .clientId("w7kcpHna8w8irDiMA4tdnnnQ")
-                    .clientSecret("8LTOzDkpVv5LkzPR9yyptsq7MMENyCVS")
-                    .redirectUri("https://mjzp.xyz/login")
+                    .clientId(props.getBaidu().getClientId())
+                    .clientSecret(props.getBaidu().getClientSecret())
+                    .redirectUri(props.getBaidu().getRedirectUri())
                     .scopes(Arrays.asList(
                             AuthBaiduScope.BASIC.getScope(),
                             AuthBaiduScope.SUPER_MSG.getScope(),
