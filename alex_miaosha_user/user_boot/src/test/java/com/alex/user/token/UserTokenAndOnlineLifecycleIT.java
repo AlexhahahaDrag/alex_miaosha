@@ -111,7 +111,7 @@ public class UserTokenAndOnlineLifecycleIT {
         login.setTokenId("token-uuid-123");
         login.setToken("Bearer jwt-token-xyz");
         login.setLoginIp("127.0.0.1");
-        login.setLastLoginTime(LocalDateTime.now());
+        login.setLastLoginTime(DateUtils.now());
 
         when(redisUtils.get(eq(LoginKey.loginIpSource), anyString())).thenReturn("内网IP");
 

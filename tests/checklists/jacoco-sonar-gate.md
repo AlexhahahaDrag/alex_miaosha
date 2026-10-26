@@ -25,6 +25,8 @@
 | **JAC-COVER-05** | `UserNoticeConfigServiceImpl`| 查看 `finance_boot/target/site/jacoco/jacoco.csv` 统计指标 | 指令覆盖率 **68.5%**（289/422），行覆盖率 **72.9%**（62/85），分支覆盖率 **72.9%**（51/70），达标 | ✅ PASS |
 | **SONAR-PROP-06**| 根 POM 属性配置 | 校验 `sonar.coverage.jacoco.xmlReportPaths` 与 `sonar.coverage.exclusions` | 路径指向标准路径，排除项与 Jacoco `<excludes>` 严格对齐，避免模板类拉低 Sonar 得分 | ✅ PASS |
 | **SCRIPT-RUN-07**| 便捷脚本 | `scripts/quality/run-coverage-check.bat` | 封装 JDK 17 与 Maven 覆盖率一键执行与路径指引 | ✅ PASS |
+| **JAC-USER-08**  | `user_boot` 覆盖率 | `mvn test jacoco:report -pl alex_miaosha_user/user_boot` | 231 项测试全部绿灯，产出 `jacoco.xml`（252KB），核心服务行覆盖率普遍在 82%~95% | ✅ PASS |
+| **SONAR-USER-09**| `user_boot` 异味消除 | 修复 `UserPermissionContextServiceTest` 线程中断标志位与 `UserTokenAndOnlineLifecycleIT` 时区时间 | 彻底消除 Sonar `java:S2142` 与 `java:S6888` 潜在告警，15 项回归测试 100% 通过 | ✅ PASS |
 
 ---
 

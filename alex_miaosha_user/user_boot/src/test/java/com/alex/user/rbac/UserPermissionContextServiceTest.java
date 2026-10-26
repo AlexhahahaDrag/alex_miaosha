@@ -160,6 +160,7 @@ public class UserPermissionContextServiceTest {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             userVo.setAvatarUrl("http://oss.example.com/cap_avatar.png");
         });
@@ -178,6 +179,7 @@ public class UserPermissionContextServiceTest {
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             userVo.setAvatarUrl("http://oss.example.com/late.png");
         });
