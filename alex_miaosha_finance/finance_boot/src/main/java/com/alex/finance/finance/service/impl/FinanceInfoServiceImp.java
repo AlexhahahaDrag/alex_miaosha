@@ -243,7 +243,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importFinance(MultipartFile file) throws Exception {
+    public boolean importFinance(MultipartFile file) {
         List<ImportFinanceInfoVo> excelInfo = getExcelInfo(file);
         if (excelInfo == null || excelInfo.isEmpty()) {
             return true;
@@ -270,7 +270,10 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
      * author: majf
      * return: java.util.List<com.alex.finance.vo.finance.ImportFinanceInfoVo>
      */
-    private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) throws Exception {
+    private List<ImportFinanceInfoVo> getExcelInfo(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return Collections.emptyList();
+        }
         ExcelImportResult<ImportFinanceInfoVo> result;
         ImportParams importParams = new ImportParams();
         //设置导入位置
@@ -283,8 +286,13 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         importParams.setNeedVerify(false);
         //告诉easypoi我们自定义的验证器
         importParams.setDictHandler(iExcelDictHandler);
-        result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportFinanceInfoVo.class, importParams);
-        return result.getList();
+        try {
+            result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportFinanceInfoVo.class, importParams);
+            return result.getList();
+        } catch (Exception e) {
+            log.error("解析导入财务信息 Excel 发生异常", e);
+            throw FinanceException.system("导入财务信息Excel解析失败: " + e.getMessage());
+        }
     }
 
     private String resolveUserName(TUserVo user) {

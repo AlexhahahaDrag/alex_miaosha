@@ -37,7 +37,7 @@ public interface CpnCouponInfoService extends IService<CpnCouponInfo> {
      * @return 是否成功
      * @throws Exception 异常
      */
-    Boolean importCpnCouponInfo(MultipartFile file) throws Exception;
+    Boolean importCpnCouponInfo(MultipartFile file);
 
     /**
      * 下载消费券信息表导入模版
@@ -45,7 +45,7 @@ public interface CpnCouponInfoService extends IService<CpnCouponInfo> {
      * @param response HTTP响应对象
      * @throws Exception 异常
      */
-    void downloadTemplate(HttpServletResponse response) throws Exception;
+    void downloadTemplate(HttpServletResponse response);
 
     /**
      * 优惠券 AI 智能策划

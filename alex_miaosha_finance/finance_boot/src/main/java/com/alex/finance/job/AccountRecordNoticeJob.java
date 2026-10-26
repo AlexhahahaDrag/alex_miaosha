@@ -18,7 +18,7 @@ public class AccountRecordNoticeJob {
     private final SysMessageInfoService sysMessageInfoService;
 
     @XxlJob("accountRecordNoticeHandler")
-    public void accountRecordNotice() throws Exception {
+    public void accountRecordNotice() {
         log.info("===============开始调用快过期账号查询与到期站内信巡检===================");
         long startTime = System.nanoTime();
         sysMessageInfoService.executeRemindJob();

@@ -138,7 +138,7 @@ public class CpnCouponInfoController {
     @ApiOperation(value = "导入消费券信息表", notes = "通过Excel 文件导入消费券信息表", response = Result.class)
     @PostMapping(value = "/import")
     @ApiImplicitParam(value = "Excel 文件", name = "file", required = true, dataTypeClass = MultipartFile.class)
-    public Result<Boolean> importCpnCouponInfo(@RequestPart("file") MultipartFile file) throws Exception {
+    public Result<Boolean> importCpnCouponInfo(@RequestPart("file") MultipartFile file) {
         return Result.success(cpnCouponInfoService.importCpnCouponInfo(file));
     }
 
@@ -152,7 +152,7 @@ public class CpnCouponInfoController {
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "下载消费券信息表导入模版", notes = "下载消费券信息表Excel 导入模版文件", response = Result.class)
     @GetMapping(value = "/template")
-    public void downloadTemplate(HttpServletResponse response) throws Exception {
+    public void downloadTemplate(HttpServletResponse response) {
         cpnCouponInfoService.downloadTemplate(response);
     }
 

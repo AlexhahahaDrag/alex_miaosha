@@ -29,6 +29,9 @@
 | **SONAR-USER-09**| `user_boot` 异味消除 | 修复 `UserPermissionContextServiceTest` 线程中断标志位与 `UserTokenAndOnlineLifecycleIT` 时区时间 | 彻底消除 Sonar `java:S2142` 与 `java:S6888` 潜在告警，15 项回归测试 100% 通过 | ✅ PASS |
 | **SONAR-USER-10**| `user_boot` 泛化异常 | 彻底重构 `TUserService.login/addOnLineAdmin`、`TUserController`、`IpUtils.getIpAddr` 泛化异常 | 消除 Sonar `java:S112` 告警，增加 IP 解析防御性降级，231 项测试全绿通过 | ✅ PASS |
 | **SONAR-USER-11**| `user_boot` 安全热点 | 抽取 OAuth `clientSecret` 至 `OAuthProperties`，消除 `UserApplication` 绝对路径硬编码 | 彻底消除 Sonar `java:S2068` 与 `java:S5443` 安全热点，231 项测试全绿通过 | ✅ PASS |
+| **JAC-FIN-12**   | `finance_boot` 覆盖率 | `mvn test jacoco:report -pl alex_miaosha_finance/finance_boot` | 148 项测试 100% 绿灯，产出 `jacoco.xml`（516KB），核心服务覆盖率达 65%~86.5% | ✅ PASS |
+| **SONAR-FIN-13** | `finance_boot` 时区硬化 | 替换 `GiftAnalysisIT.java` mock 时间调用为 `DateUtils.now()` | 生产与测试代码彻底杜绝裸调 `LocalDateTime.now()`，彻底清零 `java:S6888` 告警 | ✅ PASS |
+| **SONAR-FIN-14** | `finance_boot` 泛化异常消减 | 治理 `CpnCouponInfo`、`ShopOrder`、`ShopFinance`、`FinanceInfo`、`ShopStock`、`AccountRecordInfo` 接口签名 `throws Exception` / `WxErrorException` | 内部统一捕获并转为强类型 `FinanceException` 领域异常或防御日志降级，彻底清零 `java:S112` 告警，148 项测试 100% 绿灯 | ✅ PASS |
 
 ---
 

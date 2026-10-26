@@ -29,6 +29,6 @@ public interface ShopStockService extends IService<ShopStock> {
 
     List<ShopStockVo> getShopList(String ids);
 
-    boolean importShopStockInfo(MultipartFile file) throws Exception;
+    boolean importShopStockInfo(MultipartFile file);
 }
 

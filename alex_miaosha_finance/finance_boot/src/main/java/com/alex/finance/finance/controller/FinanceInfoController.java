@@ -126,7 +126,7 @@ public class FinanceInfoController {
     @ApiOperationSupport(order = 70, author = "alex")
     @PostMapping(value = "/importFinance")
     @ApiOperation(value = "导入财务信息表", notes = "导入财务信息表", response = Result.class)
-    public Result<Boolean> importFinance(@RequestPart("file") MultipartFile file) throws Exception {
+    public Result<Boolean> importFinance(@RequestPart("file") MultipartFile file) {
         return Result.success(financeInfoService.importFinance(file));
     }
 }

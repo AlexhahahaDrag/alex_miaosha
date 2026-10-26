@@ -32,6 +32,6 @@ public interface FinanceInfoService extends IService<FinanceInfo> {
 
     Boolean deleteFinanceInfo(String ids);
 
-    boolean importFinance(MultipartFile file) throws Exception;
+    boolean importFinance(MultipartFile file);
 }
 

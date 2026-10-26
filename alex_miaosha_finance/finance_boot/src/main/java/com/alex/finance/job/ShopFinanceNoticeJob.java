@@ -19,7 +19,7 @@ public class ShopFinanceNoticeJob {
     private final ShopFinanceAnalysisService shopFinanceAnalysisService;
 
     @XxlJob("dayShopFinanceNoticeHandler")
-    public void dayShopFinanceNotice() throws Exception {
+    public void dayShopFinanceNotice() {
         log.info("===============开始调用店铺财务当日统计信息查询===================");
         long startTime = System.nanoTime();
         shopFinanceAnalysisService.getCurShopFinanceInfo(
@@ -30,7 +30,7 @@ public class ShopFinanceNoticeJob {
     }
 
     @XxlJob("monthShopFinanceNoticeHandler")
-    public void monthShopFinanceNotice() throws Exception {
+    public void monthShopFinanceNotice() {
         log.info("===============开始调用店铺财务当月统计信息查询===================");
         long startTime = System.nanoTime();
         shopFinanceAnalysisService.getCurShopFinanceInfo(

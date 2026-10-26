@@ -79,7 +79,7 @@ public class ShopOrderController {
     @ApiOperationSupport(order = 70, author = "alex")
     @ApiOperation(value = "提交订单", notes = "提交订单", response = Result.class)
     @PostMapping(path = "/submitOrder")
-    public Result<Boolean> submitOrder(@RequestBody ShopOrderVo shopOrderVo) throws Exception {
+    public Result<Boolean> submitOrder(@RequestBody ShopOrderVo shopOrderVo) {
         return Result.success(shopOrderService.submitOrder(shopOrderVo));
     }
 }

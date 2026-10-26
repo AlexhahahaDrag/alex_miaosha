@@ -9,10 +9,13 @@ import com.alex.finance.shopFinance.mapper.ShopFinanceMapper;
 import com.alex.finance.shopFinanceAnalysis.service.ShopFinanceAnalysisService;
 import com.alex.finance.wechat.service.WeChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisService {
@@ -67,12 +70,16 @@ public class ShopFinanceAnalysisServiceImpl implements ShopFinanceAnalysisServic
     }
 
     @Override
-    public void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception {
+    public void getCurShopFinanceInfo(String startDate, String endDate, String type) {
         List<ShopFinanceAnalysisVo> curShopFinanceInfo = shopFinanceMapper.getCurShopFinanceInfo(startDate, endDate,
                 null, null, null, type);
         for (ShopFinanceAnalysisVo cur : curShopFinanceInfo) {
-            weChatService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "" : "月"),
-                    cur.getSaleAmount(), cur.getSaleNum());
+            try {
+                weChatService.sentShopFinanceMessage(cur.getInfoDate() + ("day".equals(type) ? "" : "月"),
+                        cur.getSaleAmount(), cur.getSaleNum());
+            } catch (WxErrorException e) {
+                log.error("发送微信财务通知失败, 日期: {}", cur.getInfoDate(), e);
+            }
         }
     }
 

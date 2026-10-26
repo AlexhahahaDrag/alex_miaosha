@@ -7,6 +7,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.shopStock.ImportShopStockInfoVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.constants.SysConf;
+import com.alex.common.exception.FinanceException;
 import com.alex.common.redis.key.ShopStockKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -128,7 +129,7 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importShopStockInfo(MultipartFile file) throws Exception {
+    public boolean importShopStockInfo(MultipartFile file) {
         List<ImportShopStockInfoVo> excelInfo = getExcelInfo(file);
         if (excelInfo == null || excelInfo.isEmpty()) {
             return true;
@@ -165,7 +166,7 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         return shopStockAttrs;
     }
 
-    private List<ImportShopStockInfoVo> getExcelInfo(MultipartFile file) throws Exception {
+    private List<ImportShopStockInfoVo> getExcelInfo(MultipartFile file) {
         ExcelImportResult<ImportShopStockInfoVo> result;
         ImportParams importParams = new ImportParams();
         //设置导入位置
@@ -178,8 +179,13 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
         importParams.setNeedVerify(false);
         //告诉easypoi我们自定义的验证器
         importParams.setDictHandler(iExcelDictHandler);
-        result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportShopStockInfoVo.class, importParams);
-        return result.getList();
+        try {
+            result = ExcelImportUtil.importExcelMore(file.getInputStream(), ImportShopStockInfoVo.class, importParams);
+            return result.getList();
+        } catch (Exception e) {
+            log.error("解析导入商品库存 Excel 发生异常", e);
+            throw FinanceException.system("导入商品库存Excel解析失败: " + e.getMessage());
+        }
     }
 }
 

@@ -13,6 +13,7 @@ import com.alex.finance.gift.analysis.service.impl.GiftAnalysisServiceImpl;
 import com.alex.finance.gift.event.service.GiftEventInfoService;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
+import com.alex.common.utils.date.DateUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -166,13 +167,13 @@ class GiftAnalysisIT {
         p1.setPersonName("张三");
         p1.setTotalGiveAmount(new BigDecimal("200"));
         p1.setTotalReceiveAmount(new BigDecimal("300")); // 合计 500
-        p1.setLatestRecordTime(LocalDateTime.now());
+        p1.setLatestRecordTime(DateUtils.now());
 
         GiftPersonBusinessVo p2 = new GiftPersonBusinessVo();
         p2.setPersonName("李四");
         p2.setTotalGiveAmount(new BigDecimal("600"));
         p2.setTotalReceiveAmount(new BigDecimal("800")); // 合计 1400
-        p2.setLatestRecordTime(LocalDateTime.now());
+        p2.setLatestRecordTime(DateUtils.now());
 
         Page<GiftPersonBusinessVo> page = new Page<>(1, 10, 2);
         page.setRecords(List.of(p1, p2));

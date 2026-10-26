@@ -25,5 +25,5 @@ public interface ShopOrderService extends IService<ShopOrder> {
     Boolean deleteShopOrder(String ids);
 
 
-    Boolean submitOrder(ShopOrderVo shopOrderVo) throws Exception;
+    Boolean submitOrder(ShopOrderVo shopOrderVo);
 }

@@ -88,7 +88,7 @@ public class ShopStockController {
     @ApiOperationSupport(order = 70, author = "alex")
     @PostMapping(value = "/importShopStockInfo")
     @ApiOperation(value = "导入商品库存信息", notes = "导入商品库存信息", response = Result.class)
-    public Result<Boolean> importShopStockInfo(@RequestPart("file") MultipartFile file) throws Exception {
+    public Result<Boolean> importShopStockInfo(@RequestPart("file") MultipartFile file) {
         return Result.success(shopStockService.importShopStockInfo(file));
     }
 }

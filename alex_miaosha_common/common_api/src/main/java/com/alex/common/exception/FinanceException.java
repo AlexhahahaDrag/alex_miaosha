@@ -41,6 +41,10 @@ public class FinanceException extends RuntimeException{
         return new FinanceException(ResultEnum.UNAUTHORIZED.getCode(), message);
     }
 
+    public static FinanceException system(String message) {
+        return new FinanceException(ResultEnum.SYSTEM_ERROR.getCode(), message);
+    }
+
     public static FinanceException notLogin() {
         return new FinanceException(ResultEnum.USER_NO_LOGIN);
     }

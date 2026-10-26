@@ -74,7 +74,7 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
     }
 
     @Override
-    public List<AccountCountInfoVo> queryRemindRecordInfo(Integer dif) throws WxErrorException {
+    public List<AccountCountInfoVo> queryRemindRecordInfo(Integer dif) {
         if (dif == null) {
             dif = difDay;
         }
@@ -84,7 +84,11 @@ public class AccountRecordInfoServiceImp extends ServiceImpl<AccountRecordInfoMa
         }
         //发送微信消息提醒
         for(AccountCountInfoVo cur : list) {
-            weChatService.sentMessage(cur.getAccountName(), cur.getNum());
+            try {
+                weChatService.sentMessage(cur.getAccountName(), cur.getNum());
+            } catch (WxErrorException e) {
+                log.error("发送微信账号到期提醒失败, 账号: " + cur.getAccountName(), e);
+            }
         }
         return list;
     }

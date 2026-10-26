@@ -23,7 +23,7 @@ public interface ShopFinanceAnalysisService {
 
     ShopFinanceChainYearVo getChainAndYear(String startDate, String endDate);
 
-    void getCurShopFinanceInfo(String startDate, String endDate, String type) throws Exception;
+    void getCurShopFinanceInfo(String startDate, String endDate, String type);
 
     ShopFinanceChainYearVo getBenefitInfo(String startDate, String endDate, String searchType);
 }

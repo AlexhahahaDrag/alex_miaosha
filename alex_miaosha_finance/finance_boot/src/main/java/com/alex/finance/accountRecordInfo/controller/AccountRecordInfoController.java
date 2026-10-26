@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,7 +84,7 @@ public class AccountRecordInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "间距日期", name = "difDays", dataTypeClass = Integer.class)}
     )
-    public Result<List<AccountCountInfoVo>> queryRemindRecordInfo(@RequestParam(value = "difDays", required = false) Integer difDays) throws WxErrorException {
+    public Result<List<AccountCountInfoVo>> queryRemindRecordInfo(@RequestParam(value = "difDays", required = false) Integer difDays) {
         return Result.success(accountRecordInfoService.queryRemindRecordInfo(difDays));
     }
 }
