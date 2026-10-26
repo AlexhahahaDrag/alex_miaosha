@@ -350,7 +350,7 @@ public class FileInfoServiceImp extends ServiceImpl<FileInfoMapper, FileInfo> im
     }
 
     private FileInfoVo uploadFile(String type, MultipartFile file, boolean isThumbnail, boolean isNormal)
-            throws Exception {
+            throws FileException {
         return getFileService(null).uploadFile(file, type, isThumbnail, isNormal);
     }
 

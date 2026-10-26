@@ -1,6 +1,8 @@
 package com.alex.oss.config.s3;
 
 import com.alex.common.utils.string.StringUtils;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.FileException;
 import com.alex.oss.storage.vo.ObjectItem;
 import io.minio.*;
 import io.minio.errors.*;
@@ -171,25 +173,30 @@ public abstract class BaseS3Template {
      * 流式上传（推荐：明确传入 objectSize，严禁使用 inputStream.available()）
      */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, long objectSize,
-            String contentType) throws Exception {
-        existBucket(bucketName);
-        ObjectWriteResponse response = minioClient.putObject(PutObjectArgs.builder()
-                .bucket(bucketName)
-                .object(filename)
-                .contentType(contentType)
-                .stream(inputStream, objectSize, -1)
-                .build());
-        log.info("[S3Storage] 上传文件成功：bucket={}, file={}, etag={}", bucketName, filename, response.etag());
-        Map<String, String> resultMap = new HashMap<>();
-        resultMap.put("url", filename);
-        return resultMap;
+            String contentType) throws FileException {
+        try {
+            existBucket(bucketName);
+            ObjectWriteResponse response = minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(filename)
+                    .contentType(contentType)
+                    .stream(inputStream, objectSize, -1)
+                    .build());
+            log.info("[S3Storage] 上传文件成功：bucket={}, file={}, etag={}", bucketName, filename, response.etag());
+            Map<String, String> resultMap = new HashMap<>();
+            resultMap.put("url", filename);
+            return resultMap;
+        } catch (Exception e) {
+            log.error("[S3Storage] 上传文件异常: bucket={}, file={}", bucketName, filename, e);
+            throw new FileException(ResultEnum.IMAGE_UPLOAD_FAIL, e.getMessage());
+        }
     }
 
     /**
      * 向后兼容老接口（不带 size 时降级为 -1 分片读取）
      */
     public Map<String, String> upload(String bucketName, String filename, InputStream inputStream, String contentType)
-            throws Exception {
+            throws FileException {
         return upload(bucketName, filename, inputStream, -1, contentType);
     }
 
@@ -287,24 +294,29 @@ public abstract class BaseS3Template {
     /**
      * 批量删除文件对象
      */
-    public Map<String, String> removeObjects(String bucketName, List<String> objects) throws Exception {
+    public Map<String, String> removeObjects(String bucketName, List<String> objects) throws FileException {
         if (!isInitialized()) {
             throw new IllegalStateException("S3 存储客户端未初始化");
         }
         Map<String, String> resultMap = new HashMap<>();
-        List<DeleteObject> dos = objects.stream().map(DeleteObject::new).toList();
-        Iterable<Result<DeleteError>> results = minioClient.removeObjects(
-                RemoveObjectsArgs.builder()
-                        .bucket(bucketName)
-                        .objects(dos)
-                        .build());
-        for (Result<DeleteError> result : results) {
-            DeleteError error = result.get();
-            log.error("[S3Storage] 删除文件对象失败: bucket={}, object={}, error={}", bucketName, error.objectName(),
-                    error.message());
+        try {
+            List<DeleteObject> dos = objects.stream().map(DeleteObject::new).toList();
+            Iterable<Result<DeleteError>> results = minioClient.removeObjects(
+                    RemoveObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .objects(dos)
+                            .build());
+            for (Result<DeleteError> result : results) {
+                DeleteError error = result.get();
+                log.error("[S3Storage] 删除文件对象失败: bucket={}, object={}, error={}", bucketName, error.objectName(),
+                        error.message());
+            }
+            resultMap.put("mes", "删除成功");
+            return resultMap;
+        } catch (Exception e) {
+            log.error("[S3Storage] 批量删除文件对象异常: bucket={}", bucketName, e);
+            throw new FileException(ResultEnum.IMAGE_DELETE_FAIL, e.getMessage());
         }
-        resultMap.put("mes", "删除成功");
-        return resultMap;
     }
 
     /**
@@ -413,39 +425,46 @@ public abstract class BaseS3Template {
      * 生成图片缩略图并上传
      */
     public Map<String, String> thumbnail(String bucketName, String filename, InputStream inputStream,
-            String contentType) throws Exception {
-        existBucket(bucketName);
-        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
-        BufferedImage bufferedImage = ImageIO.read(inputStream);
-        if (bufferedImage != null) {
-            Thumbnails.of(bufferedImage)
-                    .size(200, 200)
-                    .outputFormat("jpg")
-                    .toOutputStream(thumbnailStream);
-        } else {
-            throw new UnsupportedFormatException("Invalid image format.");
+            String contentType) throws FileException {
+        try {
+            existBucket(bucketName);
+            ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
+            BufferedImage bufferedImage = ImageIO.read(inputStream);
+            if (bufferedImage != null) {
+                Thumbnails.of(bufferedImage)
+                        .size(200, 200)
+                        .outputFormat("jpg")
+                        .toOutputStream(thumbnailStream);
+            } else {
+                throw new UnsupportedFormatException("Invalid image format.");
+            }
+
+            String thumbnailFilename;
+            int index = filename.lastIndexOf(".");
+            if (index != -1) {
+                thumbnailFilename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
+            } else {
+                thumbnailFilename = filename + "_thumbnail";
+            }
+
+            byte[] thumbnailBytes = thumbnailStream.toByteArray();
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(thumbnailFilename)
+                            .contentType(contentType)
+                            .stream(new ByteArrayInputStream(thumbnailBytes), thumbnailBytes.length, -1)
+                            .build());
+            log.info("[S3Storage] 上传缩略图成功：bucket={}, file={}", bucketName, thumbnailFilename);
+
+            Map<String, String> resultMap = new HashMap<>();
+            resultMap.put("url", thumbnailFilename);
+            return resultMap;
+        } catch (FileException fe) {
+            throw fe;
+        } catch (Exception e) {
+            log.error("[S3Storage] 生成缩略图上传异常: bucket={}, file={}", bucketName, filename, e);
+            throw new FileException(ResultEnum.IMAGE_UPLOAD_FAIL, "生成缩略图失败: " + e.getMessage());
         }
-
-        String thumbnailFilename;
-        int index = filename.lastIndexOf(".");
-        if (index != -1) {
-            thumbnailFilename = filename.substring(0, index) + "_thumbnail" + filename.substring(index);
-        } else {
-            thumbnailFilename = filename + "_thumbnail";
-        }
-
-        byte[] thumbnailBytes = thumbnailStream.toByteArray();
-        minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(thumbnailFilename)
-                        .contentType(contentType)
-                        .stream(new ByteArrayInputStream(thumbnailBytes), thumbnailBytes.length, -1)
-                        .build());
-        log.info("[S3Storage] 上传缩略图成功：bucket={}, file={}", bucketName, thumbnailFilename);
-
-        Map<String, String> resultMap = new HashMap<>();
-        resultMap.put("url", thumbnailFilename);
-        return resultMap;
     }
 }

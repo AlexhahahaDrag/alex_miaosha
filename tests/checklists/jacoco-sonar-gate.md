@@ -32,6 +32,8 @@
 | **JAC-FIN-12**   | `finance_boot` 覆盖率 | `mvn test jacoco:report -pl alex_miaosha_finance/finance_boot` | 148 项测试 100% 绿灯，产出 `jacoco.xml`（516KB），核心服务覆盖率达 65%~86.5% | ✅ PASS |
 | **SONAR-FIN-13** | `finance_boot` 时区硬化 | 替换 `GiftAnalysisIT.java` mock 时间调用为 `DateUtils.now()` | 生产与测试代码彻底杜绝裸调 `LocalDateTime.now()`，彻底清零 `java:S6888` 告警 | ✅ PASS |
 | **SONAR-FIN-14** | `finance_boot` 泛化异常消减 | 治理 `CpnCouponInfo`、`ShopOrder`、`ShopFinance`、`FinanceInfo`、`ShopStock`、`AccountRecordInfo` 接口签名 `throws Exception` / `WxErrorException` | 内部统一捕获并转为强类型 `FinanceException` 领域异常或防御日志降级，彻底清零 `java:S112` 告警，148 项测试 100% 绿灯 | ✅ PASS |
+| **JAC-OSS-15**   | `oss_boot` 覆盖率与安全 | `mvn test jacoco:report -pl alex_miaosha_oss/oss_boot` | 103 项安全与功能测试 100% 绿灯，产出 `jacoco.xml` 与 HTML 报告 | ✅ PASS |
+| **SONAR-OSS-16** | `oss_boot` 异常收敛硬化 | 重构 `BaseS3Template`（`upload`/`removeObjects`/`thumbnail`）与 `FileInfoServiceImp` 泛化异常签名 | 内部捕获 MinIO 底层异常并收敛为强类型 `FileException`，消除 `java:S112` 告警，103 项测试 100% 绿灯 | ✅ PASS |
 
 ---
 
