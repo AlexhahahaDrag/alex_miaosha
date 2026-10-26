@@ -70,7 +70,7 @@ public class IpUtils {
      *                author: alex
      *                return: java.lang.String
      */
-    public static String getIpAddr(HttpServletRequest request) throws Exception {
+    public static String getIpAddr(HttpServletRequest request) {
         if (request == null) {
             return "";
         }

@@ -27,6 +27,7 @@
 | **SCRIPT-RUN-07**| 便捷脚本 | `scripts/quality/run-coverage-check.bat` | 封装 JDK 17 与 Maven 覆盖率一键执行与路径指引 | ✅ PASS |
 | **JAC-USER-08**  | `user_boot` 覆盖率 | `mvn test jacoco:report -pl alex_miaosha_user/user_boot` | 231 项测试全部绿灯，产出 `jacoco.xml`（252KB），核心服务行覆盖率普遍在 82%~95% | ✅ PASS |
 | **SONAR-USER-09**| `user_boot` 异味消除 | 修复 `UserPermissionContextServiceTest` 线程中断标志位与 `UserTokenAndOnlineLifecycleIT` 时区时间 | 彻底消除 Sonar `java:S2142` 与 `java:S6888` 潜在告警，15 项回归测试 100% 通过 | ✅ PASS |
+| **SONAR-USER-10**| `user_boot` 泛化异常 | 彻底重构 `TUserService.login/addOnLineAdmin`、`TUserController`、`IpUtils.getIpAddr` 泛化异常 | 消除 Sonar `java:S112` 告警，增加 IP 解析防御性降级，231 项测试全绿通过 | ✅ PASS |
 
 ---
 

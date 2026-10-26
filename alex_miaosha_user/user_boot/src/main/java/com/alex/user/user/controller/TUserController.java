@@ -167,7 +167,7 @@ public class TUserController {
     public Result<Map<String, Object>> doLogin(HttpServletRequest request,
                                                @RequestParam(value = "username", required = false) String username,
                                                @RequestParam(value = "password", required = false) String password,
-                                               @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) throws Exception {
+                                               @RequestParam(value = "isRememberMe", required = false) Boolean isRememberMe) {
         return Result.success(tUserService.login(request, username, password, isRememberMe));
     }
 

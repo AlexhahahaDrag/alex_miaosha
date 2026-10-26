@@ -438,8 +438,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     }
 
     @Override
-    public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember)
-            throws Exception {
+    public Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("1.参数校验与Redis检查");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
@@ -783,7 +782,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
      * author: alex
      * return: java.lang.Integer
      */
-    private Integer setLoginCommit(HttpServletRequest request, String username) throws Exception {
+    private Integer setLoginCommit(HttpServletRequest request, String username) {
         String ip = IpUtils.getIpAddr(request);
         String loginCountKey = LoginKey.loginLimitCount.getPrefix() + RedisConstants.SEGMENTATION + ip +
                 RedisConstants.SEGMENTATION + username;
@@ -855,7 +854,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
      * return: void
      */
     @Override
-    public void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception {
+    public void addOnLineAdmin(TUserLogin userLogin, long expiration) {
         OnlineAdmin onlineAdmin = OnlineAdmin.builder()
                 .userId(userLogin.getUserId())
                 .tokenId(userLogin.getTokenId())
@@ -873,11 +872,15 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         // 从 Redis中获取IP来源
         String jsonResult = redisUtils.get(LoginKey.loginIpSource, userLogin.getLoginIp());
         if (StringUtils.isEmpty(jsonResult)) {
-            String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp());
-            if (StringUtils.isNotEmpty(addresses)) {
-                onlineAdmin.setLoginLocation(addresses);
-                redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24,
-                        TimeUnit.SECONDS);
+            try {
+                String addresses = IpUtils.getAddresses(SysConf.IP + "=" + userLogin.getLoginIp());
+                if (StringUtils.isNotEmpty(addresses)) {
+                    onlineAdmin.setLoginLocation(addresses);
+                    redisUtils.setEx(LoginKey.loginIpSource, userLogin.getLoginIp(), addresses, expiration * 24,
+                            TimeUnit.SECONDS);
+                }
+            } catch (Exception e) {
+                log.warn("根据 IP 解析地理位置异常: ip={}, error={}", userLogin.getLoginIp(), e.getMessage());
             }
         } else {
             onlineAdmin.setLoginLocation(jsonResult);

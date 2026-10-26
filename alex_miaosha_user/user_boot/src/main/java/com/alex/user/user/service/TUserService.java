@@ -45,7 +45,7 @@ public interface TUserService extends IService<TUser> {
 
     Boolean deleteTUser(String ids);
 
-    Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember) throws Exception;
+    Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember);
 
     /**
      * Current user's visible menu tree (auth required).
@@ -58,7 +58,7 @@ public interface TUserService extends IService<TUser> {
 
     Result<Boolean> logout(HttpServletRequest request);
 
-    void addOnLineAdmin(TUserLogin userLogin, long expiration) throws Exception;
+    void addOnLineAdmin(TUserLogin userLogin, long expiration);
 
     /**
      * @param token
