@@ -29,7 +29,7 @@ public class ShopProductController {
     @ApiOperationSupport(order = 10, author = "alex")
     @ApiOperation(value = "获取商城商品", notes = "获取商城商品", response = Result.class)
     @GetMapping("/shopProduct")
-    public Result<List<Content>> getShopProduct() throws Exception {
+    public Result<List<Content>> getShopProduct() {
         return Result.success(shopProductService.getShopProduct());
     }
 }

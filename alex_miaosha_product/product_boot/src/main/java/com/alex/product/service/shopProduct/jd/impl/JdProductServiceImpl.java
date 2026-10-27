@@ -3,8 +3,11 @@ package com.alex.product.service.shopProduct.jd.impl;
 import com.alex.api.product.vo.product.jd.Content;
 import com.alex.product.enums.SourceType;
 import com.alex.product.service.shopProduct.jd.JdProductService;
+import com.alex.base.enums.ResultEnum;
+import com.alex.common.exception.SystemException;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JdProductServiceImpl implements JdProductService {
@@ -26,22 +30,28 @@ public class JdProductServiceImpl implements JdProductService {
     @Value("${shop.jdUrl}")
     private String jdUrl;
 
-    public List<Content> parse(List<String> keywords, String type) throws Exception {
+    @Override
+    public List<Content> parse(List<String> keywords, String type) {
         if (keywords == null || keywords.isEmpty()) {
-            throw new Exception("请填写关键字");
+            throw new SystemException(ResultEnum.PARAM_ERROR, "请填写关键字");
         }
         List<Content> res = Lists.newArrayList();
         for (String keyword : keywords) {
-            if ("jd".equalsIgnoreCase(type)) {
-                res.addAll(parseJd(keyword));
-            } else if ("tb".equalsIgnoreCase(type)) {
-                res.addAll(parseTB(keyword));
+            try {
+                if ("jd".equalsIgnoreCase(type)) {
+                    res.addAll(parseJd(keyword));
+                } else if ("tb".equalsIgnoreCase(type)) {
+                    res.addAll(parseTB(keyword));
+                }
+            } catch (Exception e) {
+                log.error("抓取商品信息异常, keyword={}, type={}", keyword, type, e);
             }
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw e;
+                log.warn("商品抓取休眠被中断: keyword={}", keyword, e);
+                break;
             }
         }
         return res;

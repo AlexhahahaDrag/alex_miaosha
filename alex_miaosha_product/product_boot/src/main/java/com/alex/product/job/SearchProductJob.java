@@ -16,7 +16,7 @@ public class SearchProductJob {
     private final ShopProductService shopProductService;
 
     @XxlJob("searchJdProductJobHandler")
-    public void searchJdProductJobHandler() throws Exception {
+    public void searchJdProductJobHandler() {
         log.info("===============开始执行查询jd商品===================");
         long startTime = System.nanoTime();
         shopProductService.getShopProduct();

@@ -28,7 +28,7 @@ public class ShopProductServiceImpl implements ShopProductService {
     private final PmsShopWantProductService pmsShopWantProductService;
 
     @Override
-    public List<Content> getShopProduct() throws Exception {
+    public List<Content> getShopProduct() {
 
         PmsShopWantProductVo pmsShopWantProductVo = PmsShopWantProductVo.builder().status(1).build();
         List<PmsShopWantProductVo> productList = pmsShopWantProductService.getList(pmsShopWantProductVo);
