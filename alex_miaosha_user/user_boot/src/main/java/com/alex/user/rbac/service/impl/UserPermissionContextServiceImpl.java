@@ -194,7 +194,15 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
         }
 
         List<MenuInfoVo> filteredMenus = new ArrayList<>();
-        for (MenuInfoVo menuInfoVo : menuList) {
+        for (Object item : menuList) {
+            MenuInfoVo menuInfoVo;
+            if (item instanceof MenuInfoVo) {
+                menuInfoVo = (MenuInfoVo) item;
+            } else if (item instanceof JSONObject) {
+                menuInfoVo = ((JSONObject) item).toJavaObject(MenuInfoVo.class);
+            } else {
+                menuInfoVo = JSONObject.parseObject(JSONObject.toJSONString(item), MenuInfoVo.class);
+            }
             MenuInfoVo filteredMenu = filterMenuByPermissionCodes(menuInfoVo, permissionCodeSet);
             if (filteredMenu != null) {
                 filteredMenus.add(filteredMenu);
@@ -228,7 +236,15 @@ public class UserPermissionContextServiceImpl implements UserPermissionContextSe
         }
 
         List<MenuInfoVo> filteredChildren = new ArrayList<>();
-        for (MenuInfoVo child : children) {
+        for (Object childItem : children) {
+            MenuInfoVo child;
+            if (childItem instanceof MenuInfoVo) {
+                child = (MenuInfoVo) childItem;
+            } else if (childItem instanceof JSONObject) {
+                child = ((JSONObject) childItem).toJavaObject(MenuInfoVo.class);
+            } else {
+                child = JSONObject.parseObject(JSONObject.toJSONString(childItem), MenuInfoVo.class);
+            }
             MenuInfoVo filteredChild = filterMenuByPermissionCodes(child, permissionCodes);
             if (filteredChild != null) {
                 filteredChildren.add(filteredChild);

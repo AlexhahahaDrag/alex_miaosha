@@ -75,6 +75,25 @@ public class MenuPermissionFilterTest {
         assertEquals("Users", filtered.get(0).getName(), "retained menu should preserve menu data");
     }
 
+    @Test
+    public void testHandlesJsonObjectElementsWithoutClassCastException() {
+        com.alibaba.fastjson.JSONObject jsonItem = new com.alibaba.fastjson.JSONObject();
+        jsonItem.put("name", "Finance");
+        jsonItem.put("permissionCode", "selfFinance:financeManager");
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        List rawList = Collections.singletonList(jsonItem);
+
+        @SuppressWarnings("unchecked")
+        List<MenuInfoVo> filtered = UserPermissionContextServiceImpl.filterMenusByPermissionCodes(
+                rawList,
+                Collections.singletonList("selfFinance:financeManager")
+        );
+
+        assertEquals(1, filtered.size());
+        assertEquals("Finance", filtered.get(0).getName());
+    }
+
     private static MenuInfoVo menu(String name, String permissionCode) {
         MenuInfoVo m = new MenuInfoVo();
         m.setName(name);

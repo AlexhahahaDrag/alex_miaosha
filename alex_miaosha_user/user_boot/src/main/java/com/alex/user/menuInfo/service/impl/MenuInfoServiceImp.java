@@ -92,8 +92,7 @@ public class MenuInfoServiceImp extends ServiceImpl<MenuInfoMapper, MenuInfo> im
         if (isFullQuery) {
             if (multiLevelCacheService != null) {
                 try {
-                    @SuppressWarnings("unchecked")
-                    List<MenuInfoVo> cached = multiLevelCacheService.get(cacheRealKey, (Class<List<MenuInfoVo>>) (Class<?>) List.class);
+                    List<MenuInfoVo> cached = multiLevelCacheService.getList(cacheRealKey, MenuInfoVo.class);
                     if (cached != null && !cached.isEmpty()) {
                         log.info("从多级缓存 (L1/L2) 中获取完整菜单树成功");
                         return cached;

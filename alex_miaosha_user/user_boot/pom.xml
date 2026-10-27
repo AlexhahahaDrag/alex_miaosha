@@ -152,6 +152,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.xlsx</include>
                     <include>**/*.xdb</include>
+                    <include>**/*.txt</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

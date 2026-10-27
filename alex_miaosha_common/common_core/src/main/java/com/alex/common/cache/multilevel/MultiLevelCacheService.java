@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +104,64 @@ public class MultiLevelCacheService {
                 }
             } catch (Exception e) {
                 log.warn("读取 L2 Redis 失败，降级执行: key={}, err={}", key, e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 读取 List 泛型列表缓存（先 L1 Caffeine，后 L2 Redis）
+     * 解决 FastJson / Jackson 泛型擦除导致的 List<JSONObject> 反序列化强转异常
+     *
+     * @param key       缓存键
+     * @param elemClazz 列表元素真实 Class 类型
+     * @param <T>       元素泛型
+     * @return 实体列表
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String key, Class<T> elemClazz) {
+        if (key == null || elemClazz == null) {
+            return null;
+        }
+
+        hotKeyDetector.recordAndCheck(key);
+
+        Object l1Val = l1Cache.getIfPresent(key);
+        if (l1Val != null) {
+            if (NULL_SENTINEL.equals(l1Val)) {
+                log.debug("L1 命中防穿透空值哨兵: key={}", key);
+                return null;
+            }
+            if (l1Val instanceof List<?>) {
+                List<?> list = (List<?>) l1Val;
+                if (list.isEmpty() || elemClazz.isInstance(list.get(0))) {
+                    return (List<T>) list;
+                }
+                List<T> converted = com.alibaba.fastjson.JSONObject.parseArray(
+                        com.alibaba.fastjson.JSONObject.toJSONString(list), elemClazz);
+                l1Cache.put(key, converted);
+                return converted;
+            }
+            return com.alibaba.fastjson.JSONObject.parseArray(l1Val.toString(), elemClazz);
+        }
+
+        if (stringRedisTemplate != null) {
+            try {
+                String l2Val = stringRedisTemplate.opsForValue().get(key);
+                if (l2Val != null) {
+                    if (NULL_SENTINEL.equals(l2Val)) {
+                        l1Cache.put(key, NULL_SENTINEL);
+                        return null;
+                    }
+                    List<T> list = com.alibaba.fastjson.JSONObject.parseArray(l2Val, elemClazz);
+                    if (list != null) {
+                        l1Cache.put(key, list);
+                        return list;
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("读取 L2 Redis 列表失败，降级执行: key={}, err={}", key, e.getMessage());
             }
         }
 

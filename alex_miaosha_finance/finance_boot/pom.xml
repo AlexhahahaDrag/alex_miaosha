@@ -123,6 +123,7 @@
                     <include>**/*.yaml</include>
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
+                    <include>**/*.txt</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -147,6 +148,7 @@
                     <include>**/*.yaml</include>
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
+                    <include>**/*.txt</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
