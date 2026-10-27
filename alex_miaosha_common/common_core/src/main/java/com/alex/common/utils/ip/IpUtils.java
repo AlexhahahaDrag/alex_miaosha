@@ -2,11 +2,11 @@ package com.alex.common.utils.ip;
 
 import com.alex.common.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.lionsoul.ip2region.xdb.LongByteArray;
 import org.lionsoul.ip2region.xdb.Searcher;
+import org.lionsoul.ip2region.xdb.Version;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,8 +42,8 @@ public class IpUtils {
                         if (inputStream == null) {
                             log.error("Failed to find ip2region database at path: {}", dbPath);
                         } else {
-                            byte[] cBuff = toByteArray(inputStream);
-                            searcher = result = Searcher.newWithBuffer(cBuff);
+                            LongByteArray cBuff = Searcher.loadContentFromInputStream(inputStream);
+                            searcher = result = Searcher.newWithBuffer(Version.IPv4, cBuff);
                             log.info("Successfully loaded ip2region database lazily from: {}", dbPath);
                         }
                     } catch (Exception e) {
@@ -55,15 +55,6 @@ public class IpUtils {
         return result;
     }
 
-    private static byte[] toByteArray(InputStream input) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int n;
-        while ((n = input.read(buffer)) != -1) {
-            output.write(buffer, 0, n);
-        }
-        return output.toByteArray();
-    }
 
     /**
      * @param request description: 根据请求获取ip地址

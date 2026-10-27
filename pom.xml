@@ -79,7 +79,7 @@
         <classgraph.version>4.8.179</classgraph.version>
         <shardingsphere.version>5.2.1</shardingsphere.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <ip2region.version>2.6.6</ip2region.version>
+        <ip2region.version>3.3.7</ip2region.version>
         <prometheus.version>1.10.2</prometheus.version>
         <jasypt.version>3.0.4</jasypt.version>
         <minio.version>8.5.1</minio.version>

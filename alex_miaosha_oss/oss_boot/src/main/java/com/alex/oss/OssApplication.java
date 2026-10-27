@@ -11,6 +11,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.io.File;
+
 /**
  * description:
  * author:       majf
@@ -26,11 +28,16 @@ import org.springframework.context.annotation.ComponentScan;
 public class OssApplication {
 
     public static void main(String[] args) {
-        // 必须在最前面设置
-        System.setProperty(
-                "JM.SNAPSHOT.PATH",
-                "D:\\"
-        );
+        // 动态判断快照存储路径，兼容 Windows 与 Linux 容器环境，杜绝硬编码 D:\
+        String snapshotPath = System.getProperty("JM.SNAPSHOT.PATH");
+        if (snapshotPath == null || snapshotPath.isBlank()) {
+            File dDrive = new File("D:\\");
+            if (dDrive.exists() && dDrive.isDirectory()) {
+                System.setProperty("JM.SNAPSHOT.PATH", "D:\\");
+            } else {
+                System.setProperty("JM.SNAPSHOT.PATH", System.getProperty("java.io.tmpdir", "."));
+            }
+        }
         SpringApplication.run(OssApplication.class, args);
     }
 
