@@ -8,6 +8,7 @@
 - 前端发起 API 请求并处理响应时，统一采用对象解构的形式，即 `const { code, data, message } = await api()`，禁止直接通过 `res.code` 链式点读取。
 - 前端导入 Pinia 状态或 Vue 组件中的用户、角色、机构相关数据类型时，必须统一参考并在对应页面配置文件夹中导入（例如从 `@/views/user/roleInfo/config`、`@/views/user/menuInfo/config` 等路径导入，避免直接在页面内新增或重复定义类型）。
 - 前端开发中，对于已配置由 `unplugin-auto-import` 和 `unplugin-vue-components` 插件自动导入和注册的常用 API（如 `ref`, `computed`, `watch`） and 常用组件（如 Vant、Ant Design Vue），严禁在文件中手动重复显式 `import`。
+- 前端 PC 端所有弹窗与抽屉（基于 `<BaseRbacDrawer>`、`<a-drawer>` 或 `<a-modal>`）在承载详情查看（`readonly`）或数据编辑（`edit`）时，**必须引入 `detailLoading` 全生命周期受控与骨架屏防穿透规范**：前置设置 `detailLoading.value = true` 并清空 `formState.value = {}`；接口必须由 `try/finally` 保证 `detailLoading.value = false`；主体采用 `v-if="detailLoading"` 现代骨架屏平滑过渡；数据未返回来前底部的「保存/提交」等操作按钮必须彻底隐藏（抽屉配置 `:show-footer="!isReadonly && !detailLoading"`，模态框配置 `<template v-if="!detailLoading" #footer>`），严防误触与提交空数据；副标题与模式专有逻辑统一采用 `isEdit = computed(() => Boolean(modelInfo.value?.id || formState.value?.id))` 等稳定属性判定。
 - 移动端开发中，格式化日期/时间推荐优先引入并使用 `@alex_miaosha_mobile/src/utils/dayjs/index.ts` 中封装好的工具函数。
 - 后端开发中，严禁在业务代码中直接调用 `LocalDate.now()` 或 `LocalDateTime.now()`（不带时区），统一优先使用 `common_core` 中的 `com.alex.common.utils.date.DateUtils`（如 `DateUtils.now()`、`DateUtils.getNowTimeStr(...)`）并复用其预编译的静态 Formatter 常量（如 `DateUtils.FORMATTER_YYYY_MM`），以保证时区安全并彻底消除 SonarQube java:S6888 告警。
 - 移动端导航栏配置，建议统一使用 `const info = ref<Pick<NavBarConfig, 'title' | 'rightButton' | 'leftPath'>>(...)` 的响应式配置模式。
