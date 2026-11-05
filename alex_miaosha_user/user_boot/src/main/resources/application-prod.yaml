@@ -19,10 +19,6 @@ mybatis-plus:
   mapper-locations:
     - classpath*:com/alex/user/**/mapper/*Mapper.xml
 
-isRememberMeExpiresSecond: 86400 # 记住密码一天
-
-defaultPassword: 1234@com
-
 # 业务专属线程池配置
 thread-pool:
   # 通用异步任务线程池（登录并行查询、权限构建等核心链路）

@@ -27,6 +27,12 @@ public class Audience {
 
     private Integer refreshSecond;
 
+    /** 记住我过期时间 (默认 15 天) */
+    private Long isRememberMeExpiresSecond = 1296000L;
+
+    /** 新建用户默认初始密码 */
+    private String defaultPassword = "1234@com";
+
     private String tokenHead;
 
     private String tokenHeader;

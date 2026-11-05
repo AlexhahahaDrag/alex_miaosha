@@ -113,8 +113,8 @@ public class TokenRefreshService {
                 // 更新 Redis中的用户信息
                 redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin, SerializerFeature.DisableCircularReferenceDetect), audience.getExpiresSecond(), TimeUnit.SECONDS);
 
-                // 删除旧的 token映射
-                redisUtils.delete(LoginKey.loginToken, barToken);
+                // 旧 token 保留 120 秒平滑过渡期，避免并发请求查空被误杀
+                redisUtils.setEx(LoginKey.loginToken, barToken, onlineAdminStr, 120, TimeUnit.SECONDS);
 
                 log.info("Token刷新成功，uuidToken: {}, 新token: {}", uuidToken, newToken);
             } else {

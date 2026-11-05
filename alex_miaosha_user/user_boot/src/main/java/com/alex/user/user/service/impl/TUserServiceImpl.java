@@ -103,15 +103,9 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     private final JwtTokenUtils jwtTokenUtils;
 
-    @Value(value = "${isRememberMeExpiresSecond}")
-    private int isRememberMeExpiresSecond;
-
     private final Audience audience;
 
     private final OssApi ossApi;
-
-    @Value(value = "${defaultPassword}")
-    private String defaultPassword;
 
     private final UserUtils userUtils;
 
@@ -225,7 +219,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         judgeField(map, null);
         TUser tUser = new TUser();
         BeanUtils.copyProperties(tUserVo, tUser, "password");
-        String password = tUserVo.getPassword() == null ? defaultPassword : tUserVo.getPassword();
+        String password = tUserVo.getPassword() == null ? audience.getDefaultPassword() : tUserVo.getPassword();
         tUser.setPassword(BCRYPT_ENCODER.encode(password + tUserVo.getUsername()));
         tUserMapper.insert(tUser);
         syncUserRbacAssignments(tUser.getId(), tUserVo);
@@ -485,7 +479,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         String headers = request.getHeader(audience.getTokenHeader());
         if (redisUser != null && StringUtils.isNotBlank(headers) && authToken(headers)) {
             // 更新 token过期时间
-            long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond
+            long expiration = isRemember != null && isRemember ? audience.getIsRememberMeExpiresSecond()
                     : audience.getExpiresSecond();
             refreshLoginPermissionContext(redisUser);
 
@@ -595,7 +589,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         TUserVo tUserVo = new TUserVo();
         BeanUtils.copyProperties(admin, tUserVo, "password");
         // 在维护一张表，用于 uuid - token 互相转换
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        long expiration = isRemember != null && isRemember ? audience.getIsRememberMeExpiresSecond() : audience.getExpiresSecond();
         redisUtils.setEx(LoginKey.loginUuid, userLogin.getTokenId(), userLogin.getToken(), expiration,
                 TimeUnit.SECONDS);
         stopWatch.stop();
@@ -732,7 +726,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private TUserLogin saveLoginLog(HttpServletRequest request, TUser admin, String uuid, String ip,
             Boolean isRemember) {
         String roleName = "";
-        long expiration = isRemember != null && isRemember ? isRememberMeExpiresSecond : audience.getExpiresSecond();
+        long expiration = isRemember != null && isRemember ? audience.getIsRememberMeExpiresSecond() : audience.getExpiresSecond();
         String jwtToken = jwtTokenUtils.createJwt(admin.getUsername(), admin.getId(), roleName, audience.getClientId(),
                 audience.getName(), expiration * 1000, audience.getBase64Secret());
         Map<String, String> map = new HashMap<>();
