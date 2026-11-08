@@ -10,6 +10,7 @@ import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.OnlineAdmin;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.userInfo.vo.UserPermissionContextVo;
+import com.alex.api.user.userInfo.vo.UserRegisterReq;
 import com.alex.base.common.Result;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
@@ -21,9 +22,13 @@ import com.alex.common.exception.SystemException;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.date.DateUtils;
+import com.alex.common.utils.ip.IpUtils;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.user.config.properties.OAuthProperties;
 import com.alex.user.online.service.OnlineUserService;
+import com.alex.user.orgInfo.entity.OrgInfo;
+import com.alex.user.orgInfo.mapper.OrgInfoMapper;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import com.alex.user.rbac.service.PermissionContextCacheService;
 import com.alex.user.rbac.service.UserDeleteCleanupService;
@@ -38,19 +43,18 @@ import com.alex.user.user.service.TUserService;
 import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alex.user.utils.security.SecurityUserFactory;
-import com.alex.common.utils.ip.IpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.alex.user.config.properties.OAuthProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.collect.Lists;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.enums.scope.AuthBaiduScope;
@@ -60,7 +64,7 @@ import me.zhyd.oauth.request.AuthWeChatMpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,7 +78,14 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
@@ -96,6 +107,20 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     private static final PasswordEncoder BCRYPT_ENCODER = new BCryptPasswordEncoder();
 
     private static final int MAX_LOGIN_RETRY_LIMIT = 5;
+
+    private static final String CAPTCHA_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+    private static final long CAPTCHA_TTL_SECONDS = 120L;
+
+    private static final String MOBILE_REGEX = "^1[3-9]\\d{9}$";
+
+    public static final Long ROLE_ID_GIFT_ADMIN = 1900000000000004001L;
+
+    public static final Long ROLE_ID_FAMILY_ADMIN = 1746681527472701441L;
+
+    public static final Long ROLE_ID_GIFT_USER = 1900000000000004002L;
+
+    public static final Long ROLE_ID_FINANCE_USER = 1746681960593309698L;
 
     private final TUserMapper tUserMapper;
 
@@ -135,6 +160,10 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
     @Autowired(required = false)
     private OAuthProperties oauthProperties = new OAuthProperties();
+
+    @Autowired(required = false)
+    @Setter
+    private OrgInfoMapper orgInfoMapper;
 
     @Override
     public Page<TUserVo> getPage(Long pageNum, Long pageSize, TUserVo tUserVo) {
@@ -434,6 +463,176 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             userDeleteCleanupService.cleanupAfterUserDeleted(userId);
         }
         return true;
+    }
+
+    @Override
+    public Map<String, String> getCaptcha() {
+        String captchaId = StringUtils.getUUID();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        StringBuilder codeBuilder = new StringBuilder(4);
+        for (int i = 0; i < 4; i++) {
+            codeBuilder.append(CAPTCHA_CHARS.charAt(random.nextInt(CAPTCHA_CHARS.length())));
+        }
+        String code = codeBuilder.toString();
+        redisUtils.setEx(LoginKey.loginCaptcha, captchaId, code, CAPTCHA_TTL_SECONDS, TimeUnit.SECONDS);
+
+        int width = 120;
+        int height = 40;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        try {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setColor(new Color(245, 247, 250));
+            g.fillRect(0, 0, width, height);
+
+            // 绘制轻量干扰线
+            for (int i = 0; i < 6; i++) {
+                g.setColor(new Color(180 + random.nextInt(55), 185 + random.nextInt(50), 195 + random.nextInt(50)));
+                int x1 = random.nextInt(width);
+                int y1 = random.nextInt(height);
+                int x2 = random.nextInt(width);
+                int y2 = random.nextInt(height);
+                g.drawLine(x1, y1, x2, y2);
+            }
+
+            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+            for (int i = 0; i < code.length(); i++) {
+                g.setColor(new Color(30 + random.nextInt(100), 40 + random.nextInt(100), 80 + random.nextInt(120)));
+                int x = 16 + i * 24;
+                int y = 27 + random.nextInt(6) - 3;
+                double theta = (random.nextDouble() - 0.5) * 0.35;
+                g.rotate(theta, x, y);
+                g.drawString(String.valueOf(code.charAt(i)), x, y);
+                g.rotate(-theta, x, y);
+            }
+        } finally {
+            g.dispose();
+        }
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", baos);
+            String base64Image = "data:image/png;base64," + Base64.getEncoder().encodeToString(baos.toByteArray());
+            Map<String, String> data = new HashMap<>(4);
+            data.put("captchaId", captchaId);
+            data.put("image", base64Image);
+            return data;
+        } catch (Exception e) {
+            log.error("生成图形验证码失败", e);
+            throw new SystemException(ResultEnum.SYSTEM_ERROR, "生成图形验证码失败");
+        }
+    }
+
+    @Override
+    public List<OrgInfoVo> listRegisterOrgs() {
+        if (orgInfoMapper == null) {
+            return Collections.emptyList();
+        }
+        List<OrgInfo> orgList = orgInfoMapper.selectList(new QueryWrapper<OrgInfo>()
+                .eq("status", SysConf.VALID_STATUS)
+                .eq("is_delete", 0)
+                .gt("id", 0L)
+                .orderByAsc("id"));
+        if (orgList == null || orgList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return orgList.stream().map(org -> {
+            OrgInfoVo vo = new OrgInfoVo();
+            vo.setId(org.getId());
+            vo.setOrgName(org.getOrgName());
+            vo.setOrgShortName(org.getOrgShortName());
+            vo.setOrgCode(org.getOrgCode());
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean register(UserRegisterReq req) {
+        if (req == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "注册参数不能为空");
+        }
+        if (StringUtils.isBlank(req.getCaptchaId()) || StringUtils.isBlank(req.getCaptchaCode())) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "请输入图形验证码");
+        }
+        String captchaId = req.getCaptchaId().trim();
+        String expectedCaptcha = redisUtils.get(LoginKey.loginCaptcha, captchaId);
+        // 验证码单次消费，读取后立即删除防重放
+        redisUtils.delete(LoginKey.loginCaptcha, captchaId);
+        if (StringUtils.isBlank(expectedCaptcha) || !expectedCaptcha.equalsIgnoreCase(req.getCaptchaCode().trim())) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "图形验证码错误或已过期");
+        }
+
+        if (StringUtils.isBlank(req.getMobile()) || !req.getMobile().trim().matches(MOBILE_REGEX)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "请输入正确的11位手机号");
+        }
+        if (StringUtils.isBlank(req.getPassword()) || req.getPassword().trim().length() < 6) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "密码长度不能少于6位");
+        }
+        String orgMode = StringUtils.isBlank(req.getOrgMode()) ? "" : req.getOrgMode().trim().toUpperCase(Locale.ROOT);
+        if (!"CREATE".equals(orgMode) && !"JOIN".equals(orgMode)) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "请选择机构入驻方式");
+        }
+
+        if ("CREATE".equals(orgMode)) {
+            String orgName = req.getOrgName() == null ? "" : req.getOrgName().trim();
+            if (orgName.length() < 2 || orgName.length() > 32) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "机构名称长度需在2~32个字符之间");
+            }
+        } else {
+            if (req.getTargetOrgId() == null) {
+                throw new SystemException(ResultEnum.PARAM_ERROR, "请选择要申请加入的机构");
+            }
+            if (orgInfoMapper != null) {
+                OrgInfo targetOrg = orgInfoMapper.selectById(req.getTargetOrgId());
+                if (targetOrg == null
+                        || (targetOrg.getIsDelete() != null && targetOrg.getIsDelete() != 0)
+                        || !SysConf.VALID_STATUS.equals(targetOrg.getStatus())) {
+                    throw new SystemException(ResultEnum.PARAM_ERROR, "所选目标机构不存在或已停用");
+                }
+            }
+        }
+
+        String cleanMobile = req.getMobile().trim();
+        Map<String, Object> uniqueMap = new LinkedHashMap<>();
+        uniqueMap.put(SysConf.MOBILE, cleanMobile);
+        uniqueMap.put(SysConf.USERNAME, cleanMobile);
+        judgeField(uniqueMap, null);
+
+        String cleanPassword = req.getPassword().trim();
+        String cleanNickName = StringUtils.isNotBlank(req.getNickName()) ? req.getNickName().trim() : cleanMobile;
+
+        TUser tUser = new TUser();
+        tUser.setUsername(cleanMobile);
+        tUser.setMobile(cleanMobile);
+        tUser.setNickName(cleanNickName);
+        tUser.setStatus(SysConf.VALID_STATUS);
+        tUser.setPassword(BCRYPT_ENCODER.encode(cleanPassword + cleanMobile));
+        tUserMapper.insert(tUser);
+
+        if ("CREATE".equals(orgMode)) {
+            String cleanOrgName = req.getOrgName().trim();
+            OrgInfo orgInfo = new OrgInfo();
+            orgInfo.setOrgCode("org_" + System.currentTimeMillis() + "_" + ThreadLocalRandom.current().nextInt(1000, 9999));
+            orgInfo.setOrgName(cleanOrgName);
+            orgInfo.setOrgShortName(cleanOrgName.length() > 16 ? cleanOrgName.substring(0, 16) : cleanOrgName);
+            orgInfo.setParentId(0L);
+            orgInfo.setStatus(SysConf.VALID_STATUS);
+            orgInfo.setSummary("手机号自助注册创建机构");
+            if (orgInfoMapper != null) {
+                orgInfoMapper.insert(orgInfo);
+            }
+            orgUserInfoService.assignSingleOrg(tUser.getId(), orgInfo.getId());
+            roleUserInfoService.assignRoles(tUser.getId(), Arrays.asList(ROLE_ID_GIFT_ADMIN, ROLE_ID_FAMILY_ADMIN));
+        } else {
+            orgUserInfoService.submitOrgApplication(tUser.getId(), req.getTargetOrgId());
+            roleUserInfoService.assignRoles(tUser.getId(), Arrays.asList(ROLE_ID_GIFT_USER, ROLE_ID_FINANCE_USER));
+        }
+
+        if (tUser.getId() != null) {
+            permissionContextCacheService.invalidate(tUser.getId());
+        }
+        log.info("手机号注册成功: mobile={}, orgMode={}, userId={}", cleanMobile, orgMode, tUser.getId());
+        return Boolean.TRUE;
     }
 
     @Override
@@ -920,24 +1119,25 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         if (StringUtils.isEmpty(type)) {
             return 0;
         }
-        LambdaQueryWrapper<TUser> query = Wrappers.<TUser>lambdaQuery().eq(TUser::getIsDelete, 0);
+        QueryWrapper<TUser> query = new QueryWrapper<TUser>().eq("is_delete", 0);
         if (id != null) {
-            query.ne(TUser::getId, id);
+            query.ne("id", id);
         }
         switch (type) {
             case "username":
-                query.eq(TUser::getUsername, value);
+                query.eq("username", value);
                 break;
             case "mobile":
-                query.eq(TUser::getMobile, value);
+                query.eq("mobile", value);
                 break;
             case "email":
-                query.eq(TUser::getEmail, value);
+                query.eq("email", value);
                 break;
             default:
                 throw new UserException("400", "请输入正确的字段");
         }
-        return this.count(query);
+        Long count = tUserMapper.selectCount(query);
+        return count == null ? 0L : count;
     }
 
     private void setAvatarUrls(TUserVo userVo) {

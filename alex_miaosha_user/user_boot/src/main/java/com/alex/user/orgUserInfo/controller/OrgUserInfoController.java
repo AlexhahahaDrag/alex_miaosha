@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * description:  用户公司信息表restApi
  * author:       majf
@@ -90,5 +92,27 @@ public class OrgUserInfoController {
     @DeleteMapping("/unassign")
     public Result<Boolean> unassign(@RequestParam("userId") Long userId, @RequestParam("orgId") Long orgId) {
         return Result.success(orgUserInfoService.unassignUser(userId, orgId));
+    }
+
+    @LogRestRequest(apiName = "查询机构待审核入驻申请列表")
+    @ApiOperationSupport(order = 70, author = "alex")
+    @ApiOperation(value = "查询机构待审核入驻申请列表", notes = "查询指定机构下待审核(status=0, summary=APPLY)的成员申请", response = Result.class)
+    @GetMapping("/pending")
+    public Result<List<OrgUserInfoVo>> listPending(@RequestParam("orgId") Long orgId) {
+        return Result.success(orgUserInfoService.listPendingApplications(orgId));
+    }
+
+    @LogRestRequest(apiName = "审核机构入驻申请")
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 80, author = "alex")
+    @ApiOperation(value = "审核机构入驻申请", notes = "通过或拒绝用户的机构入驻申请", response = Result.class)
+    @PostMapping("/audit")
+    public Result<Boolean> audit(@RequestBody OrgUserInfoVo body) {
+        Long orgId = body != null && body.getOrgId() != null && !body.getOrgId().isBlank()
+                ? Long.valueOf(body.getOrgId().trim()) : null;
+        Long userId = body != null && body.getUserId() != null && !body.getUserId().isBlank()
+                ? Long.valueOf(body.getUserId().trim()) : null;
+        Boolean approved = body == null ? null : body.getApproved();
+        return Result.success(orgUserInfoService.auditApplication(orgId, userId, approved));
     }
 }

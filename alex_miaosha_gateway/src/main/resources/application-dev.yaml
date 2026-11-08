@@ -71,7 +71,7 @@ logging:
 gateway:
   audience:
     tokenHeader: Authorization
-    whiteList: /am-user/api/v1/user/login
+    whiteList: /am-user/api/v1/user/login,/am-user/api/v1/user/captcha,/am-user/api/v1/user/register,/am-user/api/v1/user/register/orgs
     docWhiteList: /swagger-resources/**,/doc.html,/**/v3/api-docs/**
 
 # 通用加密配置

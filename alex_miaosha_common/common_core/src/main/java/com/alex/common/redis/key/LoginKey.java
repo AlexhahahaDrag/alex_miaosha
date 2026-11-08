@@ -27,4 +27,6 @@ public class LoginKey extends BasePrefix {
     public static final LoginKey loginOnlineUser = new LoginKey("login:online_user");
 
     public static final LoginKey loginRefreshLock = new LoginKey("login:refresh_lock");
+
+    public static final LoginKey loginCaptcha = new LoginKey("login:captcha");
 }

@@ -31,4 +31,16 @@ public class OrgUserInfoVo extends BaseVo<OrgUserInfoVo>{
     @ApiModelProperty(value = "状态,字典(is_valid) 1：有效,0:失效)")
     private String status;
 
+    @ApiModelProperty(value = "用户名（关联展示）")
+    private String username;
+
+    @ApiModelProperty(value = "用户昵称（关联展示）")
+    private String nickName;
+
+    @ApiModelProperty(value = "手机号（关联展示）")
+    private String mobile;
+
+    @ApiModelProperty(value = "是否审批通过（true通过/false拒绝）")
+    private Boolean approved;
+
 }

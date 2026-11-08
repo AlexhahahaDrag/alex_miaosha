@@ -50,6 +50,9 @@ public class WebSecurityConfig {
         // 动态构建带 api 版本前缀的白名单路径
         String[] versionedPaths = {
                 apiVersion + "/user/login",
+                apiVersion + "/user/captcha",
+                apiVersion + "/user/register",
+                apiVersion + "/user/register/orgs",
                 apiVersion + "/menu-info/list",
                 apiVersion + "/menu-info",
                 apiVersion + "/permission-info/list",
@@ -84,4 +87,3 @@ public class WebSecurityConfig {
                 .build();
     }
 }
-

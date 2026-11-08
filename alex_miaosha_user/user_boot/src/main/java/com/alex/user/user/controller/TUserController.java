@@ -1,7 +1,9 @@
 package com.alex.user.user.controller;
 
-import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
+import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.userInfo.vo.UserRegisterReq;
 import com.alex.base.common.Result;
 import com.alex.common.annotations.AvoidRepeatableCommit;
 import com.alex.common.annotations.LogRestRequest;
@@ -171,8 +173,35 @@ public class TUserController {
         return Result.success(tUserService.login(request, username, password, isRememberMe));
     }
 
-    @LogRestRequest(apiName = "获取当前用户可见菜单")
+    @LogRestRequest(apiName = "获取图形验证码")
+    @ApiOperationSupport(order = 61, author = "alex")
+    @RateLimiter(limitType = LimitType.IP, count = 20, time = 60, message = "获取验证码过于频繁，请稍后再试")
+    @GetMapping("/captcha")
+    @ApiOperation(value = "获取注册图形验证码")
+    public Result<Map<String, String>> getCaptcha() {
+        return Result.success(tUserService.getCaptcha());
+    }
+
+    @LogRestRequest(apiName = "获取注册可选机构列表")
     @ApiOperationSupport(order = 62, author = "alex")
+    @GetMapping("/register/orgs")
+    @ApiOperation(value = "获取注册可选机构列表")
+    public Result<List<OrgInfoVo>> listRegisterOrgs() {
+        return Result.success(tUserService.listRegisterOrgs());
+    }
+
+    @LogRestRequest(apiName = "手机号自助注册")
+    @AvoidRepeatableCommit
+    @ApiOperationSupport(order = 63, author = "alex")
+    @RateLimiter(limitType = LimitType.IP, count = 5, time = 60, message = "注册请求过于频繁，请稍后再试")
+    @PostMapping("/register")
+    @ApiOperation(value = "手机号自助注册")
+    public Result<Boolean> register(@RequestBody UserRegisterReq req) {
+        return Result.success(tUserService.register(req));
+    }
+
+    @LogRestRequest(apiName = "获取当前用户可见菜单")
+    @ApiOperationSupport(order = 64, author = "alex")
     @GetMapping("/menus")
     @ApiOperation(value = "当前用户可见菜单树", notes = "需登录；按权限裁剪，不含匿名全树")
     public Result<List<MenuInfoVo>> listCurrentUserMenus() {

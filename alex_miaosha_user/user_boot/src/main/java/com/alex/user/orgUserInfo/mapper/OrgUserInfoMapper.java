@@ -27,4 +27,6 @@ public interface OrgUserInfoMapper extends BaseMapper<OrgUserInfo> {
     OrgUserInfoVo queryOrgUserInfo(@Param("id") Long id);
 
     List<OrgInfoVo> getOrgInfoList(@Param("userId") Long userId);
+
+    List<OrgUserInfoVo> getPendingApplications(@Param("orgId") String orgId);
 }

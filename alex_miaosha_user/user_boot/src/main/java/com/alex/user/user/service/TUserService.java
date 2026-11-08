@@ -1,7 +1,9 @@
 package com.alex.user.user.service;
 
 import com.alex.api.user.menuInfo.vo.MenuInfoVo;
+import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.api.user.userInfo.vo.UserRegisterReq;
 import com.alex.base.common.Result;
 import com.alex.user.tUserLogin.entity.TUserLogin;
 import com.alex.user.user.entity.TUser;
@@ -46,6 +48,21 @@ public interface TUserService extends IService<TUser> {
     Boolean deleteTUser(String ids);
 
     Map<String, Object> login(HttpServletRequest request, String username, String password, Boolean isRemember);
+
+    /**
+     * 生成图形验证码（Base64 PNG + captchaId，Redis TTL 120s）
+     */
+    Map<String, String> getCaptcha();
+
+    /**
+     * 获取公开可申请入驻的有效机构列表（精简字段）
+     */
+    List<OrgInfoVo> listRegisterOrgs();
+
+    /**
+     * 手机号自助注册（支持新建个人/家庭机构或申请加入已有机构）
+     */
+    Boolean register(UserRegisterReq req);
 
     /**
      * Current user's visible menu tree (auth required).

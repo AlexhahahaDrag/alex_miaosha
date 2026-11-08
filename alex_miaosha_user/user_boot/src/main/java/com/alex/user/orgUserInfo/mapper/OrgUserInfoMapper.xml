@@ -99,4 +99,24 @@
             and t_org_user_info.is_delete = 0
         </where>
     </select>
+
+    <select id="getPendingApplications" resultType="com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo">
+        select
+            t_org_user_info.id,
+            t_org_user_info.org_id,
+            t_org_user_info.user_id,
+            t_org_user_info.summary,
+            t_org_user_info.`status`,
+            t_org_user_info.create_time,
+            t_user.username,
+            t_user.nick_name as nickName,
+            t_user.mobile
+        from t_org_user_info
+        inner join t_user on t_user.id = t_org_user_info.user_id and t_user.is_delete = 0
+        where t_org_user_info.org_id = #{orgId}
+          and t_org_user_info.`status` = '0'
+          and t_org_user_info.summary = 'APPLY'
+          and t_org_user_info.is_delete = 0
+        order by t_org_user_info.create_time desc
+    </select>
 </mapper>

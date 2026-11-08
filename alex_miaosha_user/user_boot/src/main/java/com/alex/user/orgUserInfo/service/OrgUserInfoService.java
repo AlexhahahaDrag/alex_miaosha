@@ -34,4 +34,10 @@ public interface OrgUserInfoService extends IService<OrgUserInfo> {
     Boolean unassignUser(Long userId, Long orgId);
 
     List<OrgInfoVo> getOrgInfoList(Long userId);
+
+    Boolean submitOrgApplication(Long userId, Long orgId);
+
+    List<OrgUserInfoVo> listPendingApplications(Long orgId);
+
+    Boolean auditApplication(Long orgId, Long userId, Boolean approved);
 }

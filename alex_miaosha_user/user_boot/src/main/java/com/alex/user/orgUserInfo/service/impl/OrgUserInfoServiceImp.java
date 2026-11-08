@@ -2,30 +2,37 @@ package com.alex.user.orgUserInfo.service.impl;
 
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.orgUserInfo.vo.OrgUserInfoVo;
+import com.alex.api.user.userInfo.UserUtils;
+import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.constants.SysConf;
 import com.alex.base.enums.ResultEnum;
 import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
+import com.alex.user.orgInfo.mapper.OrgInfoMapper;
 import com.alex.user.orgUserInfo.entity.OrgUserInfo;
 import com.alex.user.orgUserInfo.mapper.OrgUserInfoMapper;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
+import com.alex.user.rbac.OrgScopeIdsResolver;
 import com.alex.user.rbac.service.PermissionContextCacheService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -47,6 +54,14 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
     private final Map<Long, Object> assignSingleOrgLocks = new ConcurrentHashMap<>();
     // RBAC-BE-RELATION-004: 每个用户最多保留最近 N 条失效历史行，更早的清理掉，避免无限堆积
     private static final int MAX_INACTIVE_HISTORY = 5;
+
+    @Autowired(required = false)
+    @Setter
+    private OrgInfoMapper orgInfoMapper;
+
+    @Autowired(required = false)
+    @Setter
+    private UserUtils userUtils;
 
     @Override
     public Page<OrgUserInfoVo> getPage(Long pageNum, Long pageSize, OrgUserInfoVo orgUserInfoVo) {
@@ -294,6 +309,101 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
         }
     }
 
+    @Override
+    public Boolean submitOrgApplication(Long userId, Long orgId) {
+        if (userId == null || orgId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "用户机构申请参数错误");
+        }
+        synchronized (assignSingleOrgLock(userId)) {
+            return transactionTemplate.execute(status -> {
+                List<OrgUserInfo> existing = listPendingApplicationsByUserAndOrg(userId, orgId);
+                if (existing != null && !existing.isEmpty()) {
+                    return true;
+                }
+                OrgUserInfo application = new OrgUserInfo();
+                application.setUserId(String.valueOf(userId));
+                application.setOrgId(String.valueOf(orgId));
+                application.setStatus(SysConf.INVALID_STATUS);
+                application.setSummary("APPLY");
+                if (!save(application)) {
+                    throw new SystemException(ResultEnum.SYSTEM_ERROR, "提交机构入驻申请失败");
+                }
+                return true;
+            });
+        }
+    }
+
+    @Override
+    public List<OrgUserInfoVo> listPendingApplications(Long orgId) {
+        if (orgId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构ID不能为空");
+        }
+        assertOrgAccessible(orgId);
+        List<OrgUserInfoVo> rows = orgUserInfoMapper.getPendingApplications(String.valueOf(orgId));
+        return rows == null ? new ArrayList<>() : rows;
+    }
+
+    @Override
+    public Boolean auditApplication(Long orgId, Long userId, Boolean approved) {
+        if (orgId == null || userId == null || approved == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "审核参数不能为空");
+        }
+        assertOrgAccessible(orgId);
+        synchronized (assignSingleOrgLock(userId)) {
+            return transactionTemplate.execute(status -> {
+                List<OrgUserInfo> pendingRows = listPendingApplicationsByUserAndOrg(userId, orgId);
+                if (pendingRows == null || pendingRows.isEmpty()) {
+                    throw new SystemException(ResultEnum.PARAM_ERROR, "未找到待审核的入驻申请");
+                }
+                List<Long> pendingIds = pendingRows.stream()
+                        .map(OrgUserInfo::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                for (OrgUserInfo row : pendingRows) {
+                    row.setSummary(Boolean.TRUE.equals(approved) ? "APPROVED" : "REJECTED");
+                    updateById(row);
+                }
+                if (!pendingIds.isEmpty()) {
+                    orgUserInfoMapper.deleteByIds(pendingIds);
+                }
+                if (Boolean.TRUE.equals(approved)) {
+                    doAssignSingleOrg(userId, orgId, "MAIN");
+                } else {
+                    permissionContextCacheService.invalidate(userId);
+                }
+                return true;
+            });
+        }
+    }
+
+    private void assertOrgAccessible(Long orgId) {
+        if (orgId == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "机构ID不能为空");
+        }
+        if (userUtils == null || orgInfoMapper == null) {
+            return;
+        }
+        TUserVo loginUser = userUtils.getLoginUser();
+        if (loginUser == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问：登录上下文不可用");
+        }
+        if (OrgScopeIdsResolver.isSuperAdmin(loginUser)) {
+            return;
+        }
+        OrgInfoVo visible = orgInfoMapper.queryOrgInfo(String.valueOf(orgId));
+        if (visible == null) {
+            throw new SystemException(ResultEnum.PARAM_ERROR, "无权访问其他机构");
+        }
+    }
+
+    protected List<OrgUserInfo> listPendingApplicationsByUserAndOrg(Long userId, Long orgId) {
+        return list(new QueryWrapper<OrgUserInfo>()
+                .eq("user_id", String.valueOf(userId))
+                .eq("org_id", String.valueOf(orgId))
+                .eq("status", SysConf.INVALID_STATUS)
+                .eq("summary", "APPLY"));
+    }
+
     protected List<OrgUserInfo> listActiveAssignments(Long userId) {
         return list(Wrappers.<OrgUserInfo>lambdaQuery()
                 .eq(OrgUserInfo::getUserId, String.valueOf(userId))
@@ -311,13 +421,20 @@ public class OrgUserInfoServiceImp extends ServiceImpl<OrgUserInfoMapper, OrgUse
      * 只保留最近 {@link #MAX_INACTIVE_HISTORY} 条，更早的物理删除（entity 上有 {@code @TableLogic}，
      * 底层实际按逻辑删处理，与 {@code deleteByIds} 在本代码库其它删除口子的语义一致）。
      * 有效行数量不受影响，始终由 assignSingleOrg 自身逻辑保证 ≤1。
+     * 注意：过滤掉 summary = 'APPLY' 的待审核入驻申请，避免未审申请被误删。
      */
     private void pruneInactiveHistory(Long userId) {
         List<OrgUserInfo> invalidRows = listInvalidHistory(userId);
-        if (invalidRows == null || invalidRows.size() <= MAX_INACTIVE_HISTORY) {
+        if (invalidRows == null) {
             return;
         }
-        List<OrgUserInfo> newestFirst = new ArrayList<>(invalidRows);
+        List<OrgUserInfo> prunableRows = invalidRows.stream()
+                .filter(row -> row != null && !"APPLY".equalsIgnoreCase(row.getSummary()))
+                .collect(Collectors.toList());
+        if (prunableRows.size() <= MAX_INACTIVE_HISTORY) {
+            return;
+        }
+        List<OrgUserInfo> newestFirst = new ArrayList<>(prunableRows);
         newestFirst.sort(Comparator
                 .comparing(OrgUserInfo::getCreateTime, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(OrgUserInfo::getId, Comparator.nullsFirst(Comparator.naturalOrder()))
