@@ -1,3 +1,22 @@
+## ⚡ 分级执行指令（Execution Modes - 最高优先级）
+
+本项目采用**双轨分级执行机制**，默认开启极速模式以保证敏捷开发响应速度：
+
+1. **极速模式（Fast Execution — 默认行为）**
+   - **适用范围**：常规页面样式调整、单点 Bug 修复、局部逻辑修改、组件细节微调、明确的单文件或小范围需求。
+   - **执行规范**：
+     - **直接修改代码**：精准定位后立即修改目标代码，**禁止**先生成 Implementation Plan Artifact 并停下等待 `Proceed`。
+     - **免自动全量跑测**：**不要**自动运行全量 Vitest 或 Maven 测试（仅在涉及复杂核心算法或用户明确要求时，按需只跑单个受影响的测试文件）。
+     - **免同步知识库**：**不要**自动读写 `my_alex_brain` 知识库。
+     - **免浏览器自动走查**：**不要**强制启动浏览器（`chrome-devtools-mcp`）进行截屏走查。
+     - **代码红线不降级**：极速模式下仍须严格遵守代码工程红线（ID 字符串防精度丢失、响应解构、禁止重复手动 `import`、`DateUtils` 时区安全等）。
+
+2. **完整流程（Full Workflow — 仅按需显式触发）**
+   - **触发条件**：仅当用户明确指令**「完整流程」**、**「规划方案」**、**「先出方案」**、**「/plan」**，或任务涉及**全新独立大模块开发 / 数据库表结构设计 / 跨端重大 API 契约重构**时触发。
+   - **执行规范**：严格执行「输出 Plan Artifact 停下等待 `Proceed` ➔ 按测试金字塔执行测试验证 ➔ 同步更新 `my_alex_brain` 知识库 ➔ 浏览器工具视觉走查」。
+
+---
+
 ## Learned User Preferences
 
 - 用户说「git提交代码」时，默认执行 **commit + push**（推送到当前分支的 remote tracking branch）；仅当用户明确说「只 commit / 不要 push」时才跳过 push。
@@ -12,11 +31,11 @@
 - 移动端开发中，格式化日期/时间推荐优先引入并使用 `@alex_miaosha_mobile/src/utils/dayjs/index.ts` 中封装好的工具函数。
 - 后端开发中，严禁在业务代码中直接调用 `LocalDate.now()` 或 `LocalDateTime.now()`（不带时区），统一优先使用 `common_core` 中的 `com.alex.common.utils.date.DateUtils`（如 `DateUtils.now()`、`DateUtils.getNowTimeStr(...)`）并复用其预编译的静态 Formatter 常量（如 `DateUtils.FORMATTER_YYYY_MM`），以保证时区安全并彻底消除 SonarQube java:S6888 告警。
 - 移动端导航栏配置，建议统一使用 `const info = ref<Pick<NavBarConfig, 'title' | 'rightButton' | 'leftPath'>>(...)` 的响应式配置模式。
-- 修改关键代码后，若涉及业务逻辑、模型字段或契约变更，需同步更新 `F:\workplace\project\myself\my_alex_brain` 知识库对应端文档，且同步更新对应的规范规约文件。
+- **【完整流程触发】**仅在完整流程或涉及重大业务逻辑、模型字段及跨端契约变更时，同步更新 `F:\workplace\project\myself\my_alex_brain` 知识库对应端文档及规范规约文件；常规极速修改免更新。
 - 新增功能开发前必须先阅读项目根目录的 `TESTING_STANDARD.md`，按测试金字塔分层落地（后端 单元 70%/集成 25%/AI 5%，PC 端 60/25/15，移动端 55/25/20），并在 `tests/checklists/{feature}.md` 中沿用 `gift.md` 样板补齐字段边界（七点法）、状态机、权限矩阵与"不测理由"。
 - AI/E2E 测试统一使用 Midscene + Playwright 组合：所有可交互 DOM 必须挂 `data-testid` 并禁止用中文文案做精确匹配；等待必须用 `waitForResponse` / `waitForSelector` / `aiWaitFor`，禁用 `Thread.sleep` 或 `waitForTimeout`；测试数据需 try/finally 通过 API 清理，禁止直接连 dev 库跑 CRUD 残留脏数据。
-- 在制定任何方案（Implementation Plan 或重构方案）后，**必须立即终止工具调用并结束当前 Turn（回合）**，严禁在未获得用户通过 "Proceed" 或显式消息授权前自动执行后续的文件修改或命令运行。
-- 前端页面 UI 样式优化或重构完成后，**必须通过浏览器工具（如 `chrome-devtools-mcp`）访问实际运行的页面并截取全屏/分屏视图进行真实视觉走查**（检查文字截断、孤字换行、图表正负值渲染与布局间距），严禁仅凭代码或单测通过就结束交付。
+- **【完整流程触发】**仅在完整流程下制定 Implementation Plan 或大型重构方案后，必须立即终止工具调用并结束当前 Turn（回合），严禁在未获得用户通过 "Proceed" 或显式消息授权前自动执行后续的文件修改或命令运行；极速模式下直接修改代码，不输出方案。
+- **【完整流程或显式要求触发】**仅在完整流程或用户明确要求视觉验收时，在前端页面 UI 样式大型重构完成后，通过浏览器工具（如 `chrome-devtools-mcp`）访问实际运行的页面并截取视图进行视觉走查；常规样式微调免自动走查。
 
 ## Learned Workspace Facts
 

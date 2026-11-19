@@ -1,6 +1,7 @@
 package com.alex.user.token.service;
 
 import com.alex.api.user.userInfo.vo.TUserVo;
+import com.alex.base.constants.SysConf;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -8,6 +9,7 @@ import com.alex.user.utils.jwt.Audience;
 import com.alex.user.utils.jwt.JwtTokenUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -88,6 +90,35 @@ public class TokenRefreshService {
     }
 
     /**
+     * 解析续期时应使用的有效期（秒）：
+     * 若旧 JWT 签发总时长超过普通 expiresSecond（说明为「记住我」长效会话），
+     * 续期时保留 isRememberMeExpiresSecond，防止长效登录态被降级为短效。
+     */
+    private long resolveRefreshExpiresSecond(String token, String base64Secret) {
+        long baseExpiresSecond = audience.getExpiresSecond();
+        Long rememberExpiresSecond = audience.getIsRememberMeExpiresSecond();
+        if (rememberExpiresSecond == null || rememberExpiresSecond <= baseExpiresSecond) {
+            return baseExpiresSecond;
+        }
+        Claims claims = jwtTokenUtils.parseJwt(token, base64Secret);
+        if (claims == null || claims.getExpiration() == null) {
+            return baseExpiresSecond;
+        }
+        Object createTimeObj = claims.get(SysConf.CREATE_TIME);
+        Long createdAtMillis = null;
+        if (createTimeObj instanceof Number) {
+            createdAtMillis = ((Number) createTimeObj).longValue();
+        } else if (createTimeObj instanceof Date) {
+            createdAtMillis = ((Date) createTimeObj).getTime();
+        }
+        if (createdAtMillis == null) {
+            return baseExpiresSecond;
+        }
+        long issuedTtlSeconds = (claims.getExpiration().getTime() - createdAtMillis) / 1000L;
+        return issuedTtlSeconds > baseExpiresSecond ? rememberExpiresSecond : baseExpiresSecond;
+    }
+
+    /**
      * @description: 内部刷新 token方法
      *
      * @param token JWT token
@@ -99,11 +130,13 @@ public class TokenRefreshService {
         try {
             log.info("开始刷新token，uuidToken: {}", uuidToken);
 
+            long refreshExpiresSecond = resolveRefreshExpiresSecond(token, base64Secret);
+
             // 生成新 token
-            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, audience.getExpiresSecond() * 1000L);
+            String newToken = audience.getTokenHead() + jwtTokenUtils.refreshToken(token, base64Secret, refreshExpiresSecond * 1000L);
 
             // 更新 Redis中的token映射
-            redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, audience.getExpiresSecond(), TimeUnit.SECONDS);
+            redisUtils.setEx(LoginKey.loginUuid, uuidToken, newToken, refreshExpiresSecond, TimeUnit.SECONDS);
 
             // 获取并更新用户信息
             String onlineAdminStr = redisUtils.get(LoginKey.loginToken, barToken);
@@ -111,12 +144,12 @@ public class TokenRefreshService {
                 TUserVo onlineAdmin = JSONObject.parseObject(onlineAdminStr, TUserVo.class);
 
                 // 更新 Redis中的用户信息
-                redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin, SerializerFeature.DisableCircularReferenceDetect), audience.getExpiresSecond(), TimeUnit.SECONDS);
+                redisUtils.setEx(LoginKey.loginToken, newToken, JSONObject.toJSONString(onlineAdmin, SerializerFeature.DisableCircularReferenceDetect), refreshExpiresSecond, TimeUnit.SECONDS);
 
                 // 旧 token 保留 120 秒平滑过渡期，避免并发请求查空被误杀
                 redisUtils.setEx(LoginKey.loginToken, barToken, onlineAdminStr, 120, TimeUnit.SECONDS);
 
-                log.info("Token刷新成功，uuidToken: {}, 新token: {}", uuidToken, newToken);
+                log.info("Token刷新成功，uuidToken: {}, 新token: {}, 续期时长: {} 秒", uuidToken, newToken, refreshExpiresSecond);
             } else {
                 log.warn("未找到用户信息，无法更新token，uuidToken: {}", uuidToken);
             }

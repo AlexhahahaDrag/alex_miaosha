@@ -1,0 +1,34 @@
+# ==========================================
+# Antigravity Index Ignore Configuration (Backend)
+# ==========================================
+
+# Maven 构建与类编译产物 (杜绝 target/ 编译文件干扰搜索与上下文)
+target/
+**/target/
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE 与编辑器临时配置
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.settings/
+.classpath
+
+# 本地运行日志与临时数据
+logs/
+**/logs/
+*.log
+temp/
+*.tmp
+.DS_Store
+Thumbs.db
