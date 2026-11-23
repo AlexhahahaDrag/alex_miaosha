@@ -1,8 +1,7 @@
 package com.alex.api.user.userInfo;
 
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.base.enums.ResultEnum;
-import com.alex.common.exception.LoginException;
+import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
 import com.alex.common.redis.key.UserKey;
 import com.alex.common.utils.redis.RedisUtils;
@@ -35,18 +34,18 @@ public class UserUtils {
      * author: alex
      * return: java.lang.Long
      */
-    public Long getUserId(HttpServletRequest request) throws LoginException {
+    public Long getUserId(HttpServletRequest request) throws UserException {
         String authInfo = request.getHeader("Authorization");
         if (StringUtils.isEmpty(authInfo)) {
-            throw new LoginException(ResultEnum.USER_NO_LOGIN);
+            throw UserException.notLogin();
         }
         String loginToken = authInfo.split("Bearer_")[1];
         if (StringUtils.isEmpty(loginToken)) {
-            throw new LoginException(ResultEnum.USER_NO_LOGIN);
+            throw UserException.notLogin();
         }
         Object result = redisUtils.get(UserKey.getById, loginToken);
         if (result == null) {
-            throw new LoginException(ResultEnum.USER_NO_LOGIN);
+            throw UserException.notLogin();
         }
         return Long.parseLong(result.toString());
     }

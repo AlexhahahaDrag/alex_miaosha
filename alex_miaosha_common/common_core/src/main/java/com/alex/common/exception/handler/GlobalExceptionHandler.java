@@ -3,7 +3,6 @@ package com.alex.common.exception.handler;
 import com.alex.base.common.Result;
 import com.alex.common.exception.*;
 import com.alex.common.utils.trace.TraceIdContext;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
  * description:  全局异常处理，统一注入 TraceId 链路跟踪凭据
  * author:       majf / alex
  * createDate:   2022/7/12 16:19
- * version:      2.0.0
+ * version:      3.0.0
  */
 @RestControllerAdvice
 @Slf4j
@@ -37,20 +36,6 @@ public class GlobalExceptionHandler {
         return result;
     }
 
-    @ExceptionHandler(LoginException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> handler(LoginException exception) {
-        log.error("登录异常:{},{}", exception.getMsg(), JSONObject.toJSONString(exception));
-        return attachTraceId(Result.error(exception.getCode(), exception.getMsg()));
-    }
-
-    @ExceptionHandler(CustomizeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<Object> handle(CustomizeException exception) {
-        log.error("自定义异常:{}", exception.getMsg(), exception);
-        return attachTraceId(Result.error(exception.getCode(), exception.getMsg()));
-    }
-
     /**
      * 接口防刷与分布式限流拦截：返回 HTTP 429 Too Many Requests，并设置 Retry-After 响应头
      */
@@ -61,27 +46,6 @@ public class GlobalExceptionHandler {
         headers.set(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfterSeconds()));
         Result<String> result = attachTraceId(Result.error(ex.getCode(), ex.getMessage()));
         return ResponseEntity.status(429).headers(headers).body(result);
-    }
-
-    @ExceptionHandler(RegisterException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<Object> handle(RegisterException exception) {
-        log.error("注册异常:{}", exception.getMsg(), exception);
-        return attachTraceId(Result.error(exception.getCode(), exception.getMsg()));
-    }
-
-    @ExceptionHandler(SeckillException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<Object> handle(SeckillException exception) {
-        log.error("秒杀异常:{}", exception.getMsg(), exception);
-        return attachTraceId(Result.error(exception.getCode(), exception.getMsg()));
-    }
-
-    @ExceptionHandler(UserException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handle(UserException userException) {
-        log.error("用户异常:{}", userException.getMsg(), userException);
-        return attachTraceId(Result.error(userException.getCode(), userException.getMsg()));
     }
 
     @ExceptionHandler(BindException.class)
@@ -131,38 +95,13 @@ public class GlobalExceptionHandler {
         return false;
     }
 
-    @ExceptionHandler(ProductException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handle(ProductException e) {
-        log.error("商品异常:{}", e.getMsg(), e);
-        return attachTraceId(Result.error(e.getCode(), e.getMsg()));
-    }
-
-    @ExceptionHandler(FinanceException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handle(FinanceException e) {
-        log.error("财务异常:{}", e.getMsg(), e);
-        return attachTraceId(Result.error(e.getCode(), e.getMsg()));
-    }
-
-    @ExceptionHandler(AiException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result<String> handle(AiException e) {
-        log.error("AI异常:{}", e.getMsg(), e);
-        return attachTraceId(Result.error(e.getCode(), e.getMsg()));
-    }
-
-    @ExceptionHandler(FileException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<String> handle(FileException e) {
-        log.error("文件异常:{}", e.getMsg(), e);
-        return attachTraceId(Result.error(e.getCode(), e.getMsg()));
-    }
-
+    /**
+     * 统一业务异常拦截（涵盖 SystemException 及其全部子域异常 UserException / FinanceException / AiException / FileException）
+     */
     @ExceptionHandler(SystemException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> handle(SystemException e) {
-        log.error("系统业务异常:{},{}", e.getCode(), e.getMsg());
+        log.error("业务异常[{}]: code={}, msg={}", e.getClass().getSimpleName(), e.getCode(), e.getMsg(), e);
         String code = e.getCode() != null ? e.getCode() : "500";
         return attachTraceId(Result.error(code, e.getMsg()));
     }

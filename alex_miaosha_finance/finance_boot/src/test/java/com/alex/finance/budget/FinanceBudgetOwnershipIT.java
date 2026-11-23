@@ -8,7 +8,7 @@ import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.finance.entity.FinanceBudgetInfo;
 import com.alex.finance.finance.mapper.FinanceBudgetInfoMapper;
 import com.alex.finance.finance.service.FinanceInfoService;
@@ -79,7 +79,7 @@ class FinanceBudgetOwnershipIT {
         when(userUtils.getOrgId()).thenReturn(20L);
 
         // 尝试查询机构 999 的预算
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 budgetService.getMonthlyBudgetStatus("2026-10", 999L, 2L)
         );
         assertEquals("无权访问其他机构数据", ex.getMsg());
@@ -99,7 +99,7 @@ class FinanceBudgetOwnershipIT {
         req.setBudgetMonth("2026-10");
         req.setBudgetAmount(new BigDecimal("3000.00"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 budgetService.saveMonthlyBudget(req)
         );
         assertEquals("无权访问其他机构数据", ex.getMsg());
@@ -120,7 +120,7 @@ class FinanceBudgetOwnershipIT {
         req.setBudgetMonth("2026-10");
         req.setBudgetAmount(new BigDecimal("2500.00"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 budgetService.saveMonthlyBudget(req)
         );
         assertEquals("无权保存预算设定，仅家庭管理员可操作", ex.getMsg());

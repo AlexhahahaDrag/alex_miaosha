@@ -4,7 +4,7 @@ import com.alex.api.finance.message.vo.UserNoticeConfigVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.base.common.Result;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
 import com.alex.finance.message.service.UserNoticeConfigService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +46,7 @@ public class UserNoticeConfigController {
     private Long getRequiredLoginUserId() {
         TUserVo loginUser = userUtils.getLoginUser();
         if (loginUser == null || loginUser.getId() == null) {
-            throw FinanceException.forbidden("未检测到登录用户，无法读取或更新个性化配置！");
+            throw UserException.forbidden("未检测到登录用户，无法读取或更新个性化配置！");
         }
         return loginUser.getId();
     }

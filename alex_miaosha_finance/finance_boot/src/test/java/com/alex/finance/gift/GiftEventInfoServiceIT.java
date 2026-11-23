@@ -4,7 +4,7 @@ import com.alex.api.finance.gift.event.vo.GiftEventInfoVo;
 import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.event.service.impl.GiftEventInfoServiceImp;
@@ -77,18 +77,18 @@ class GiftEventInfoServiceIT {
     @Test
     void addEvent_should_reject_when_name_is_empty_or_blank() {
         GiftEventInfoVo vo = new GiftEventInfoVo().setEventName("");
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftEventInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftEventInfo(vo));
         assertEquals("事由名称不能为空", ex.getMsg());
 
         vo.setEventName("   ");
-        ex = assertThrows(FinanceException.class, () -> service.addGiftEventInfo(vo));
+        ex = assertThrows(SystemException.class, () -> service.addGiftEventInfo(vo));
         assertEquals("事由名称不能为空", ex.getMsg());
     }
 
     @Test
     void addEvent_should_reject_when_name_too_long() {
         GiftEventInfoVo vo = new GiftEventInfoVo().setEventName("E".repeat(101));
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftEventInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftEventInfo(vo));
         assertEquals("事由名称最多100个字符", ex.getMsg());
     }
 
@@ -100,7 +100,7 @@ class GiftEventInfoServiceIT {
                 .setEventName("婚礼")
                 .setHostPersonId(99L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftEventInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftEventInfo(vo));
         assertEquals("无权访问其他机构的亲友", ex.getMsg());
     }
 
@@ -135,7 +135,7 @@ class GiftEventInfoServiceIT {
     @Test
     void updateEvent_should_reject_when_id_is_null() {
         GiftEventInfoVo vo = new GiftEventInfoVo().setEventName("满月酒");
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftEventInfo(vo));
         assertEquals("事由ID不能为空", ex.getMsg());
     }
 
@@ -146,7 +146,7 @@ class GiftEventInfoServiceIT {
 
         GiftEventInfoVo update = new GiftEventInfoVo().setEventName("修改事由");
         update.setId(2L);
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(update));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftEventInfo(update));
         assertEquals("无权访问其他机构的事由", ex.getMsg());
     }
 
@@ -167,13 +167,13 @@ class GiftEventInfoServiceIT {
         GiftEventInfo existing = event(4L, OTHER_USER_ID, OTHER_ORG_ID);
         when(giftEventInfoMapper.selectById(4L)).thenReturn(existing);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftEventInfo("4"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftEventInfo("4"));
         assertEquals("无权访问其他机构的事由", ex.getMsg());
     }
 
     @Test
     void deleteEvent_should_reject_invalid_id_format() {
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftEventInfo("1,abc,3"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftEventInfo("1,abc,3"));
         assertEquals("事由ID格式不合法", ex.getMsg());
     }
 
@@ -243,12 +243,12 @@ class GiftEventInfoServiceIT {
 
         GiftEventInfoVo emptyVo = new GiftEventInfoVo().setEventName("");
         emptyVo.setId(5L);
-        FinanceException ex1 = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(emptyVo));
+        SystemException ex1 = assertThrows(SystemException.class, () -> service.updateGiftEventInfo(emptyVo));
         assertEquals("事由名称不能为空", ex1.getMsg());
 
         GiftEventInfoVo tooLongVo = new GiftEventInfoVo().setEventName("L".repeat(101));
         tooLongVo.setId(5L);
-        FinanceException ex2 = assertThrows(FinanceException.class, () -> service.updateGiftEventInfo(tooLongVo));
+        SystemException ex2 = assertThrows(SystemException.class, () -> service.updateGiftEventInfo(tooLongVo));
         assertEquals("事由名称最多100个字符", ex2.getMsg());
     }
 

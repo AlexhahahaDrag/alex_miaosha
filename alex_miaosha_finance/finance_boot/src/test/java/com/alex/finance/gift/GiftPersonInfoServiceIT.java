@@ -8,7 +8,7 @@ import com.alex.api.user.orgUserInfo.api.OrgUserInfoApi;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.impl.GiftPersonInfoServiceImp;
@@ -85,25 +85,25 @@ class GiftPersonInfoServiceIT {
     @Test
     void addPerson_should_reject_when_name_is_empty_or_blank() {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setPersonName("");
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftPersonInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftPersonInfo(vo));
         assertEquals("亲友姓名不能为空", ex.getMsg());
 
         vo.setPersonName("   ");
-        ex = assertThrows(FinanceException.class, () -> service.addGiftPersonInfo(vo));
+        ex = assertThrows(SystemException.class, () -> service.addGiftPersonInfo(vo));
         assertEquals("亲友姓名不能为空", ex.getMsg());
     }
 
     @Test
     void addPerson_should_reject_when_name_too_long() {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setPersonName("A".repeat(51));
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftPersonInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftPersonInfo(vo));
         assertEquals("亲友姓名最多50个字符", ex.getMsg());
     }
 
     @Test
     void addPerson_should_reject_when_phone_too_long() {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setPersonName("张三").setPhone("1".repeat(21));
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftPersonInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftPersonInfo(vo));
         assertEquals("电话号码长度不能超过20位", ex.getMsg());
     }
 
@@ -124,7 +124,7 @@ class GiftPersonInfoServiceIT {
     @Test
     void updatePerson_should_reject_when_id_is_null() {
         GiftPersonInfoVo vo = new GiftPersonInfoVo().setPersonName("王五");
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftPersonInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftPersonInfo(vo));
         assertEquals("亲友ID不能为空", ex.getMsg());
     }
 
@@ -135,7 +135,7 @@ class GiftPersonInfoServiceIT {
 
         GiftPersonInfoVo update = new GiftPersonInfoVo().setPersonName("修改名称");
         update.setId(2L);
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftPersonInfo(update));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftPersonInfo(update));
         assertEquals("无权访问其他机构的亲友", ex.getMsg());
     }
 
@@ -156,13 +156,13 @@ class GiftPersonInfoServiceIT {
         GiftPersonInfo existing = person(4L, OTHER_USER_ID, OTHER_ORG_ID);
         when(giftPersonInfoMapper.selectById(4L)).thenReturn(existing);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftPersonInfo("4"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftPersonInfo("4"));
         assertEquals("无权访问其他机构的亲友", ex.getMsg());
     }
 
     @Test
     void deletePerson_should_reject_invalid_id_format() {
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftPersonInfo("1,abc,3"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftPersonInfo("1,abc,3"));
         assertEquals("亲友ID格式不合法", ex.getMsg());
     }
 
@@ -170,7 +170,7 @@ class GiftPersonInfoServiceIT {
     void getProfile_should_reject_cross_org() {
         when(giftPersonInfoMapper.selectById(5L)).thenReturn(person(5L, OTHER_USER_ID, OTHER_ORG_ID));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.getProfile(5L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.getProfile(5L));
         assertEquals("无权访问其他机构的亲友", ex.getMsg());
     }
 

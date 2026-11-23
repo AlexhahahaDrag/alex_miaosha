@@ -3,7 +3,7 @@ package com.alex.finance.prepaidCardInfoT;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
 import com.alex.common.config.Long2StringSerializer;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class PrepaidCardBusinessRuleIT {
         BigDecimal currentBalance = new BigDecimal("100.00");
         BigDecimal consumeAmount = new BigDecimal("100.01");
 
-        FinanceException ex = assertThrows(FinanceException.class,
+        SystemException ex = assertThrows(SystemException.class,
                 () -> applyConsume(currentBalance, consumeAmount));
 
         assertEquals("预付卡余额不足，无法完成消费扣减", ex.getMessage());
@@ -78,10 +78,10 @@ class PrepaidCardBusinessRuleIT {
     void non_positive_transaction_amount_should_be_rejected() {
         BigDecimal balance = new BigDecimal("100.00");
 
-        assertThrows(FinanceException.class, () -> applyRecharge(balance, BigDecimal.ZERO));
-        assertThrows(FinanceException.class, () -> applyRecharge(balance, new BigDecimal("-10.00")));
-        assertThrows(FinanceException.class, () -> applyConsume(balance, BigDecimal.ZERO));
-        assertThrows(FinanceException.class, () -> applyConsume(balance, new BigDecimal("-5.00")));
+        assertThrows(SystemException.class, () -> applyRecharge(balance, BigDecimal.ZERO));
+        assertThrows(SystemException.class, () -> applyRecharge(balance, new BigDecimal("-10.00")));
+        assertThrows(SystemException.class, () -> applyConsume(balance, BigDecimal.ZERO));
+        assertThrows(SystemException.class, () -> applyConsume(balance, new BigDecimal("-5.00")));
     }
 
     // ==========================================
@@ -106,7 +106,7 @@ class PrepaidCardBusinessRuleIT {
 
     private static BigDecimal applyRecharge(BigDecimal currentBalance, BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw FinanceException.param("充值金额必须大于0");
+            throw SystemException.param("充值金额必须大于0");
         }
         BigDecimal balance = currentBalance == null ? BigDecimal.ZERO : currentBalance;
         return balance.add(amount).setScale(2, RoundingMode.HALF_UP);
@@ -114,11 +114,11 @@ class PrepaidCardBusinessRuleIT {
 
     private static BigDecimal applyConsume(BigDecimal currentBalance, BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw FinanceException.param("消费金额必须大于0");
+            throw SystemException.param("消费金额必须大于0");
         }
         BigDecimal balance = currentBalance == null ? BigDecimal.ZERO : currentBalance;
         if (balance.compareTo(amount) < 0) {
-            throw FinanceException.param("预付卡余额不足，无法完成消费扣减");
+            throw SystemException.param("预付卡余额不足，无法完成消费扣减");
         }
         return balance.subtract(amount).setScale(2, RoundingMode.HALF_UP);
     }

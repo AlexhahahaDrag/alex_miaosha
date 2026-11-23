@@ -12,7 +12,8 @@ import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.common.Result;
 import com.alex.common.cache.multilevel.MultiLevelCacheService;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.finance.finance.entity.FinanceInfo;
@@ -168,11 +169,11 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
     @Override
     public FinanceInfo updateFinanceInfo(FinanceInfoVo financeInfoVo) {
         if (financeInfoVo == null || financeInfoVo.getId() == null) {
-            throw FinanceException.param("财务信息ID不能为空");
+            throw SystemException.param("财务信息ID不能为空");
         }
         FinanceInfo existing = getById(financeInfoVo.getId());
         if (existing == null) {
-            throw FinanceException.param("财务信息不存在");
+            throw SystemException.param("财务信息不存在");
         }
         assertCanModify(existing, "修改");
         FinanceInfo financeInfo = new FinanceInfo();
@@ -220,7 +221,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
         if (existing.getBelongTo() != null && existing.getBelongTo().equals(user.getId())) {
             return;
         }
-        throw FinanceException.forbidden("无权" + action + "其他家庭成员的财务流水");
+        throw UserException.forbidden("无权" + action + "其他家庭成员的财务流水");
     }
 
     private boolean isSuperOrAdmin(TUserVo user) {
@@ -291,7 +292,7 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
             return result.getList();
         } catch (Exception e) {
             log.error("解析导入财务信息 Excel 发生异常", e);
-            throw FinanceException.system("导入财务信息Excel解析失败: " + e.getMessage());
+            throw SystemException.system("导入财务信息Excel解析失败: " + e.getMessage());
         }
     }
 

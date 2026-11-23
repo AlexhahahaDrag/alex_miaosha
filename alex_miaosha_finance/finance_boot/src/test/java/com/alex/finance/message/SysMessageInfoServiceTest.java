@@ -5,7 +5,8 @@ import com.alex.api.finance.message.vo.SysMessageInfoVo;
 import com.alex.api.finance.message.vo.SysMessageSummaryVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.finance.accountRecordInfo.entity.AccountRecordInfo;
 import com.alex.finance.accountRecordInfo.mapper.AccountRecordInfoMapper;
@@ -101,7 +102,7 @@ class SysMessageInfoServiceTest {
     @DisplayName("executeRemindJob：XXL-Job无登录态后台定时任务应扫描全量礼金事件、消费券、猫超卡与预付卡并联动微信模板推送")
     void testExecuteRemindJobWithoutLoginContext() throws Exception {
         // 模拟 XXL-Job 后台线程：如果调用 requireLoginUser 则直接抛未登录异常
-        when(scopeSupport.requireLoginUser()).thenThrow(FinanceException.notLogin());
+        when(scopeSupport.requireLoginUser()).thenThrow(UserException.notLogin());
 
         LocalDateTime now = DateUtils.now();
 
@@ -367,14 +368,14 @@ class SysMessageInfoServiceTest {
 
         when(sysMessageInfoMapper.selectById(9001L)).thenReturn(otherMsg);
 
-        Assertions.assertThrows(FinanceException.class, () -> service.markRead(9001L));
+        Assertions.assertThrows(SystemException.class, () -> service.markRead(9001L));
     }
 
     @Test
     @DisplayName("publishSystemMessage：标题或内容为空应抛出参数异常，合法参数正常入库")
     void testPublishSystemMessageValidationAndSuccess() {
         SysMessageInfoVo emptyTitle = new SysMessageInfoVo().setTitle("  ").setContent("正文");
-        Assertions.assertThrows(FinanceException.class, () -> service.publishSystemMessage(emptyTitle));
+        Assertions.assertThrows(SystemException.class, () -> service.publishSystemMessage(emptyTitle));
 
         SysMessageInfoVo validVo = new SysMessageInfoVo()
                 .setTitle("年度账单复盘提醒")

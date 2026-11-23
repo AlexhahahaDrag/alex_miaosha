@@ -8,7 +8,8 @@ import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.base.constants.SysConf;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.finance.dict.service.DictInfoService;
 import com.alex.finance.finance.entity.FinanceBudgetInfo;
@@ -62,7 +63,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         try {
             return YearMonth.parse(budgetMonth.trim());
         } catch (Exception e) {
-            throw FinanceException.param("预算月份格式不正确，标准格式为 YYYY-MM（如 2026-10）");
+            throw SystemException.param("预算月份格式不正确，标准格式为 YYYY-MM（如 2026-10）");
         }
     }
 
@@ -129,13 +130,13 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
     public Boolean saveMonthlyBudget(FinanceBudgetSaveReq req) {
         String budgetMonth = req != null ? req.getBudgetMonth() : null;
         if (req == null || StringUtils.isBlank(budgetMonth)) {
-            throw FinanceException.param("预算月份不能为空！");
+            throw SystemException.param("预算月份不能为空！");
         }
         YearMonth ym = validateAndParseBudgetMonth(budgetMonth);
         String targetBudgetMonth = ym.toString();
 
         if (req.getBudgetAmount() != null && req.getBudgetAmount().compareTo(BigDecimal.ZERO) < 0) {
-            throw FinanceException.param("预算金额不能为负数！");
+            throw SystemException.param("预算金额不能为负数！");
         }
 
         assertCanEditBudget();
@@ -181,7 +182,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             TUserVo user = userUtils.getLoginUser();
             if (user != null && !isSuper(user)) {
                 if (orgId != null && userOrgId != null && !userOrgId.equals(orgId)) {
-                    throw FinanceException.forbidden("无权访问其他机构数据");
+                    throw UserException.forbidden("无权访问其他机构数据");
                 }
             }
         }
@@ -202,7 +203,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         if (isSuper(user) || isFamilyAdmin(user) || hasBudgetEditPermission(user)) {
             return;
         }
-        throw FinanceException.forbidden("无权保存预算设定，仅家庭管理员可操作");
+        throw UserException.forbidden("无权保存预算设定，仅家庭管理员可操作");
     }
 
     private boolean isSuper(TUserVo user) {

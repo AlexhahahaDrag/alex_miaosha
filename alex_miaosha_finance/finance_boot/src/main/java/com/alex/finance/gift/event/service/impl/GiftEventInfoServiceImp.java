@@ -16,7 +16,7 @@ import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -111,7 +111,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftEventInfo(GiftEventInfoVo giftEventInfoVo) {
         if (giftEventInfoVo == null || giftEventInfoVo.getId() == null) {
-            throw FinanceException.param("事由ID不能为空");
+            throw SystemException.param("事由ID不能为空");
         }
         GiftEventInfo existing = getById(giftEventInfoVo.getId());
         giftDataScopeSupport.assertEventAccessible(existing);
@@ -130,13 +130,13 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
 
     private void validateForSave(GiftEventInfoVo vo) {
         if (vo == null) {
-            throw FinanceException.param("事由信息不能为空");
+            throw SystemException.param("事由信息不能为空");
         }
         if (!StringUtils.hasText(vo.getEventName())) {
-            throw FinanceException.param("事由名称不能为空");
+            throw SystemException.param("事由名称不能为空");
         }
         if (vo.getEventName().trim().length() > 100) {
-            throw FinanceException.param("事由名称最多100个字符");
+            throw SystemException.param("事由名称最多100个字符");
         }
         if (vo.getHostPersonId() != null && giftPersonInfoMapper != null) {
             GiftPersonInfo hostPerson = giftPersonInfoMapper.selectById(vo.getHostPersonId());
@@ -170,7 +170,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
                     .map(Long::valueOf)
                     .toList();
         } catch (NumberFormatException ex) {
-            throw FinanceException.param("事由ID格式不合法");
+            throw SystemException.param("事由ID格式不合法");
         }
     }
 

@@ -1,34 +1,30 @@
 package com.alex.common.exception;
 
 import com.alex.base.enums.ResultEnum;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- *description:  登录异常
- *author:       majf
- *createDate:   2022/7/12 16:21
- *version:      1.0.0
+ * description:  用户与鉴权业务异常
+ * author:       majf
+ * createDate:   2022/7/12 16:21
+ * version:      2.0.0
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
-@Slf4j
-public class UserException extends RuntimeException{
-
-    private String code;
-
-    private String msg;
+public class UserException extends SystemException {
 
     public UserException(ResultEnum resultEnum) {
-        this.code = resultEnum.getCode();
-        this.msg = resultEnum.getValue();
-        log.error("用户异常resultEnum，编码：{}，信息：{}", resultEnum.getCode(), resultEnum.getValue());
+        super(resultEnum);
     }
 
     public UserException(String code, String message) {
-        this.code = code;
-        this.msg = message;
-        log.error("用户异常，编码：{}，信息：{}", code, message);
+        super(code, message);
+    }
+
+    public static UserException forbidden(String message) {
+        return new UserException(ResultEnum.UNAUTHORIZED.getCode(), message);
+    }
+
+    public static UserException notLogin() {
+        return new UserException(ResultEnum.USER_NO_LOGIN);
     }
 }

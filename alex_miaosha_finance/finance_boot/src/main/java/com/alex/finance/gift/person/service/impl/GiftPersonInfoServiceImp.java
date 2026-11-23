@@ -23,7 +23,7 @@ import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.person.service.GiftPersonInfoService;
 import com.alex.finance.gift.personoption.service.GiftPersonRelationOptionService;
 import com.alex.finance.gift.record.service.GiftRecordInfoService;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftRecordConstants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -229,7 +229,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateGiftPersonInfo(GiftPersonInfoVo giftPersonInfoVo) {
         if (giftPersonInfoVo == null || giftPersonInfoVo.getId() == null) {
-            throw FinanceException.param("亲友ID不能为空");
+            throw SystemException.param("亲友ID不能为空");
         }
         GiftPersonInfo existing = getById(giftPersonInfoVo.getId());
         giftDataScopeSupport.assertPersonAccessible(existing);
@@ -248,19 +248,19 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
 
     private void validateForSave(GiftPersonInfoVo vo) {
         if (vo == null) {
-            throw FinanceException.param("亲友信息不能为空");
+            throw SystemException.param("亲友信息不能为空");
         }
         if (!StringUtils.hasText(vo.getPersonName())) {
-            throw FinanceException.param("亲友姓名不能为空");
+            throw SystemException.param("亲友姓名不能为空");
         }
         if (vo.getPersonName().trim().length() > 50) {
-            throw FinanceException.param("亲友姓名最多50个字符");
+            throw SystemException.param("亲友姓名最多50个字符");
         }
         if (StringUtils.hasText(vo.getPhone()) && vo.getPhone().trim().length() > 20) {
-            throw FinanceException.param("电话号码长度不能超过20位");
+            throw SystemException.param("电话号码长度不能超过20位");
         }
         if (StringUtils.hasText(vo.getRelationType()) && vo.getRelationType().trim().length() > 32) {
-            throw FinanceException.param("关系类型长度不能超过32位");
+            throw SystemException.param("关系类型长度不能超过32位");
         }
     }
 
@@ -452,7 +452,7 @@ public class GiftPersonInfoServiceImp extends ServiceImpl<GiftPersonInfoMapper, 
                     .map(Long::valueOf)
                     .toList();
         } catch (NumberFormatException ex) {
-            throw FinanceException.param("亲友ID格式不合法");
+            throw SystemException.param("亲友ID格式不合法");
         }
     }
 

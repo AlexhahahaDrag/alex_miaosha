@@ -10,7 +10,7 @@ import com.alex.finance.gift.person.entity.GiftPersonInfo;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,18 +71,18 @@ class GiftRecordInfoServiceIT {
 
     @Test
     void addRecord_should_reject_when_amount_zero_or_negative() {
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(receiveVo(BigDecimal.ZERO)));
         assertEquals("礼金金额必须大于0", ex.getMsg());
 
-        ex = assertThrows(FinanceException.class, () ->
+        ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(receiveVo(new BigDecimal("-0.01"))));
         assertEquals("礼金金额必须大于0", ex.getMsg());
     }
 
     @Test
     void addRecord_should_reject_when_amount_exceeds_max() {
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(receiveVo(new BigDecimal("10000000000.00"))));
         assertEquals("礼金金额超出系统上限", ex.getMsg());
     }
@@ -100,7 +100,7 @@ class GiftRecordInfoServiceIT {
         giveRecord.setDirection("GIVE");
         when(giftRecordInfoMapper.selectById(1L)).thenReturn(giveRecord);
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(returnVo(1L, new BigDecimal("100"))));
         assertEquals("回礼记录只能关联收礼记录", ex.getMsg());
     }
@@ -109,7 +109,7 @@ class GiftRecordInfoServiceIT {
     void addRecord_RETURN_should_reject_when_related_not_exists() {
         when(giftRecordInfoMapper.selectById(1L)).thenReturn(null);
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(returnVo(1L, new BigDecimal("100"))));
         assertEquals("关联的收礼记录不存在", ex.getMsg());
     }
@@ -118,7 +118,7 @@ class GiftRecordInfoServiceIT {
     void addRecord_RETURN_should_reject_when_related_belongs_to_other_org() {
         when(giftRecordInfoMapper.selectById(1L)).thenReturn(receiveRecord(1L, OTHER_USER_ID, OTHER_ORG_ID));
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.addGiftRecordInfo(returnVo(1L, new BigDecimal("100"))));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
@@ -133,7 +133,7 @@ class GiftRecordInfoServiceIT {
         GiftRecordInfoVo update = returnVo(1L, new BigDecimal("50"));
         update.setId(1L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.updateGiftRecordInfo(update));
         assertEquals("回礼记录不能关联自身", ex.getMsg());
     }
@@ -145,7 +145,7 @@ class GiftRecordInfoServiceIT {
         GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
         vo.setGiverPersonId(5L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("无权访问其他机构的亲友", ex.getMsg());
     }
 
@@ -168,7 +168,7 @@ class GiftRecordInfoServiceIT {
         GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
         vo.setGiverPersonId(5L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("亲友不存在", ex.getMsg());
     }
 
@@ -179,7 +179,7 @@ class GiftRecordInfoServiceIT {
         GiftRecordInfoVo vo = receiveVo(new BigDecimal("200"));
         vo.setEventId(8L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("无权访问其他机构的事由", ex.getMsg());
     }
 
@@ -210,7 +210,7 @@ class GiftRecordInfoServiceIT {
         GiftRecordInfoVo update = receiveVo(new BigDecimal("100"));
         update.setId(2L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () ->
+        SystemException ex = assertThrows(SystemException.class, () ->
                 service.updateGiftRecordInfo(update));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
@@ -219,7 +219,7 @@ class GiftRecordInfoServiceIT {
     void markReturned_should_reject_cross_org() {
         when(giftRecordInfoMapper.selectById(3L)).thenReturn(receiveRecord(3L, OTHER_USER_ID, OTHER_ORG_ID));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(3L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(3L));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 

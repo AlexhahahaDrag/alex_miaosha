@@ -5,7 +5,7 @@ import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.api.UserApi;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.impl.FinanceInfoServiceImp;
@@ -89,7 +89,7 @@ class FinanceInfoCrossMemberPermissionIT {
         updateVo.setId(100L);
         updateVo.setAmount(new BigDecimal("999.00"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> financeInfoService.updateFinanceInfo(updateVo));
+        SystemException ex = assertThrows(SystemException.class, () -> financeInfoService.updateFinanceInfo(updateVo));
         assertTrue(ex.getMessage().contains("无权修改其他家庭成员的财务流水"));
         verify(financeInfoMapper, never()).updateById(any(FinanceInfo.class));
     }
@@ -110,7 +110,7 @@ class FinanceInfoCrossMemberPermissionIT {
         when(financeInfoMapper.selectById(10L)).thenReturn(record1);
         when(financeInfoMapper.selectById(11L)).thenReturn(record2);
 
-        FinanceException ex = assertThrows(FinanceException.class,
+        SystemException ex = assertThrows(SystemException.class,
                 () -> financeInfoService.deleteFinanceInfo("10,11"));
         assertTrue(ex.getMessage().contains("无权删除其他家庭成员的财务流水"));
         verify(financeInfoMapper, never()).deleteByIds(any());

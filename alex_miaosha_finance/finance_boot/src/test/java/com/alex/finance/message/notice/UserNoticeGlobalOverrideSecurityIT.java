@@ -1,7 +1,7 @@
 package com.alex.finance.message.notice;
 
 import com.alex.api.finance.message.vo.UserNoticeConfigVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.message.entity.UserNoticeConfig;
 import com.alex.finance.message.enums.NoticeBizType;
 import com.alex.finance.message.mapper.UserNoticeConfigMapper;
@@ -109,17 +109,17 @@ class UserNoticeGlobalOverrideSecurityIT {
         // 1. 无效用户
         UserNoticeConfigVo vo = new UserNoticeConfigVo();
         vo.setNoticeCode("GLOBAL");
-        assertThrows(FinanceException.class, () -> userNoticeConfigService.saveMyConfig(null, vo));
-        assertThrows(FinanceException.class, () -> userNoticeConfigService.saveMyConfig(0L, vo));
+        assertThrows(SystemException.class, () -> userNoticeConfigService.saveMyConfig(null, vo));
+        assertThrows(SystemException.class, () -> userNoticeConfigService.saveMyConfig(0L, vo));
 
         // 2. 空 VO 或空编码
-        assertThrows(FinanceException.class, () -> userNoticeConfigService.saveMyConfig(1001L, null));
+        assertThrows(SystemException.class, () -> userNoticeConfigService.saveMyConfig(1001L, null));
         vo.setNoticeCode("");
-        assertThrows(FinanceException.class, () -> userNoticeConfigService.saveMyConfig(1001L, vo));
+        assertThrows(SystemException.class, () -> userNoticeConfigService.saveMyConfig(1001L, vo));
 
         // 3. 非法编码 (非 8 大枚举)
         vo.setNoticeCode("ILLEGAL_CODE_ATTACK");
-        assertThrows(FinanceException.class, () -> userNoticeConfigService.saveMyConfig(1001L, vo));
+        assertThrows(SystemException.class, () -> userNoticeConfigService.saveMyConfig(1001L, vo));
     }
 
     @Test

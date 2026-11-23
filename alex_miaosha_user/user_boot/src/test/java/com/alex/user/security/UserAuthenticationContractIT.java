@@ -4,7 +4,7 @@ import com.alex.api.oss.fileInfo.api.OssApi;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.base.enums.ResultEnum;
-import com.alex.common.exception.LoginException;
+import com.alex.common.exception.UserException;
 import com.alex.common.utils.redis.RedisUtils;
 import com.alex.user.online.service.OnlineUserService;
 import com.alex.user.orgUserInfo.service.OrgUserInfoService;
@@ -127,12 +127,12 @@ public class UserAuthenticationContractIT {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         // 1. 用户名为空
-        LoginException ex1 = assertThrows(LoginException.class,
+        UserException ex1 = assertThrows(UserException.class,
                 () -> service.login(request, "", "123456", false));
         assertEquals(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY.getCode(), ex1.getCode());
 
         // 2. 密码为空
-        LoginException ex2 = assertThrows(LoginException.class,
+        UserException ex2 = assertThrows(UserException.class,
                 () -> service.login(request, "admin", null, false));
         assertEquals(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY.getCode(), ex2.getCode());
     }
@@ -146,7 +146,7 @@ public class UserAuthenticationContractIT {
         // 模拟 Redis 中错误计数已达到 5 次
         when(redisUtils.get(anyString())).thenReturn("5");
 
-        LoginException ex = assertThrows(LoginException.class,
+        UserException ex = assertThrows(UserException.class,
                 () -> service.login(request, "victim_user", "password123", false));
         assertEquals(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(), ex.getCode());
     }
@@ -163,7 +163,7 @@ public class UserAuthenticationContractIT {
         // 查库由于强制要求 status = '1'，返回空列表
         when(tUserMapper.selectList(any())).thenReturn(Collections.emptyList());
 
-        LoginException ex = assertThrows(LoginException.class,
+        UserException ex = assertThrows(UserException.class,
                 () -> service.login(request, "disabled_user", "password123", false));
         assertNotNull(ex);
         // 验证累加了失败重试计数（setEx 锁定30分钟）

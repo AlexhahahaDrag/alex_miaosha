@@ -7,7 +7,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alex.api.finance.vo.shopStock.ImportShopStockInfoVo;
 import com.alex.api.finance.vo.shopStock.ShopStockVo;
 import com.alex.base.constants.SysConf;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.redis.key.ShopStockKey;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
@@ -184,7 +184,7 @@ public class ShopStockServiceImp extends ServiceImpl<ShopStockMapper, ShopStock>
             return result.getList();
         } catch (Exception e) {
             log.error("解析导入商品库存 Excel 发生异常", e);
-            throw FinanceException.system("导入商品库存Excel解析失败: " + e.getMessage());
+            throw SystemException.system("导入商品库存Excel解析失败: " + e.getMessage());
         }
     }
 }

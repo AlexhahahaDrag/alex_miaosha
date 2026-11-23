@@ -17,7 +17,6 @@ import com.alex.base.enums.ResultEnum;
 import com.alex.common.constants.message.MessageConf;
 import com.alex.common.constants.redis.RedisConstants;
 import com.alex.common.enums.EStatus;
-import com.alex.common.exception.LoginException;
 import com.alex.common.exception.SystemException;
 import com.alex.common.exception.UserException;
 import com.alex.common.redis.key.LoginKey;
@@ -640,7 +639,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("1.参数校验与Redis检查");
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            throw new LoginException(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
+            throw new UserException(ResultEnum.USER_USERNAME_OR_PASSWORD_EMPTY);
         }
         String ip = IpUtils.getIpAddr(request);
 
@@ -664,14 +663,14 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
             redisUser = redisUserFuture.join();
         } catch (CompletionException e) {
             log.error("并行读取 Redis 校验数据异常", e);
-            throw new LoginException(ResultEnum.SYSTEM_ERROR.getCode(), "并行读取登录校验数据失败");
+            throw new UserException(ResultEnum.SYSTEM_ERROR.getCode(), "并行读取登录校验数据失败");
         }
 
         Map<String, Object> result = new HashMap<>();
         // 如果登录错误超过限制，抛出异常
         if (limitCount != null && !limitCount.isBlank()
                 && Integer.parseInt(limitCount) >= MAX_LOGIN_RETRY_LIMIT) {
-            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE);
+            throw new UserException(ResultEnum.USER_LOGIN_ERROR_MORE);
         }
         // 检查 Redis 是否命中，并验证 Token。注意由于 headers 参数不在 CompletableFuture
         // 闭包内，我们可直接在主线程安全使用它
@@ -764,7 +763,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
         if (admin == null) {
             // 设置错误登录次数
-            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
+            throw new UserException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
                     String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         stopWatch.stop();
@@ -774,7 +773,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
         boolean isPassword = BCRYPT_ENCODER.matches(password + admin.getUsername(), admin.getPassword());
         if (!isPassword) {
             // 密码错误，返回提示信息
-            throw new LoginException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
+            throw new UserException(ResultEnum.USER_LOGIN_ERROR_MORE.getCode(),
                     String.format(MessageConf.LOGIN_ERROR, setLoginCommit(request, username)));
         }
         stopWatch.stop();

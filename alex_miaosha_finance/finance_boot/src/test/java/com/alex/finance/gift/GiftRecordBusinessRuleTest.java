@@ -11,7 +11,7 @@ import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import com.alex.finance.gift.record.mapper.GiftRecordInfoMapper;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.record.service.impl.GiftRecordInfoServiceImp;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -124,7 +124,7 @@ class GiftRecordBusinessRuleTest {
     void should_throw_when_direction_is_null() {
         GiftRecordInfoVo vo = new GiftRecordInfoVo().setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("礼金方向不能为空", ex.getMsg());
     }
 
@@ -135,7 +135,7 @@ class GiftRecordBusinessRuleTest {
                 .setDirection("give")
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("礼金方向不合法", ex.getMsg());
     }
 
@@ -146,7 +146,7 @@ class GiftRecordBusinessRuleTest {
                 .setDirection("RETURN")
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("回礼记录必须关联原始收礼记录", ex.getMsg());
     }
 
@@ -164,7 +164,7 @@ class GiftRecordBusinessRuleTest {
                 .setAmount(new BigDecimal("100"));
         vo.setId(1L);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftRecordInfo(vo));
         assertEquals("回礼记录不能关联自身", ex.getMsg());
     }
 
@@ -178,7 +178,7 @@ class GiftRecordBusinessRuleTest {
                 .setRelatedRecordId(999L)
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("关联的收礼记录不存在", ex.getMsg());
     }
 
@@ -193,7 +193,7 @@ class GiftRecordBusinessRuleTest {
                 .setRelatedRecordId(2L)
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
@@ -209,7 +209,7 @@ class GiftRecordBusinessRuleTest {
                 .setRelatedRecordId(3L)
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("回礼记录只能关联收礼记录", ex.getMsg());
     }
 
@@ -220,7 +220,7 @@ class GiftRecordBusinessRuleTest {
                 .setDirection("GIVE")
                 .setAmount(new BigDecimal("-50.00"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("礼金金额必须大于0", ex.getMsg());
     }
 
@@ -231,7 +231,7 @@ class GiftRecordBusinessRuleTest {
                 .setDirection("GIVE")
                 .setAmount(BigDecimal.ZERO);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("礼金金额必须大于0", ex.getMsg());
     }
 
@@ -255,7 +255,7 @@ class GiftRecordBusinessRuleTest {
                 .setDirection("GIVE")
                 .setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(vo));
         assertEquals("请先登录", ex.getMsg());
     }
 
@@ -266,7 +266,7 @@ class GiftRecordBusinessRuleTest {
     @Test
     @DisplayName("I8: should_throw_when_id_is_null - 标记回礼ID为空拦截")
     void markReturned_should_throw_when_id_is_null() {
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(null));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(null));
         assertEquals("原始收礼记录不能为空", ex.getMsg());
     }
 
@@ -275,7 +275,7 @@ class GiftRecordBusinessRuleTest {
     void markReturned_should_throw_when_record_not_exists() {
         when(giftRecordInfoMapper.selectById(999L)).thenReturn(null);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(999L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(999L));
         assertEquals("礼金记录不存在", ex.getMsg());
     }
 
@@ -286,7 +286,7 @@ class GiftRecordBusinessRuleTest {
         giveRecord.setDirection("GIVE");
         when(giftRecordInfoMapper.selectById(1L)).thenReturn(giveRecord);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(1L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(1L));
         assertEquals("仅收礼记录可标记已回礼", ex.getMsg());
     }
 
@@ -296,7 +296,7 @@ class GiftRecordBusinessRuleTest {
         GiftRecordInfo otherRecord = receiveRecord(1L, OTHER_USER_ID, OTHER_ORG_ID);
         when(giftRecordInfoMapper.selectById(1L)).thenReturn(otherRecord);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(1L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(1L));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
@@ -328,7 +328,7 @@ class GiftRecordBusinessRuleTest {
         vo.setDirection("GIVE");
         vo.setAmount(new BigDecimal("100"));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftRecordInfo(vo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftRecordInfo(vo));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
@@ -359,7 +359,7 @@ class GiftRecordBusinessRuleTest {
     void delete_should_throw_when_record_belongs_to_other_user() {
         when(giftRecordInfoMapper.selectById(7L)).thenReturn(receiveRecord(7L, OTHER_USER_ID, OTHER_ORG_ID));
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftRecordInfo("7"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftRecordInfo("7"));
         assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
     }
 
@@ -374,7 +374,7 @@ class GiftRecordBusinessRuleTest {
     @Test
     @DisplayName("delete: should_throw_business_error_when_id_not_parsable - 非法ID字符报错拦截")
     void delete_should_throw_business_error_when_id_not_parsable() {
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftRecordInfo("1,abc,3"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftRecordInfo("1,abc,3"));
         assertEquals("礼金记录ID格式不合法", ex.getMsg());
     }
 
@@ -399,19 +399,19 @@ class GiftRecordBusinessRuleTest {
     @DisplayName("calcPending: should_throw_when_id_is_null_or_not_exists_or_not_RECEIVE")
     void calcPending_should_throw_on_invalid_conditions() {
         // null ID
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.calculatePendingReturnAmount(null));
+        SystemException ex = assertThrows(SystemException.class, () -> service.calculatePendingReturnAmount(null));
         assertEquals("原始收礼记录不能为空", ex.getMsg());
 
         // not exists
         when(giftRecordInfoMapper.selectById(99L)).thenReturn(null);
-        ex = assertThrows(FinanceException.class, () -> service.calculatePendingReturnAmount(99L));
+        ex = assertThrows(SystemException.class, () -> service.calculatePendingReturnAmount(99L));
         assertEquals("礼金记录不存在", ex.getMsg());
 
         // not RECEIVE
         GiftRecordInfo give = receiveRecord(8L, LOGIN_USER_ID, LOGIN_ORG_ID);
         give.setDirection("GIVE");
         when(giftRecordInfoMapper.selectById(8L)).thenReturn(give);
-        ex = assertThrows(FinanceException.class, () -> service.calculatePendingReturnAmount(8L));
+        ex = assertThrows(SystemException.class, () -> service.calculatePendingReturnAmount(8L));
         assertEquals("原始记录必须是收礼记录", ex.getMsg());
     }
 

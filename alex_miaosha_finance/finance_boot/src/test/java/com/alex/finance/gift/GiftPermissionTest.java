@@ -5,7 +5,7 @@ import com.alex.api.user.orgInfo.vo.OrgInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.event.mapper.GiftEventInfoMapper;
 import com.alex.finance.gift.person.mapper.GiftPersonInfoMapper;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
@@ -309,35 +309,35 @@ class GiftPermissionTest {
         @Test
         @DisplayName("4.1 queryGiftRecordInfo - 跨机构访问详情拦截 403")
         void other_cannot_query() {
-            FinanceException ex = assertThrows(FinanceException.class, () -> service.queryGiftRecordInfo(TARGET_RECORD_ID));
+            SystemException ex = assertThrows(SystemException.class, () -> service.queryGiftRecordInfo(TARGET_RECORD_ID));
             assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
         }
 
         @Test
         @DisplayName("4.2 addGiftRecordInfo (RETURN) - 跨机构关联他人收礼还礼拦截 403 (H7)")
         void other_cannot_add_return() {
-            FinanceException ex = assertThrows(FinanceException.class, () -> service.addGiftRecordInfo(buildReturnAddVo()));
+            SystemException ex = assertThrows(SystemException.class, () -> service.addGiftRecordInfo(buildReturnAddVo()));
             assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
         }
 
         @Test
         @DisplayName("4.3 updateGiftRecordInfo - 跨机构修改他人记录拦截 403 (H3)")
         void other_cannot_update() {
-            FinanceException ex = assertThrows(FinanceException.class, () -> service.updateGiftRecordInfo(buildUpdateVo()));
+            SystemException ex = assertThrows(SystemException.class, () -> service.updateGiftRecordInfo(buildUpdateVo()));
             assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
         }
 
         @Test
         @DisplayName("4.4 deleteGiftRecordInfo - 跨机构删除他人记录拦截 403 (H4)")
         void other_cannot_delete() {
-            FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteGiftRecordInfo(String.valueOf(TARGET_RECORD_ID)));
+            SystemException ex = assertThrows(SystemException.class, () -> service.deleteGiftRecordInfo(String.valueOf(TARGET_RECORD_ID)));
             assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
         }
 
         @Test
         @DisplayName("4.5 markReturned - 跨机构标记他人收礼记录拦截 403 (H2)")
         void other_cannot_mark_returned() {
-            FinanceException ex = assertThrows(FinanceException.class, () -> service.markReturned(TARGET_RECORD_ID));
+            SystemException ex = assertThrows(SystemException.class, () -> service.markReturned(TARGET_RECORD_ID));
             assertEquals("无权访问其他机构的礼金记录", ex.getMsg());
         }
     }

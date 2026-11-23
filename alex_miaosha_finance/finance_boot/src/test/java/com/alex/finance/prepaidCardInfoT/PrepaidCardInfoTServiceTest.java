@@ -4,7 +4,7 @@ import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardConsumeVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidDashboardOverviewVo;
 import com.alex.api.finance.prepaidConsumeRecordT.vo.PrepaidConsumeRecordTVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.finance.prepaidCardInfoT.entity.PrepaidCardInfoT;
 import com.alex.finance.prepaidCardInfoT.mapper.PrepaidCardInfoTMapper;
@@ -167,6 +167,6 @@ class PrepaidCardInfoTServiceTest {
         req.setType("invalid_type");
         req.setConsumeAmount(new BigDecimal("50.00"));
 
-        Assertions.assertThrows(FinanceException.class, () -> service.consumeAndRecharge(req));
+        Assertions.assertThrows(SystemException.class, () -> service.consumeAndRecharge(req));
     }
 }

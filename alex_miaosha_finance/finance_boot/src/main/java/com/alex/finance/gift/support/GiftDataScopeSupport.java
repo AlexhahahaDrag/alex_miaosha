@@ -6,7 +6,8 @@ import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
 import com.alex.finance.gift.event.entity.GiftEventInfo;
 import com.alex.finance.gift.person.entity.GiftPersonInfo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.gift.record.entity.GiftRecordInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class GiftDataScopeSupport {
     public TUserVo requireLoginUser() {
         TUserVo user = userUtils.getLoginUser();
         if (user == null) {
-            throw FinanceException.notLogin();
+            throw UserException.notLogin();
         }
         return user;
     }
@@ -73,7 +74,7 @@ public class GiftDataScopeSupport {
      */
     private void assertEntityAccessible(Long entityUserId, Long entityOrgId, String resourceName) {
         if (entityUserId == null && entityOrgId == null) {
-            throw FinanceException.param(resourceName + "不存在");
+            throw SystemException.param(resourceName + "不存在");
         }
         TUserVo user = requireLoginUser();
         if (isSuper(user)) {
@@ -89,7 +90,7 @@ public class GiftDataScopeSupport {
         if (myOrgId != null && entityOrgId == null && user.getId().equals(entityUserId)) {
             return;
         }
-        throw FinanceException.forbidden("无权访问其他机构的" + resourceName);
+        throw UserException.forbidden("无权访问其他机构的" + resourceName);
     }
 
     /** roleCode 含 "super" → 超管。 */

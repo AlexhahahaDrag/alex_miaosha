@@ -7,7 +7,7 @@ import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.finance.entity.FinanceBudgetInfo;
 import com.alex.finance.finance.mapper.FinanceBudgetInfoMapper;
 import com.alex.finance.finance.service.FinanceInfoService;
@@ -70,17 +70,17 @@ class FinanceBudgetLifecycleAndBoundaryIT {
     @DisplayName("边界校验：非法月份格式（如 2026-13、2026/10、abc）抛出 FinanceException.param (400)")
     void testInvalidMonthFormatThrowsFinanceException() {
         // 非法月份：超界月份 13
-        FinanceException ex1 = assertThrows(FinanceException.class,
+        SystemException ex1 = assertThrows(SystemException.class,
                 () -> budgetService.getMonthlyBudgetStatus("2026-13", 20L, 1001L));
         assertTrue(ex1.getMessage().contains("预算月份格式不正确"));
 
         // 非法月份：非破折号分隔
-        FinanceException ex2 = assertThrows(FinanceException.class,
+        SystemException ex2 = assertThrows(SystemException.class,
                 () -> budgetService.getMonthlyBudgetStatus("2026/10", 20L, 1001L));
         assertTrue(ex2.getMessage().contains("预算月份格式不正确"));
 
         // 非法月份：纯文本
-        FinanceException ex3 = assertThrows(FinanceException.class,
+        SystemException ex3 = assertThrows(SystemException.class,
                 () -> budgetService.getMonthlyBudgetStatus("invalid-month", 20L, 1001L));
         assertTrue(ex3.getMessage().contains("预算月份格式不正确"));
     }
@@ -93,7 +93,7 @@ class FinanceBudgetLifecycleAndBoundaryIT {
         req.setBudgetAmount(new BigDecimal("-100.00"));
         req.setCategoryCodes(List.of("餐饮"));
 
-        FinanceException ex = assertThrows(FinanceException.class,
+        SystemException ex = assertThrows(SystemException.class,
                 () -> budgetService.saveMonthlyBudget(req));
         assertTrue(ex.getMessage().contains("预算金额不能为负数"));
         verify(financeBudgetInfoMapper, never()).insert(any(FinanceBudgetInfo.class));

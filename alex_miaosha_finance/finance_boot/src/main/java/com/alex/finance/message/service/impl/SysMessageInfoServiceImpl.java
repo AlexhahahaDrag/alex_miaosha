@@ -5,7 +5,8 @@ import com.alex.api.finance.message.vo.SysMessageInfoVo;
 import com.alex.api.finance.message.vo.SysMessageSummaryVo;
 import com.alex.api.finance.prepaidCardInfoT.vo.PrepaidCardInfoTVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.common.utils.date.DateUtils;
 import com.alex.common.utils.string.StringUtils;
 import com.alex.finance.accountRecordInfo.entity.AccountRecordInfo;
@@ -825,7 +826,7 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public Boolean markRead(Long id) {
         ensureTableInitialized();
         if (id == null) {
-            throw FinanceException.param("消息ID不能为空");
+            throw SystemException.param("消息ID不能为空");
         }
         SysMessageInfo entity = baseMapper.selectById(id);
         assertMessageAccessible(entity);
@@ -850,18 +851,18 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public SysMessageInfoVo publishSystemMessage(SysMessageInfoVo vo) {
         ensureTableInitialized();
         if (vo == null || vo.getTitle() == null || vo.getContent() == null) {
-            throw FinanceException.param("消息标题和正文不能为空");
+            throw SystemException.param("消息标题和正文不能为空");
         }
         String title = vo.getTitle().trim();
         String content = vo.getContent().trim();
         if (StringUtils.isEmpty(title) || StringUtils.isEmpty(content)) {
-            throw FinanceException.param("消息标题和正文不能为空");
+            throw SystemException.param("消息标题和正文不能为空");
         }
         if (title.length() > 200) {
-            throw FinanceException.param("消息标题长度不能超过200个字符");
+            throw SystemException.param("消息标题长度不能超过200个字符");
         }
         if (content.length() > 1000) {
-            throw FinanceException.param("消息正文长度不能超过1000个字符");
+            throw SystemException.param("消息正文长度不能超过1000个字符");
         }
 
         TUserVo user = scopeSupport.requireLoginUser();
@@ -905,23 +906,23 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
     public Boolean deleteMessages(String ids) {
         ensureTableInitialized();
         if (StringUtils.isBlank(ids)) {
-            throw FinanceException.param("删除的消息ID不能为空");
+            throw SystemException.param("删除的消息ID不能为空");
         }
         String[] tokens = ids.split(",", -1);
         List<Long> idList = new ArrayList<>();
         for (String token : tokens) {
             String trimmed = token.trim();
             if (trimmed.isEmpty()) {
-                throw FinanceException.param("删除消息ID格式不正确");
+                throw SystemException.param("删除消息ID格式不正确");
             }
             try {
                 idList.add(Long.valueOf(trimmed));
             } catch (NumberFormatException e) {
-                throw FinanceException.param("删除消息ID格式不正确");
+                throw SystemException.param("删除消息ID格式不正确");
             }
         }
         if (idList.isEmpty()) {
-            throw FinanceException.param("删除的消息ID不能为空");
+            throw SystemException.param("删除的消息ID不能为空");
         }
         List<Long> deletableIds = new ArrayList<>(idList.size());
         for (Long id : idList) {
@@ -939,7 +940,7 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
 
     private void assertMessageAccessible(SysMessageInfo entity) {
         if (entity == null || Integer.valueOf(1).equals(entity.getIsDelete())) {
-            throw FinanceException.param("消息不存在或已被删除");
+            throw SystemException.param("消息不存在或已被删除");
         }
         TUserVo user = scopeSupport.requireLoginUser();
         if (scopeSupport.isSuper(user)) {
@@ -951,11 +952,11 @@ public class SysMessageInfoServiceImpl extends ServiceImpl<SysMessageInfoMapper,
             if (entity.getUserId().equals(currentUserId)) {
                 return;
             }
-            throw FinanceException.forbidden("无权操作他人的消息通知");
+            throw UserException.forbidden("无权操作他人的消息通知");
         }
         if (entity.getOrgId() == null || entity.getOrgId() == 0L || entity.getOrgId().equals(currentOrgId)) {
             return;
         }
-        throw FinanceException.forbidden("无权操作其他机构的消息通知");
+        throw UserException.forbidden("无权操作其他机构的消息通知");
     }
 }

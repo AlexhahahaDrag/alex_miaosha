@@ -13,7 +13,8 @@ import com.alex.finance.gift.eventoption.service.GiftEventTypeOptionService;
 import com.alex.finance.gift.support.GiftDataScopeSupport;
 import com.alex.finance.gift.support.GiftOptionConstants;
 import com.alex.finance.gift.support.GiftEventTypePresetSupport;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -164,7 +165,7 @@ public class GiftEventTypeOptionServiceImp
     @Override
     public boolean updateOption(GiftEventTypeOption option) {
         if (option == null || option.getId() == null) {
-            throw FinanceException.param("选项ID不能为空");
+            throw SystemException.param("选项ID不能为空");
         }
         GiftEventTypeOption existing = getById(option.getId());
         TUserVo loginUser = giftDataScopeSupport.requireLoginUser();
@@ -215,7 +216,7 @@ public class GiftEventTypeOptionServiceImp
 
     private boolean updateCustomOption(GiftEventTypeOption option, GiftEventTypeOption existing, Long orgId) {
         if (orgId != null && existing != null && !orgId.equals(existing.getOrgId())) {
-            throw FinanceException.forbidden("无权修改其他机构的分类");
+            throw UserException.forbidden("无权修改其他机构的分类");
         }
         return updateById(option);
     }
@@ -227,18 +228,18 @@ public class GiftEventTypeOptionServiceImp
         }
         GiftEventTypeOption option = getById(eventTypeOptionId);
         if (option == null || (option.getIsDelete() != null && option.getIsDelete() == 1)) {
-            throw FinanceException.param("事由类型选项不存在");
+            throw SystemException.param("事由类型选项不存在");
         }
         if (GiftOptionConstants.OPTION_TYPE_SYSTEM.equals(option.getOptionType())) {
             return option.getEventCode();
         }
         if (GiftOptionConstants.OPTION_TYPE_CUSTOM.equals(option.getOptionType())) {
             if (orgId == null || !orgId.equals(option.getOrgId())) {
-                throw FinanceException.forbidden("无权使用该自定义事由类型");
+                throw UserException.forbidden("无权使用该自定义事由类型");
             }
             return option.getEventLabel();
         }
-        throw FinanceException.param("事由类型选项不合法");
+        throw SystemException.param("事由类型选项不合法");
     }
 
     @Override
@@ -256,10 +257,10 @@ public class GiftEventTypeOptionServiceImp
         }
         String label = eventType.trim();
         if (label.length() > MAX_LABEL_LENGTH) {
-            throw FinanceException.param("自定义事由类型最多20个字符");
+            throw SystemException.param("自定义事由类型最多20个字符");
         }
         if (giftEventTypePresetSupport.isPresetLabel(label)) {
-            throw FinanceException.param("请从常用类型中选择「" + label + "」");
+            throw SystemException.param("请从常用类型中选择「" + label + "」");
         }
         upsertLabel(orgId, userId, label);
     }

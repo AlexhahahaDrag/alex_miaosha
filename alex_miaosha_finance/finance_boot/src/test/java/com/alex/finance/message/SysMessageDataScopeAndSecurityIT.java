@@ -2,7 +2,7 @@ package com.alex.finance.message;
 
 import com.alex.api.finance.message.vo.SysMessageInfoVo;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.accountRecordInfo.mapper.AccountRecordInfoMapper;
 import com.alex.finance.cpnCouponInfo.mapper.CpnCouponInfoMapper;
 import com.alex.finance.finance.mapper.FinanceBudgetInfoMapper;
@@ -84,7 +84,7 @@ class SysMessageDataScopeAndSecurityIT {
         otherUserMsg.setId(101L);
         when(sysMessageInfoMapper.selectById(101L)).thenReturn(otherUserMsg);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markRead(101L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markRead(101L));
         assertEquals("403", ex.getCode());
         assertTrue(ex.getMsg().contains("无权操作他人的消息通知"));
         verify(sysMessageInfoMapper, never()).updateById(any(SysMessageInfo.class));
@@ -105,7 +105,7 @@ class SysMessageDataScopeAndSecurityIT {
         otherOrgMsg.setId(102L);
         when(sysMessageInfoMapper.selectById(102L)).thenReturn(otherOrgMsg);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.markRead(102L));
+        SystemException ex = assertThrows(SystemException.class, () -> service.markRead(102L));
         assertEquals("403", ex.getCode());
         assertTrue(ex.getMsg().contains("无权操作其他机构的消息通知"));
     }
@@ -117,7 +117,7 @@ class SysMessageDataScopeAndSecurityIT {
 
         // 1. 记录不存在
         when(sysMessageInfoMapper.selectById(404L)).thenReturn(null);
-        FinanceException ex1 = assertThrows(FinanceException.class, () -> service.markRead(404L));
+        SystemException ex1 = assertThrows(SystemException.class, () -> service.markRead(404L));
         assertTrue(ex1.getMsg().contains("消息不存在或已被删除"));
 
         // 2. 软删除记录 (is_delete = 1)
@@ -126,7 +126,7 @@ class SysMessageDataScopeAndSecurityIT {
         deletedMsg.setIsDelete(1);
         when(sysMessageInfoMapper.selectById(405L)).thenReturn(deletedMsg);
 
-        FinanceException ex2 = assertThrows(FinanceException.class, () -> service.markRead(405L));
+        SystemException ex2 = assertThrows(SystemException.class, () -> service.markRead(405L));
         assertTrue(ex2.getMsg().contains("消息不存在或已被删除"));
     }
 
@@ -136,7 +136,7 @@ class SysMessageDataScopeAndSecurityIT {
     void deleteMessages_invalidNonNumericIds_mustThrowParamErrorNot500(String badIds) {
         when(scopeSupport.requireLoginUser()).thenReturn(normalUser);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteMessages(badIds));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteMessages(badIds));
         assertTrue(ex.getMsg().contains("删除消息ID格式不正确"));
         verify(sysMessageInfoMapper, never()).selectById(any());
     }
@@ -146,7 +146,7 @@ class SysMessageDataScopeAndSecurityIT {
     @ValueSource(strings = {"   "})
     @DisplayName("删除空参数防御：ids 为空时明确提示参数异常")
     void deleteMessages_blankIds_mustThrow(String blankIds) {
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteMessages(blankIds));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteMessages(blankIds));
         assertTrue(ex.getMsg().contains("删除的消息ID不能为空"));
     }
 
@@ -163,7 +163,7 @@ class SysMessageDataScopeAndSecurityIT {
         otherMsg.setId(999L);
         when(sysMessageInfoMapper.selectById(999L)).thenReturn(otherMsg);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteMessages("999"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteMessages("999"));
         assertEquals("403", ex.getCode());
         assertTrue(ex.getMsg().contains("无权操作他人的消息通知"));
         verify(service, never()).removeBatchByIds(any());
@@ -226,13 +226,13 @@ class SysMessageDataScopeAndSecurityIT {
         // 1. 标题超长 201 字符
         String longTitle = "T".repeat(201);
         SysMessageInfoVo titleVo = new SysMessageInfoVo().setTitle(longTitle).setContent("正常正文");
-        FinanceException ex1 = assertThrows(FinanceException.class, () -> service.publishSystemMessage(titleVo));
+        SystemException ex1 = assertThrows(SystemException.class, () -> service.publishSystemMessage(titleVo));
         assertTrue(ex1.getMsg().contains("标题长度不能超过200个字符"));
 
         // 2. 正文超长 1001 字符
         String longContent = "C".repeat(1001);
         SysMessageInfoVo contentVo = new SysMessageInfoVo().setTitle("正常标题").setContent(longContent);
-        FinanceException ex2 = assertThrows(FinanceException.class, () -> service.publishSystemMessage(contentVo));
+        SystemException ex2 = assertThrows(SystemException.class, () -> service.publishSystemMessage(contentVo));
         assertTrue(ex2.getMsg().contains("正文长度不能超过1000个字符"));
     }
 }

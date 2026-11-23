@@ -4,7 +4,7 @@ import com.alex.api.finance.vo.finance.FinanceInfoVo;
 import com.alex.api.user.roleInfo.vo.RoleInfoVo;
 import com.alex.api.user.userInfo.UserUtils;
 import com.alex.api.user.userInfo.vo.TUserVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.finance.entity.FinanceInfo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.impl.FinanceInfoServiceImp;
@@ -114,7 +114,7 @@ class FinanceInfoOwnershipTest {
         updateVo.setId(102L);
         updateVo.setName("非法修改他人流水");
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.updateFinanceInfo(updateVo));
+        SystemException ex = assertThrows(SystemException.class, () -> service.updateFinanceInfo(updateVo));
         assertTrue(ex.getMessage().contains("无权修改其他家庭成员的财务流水"));
         verify(mapper, never()).updateById(any(FinanceInfo.class));
     }
@@ -171,7 +171,7 @@ class FinanceInfoOwnershipTest {
         existing.setBelongTo(777L); // 他人流水
         when(mapper.selectById(203L)).thenReturn(existing);
 
-        FinanceException ex = assertThrows(FinanceException.class, () -> service.deleteFinanceInfo("203"));
+        SystemException ex = assertThrows(SystemException.class, () -> service.deleteFinanceInfo("203"));
         assertTrue(ex.getMessage().contains("无权删除其他家庭成员的财务流水"));
         verify(mapper, never()).deleteByIds(any());
     }

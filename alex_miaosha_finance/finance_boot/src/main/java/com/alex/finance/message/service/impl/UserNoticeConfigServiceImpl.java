@@ -1,7 +1,8 @@
 package com.alex.finance.message.service.impl;
 
 import com.alex.api.finance.message.vo.UserNoticeConfigVo;
-import com.alex.common.exception.FinanceException;
+import com.alex.common.exception.UserException;
+import com.alex.common.exception.SystemException;
 import com.alex.finance.message.entity.UserNoticeConfig;
 import com.alex.finance.message.enums.NoticeBizType;
 import com.alex.finance.message.mapper.UserNoticeConfigMapper;
@@ -127,14 +128,14 @@ public class UserNoticeConfigServiceImpl extends ServiceImpl<UserNoticeConfigMap
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveMyConfig(Long userId, UserNoticeConfigVo vo) {
         if (userId == null || userId <= 0) {
-            throw FinanceException.forbidden("无法获取有效用户上下文！");
+            throw UserException.forbidden("无法获取有效用户上下文！");
         }
         if (vo == null || StringUtils.isBlank(vo.getNoticeCode())) {
-            throw FinanceException.param("业务通知类型编码不能为空！");
+            throw SystemException.param("业务通知类型编码不能为空！");
         }
         String noticeCode = vo.getNoticeCode().trim().toUpperCase();
         if (!NoticeBizType.isValidCode(noticeCode)) {
-            throw FinanceException.param("非法的业务通知类型编码: " + noticeCode);
+            throw SystemException.param("非法的业务通知类型编码: " + noticeCode);
         }
 
         boolean internalEnabled = vo.getInternalEnabled() == null || vo.getInternalEnabled();

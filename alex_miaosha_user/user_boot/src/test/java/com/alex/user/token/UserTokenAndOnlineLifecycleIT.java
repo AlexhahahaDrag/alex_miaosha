@@ -204,8 +204,8 @@ public class UserTokenAndOnlineLifecycleIT {
         verify(redisUtils).setEx(LoginKey.loginUuid, uuidToken, "Bearer new-raw-jwt", 7200L, TimeUnit.SECONDS);
         // 验证写入新 loginToken
         verify(redisUtils).setEx(eq(LoginKey.loginToken), eq("Bearer new-raw-jwt"), anyString(), eq(7200L), eq(TimeUnit.SECONDS));
-        // 验证删除旧 loginToken
-        verify(redisUtils).delete(LoginKey.loginToken, barToken);
+        // 验证旧 token 保留 120 秒平滑过渡期，避免并发查空
+        verify(redisUtils).setEx(eq(LoginKey.loginToken), eq(barToken), anyString(), eq(120L), eq(TimeUnit.SECONDS));
     }
 
     @Test
