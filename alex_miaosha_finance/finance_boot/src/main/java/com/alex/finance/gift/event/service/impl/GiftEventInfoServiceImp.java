@@ -29,7 +29,6 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -63,9 +62,12 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
         List<GiftEventInfo> events = getBaseMapper().listEntities(null);
         List<GiftRecordInfoVo> records = listGiftRecordsForAggregate();
         LocalDateTime now = DateUtils.now();
+        int currentYear = now.getYear();
+        int currentMonth = now.getMonthValue();
         long monthPendingCount = events.stream()
                 .filter(event -> event.getEventTime() != null)
-                .filter(event -> event.getEventTime().getYear() == now.getYear() && event.getEventTime().getMonth() == now.getMonth())
+                .filter(event -> event.getEventTime().getYear() == currentYear
+                        && event.getEventTime().getMonthValue() == currentMonth)
                 .count();
         BigDecimal totalAmount = records.stream().map(this::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
         long activePersonCount = records.stream()
@@ -145,6 +147,7 @@ public class GiftEventInfoServiceImp extends ServiceImpl<GiftEventInfoMapper, Gi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteGiftEventInfo(String ids) {
         if (!StringUtils.hasText(ids)) {
             return true;

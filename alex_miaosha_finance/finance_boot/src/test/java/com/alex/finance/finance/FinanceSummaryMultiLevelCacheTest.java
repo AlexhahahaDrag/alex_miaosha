@@ -72,11 +72,11 @@ class FinanceSummaryMultiLevelCacheTest {
         financeInfoService = new FinanceInfoServiceImp(
                 financeInfoMapper,
                 iExcelDictHandler,
-                userApi
+                userApi, userUtils, multiLevelCacheService
         );
         ReflectionTestUtils.setField(financeInfoService, "baseMapper", financeInfoMapper);
-        ReflectionTestUtils.setField(financeInfoService, "userUtils", userUtils);
-        financeInfoService.setMultiLevelCacheService(multiLevelCacheService);
+
+
 
         TUserVo userA = new TUserVo();
         userA.setId(USER_ID_A);

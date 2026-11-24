@@ -51,8 +51,8 @@ class FinanceInfoCrossMemberPermissionIT {
 
     @BeforeEach
     void setUp() {
-        financeInfoService = new FinanceInfoServiceImp(financeInfoMapper, iExcelDictHandler, userApi);
-        ReflectionTestUtils.setField(financeInfoService, "userUtils", userUtils);
+        financeInfoService = new FinanceInfoServiceImp(financeInfoMapper, iExcelDictHandler, userApi, userUtils, null);
+
         ReflectionTestUtils.setField(financeInfoService, "baseMapper", financeInfoMapper);
 
         // 普通成员用户 (1001L)

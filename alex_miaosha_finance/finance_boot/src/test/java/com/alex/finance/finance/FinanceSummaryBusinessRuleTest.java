@@ -5,7 +5,7 @@ import com.alex.api.finance.vo.finance.FinanceSummaryVo;
 import com.alex.finance.finance.mapper.FinanceInfoMapper;
 import com.alex.finance.finance.service.impl.FinanceInfoServiceImp;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+
 
 import java.math.BigDecimal;
 
@@ -20,7 +20,7 @@ class FinanceSummaryBusinessRuleTest {
     @Test
     void testSummaryCalculatesBalanceCorrectly() {
         FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
-        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null, null, null);
 
         FinanceSummaryVo mockAgg = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("500.00"))
@@ -41,7 +41,7 @@ class FinanceSummaryBusinessRuleTest {
     @Test
     void testSummaryHandlesExpenseOnlyCorrectly() {
         FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
-        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null, null, null);
 
         FinanceSummaryVo mockAgg = FinanceSummaryVo.builder()
                 .totalExpense(new BigDecimal("350.50"))
@@ -62,7 +62,7 @@ class FinanceSummaryBusinessRuleTest {
     @Test
     void testSummaryHandlesNullMapperResultGracefully() {
         FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
-        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null, null, null);
 
         when(mapper.getFinanceSummary(any())).thenReturn(null);
 
@@ -77,7 +77,7 @@ class FinanceSummaryBusinessRuleTest {
     @Test
     void testSummaryNetBalanceAccountingLogic() {
         FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
-        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null, null, null);
 
         // 真实日常账单剔除转账后的数值模拟：支出 857,538.10，收入 984,349.51，结余 +126,811.41，笔数 4,913
         FinanceSummaryVo mockAgg = FinanceSummaryVo.builder()
@@ -99,7 +99,7 @@ class FinanceSummaryBusinessRuleTest {
     @Test
     void testAddFinanceInfoSuccessfully() {
         FinanceInfoMapper mapper = mock(FinanceInfoMapper.class);
-        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null);
+        FinanceInfoServiceImp service = new FinanceInfoServiceImp(mapper, null, null, null, null);
 
         FinanceInfoVo req = new FinanceInfoVo();
         req.setName("电费");

@@ -37,8 +37,8 @@ class FinanceBudgetServiceTest {
         userUtils = mock(com.alex.api.user.userInfo.UserUtils.class);
         when(userUtils.getOrgId()).thenReturn(20L);
         when(userUtils.getUserId()).thenReturn(1001L);
-        budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService);
-        org.springframework.test.util.ReflectionTestUtils.setField(budgetService, "userUtils", userUtils);
+        budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService, null, null, userUtils);
+
     }
 
     @Test
@@ -355,7 +355,7 @@ class FinanceBudgetServiceTest {
 
         com.alex.api.user.userInfo.UserUtils mockUserUtils = mock(com.alex.api.user.userInfo.UserUtils.class);
         when(mockUserUtils.getOrgId()).thenReturn(mockOrgId);
-        org.springframework.test.util.ReflectionTestUtils.setField(budgetService, "userUtils", mockUserUtils);
+        budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService, null, null, mockUserUtils);
 
         FinanceBudgetInfo orgBudget = new FinanceBudgetInfo();
         orgBudget.setId(18L);

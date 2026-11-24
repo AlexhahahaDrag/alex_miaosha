@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * description: 月度零花钱预算服务实现
@@ -46,15 +44,9 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
 
     private final FinanceBudgetInfoMapper financeBudgetInfoMapper;
     private final FinanceInfoService financeInfoService;
-
-    @Autowired(required = false)
-    private FinanceInfoMapper financeInfoMapper;
-
-    @Autowired(required = false)
-    private DictInfoService dictInfoService;
-
-    @Autowired(required = false)
-    private UserUtils userUtils;
+    private final FinanceInfoMapper financeInfoMapper;
+    private final DictInfoService dictInfoService;
+    private final UserUtils userUtils;
 
     private YearMonth validateAndParseBudgetMonth(String budgetMonth) {
         if (StringUtils.isBlank(budgetMonth)) {
@@ -180,10 +172,8 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
         Long userOrgId = userUtils != null ? userUtils.getOrgId() : null;
         if (userUtils != null) {
             TUserVo user = userUtils.getLoginUser();
-            if (user != null && !isSuper(user)) {
-                if (orgId != null && userOrgId != null && !userOrgId.equals(orgId)) {
-                    throw UserException.forbidden("无权访问其他机构数据");
-                }
+            if (user != null && !isSuper(user) && orgId != null && userOrgId != null && !userOrgId.equals(orgId)) {
+                throw UserException.forbidden("无权访问其他机构数据");
             }
         }
         if (orgId != null) {
@@ -252,7 +242,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
                 .filter(c -> !c.equalsIgnoreCase("支出") && !c.equalsIgnoreCase("收入")
                         && !c.equalsIgnoreCase(SysConf.EXPENSE_STATUS) && !c.equalsIgnoreCase(SysConf.INCOME_STATUS))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private BigDecimal calculateActualExpense(FinanceInfoVo queryVo, Set<String> directions) {
@@ -319,7 +309,7 @@ public class FinanceBudgetInfoServiceImpl extends ServiceImpl<FinanceBudgetInfoM
             }
             return categoryCodes.stream()
                     .map(code -> dictMap.getOrDefault(code, code))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             log.debug("解析分类字典名称异常: {}", e.getMessage());
             return categoryCodes;

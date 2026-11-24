@@ -49,9 +49,9 @@ class FinanceManagerOwnershipIT {
 
     @BeforeEach
     void setUp() {
-        service = new FinanceInfoServiceImp(mapper, null, null);
+        service = new FinanceInfoServiceImp(mapper, null, null, userUtils, null);
         ReflectionTestUtils.setField(service, "baseMapper", mapper);
-        ReflectionTestUtils.setField(service, "userUtils", userUtils);
+
     }
 
     private TUserVo buildUser(Long id, String roleCode) {

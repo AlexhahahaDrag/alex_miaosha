@@ -23,9 +23,7 @@ import com.alex.finance.handler.IExcelDictHandlerImpl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,12 +51,9 @@ public class FinanceInfoServiceImp extends ServiceImpl<FinanceInfoMapper, Financ
 
     private final UserApi userApi;
 
-    @Autowired(required = false)
-    private UserUtils userUtils;
+    private final UserUtils userUtils;
 
-    @Setter
-    @Autowired(required = false)
-    private MultiLevelCacheService multiLevelCacheService;
+    private final MultiLevelCacheService multiLevelCacheService;
 
     @Override
     public Page<FinanceInfoVo> getPage(Long pageNum, Long pageSize, FinanceInfoVo financeInfoVo) {

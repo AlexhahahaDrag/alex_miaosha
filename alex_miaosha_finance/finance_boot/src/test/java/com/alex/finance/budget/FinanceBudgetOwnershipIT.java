@@ -16,7 +16,7 @@ import com.alex.finance.finance.service.impl.FinanceBudgetInfoServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -45,8 +45,8 @@ class FinanceBudgetOwnershipIT {
         financeInfoService = mock(FinanceInfoService.class);
         userUtils = mock(UserUtils.class);
 
-        budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService);
-        ReflectionTestUtils.setField(budgetService, "userUtils", userUtils);
+        budgetService = new FinanceBudgetInfoServiceImpl(financeBudgetInfoMapper, financeInfoService, null, null, userUtils);
+
     }
 
     private TUserVo buildUser(Long id, Long orgId, String roleCode, List<String> permissions) {
